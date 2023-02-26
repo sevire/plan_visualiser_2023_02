@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 django = "*"
+openpyxl = "*"
+djangorestframework = "*"
+ddt = "*"
 
 [dev-packages]
 

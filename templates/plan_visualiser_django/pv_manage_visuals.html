@@ -1,0 +1,26 @@
+{% extends "plan_visualiser_django/pv_base.html" %}
+
+{% block page_heading %}Manage Visuals for Plan - {{ plan.original_file_name }}{% endblock %}
+
+{% block main_content %}
+
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-visual/{{ plan.id }}'">Add Visual</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Visual Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for visual in visuals %}
+            <tr>
+                <td><a href="/pv/edit-visual/{{ visual.id }}">{{ visual.name }}</a></td>
+                <td><a href="/pv/delete-visual/{{ visual.id }}" class="badge bg-danger" onclick="return confirm('Are you sure you want to delete this visual?')">Delete</a></td>
+                <td><a href="/pv/layout-visual/{{ visual.id }}" class="badge bg-danger">Layout</a></td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

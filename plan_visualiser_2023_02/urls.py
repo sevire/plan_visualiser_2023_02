@@ -1,4 +1,4 @@
-"""plan_visualiser_2023_02 URL Configuration
+"""plan_visualiser_2022_10 URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.views.generic import RedirectView
+
+import plan_visual_django
 
 urlpatterns = [
+    path("", RedirectView.as_view(url='pv', permanent=True), name='index'),
     path("admin/", admin.site.urls),
+    path("pv/", include('plan_visual_django.urls')),
+    path('api/', include('api.urls'))
 ]
