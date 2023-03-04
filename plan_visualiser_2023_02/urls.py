@@ -23,5 +23,6 @@ urlpatterns = [
     path("", RedirectView.as_view(url='pv', permanent=True), name='index'),
     path("admin/", admin.site.urls),
     path("pv/", include('plan_visual_django.urls')),
-    path('api/', include('api.urls'))
+    path('api/', include('api.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -1,17 +1,15 @@
 import os
-from tempfile import template
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
-from plan_visualiser_2023_02 import settings
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField
 from django.contrib import messages
-
 from plan_visual_django.services.plan_reader import ExcelXLSFileReader
+from plan_visual_django.services.user_services import get_current_user
 
 
 # Create your views here.
@@ -20,15 +18,13 @@ def add_plan(request):
     if request.method == "POST":
         plan_form = PlanForm(data=request.POST, files=request.FILES)
         if plan_form.is_valid():
-            # Get current user
-            user_model = get_user_model()
-            user = user_model.objects.get(username="plan_visualiser_dev")
+            current_user = get_current_user(request, default_if_logged_out=True)
 
-            # Save fields from form but don't commit so can modify other fields before comitting.
+            # Save fields from form but don't commit so can modify other fields before committing.
             plan = plan_form.save(commit=False)
 
             # Check that user hasn't already added a file with this name. Count should be zero
-            count = Plan.objects.filter(user=user, original_file_name=plan.file.name).count()
+            count = Plan.objects.filter(user=current_user, original_file_name=plan.file.name).count()
             if count > 0:
                 messages.error(request, f"Already uploaded a file called {plan.file.name}.  Record not added")
             else:
@@ -36,7 +32,7 @@ def add_plan(request):
                 plan.original_file_name = plan.file.name
 
                 # Add user to record (currently hard-coded)
-                plan.user = user
+                plan.user = current_user
 
                 # Now can save the record
                 plan.save()
@@ -102,9 +98,7 @@ def edit_visual(request, visual_id):
 
 
 def manage_plans(request):
-    # ToDo: remove hard coded user and replaced with current user.
-    user_model = get_user_model()
-    user = user_model.objects.get(username="plan_visualiser_dev")
+    user = get_current_user(request, default_if_logged_out=True)
     plan_files = Plan.objects.filter(user=user)
 
     context = {

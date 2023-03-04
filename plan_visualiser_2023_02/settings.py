@@ -117,3 +117,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Redirect to home URL after login (Default redirects to /accounts/profile/)
+LOGIN_REDIRECT_URL = '/'
+
+# Email settings, mostly to support resetting of passwords for users
+EMAIL_HOST = "mail.genonline.co.uk"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "thomas.gaylard@genonline.co.uk"
+EMAIL_HOST_PASSWORD = "SnowdonLuthi@r3141"
+EMAIL_USE_SSL = True
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -22,7 +22,15 @@
             </ul>
 
             <div class="text-end">
-                <p>{{ user }}</p>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    {%  if request.user.is_authenticated %}
+                        <li><a href="{% url 'logout' %}" class="nav-link px-2 text-white">Logout</a></li>
+                        <li class="nav-link px-2 text-white">{{ request.user.username }}</li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}" class="nav-link px-2 text-white">Login</a></li>
+                        <li class="nav-link px-2 text-white">(not logged in)</li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </div>

@@ -1,3 +1,3 @@
-from plan_visualiser_django.models import Plan
+from plan_visual_django.models import Plan
 
 

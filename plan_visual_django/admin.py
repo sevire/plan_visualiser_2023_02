@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
     PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
     PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType
@@ -8,15 +10,17 @@ from plan_visual_django.models import Plan, Color, Font, PlotableStyle, Plotable
 class FileTypeAdmin(admin.ModelAdmin):
     list_display = ["file_type_name", "file_type_description"]
 
+
 @admin.register(PlanField)
 class PlanFieldAdmin(admin.ModelAdmin):
-    list_display = ["field_name", "field_type"]
+    list_display = ["field_name", "field_type", "required_flag", "sort_index"]
     ordering = ["sort_index"]
 
 
 @admin.register(PlanMappedField)
 class PlanMappedFieldAdmin(admin.ModelAdmin):
     list_display = ["plan_field_mapping_type", "mapped_field", "input_field_name", "input_field_type"]
+    ordering = ['plan_field_mapping_type', 'mapped_field']
 
 
 @admin.register(PlanFieldMappingType)

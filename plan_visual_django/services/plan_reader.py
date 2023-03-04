@@ -6,12 +6,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime, date
 from pathlib import Path
 from typing import List, Dict, Callable, Any
-
-import openpyxl as openpyxl
-from django.core.files import File
-
 from plan_visual_django.models import PlanField, PlanFieldMappingType, PlanMappedField
-
+import openpyxl as openpyxl
 
 # Utility functions for parsing into every data type required by the app from every plan format
 # required to be supported.
@@ -31,13 +27,15 @@ def convert_dispatch(input_type: str, output_type: str, input_value: any) -> any
     convert_float_string: Callable[[float], str] = lambda float_val: str(float_val)
     convert_float_int: Callable[[float], int] = lambda float_val: int(float_val)
 
+    # Drives conversion of input types/encoding to appropriate output types.  Utility to allow input fields to be encoded
+    # in different ways (e.g. dates can be encoded in a string in many ways)
     convert_dispatch_table = {
         'STR': {
             'STR': convert_pass_through,
             'INT': convert_string_int,
             'DATE': convert_string_date_dmy,
         },
-        'STR_nnd': {
+        'STR_nnd': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
             'INT': convert_string_nnd_int,
         },
         'INT': {

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint
@@ -66,6 +67,23 @@ TEXT_FLOW_CHOICES = (
     (FLOW_CLIPPED, 'Align centre, clipped to shape'),
 )
 
+# --- PLAN FIELDS (The fixed names for fields which are used within the app so need to be consistent in the model) ---
+STICKY_UID = "unique_sticky_activity_id"
+NAME = "activity_name"
+DURATION = "duration"
+START = "start_date"
+END = "end_date"
+LEVEL = "level"
+
+PLAN_FIELD_NAME_CHOICES = (
+    (STICKY_UID, 'Unique id for activity'),
+    (NAME, 'Name of activity'),
+    (DURATION, 'Duration of activity'),
+    (START, 'Start date of activity'),
+    (END, 'End date of activity'),
+    (LEVEL, 'The level in the hierarchy of the an activity'),
+)
+
 # MODEL CLASSES
 
 
@@ -75,8 +93,11 @@ class PlanField(models.Model):
 
     The field names defined here need map directly on to the variable names for each field used within the app, so
     these need to be maintained to be consistent with the code.
+
+    To do this I've restricted the choices for the field, but allowed other attributes to be entered.
     """
-    field_name = models.CharField(max_length=50)
+
+    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES)
     field_type = models.CharField(max_length=20, choices=PLAN_FIELD_TYPES)
     field_description = models.TextField(max_length=1000)
     required_flag = models.BooleanField(default=True)
