@@ -122,10 +122,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = '/'
 
 # Email settings, mostly to support resetting of passwords for users
-EMAIL_HOST = "mail.genonline.co.uk"
+EMAIL_HOST = ""
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "thomas.gaylard@genonline.co.uk"
-EMAIL_HOST_PASSWORD = "SnowdonLuthi@r3141"
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = "(secret)"
 EMAIL_USE_SSL = True
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
