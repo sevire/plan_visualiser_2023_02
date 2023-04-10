@@ -84,6 +84,17 @@ PLAN_FIELD_NAME_CHOICES = (
     (LEVEL, 'The level in the hierarchy of the an activity'),
 )
 
+# Defaults to use when creating a new visual before any formatting or layout has been done.
+DEFAULT_SWIMLANE_NAME = "(default)"
+DEFAULT_VERTICAL_POSITIONING_TYPE = RELATIVE_TRACK
+DEFAULT_VERTICAL_POSITIONING_VALUE = 1
+DEFAULT_HEIGHT_IN_TRACKS = 1
+DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = LEFT
+DEFAULT_TEXT_VERTICAL_ALIGNMENT = MIDDLE
+DEFAULT_TEXT_FLOW = FLOW_TO_LEFT
+DEFAULT_PLOTABLE_SHAPE_NAME = "RECTANGLE"
+DEFAULT_PLOTABLE_STYLE_NAME = "(default)"
+
 # MODEL CLASSES
 
 
@@ -97,7 +108,7 @@ class PlanField(models.Model):
     To do this I've restricted the choices for the field, but allowed other attributes to be entered.
     """
 
-    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES)
+    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES, help_text="field name used in commone datastructure for plan")
     field_type = models.CharField(max_length=20, choices=PLAN_FIELD_TYPES)
     field_description = models.TextField(max_length=1000)
     required_flag = models.BooleanField(default=True)
@@ -120,7 +131,7 @@ class PlanFieldMappingType(models.Model):
     description = models.TextField(max_length=1000)
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
 
 class PlanMappedField(models.Model):
@@ -159,6 +170,23 @@ class Plan(models.Model):
 
     def __str__(self):
         return f'{self.original_file_name}:{self.file_type}'
+
+
+class PlanActivity(models.Model):
+    """
+    When a new plan is added, read in all the activities as a base which the various
+    visuals can be based upon.  Only store the fields which are relevant to the plan.
+    """
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    unique_sticky_activity_id = models.CharField(max_length=50)
+    activity_name = models.CharField(max_length=200)
+    duration = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    level = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.activity_name:.20}'
 
 
 class Color(models.Model):
@@ -220,6 +248,9 @@ class PlotableShapeType(models.Model):
 class PlotableShape(models.Model):
     shape_type = models.ForeignKey(PlotableShapeType, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.shape_type.name
+
 
 class PlotableShapeAttributesRectangle(models.Model):
     plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
@@ -249,10 +280,17 @@ class SwimlaneForVisual(models.Model):
     swim_lane_name = models.CharField(max_length=50)
     sequence_number = models.IntegerField
 
+    class Meta:
+        unique_together = ('plan_visual', 'swim_lane_name')
+
+    def __str__(self):
+        return self.swim_lane_name
+
 
 class VisualActivity(models.Model):
     visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
     unique_id_from_plan = models.CharField(max_length=50)  # ID from imported plan which will not change
+    enabled = models.BooleanField()
     swimlane = models.ForeignKey(SwimlaneForVisual, on_delete=models.CASCADE)
     plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
     vertical_positioning_type = models.CharField(max_length=20, choices=V_POSITIONING_CHOICES)
@@ -265,3 +303,7 @@ class VisualActivity(models.Model):
 
     class Meta:
         verbose_name_plural = 'visual activities'
+        unique_together = ['visual', 'unique_id_from_plan']
+
+    def __str__(self):
+        return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'

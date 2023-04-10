@@ -96,7 +96,7 @@ class PlanParser():
                     if field_present:
                         mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
                         field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
-                        parsed_data_record[plan_field] = field_parsed_value
+                        parsed_data_record[plan_field.field_name] = field_parsed_value
                     else:
                         parsed_data_record[plan_field] = "(n/a)"
             parsed_data.append(parsed_data_record)
@@ -154,6 +154,11 @@ class PlanFileReader(ABC):
 
 
 class ExcelXLSFileReader(PlanFileReader):
+    def __init__(self, sheet_name: str):
+
+        super().__init__()
+        self.sheet_name = sheet_name
+
     def read(self, file_path: str) -> List[Dict]:
         """
         For now the only logic here is to hard code the sheet name that the plan is located within.  This is only
@@ -161,8 +166,6 @@ class ExcelXLSFileReader(PlanFileReader):
 
         :return:
         """
-        self.sheet_name = Path(file_path).stem
-
         skiprows = 0
 
         wb_obj = openpyxl.load_workbook(file_path, data_only=True)

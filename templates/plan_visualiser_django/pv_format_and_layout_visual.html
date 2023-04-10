@@ -1,59 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Format and Layout Visual</title>
-</head>
-<body>
-
 {% extends "plan_visualiser_django/pv_base.html" %}
 {% block page_heading %}Format and Layout Visual{% endblock %}
 {% block main_content %}
     <div class="row">
-        <div class="col">
+        <div class="col-md-12">
             <table class="table">
                 <thead>
                     <tr>
                         {% for heading in headings %}
                             <th>{{ heading }}</th>
                         {% endfor %}
+                        <th>In Visual?</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for activity in plan_activities %}
+                {% for activity_data in plan_activities %}
                     <tr>
-                        {% for field, value in activity.items %}
-                            <td>{{ value }}</td>
+                        <td>{{ activity_data.unique_sticky_id }}</td>
+                        <!-- Layout fields for each activity from the plan -->
+                        {% for name, value in activity_data.field_list %}
+                            {% if name == "enabled" %}
+                                <td>
+                                    <label for="{{ activity_data.unique_sticky_id }}"></label>
+                                    <input id="{{ activity_data.unique_sticky_id }}"
+                                           type="checkbox" onchange="add_delete_activity(this)"
+                                           {{ value|yesno:"checked,unchecked" }}>
+                                </td>
+                            {%  else %}
+                                <td>{{ value }}</td>
+                            {% endif %}
                         {% endfor %}
+                        <!-- Add widgets to add or remove activities for this visual -->
                     </tr>
                 {% endfor %}
+
                 </tbody>
             </table>
         </div>
-        <div class="col">
-            <canvas id="myCanvas" width="1000" height="800"></canvas>
-        </div>
     </div>
     <script>
-        let c = document.getElementById("myCanvas");
-        let ctx = c.getContext("2d");
+        function add_delete_activity(element) {
+            axios.defaults.xsrfCookieName = 'csrftoken'
+            axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
-        // Create gradient
-        let grd = ctx.createLinearGradient(0, 0, 200, 0);
-        grd.addColorStop(0, "red");
-        grd.addColorStop(1, "white");
-
-        // Fill with gradient
-        ctx.fillStyle = grd;
-        ctx.fillRect(10, 10, 150, 80);
-
-        // Draw line
-        ctx.moveTo(0, 0);
-        ctx.lineTo(200, 100);
-        ctx.stroke();
-
+            vid = {{ visual_id }}
+            if (element.checked === true) {
+                console.log(element.id + " is checked")
+                console.log(element)
+                console.log("Unique Id: " + element.id)
+                console.log("visual id " + vid)
+                url_string_put = "/api/v1/visual_activity/add/{{ visual_id }}/" + element.id + "/"
+                console.log("URL: " + url_string_put)
+                axios.put(url_string_put)
+                .then((response) => {
+                        console.log(response)
+                    },
+                    (error) => {
+                        console.log(error)
+                    }
+                );
+            } else {
+                console.log(element.id + " is not checked (remove from visual")
+                console.log(element)
+                console.log("Unique Id: " + element.id)
+                console.log("visual id " + vid)
+                url_string_delete = "/api/v1/visual_activity/remove/{{ visual_id }}/" + element.id +"/"
+                console.log("URL: " + url_string_delete)
+                axios.delete(url_string_delete)
+                .then((response) => {
+                        console.log(response)
+                    },
+                    (error) => {
+                        console.log(error)
+                    }
+                );
+            }
+        }
     </script>
-
 {% endblock %}
-</body>
-</html>

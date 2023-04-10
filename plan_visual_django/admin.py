@@ -81,4 +81,5 @@ class SwimlaneForVisualAdmin(admin.ModelAdmin):
 
 @admin.register(VisualActivity)
 class VisualActivityAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ('visual', 'unique_id_from_plan', 'enabled')
+    ordering = ('enabled',)

@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit
-from plan_visual_django.models import Plan, PlanVisual, PlanField
+from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity
 from django.contrib import messages
 from plan_visual_django.services.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.user_services import get_current_user
@@ -36,6 +36,30 @@ def add_plan(request):
 
                 # Now can save the record
                 plan.save()
+
+                # Have saved the record, now parse the plan and store activities.
+                # Only store fields which are part of the plan for the given file type.
+
+                mapping_type = plan.file_type.plan_field_mapping_type
+
+                plan_file = plan.file.path
+                sheet_name, _ = os.path.splitext(plan.original_file_name)
+
+                file_reader = ExcelXLSFileReader(sheet_name)
+                raw_data = file_reader.read(plan_file)
+                parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+                for activity in parsed_data:
+                    record = PlanActivity(
+                        plan=plan,
+                        unique_sticky_activity_id=activity['unique_sticky_activity_id'],
+                        activity_name=activity['activity_name'],
+                        duration=activity['duration'],
+                        start_date=activity['start_date'],
+                        end_date=activity['end_date'],
+                        level=activity['level'],
+                    )
+                    record.save()
+
                 messages.success(request, "New plan saved successfully")
         else:
             messages.error(request, "Failed validation")
@@ -62,6 +86,13 @@ def add_visual(request, plan_id):
             # Now can save the record
             visual_record.save()
             messages.success(request, "New visual for plan saved successfully")
+
+            # Now create default versions of objects which are required as part of any visual activity
+            # First create default swimlane
+            swimlane = SwimlaneForVisual(
+                plan_visual=visual_record,
+                swim_lane_name = "(default)",
+            ).save()
 
         return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
     elif request.method == "GET":
@@ -169,16 +200,41 @@ def manage_visuals(request, plan_id):
 def format_and_layout_visual(request, visual_id):
     visual = PlanVisual.objects.get(id=visual_id)  # get() returns exactly one result or raises an exception
     plan = visual.plan
-    mapping_type = plan.file_type.plan_field_mapping_type
+    plan_activities = plan.planactivity_set.all()
 
-    plan_file = plan.file.path
-    file_reader = ExcelXLSFileReader()
-    raw_data = file_reader.read(plan_file)
-    parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+    # Create list of fields for each activity and a flag to say whether the activity
+    # is already in the plan or not.
+    # But extract the unique_sticky_id as this is needed for the id of the <tr> element
+    # for each activity (used in sending API request later)
+    plan_activities_list = []
+    for activity in plan_activities:
+        activity_data = {
+            "unique_sticky_id": activity.unique_sticky_activity_id,
+            "field_list": [],
+        }
+        for field_name in PlanField.plan_headings():
+            if field_name != "unique_sticky_activity_id":  # Already included this
+                activity_data['field_list'].append((field_name, getattr(activity, field_name)))
+
+        # Now add the flag to say whether this activity is in or out of the visual.
+        # If the record doesn't exist then the activity has never been added so is absent.
+        # If the record does exist then check the enabled flag as may have been added and then disabled.
+        try:
+            # Get record for this activity if it exists.  There will be one or no records.
+            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity.unique_sticky_activity_id)
+        except VisualActivity.DoesNotExist:
+            # No record so activity not currently in visual
+            enabled = False
+        else:
+            enabled = visual_activity.enabled
+
+        activity_data['field_list'].append(("enabled", enabled))
+        plan_activities_list.append(activity_data)
 
     context = {
+        'visual_id': visual.id,
         'headings': PlanField.plan_headings(),
-        'plan_activities': parsed_data
+        'plan_activities': plan_activities_list
     }
 
     return render(request, "plan_visualiser_django/pv_format_and_layout_visual.html", context)
