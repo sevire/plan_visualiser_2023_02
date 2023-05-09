@@ -1,15 +1,25 @@
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.v1.visual_activity.serializer import VisualActivityListSerialiser
 from plan_visual_django.models import TRACK_NUMBER, DEFAULT_VERTICAL_POSITIONING_TYPE, \
     DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, \
     DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
     SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, PlotableStyle, DEFAULT_PLOTABLE_STYLE_NAME, VisualActivity, PlanVisual
 
 
+class VisualActivityListAPI(APIView):
+    def get(self, request, visual_id):
+        activities = VisualActivity.objects.filter(visual_id=visual_id)
+        serializer = VisualActivityListSerialiser(activities, many=True)
+        return Response(serializer.data)
+
+
 class VisualActivityAPI(APIView):
-    def put(self, request, visual_id, unique_id, format=None, **kwargs):
+    def put(self, request, visual_id, unique_id, **kwargs):
         """
         I don't know whether this is the right way to do this!
 
