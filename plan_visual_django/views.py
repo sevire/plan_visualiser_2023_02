@@ -2,10 +2,11 @@ import os
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
-from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit
+from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity
 from django.contrib import messages
 from plan_visual_django.services.plan_reader import ExcelXLSFileReader
@@ -197,7 +198,7 @@ def manage_visuals(request, plan_id):
     return render(request, "plan_visualiser_django/pv_manage_visuals.html", context)
 
 
-def format_and_layout_visual(request, visual_id):
+def configure_visual_activities(request, visual_id):
     visual = PlanVisual.objects.get(id=visual_id)  # get() returns exactly one result or raises an exception
     plan = visual.plan
     plan_activities = plan.planactivity_set.all()
@@ -237,4 +238,46 @@ def format_and_layout_visual(request, visual_id):
         'plan_activities': plan_activities_list
     }
 
-    return render(request, "plan_visualiser_django/pv_format_and_layout_visual.html", context)
+    return render(request, "plan_visualiser_django/pv_configure_visual_activities.html", context)
+
+
+def layout_visual(request, visual_id):
+    """
+    Note this uses a skeleton template as the html will be built by Javascript.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    VisualActivityFormSet = inlineformset_factory(
+        PlanVisual,
+        VisualActivity,
+
+        # These are the fields that can be edited.  There will be other fields which need to be displayed but aren't
+        # part of the form. (e.g. Activity name)
+        fields=(
+          "swimlane",
+          "vertical_positioning_type",
+          "vertical_positioning_value"
+        ),
+        extra=0,
+        can_delete=False,
+        form=VisualActivityFormForEdit
+    )
+    visual = PlanVisual.objects.get(pk=visual_id)
+    if request.method == 'GET':
+        formset = VisualActivityFormSet(instance=visual)
+        # Add value of activity field for each form as won't be provided by visual
+        context = {
+            'formset': formset
+        }
+        return render(request, "plan_visualiser_django/pv_layout_visual.html", context)
+
+    if request.method == 'POST':
+        formset = VisualActivityFormSet(request.POST, instance=visual)
+        if formset.is_valid():
+            formset.save()
+            return redirect(f'/pv/layout-visual/{visual_id}')
+        else:
+            pass
+            return redirect(f'/pv/layout-visual/{visual_id}')
