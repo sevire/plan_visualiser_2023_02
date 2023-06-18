@@ -1,0 +1,27 @@
+{
+  "shape_formats": {
+    "shape_format_01": {},
+    "shape_format_02": {}
+  },
+  "shape_text_formats": {
+    "shape_text_format_01": {}
+  },
+  "shapes": [
+    {
+      "shape_details": {
+        "shape_name": "RECTANGLE",
+        "shape_plot_dims":  {
+          "top_left": {
+            "top": 0,
+            "left": 0
+          },
+          "width": 30,
+          "height": 10
+        }
+      },
+      "text": "Text 1",
+      "shape_format": "Format name 1",
+      "text_layout": "left"
+    }
+  ]
+}

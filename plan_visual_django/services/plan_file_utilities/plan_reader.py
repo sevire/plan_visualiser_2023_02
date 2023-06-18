@@ -89,7 +89,7 @@ class PlanParser():
                 except PlanMappedField.DoesNotExist as e:
                     # No mapping record for this plan field.  Ok if it's optional, otherwise an error
                     if plan_field.required_flag:
-                        raise e(f"Missing compulsory mapping for field {plan_field.field_name}")
+                        raise Exception(f"Missing compulsory mapping for field {plan_field.field_name}")
                     else:
                         field_present = False
                 finally:

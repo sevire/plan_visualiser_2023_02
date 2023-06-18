@@ -8,6 +8,7 @@ django = "*"
 openpyxl = "*"
 djangorestframework = "*"
 ddt = "*"
+colour = "*"
 
 [dev-packages]
 

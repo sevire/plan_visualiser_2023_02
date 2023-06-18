@@ -30,8 +30,10 @@ class VisualActivityFormForEdit(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['activity'] = CharField(max_length=50)
+        self.fields['unique_id_from_plan'] = CharField(max_length=50)
         self.fields['swimlane'].queryset = SwimlaneForVisual.objects.filter(plan_visual=visual)
         self.initial['activity'] = activity_name
+        self.initial['unique_id_from_plan'] = unique_id
         field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_type", "vertical_positioning_value"]
 
 
