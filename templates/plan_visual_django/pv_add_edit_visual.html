@@ -1,7 +1,6 @@
-{% extends "plan_visualiser_django/pv_base.html" %}
+{% extends "plan_visual_django/pv_base.html" %}
 
-{% block page_heading %}Add Plan{% endblock %}
-
+{% block page_heading %}{{ add_or_edit }} Visual{% endblock %}
 {% block main_content %}
 <div>
     <form method="post" enctype="multipart/form-data">

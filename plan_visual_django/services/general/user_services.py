@@ -12,6 +12,7 @@ def get_current_user(request: HttpRequest, default_if_logged_out: bool):
     """
     If there is a current authenticated user then return the user, otherwise return None
 
+    :param default_if_logged_out:
     :param request:
     :return:
     """

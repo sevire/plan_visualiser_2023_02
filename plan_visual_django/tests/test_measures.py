@@ -1,7 +1,6 @@
 from unittest import TestCase
 from ddt import ddt, unpack, data
-
-from plan_visual_django.services.drawing.plan_visual_plotter import DistanceMeasure, Unit
+from plan_visual_django.services.drawing.plan_visual_plotter_types import DistanceMeasure, Unit
 
 
 @ddt

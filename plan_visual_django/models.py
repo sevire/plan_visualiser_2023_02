@@ -2,6 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint
+from plan_visual_django.services.drawing.plan_visual_plotter_types import Renderer
+from plan_visual_django.services.general.date_utilities import date_from_string
+from plan_visual_django.services.visual.formatting import VerticalPositioningOption
 
 # Choices Definitions
 
@@ -108,7 +111,7 @@ class PlanField(models.Model):
     To do this I've restricted the choices for the field, but allowed other attributes to be entered.
     """
 
-    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES, help_text="field name used in commone datastructure for plan")
+    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES, help_text="field name used in common datastructure for plan")
     field_type = models.CharField(max_length=20, choices=PLAN_FIELD_TYPES)
     field_description = models.TextField(max_length=1000)
     required_flag = models.BooleanField(default=True)
@@ -185,6 +188,9 @@ class PlanActivity(models.Model):
     end_date = models.DateField()
     level = models.IntegerField()
 
+    class Meta:
+        verbose_name_plural = " Plan activities"
+
     def __str__(self):
         return f'{self.activity_name:.20}'
 
@@ -251,6 +257,9 @@ class PlotableShape(models.Model):
     def __str__(self):
         return self.shape_type.name
 
+    def to_json(self):
+        return self.shape_type
+
 
 class PlotableShapeAttributesRectangle(models.Model):
     plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
@@ -274,11 +283,64 @@ class PlanVisual(models.Model):
     def __str__(self):
         return f"{self.plan.original_file_name} ({self.name})"
 
+    def get_visual_activities(self):
+        """
+        Only return activities which have been selected for this visual.
+
+        Note the visual activities only include the attributes which are relevant to formatting the visual.  The actual
+        activity information (such as name, start_date etc.) is stored in the plan accessed by the unique id.
+
+        :return:
+        """
+        # First get all the visual activity records for this visual (which are enabled)
+        activities = self.visualactivity_set.filter(enabled=True)
+
+        # Now consolidate them into an array of dicts (not using comprehension for this is it's likely to be unreadable)
+        # ToDo: Look for ways to simplify and improve performance of consolidation of activity data
+        activities_consolidated = []
+        for activity in activities:
+            activity_record = {}
+            # Get the record from the plan for this visual to get at the plan data (dates etc.)
+            plan_activity = PlanActivity.objects.get(plan_id=self.plan_id, unique_sticky_activity_id=activity.unique_id_from_plan)
+
+            # Now set up each field we want to be included
+
+            # Start with the positioning and formatting fields for this activity
+            activity_record['unique_id_from_plan'] = activity.unique_id_from_plan
+            activity_record['swimlane'] = activity.swimlane.swim_lane_name
+            activity_record['plotable_shape'] = activity.plotable_shape.shape_type.name
+            activity_record['vertical_positioning_type'] = VerticalPositioningOption(activity.vertical_positioning_type)
+            activity_record['vertical_positioning_value'] = activity.vertical_positioning_value
+            activity_record['height_in_tracks'] = activity.height_in_tracks
+            activity_record['text_horizontal_alignment'] = activity.text_horizontal_alignment
+            activity_record['text_vertical_alignment'] = activity.text_vertical_alignment
+            activity_record['text_flow'] = activity.text_flow
+            activity_record['plotable_style'] = activity.plotable_style
+
+            # Now add the plan activity record data for this activity
+            activity_record['activity_name'] = plan_activity.activity_name
+            activity_record['duration'] = plan_activity.duration
+            activity_record['start_date'] = plan_activity.start_date
+            activity_record['end_date'] = plan_activity.end_date
+            activity_record['level'] = plan_activity.level
+
+            activities_consolidated.append(activity_record)
+
+        return activities_consolidated
+
+    def get_earliest_date(self):
+        pass
+
+    def get_latest_date(self):
+        pass
+
+
+
 
 class SwimlaneForVisual(models.Model):
     plan_visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
-    swim_lane_name = models.CharField(max_length=50)
-    sequence_number = models.IntegerField
+    swim_lane_name = models.CharField(max_length=51)
+    sequence_number = models.IntegerField()
 
     class Meta:
         unique_together = ('plan_visual', 'swim_lane_name')
@@ -307,3 +369,17 @@ class VisualActivity(models.Model):
 
     def __str__(self):
         return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'
+
+    def to_json(self, plot_parameters):
+        # Hard code during development
+        plot_parameters = {
+            'min_date': date_from_string('01/01/2023'),
+            'max_date': date_from_string('12/01/2023'),
+            'visual_top': 0,
+            'visual_left': 0,
+            'visual_width': 400,
+            'visual_height': 200,
+            'track_height': 10,
+            'track_gap': 2
+        }
+        # ToDo: Come back and finish activity.to_json()

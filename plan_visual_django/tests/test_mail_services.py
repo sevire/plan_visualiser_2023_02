@@ -11,10 +11,11 @@ class TestMailServices(TestCase):
         Tests normal Python email sending outside of Django - helps in initial debugging of email sending.
         :return:
         """
-        import smtplib, ssl
+        import smtplib, ssl, os
 
-        port = 465  # For SSL
-        password = "SnowdonLuthi@r3141"
+        port = os.environ.get("EMAIL_PORT")
+        password = os.environ.get("EMAIL_PASSWORD")
+        username = os.environ.get("EMAIL_USERNAME")
 
         # Create a secure SSL context
         context = ssl.create_default_context()

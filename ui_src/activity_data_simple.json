@@ -1,0 +1,26 @@
+{
+    "shapes": [
+        {
+            "shape_details": {
+                "shape_name": "RECTANGLE",
+                "shape_plot_dims": {
+                    "top": 0,
+                    "left": 0,
+                    "width": 30,
+                    "height": 10
+                }
+            }
+        },
+        {
+            "shape_details": {
+                "shape_name": "RECTANGLE",
+                "shape_plot_dims": {
+                    "top": 12,
+                    "left": 10,
+                    "width": 50,
+                    "height": 10
+                }
+            }
+        }
+    ]
+}

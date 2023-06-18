@@ -1,16 +1,19 @@
+import json
 import os
-
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.generic import DetailView
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity
 from django.contrib import messages
-from plan_visual_django.services.plan_reader import ExcelXLSFileReader
-from plan_visual_django.services.user_services import get_current_user
+from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
+from plan_visual_django.services.general.user_services import get_current_user
+from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
+from plan_visual_django.services.visual.canvas_visual import CanvasPlotter
+from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
 
 # Create your views here.
@@ -68,7 +71,7 @@ def add_plan(request):
         return HttpResponseRedirect(reverse('manage_plans'))
     elif request.method == "GET":
         form = PlanForm()
-        return render(request=request, template_name="plan_visualiser_django/pv_add_plan.html", context={'form': form})
+        return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
@@ -92,7 +95,8 @@ def add_visual(request, plan_id):
             # First create default swimlane
             swimlane = SwimlaneForVisual(
                 plan_visual=visual_record,
-                swim_lane_name = "(default)",
+                swim_lane_name="(default)",
+                sequence_number=1
             ).save()
 
         return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
@@ -102,7 +106,7 @@ def add_visual(request, plan_id):
             'add_or_edit': 'Add',
             'form': form
         }
-        return render(request=request, template_name="plan_visualiser_django/pv_add_edit_visual.html", context=context)
+        return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
@@ -124,7 +128,7 @@ def edit_visual(request, visual_id):
             'add_or_edit': 'Edit',
             'form': form
         }
-        return render(request=request, template_name="plan_visualiser_django/pv_add_edit_visual.html", context=context)
+        return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
@@ -137,7 +141,7 @@ def manage_plans(request):
         'user': user,
         'plan_files': plan_files
     }
-    return render(request, "plan_visualiser_django/pv_manage_plans.html", context)
+    return render(request, "plan_visual_django/pv_manage_plans.html", context)
 
 
 def delete_plan(request, pk):
@@ -169,7 +173,8 @@ def delete_visual(request, pk):
     try:
         visual_record.delete()
     except Exception:
-        messages.error(request, f"Error deleting visual record {visual_record.name} for {visual_record.plan.original_file_name}")
+        messages.error(request,
+                       f"Error deleting visual record {visual_record.name} for {visual_record.plan.original_file_name}")
     else:
         messages.success(request, f"Record deleted for {visual_record.name}")
 
@@ -195,10 +200,28 @@ def manage_visuals(request, plan_id):
         'plan': plan_record,
         'visuals': plan_visuals
     }
-    return render(request, "plan_visualiser_django/pv_manage_visuals.html", context)
+    return render(request, "plan_visual_django/pv_manage_visuals.html", context)
 
 
 def configure_visual_activities(request, visual_id):
+    """
+    Gets all the plan activities related to the plan for which this visual was added and displays in tabular form to
+    allow user to select which activities are to appear on the visual.  For every record which is selected, a visual
+    activity record will be added.
+
+    When a visual is first added there will be no visual activities.  As activities are added to the visual, new
+    records will be added.  If the user deselects an activity which was previously selected, instead of deleting
+    the plan activity record, the record will be flagged is disabled.  If the user subsequently reselects it,
+    the visual activity will be re-enabled, and previous formatting and layout information will be retained.
+
+    NOTE: Visual activities use the unique sticky id from the plan to identify which record on the plan a visual
+    activity relates to, as that is the only field which will be consistent across multiple versions of a plan
+    being uploaded.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
     visual = PlanVisual.objects.get(id=visual_id)  # get() returns exactly one result or raises an exception
     plan = visual.plan
     plan_activities = plan.planactivity_set.all()
@@ -238,11 +261,15 @@ def configure_visual_activities(request, visual_id):
         'plan_activities': plan_activities_list
     }
 
-    return render(request, "plan_visualiser_django/pv_configure_visual_activities.html", context)
+    return render(request, "plan_visual_django/pv_configure_visual_activities.html", context)
 
 
 def layout_visual(request, visual_id):
     """
+    Used to specify layout and formatting attributes for each of the activities selected to be in the visual.  Only the
+    activities which have been selected will be shown (activities can be added or removed from the visual using the
+    configure activities from visual screen).
+
     Note this uses a skeleton template as the html will be built by Javascript.
 
     :param request:
@@ -256,9 +283,9 @@ def layout_visual(request, visual_id):
         # These are the fields that can be edited.  There will be other fields which need to be displayed but aren't
         # part of the form. (e.g. Activity name)
         fields=(
-          "swimlane",
-          "vertical_positioning_type",
-          "vertical_positioning_value"
+            "swimlane",
+            "vertical_positioning_type",
+            "vertical_positioning_value"
         ),
         extra=0,
         can_delete=False,
@@ -266,12 +293,12 @@ def layout_visual(request, visual_id):
     )
     visual = PlanVisual.objects.get(pk=visual_id)
     if request.method == 'GET':
-        formset = VisualActivityFormSet(instance=visual)
+        formset = VisualActivityFormSet(instance=visual, queryset=visual.visualactivity_set.filter(enabled=True))
         # Add value of activity field for each form as won't be provided by visual
         context = {
             'formset': formset
         }
-        return render(request, "plan_visualiser_django/pv_layout_visual.html", context)
+        return render(request, "plan_visual_django/pv_layout_visual.html", context)
 
     if request.method == 'POST':
         formset = VisualActivityFormSet(request.POST, instance=visual)
@@ -281,3 +308,25 @@ def layout_visual(request, visual_id):
         else:
             pass
             return redirect(f'/pv/layout-visual/{visual_id}')
+
+
+class PlotVisualView(DetailView):
+    model = PlanVisual
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
+        visual_activity_data = visual.get_visual_activities()
+
+        swimlanes = [swimlane.swim_lane_name for swimlane in visual.swimlaneforvisual_set.all()]
+        swimlane_settings = SwimlaneSettings(swimlanes=swimlanes)
+
+        visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
+
+        visual_manager = VisualManager(visual_activity_data, visual_settings)
+        visual_plotter = CanvasPlotter()
+        canvas_visual_data = visual_manager.plot_visual(visual_plotter)
+
+        context['activity_data'] = canvas_visual_data
+        return context
