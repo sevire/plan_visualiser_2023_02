@@ -52,7 +52,7 @@ class DatePlotter:
 
         return num_days
 
-    def x_coordinate_for_date(self, date: datetime.date, end_flag = False) -> float:
+    def x_coordinate_for_date(self, date: datetime.date, end_flag = False, mid_point=False) -> float:
         """
         Calculates the x coordinate for a given date within the visual.
 
@@ -64,8 +64,14 @@ class DatePlotter:
         :param end_flag:
         :return:
         """
-        additional_day = datetime.timedelta(days=0) if not end_flag else datetime.timedelta(days=1)
-        day_number_in_activities = date - self.earliest_date + additional_day
+
+        additional_amount = datetime.timedelta(days=0)
+        if end_flag:
+            additional_amount = datetime.timedelta(days=1)
+        elif mid_point:
+            additional_amount = datetime.timedelta(hours=12)
+
+        day_number_in_activities = date - self.earliest_date + additional_amount
         proportion_of_width = day_number_in_activities / self.num_days_in_visual
         x = self.x_plot_start + proportion_of_width * self.activity_plot_width
 
@@ -78,6 +84,16 @@ class DatePlotter:
         width = self.x_coordinate_for_date(end_date, end_flag=True) - self.left(start_date)
 
         return width
+
+    def midpoint(self, date):
+        """
+        Used mostly for plotting milestones (probably) - calculates the mid-point of a given day.
+
+        :param date:
+        :return:
+        """
+        midpoint = self.x_coordinate_for_date(date, mid_point=True)
+        return midpoint
 
 
 class ActivityManager:
@@ -97,6 +113,7 @@ class ActivityManager:
         self.y_start = y_plot_start
         self.x_end = x_plot_end
         self.y_end = y_plot_end
+        self.visual_settings = visual_settings
 
         self.swimlane_manager = SwimlaneManager(visual_settings)
 
@@ -155,9 +172,14 @@ class ActivityManager:
             activity = activity_record["activity"]
             track_number = activity_record["track_number"]
             top, height = self.calculate_vertical_position(activity, track_number)
-            left = self.date_plotter.left(activity['start_date'])
-            width = self.date_plotter.width(activity['start_date'], activity['end_date'])
-            shape = ShapeType.RECTANGLE
+            if activity['duration'] == 0:
+                # This is a milestone so we plot in the middle of the day to the specified width for a milestone.
+                left = self.date_plotter.midpoint(activity['start_date']) - self.visual_settings.milestone_width/2
+                width = self.visual_settings.milestone_width
+            else:
+                left = self.date_plotter.left(activity['start_date'])
+                width = self.date_plotter.width(activity['start_date'], activity['end_date'])
+            shape = ShapeType[activity['plotable_shape']]
             plotable_format = PlotableFormat.default()
             plotable = PlotableFactory.get_plotable(
                 shape,

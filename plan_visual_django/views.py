@@ -285,7 +285,8 @@ def layout_visual(request, visual_id):
         fields=(
             "swimlane",
             "vertical_positioning_type",
-            "vertical_positioning_value"
+            "vertical_positioning_value",
+            "plotable_shape"
         ),
         extra=0,
         can_delete=False,
