@@ -325,6 +325,9 @@ class PlotVisualView(DetailView):
         visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
 
         visual_manager = VisualManager(visual_activity_data, visual_settings)
+        visual_manager.add_activities_to_visual(0, visual_settings.width, 0, visual_settings.height)
+        visual_manager.add_swimlanes_to_visual(visual_settings.width)
+
         visual_plotter = CanvasPlotter()
         canvas_visual_data = visual_manager.plot_visual(visual_plotter)
 

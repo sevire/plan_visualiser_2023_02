@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Iterable, Tuple, Set
 
 from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import VerticalPositioningOption, PlotableFormat
+from plan_visual_django.services.visual.formatting import VerticalPositioningOption, PlotableFormat, LineFormat, \
+    FillFormat, PlotableColor
 from plan_visual_django.services.visual.visual import Visual, Plotable, VisualPlotter, PlotableFactory, \
     PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
@@ -129,7 +130,9 @@ class ActivityManager:
         """
         Turn activities with dates into plotable objects with precise coordinates.
 
-        Also involves creation of swimlanes and laying out of objects on tracks.
+        Also involves creation of swimlanes and laying out of objects on tracks.  Note that the track number isn't
+        always specified by the user as layout options include (or will include) options to position relative to
+        the previous activity or just to auto calculate the layout.
         :return:
         """
 
@@ -139,16 +142,19 @@ class ActivityManager:
         # of each activity correctly when we add them to the visual.
         activities_plus_tracks = []
         for activity in self.activities:
+            # The returned track number will be either that specified by user or calculated by logic of preferred layout
+            # option selected.
             track_number = self.swimlane_manager.add_activity_to_swimlane(activity)
             activities_plus_tracks.append({
                 'track_number': track_number,
                 'activity': activity
             })
 
+        # Second parse calculates the shape, dimensions and position for each activity in the visual.
         for activity_record in activities_plus_tracks:
             activity = activity_record["activity"]
             track_number = activity_record["track_number"]
-            top, height = self.calculate_vertical_position(activity, track_number)  # ToDo: Remove hard coding of top and replace with correct code.
+            top, height = self.calculate_vertical_position(activity, track_number)
             left = self.date_plotter.left(activity['start_date'])
             width = self.date_plotter.width(activity['start_date'], activity['end_date'])
             shape = ShapeType.RECTANGLE
@@ -163,7 +169,7 @@ class ActivityManager:
             )
             self.activity_collection.add_plotable(plotable)
 
-        return self.activity_collection
+        return self.activity_collection, self.swimlane_manager
 
 @dataclass
 class TrackManager:
@@ -191,10 +197,9 @@ class TrackManager:
         self.tracks: Set[int] = set()
         self.current_track = None  # Used for layout options where activities are laid out relative to previous ones.
 
-
     def add_tracks_for_activity(self, track_number: int, num_tracks: int):
         """
-        Will be called while iterating through activities.  If tracks already exist to accomodate the activity then
+        Will be called while iterating through activities.  If tracks already exist to accommodate the activity then
         nothing needs to be done.  Otherwise add new tracks as required.
 
         :param num_tracks:
@@ -275,6 +280,12 @@ class SwimlaneManager:
                 'track_manager': TrackManager(visual_settings.track_height, visual_settings.track_gap)
             }
 
+
+    def iter_swimlanes(self):
+        ordered_swimlanes = sorted(self.swimlanes.values(), key=lambda x: x["swimlane_number"])
+        for swimlane_record in ordered_swimlanes:
+            yield swimlane_record['swimlane_number'], swimlane_record['swimlane_name'], swimlane_record['track_manager']
+
     def add_activity_to_swimlane(self, activity):
         # Calculate position and height of activity based on selected vertical positioning type.
         v_positioning_type:VerticalPositioningOption = activity['vertical_positioning_type']
@@ -291,7 +302,6 @@ class SwimlaneManager:
 
         return track_number
 
-
     def get_swimlane_height(self, swimlane_name):
         """
         Calculates the height of a swimlane, from top of first track to bottom of last track (no margins included)
@@ -300,7 +310,6 @@ class SwimlaneManager:
         :return:
         """
         return self.swimlanes[swimlane_name]['track_manager'].get_height_of_tracks()
-
 
     def get_swimlane_top(self, swimlane_name):
         """
@@ -315,11 +324,11 @@ class SwimlaneManager:
 
         # Now iterate through the swimlanes adding to the total height until we get to the one we are looking at.
         height = 0
-        for swimlane_to_process in ordered_swimlanes:
+        for number, name, track_manager in self.iter_swimlanes():
             # Only process up to the named swimlane.
-            if swimlane_to_process['swimlane_name'] == swimlane_name:
+            if name == swimlane_name:
                 break
-            swimlane_height = self.swimlanes[swimlane_name]['track_manager'].get_height_of_tracks()
+            swimlane_height = track_manager.get_height_of_tracks()
             swimlane_gap = self.visual_settings.swimlane_settings.swimlane_gap
             height += swimlane_height + swimlane_gap
 
@@ -329,15 +338,65 @@ class SwimlaneManager:
         return top
 
     def get_track_top_within_swimlane(self, swimlane_name: str, track_num: int):
+        """
+        for a track within a swimlane, works out the position of the top of the track within the set of all swimlanes.
+
+        NOTE:
+
+        - Doesn't take account of how the swimlanes are positioned within the overall visual (it doesn't know).
+        - Takes account of gap between swimlane
+        - Only valid if track number is one which actually exists within the specified swimlane
+
+        :param swimlane_name:
+        :param track_num: Track number within supplied swimlane.
+        :return:
+        """
+
+        num_tracks = self.swimlanes[swimlane_name]['track_manager'].get_num_tracks()
+        if track_num > num_tracks:
+            raise ValueError(f"Track number {track_num}, for swimlane {swimlane_name}, invalid, only {num_tracks} available")
         swimlane_top = self.get_swimlane_top(swimlane_name)
         relative_track_top = self.swimlanes[swimlane_name]['track_manager'].get_relative_track_top(track_num)
 
         track_top_within_swimlane = swimlane_top + relative_track_top
 
-        return relative_track_top
+        return track_top_within_swimlane
 
     def get_plotable_height(self, swimlane_name: str, num_tracks: int):
         return self.swimlanes[swimlane_name]["track_manager"].get_height_of_tracks(num_tracks)
+
+    def create_collection(self):
+        """
+        Creates a collection of plotables from what we know about the height of each swimlane
+        :return:
+        """
+        collection = PlotableCollection()
+        for number, name, track_manager in self.iter_swimlanes():
+            # ToDo: Make shape for swimlane configurable at some point
+            top = self.get_swimlane_top(name)
+
+            # ToDo Remove hard coding of swimlane left at some point
+            left = 0
+
+            width = self.visual_settings.width
+            height = track_manager.get_height_of_tracks()
+
+            line_format = LineFormat(PlotableColor(255, 150, 150), 1)
+            fill_format = FillFormat(PlotableColor(150, 255, 150))
+            plotable_format = PlotableFormat(line_format, fill_format)
+
+            swimlane_plotable = PlotableFactory.get_plotable(
+                ShapeType.RECTANGLE,
+                top=top,
+                left=left,
+                width=width,
+                height=height,
+                format=plotable_format
+            )
+
+            collection.add_plotable(swimlane_plotable)
+
+        return collection
 
 
 class VisualManager:
@@ -374,7 +433,7 @@ class VisualManager:
         self.visual = Visual()
         self.visual_activity_data = visual_activity_data
         self.visual_settings = visual_settings
-        self.add_activities_to_visual(0, 600, 0, 400)
+        self.swimlane_manager = None  # Will be created when creating activity collection of plotables.
 
     def add_activities_to_visual(
             self,
@@ -383,6 +442,9 @@ class VisualManager:
             y_plot_start: float,
             y_plot_end: float
     ):
+        # ToDo: Management of which layer each component goes into needs to be managed somewhere not hard coded
+        # ToDo: Stop hard-coding the layer which activities go into
+        self.visual.set_layer(2)  # Activities need to be on top of the swimlanes.
         activity_manager = ActivityManager(
             self.visual_activity_data,
             x_plot_start,
@@ -391,8 +453,14 @@ class VisualManager:
             y_plot_end,
             self.visual_settings
         )
-        collection = activity_manager.create_activity_collection()
+        collection, self.swimlane_manager = activity_manager.create_activity_collection()
         self.visual.add_collection(collection_name="activities", collection=collection)
+
+    def add_swimlanes_to_visual(self, width):
+        # ToDo: Stop hard-coding the layer which swimlanes go into
+        self.visual.set_layer(1)
+        swimlane_collection = self.swimlane_manager.create_collection()
+        self.visual.add_collection(collection_name="swimlanes", collection=swimlane_collection)
 
     def extract_visual_properties(self):
         """
