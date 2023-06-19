@@ -212,6 +212,7 @@ class Visual:
         :param layer_number:
         :return:
         """
+        self.current_layer = layer_number
 
     def increment_layer(self):
         self.current_layer += 1
@@ -244,7 +245,7 @@ class Visual:
         Collections in the same layer will appear in the order they were added.
         :return:
         """
-        ordered_layers = sorted(self.visual.items())
+        ordered_layers = sorted(self.visual.items(), key=lambda x: x[1]['layer'])
 
         # ToDo: Tidy this up a bit - we seem to have layer information twice.
         for layer in ordered_layers:

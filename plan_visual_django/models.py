@@ -335,8 +335,6 @@ class PlanVisual(models.Model):
         pass
 
 
-
-
 class SwimlaneForVisual(models.Model):
     plan_visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
     swim_lane_name = models.CharField(max_length=51)
@@ -344,6 +342,7 @@ class SwimlaneForVisual(models.Model):
 
     class Meta:
         unique_together = ('plan_visual', 'swim_lane_name')
+        ordering = ['plan_visual', 'sequence_number']
 
     def __str__(self):
         return self.swim_lane_name
