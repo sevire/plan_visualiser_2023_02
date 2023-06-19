@@ -245,6 +245,10 @@ class PlotableStyle(models.Model):
 
 
 class PlotableShapeType(models.Model):
+    """
+    Eek! I'm struggling to remember why I had ShapeType and Shape!  I'm guessing that it was something like
+
+    """
     name = models.CharField(max_length=50)
 
     def __str__(self):
