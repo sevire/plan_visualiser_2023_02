@@ -1,19 +1,32 @@
-import {BoxShapeDimensions, ShapeName, ShapesData} from "./shapes";
-import get_activity_data from "./visual";
+import {BoxShapeDimensions, ShapeName} from "./shapes";
 
 const scale_factor:number = 1.0;  // to ensure that visual works on screen (may tweak value)
 
 interface PlotFunctionData {
     ctx: CanvasRenderingContext2D;
     shape_data: any;
+    shape_format: any
+}
+
+function color_to_fill_style(color: any) {
+
+    const red = color[0]
+    const green = color[1]
+    const blue = color[2]
+    return "rgb(" + red + "," + green + "," + blue + ")"
 }
 
 function plot_rectangle(plot_data: PlotFunctionData) {
     console.log("Plotting rectangle...");
     console.log("left:" + plot_data.shape_data.left + ", top:" + plot_data.shape_data.top)
     console.log("width:" + plot_data.shape_data.width + ", height:" + plot_data.shape_data.height)
-    plot_data.ctx.fillStyle = "blue";
-    plot_data.ctx.strokeStyle = "white";
+    console.log("incoming colour: " + plot_data.shape_format.fill_style.fill_color)
+
+    const fill_color_string = color_to_fill_style(plot_data.shape_format.fill_style.fill_color)
+    const line_color_string = color_to_fill_style(plot_data.shape_format.line_style.line_color)
+
+    plot_data.ctx.fillStyle = fill_color_string;
+    plot_data.ctx.strokeStyle = line_color_string;
     plot_data.ctx.lineWidth = 1;
     plot_data.ctx.fillRect(
         plot_data.shape_data.left,
@@ -66,6 +79,7 @@ export function plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings:
         const shape_details = shape.shape_details
         const shape_name: ShapeName = shape_details.shape_name as keyof typeof dispatch_table;
         let shape_plot_dims:BoxShapeDimensions = shape.shape_details.shape_plot_dims
+        const shape_format: any = shape.shape_details.shape_format
 
         // Scale all dimensions by scale_factor
         let k: keyof typeof shape_plot_dims
@@ -75,7 +89,7 @@ export function plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings:
 
         const plot_function = dispatch_table[shape_name]
 
-        const params:PlotFunctionData = {ctx: ctx, shape_data: shape_plot_dims}
+        const params:PlotFunctionData = {ctx: ctx, shape_data: shape_plot_dims, shape_format: shape_format}
         plot_function(params)
 
         // Now plot text
