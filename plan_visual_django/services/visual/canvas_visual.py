@@ -1,5 +1,6 @@
 from typing import Type
 
+from plan_visual_django.services.visual.formatting import PlotableFormat
 from plan_visual_django.services.visual.visual import VisualPlotter, Visual, Plotable, PlotableCollection, \
     RectangleBasedPlotable
 
@@ -21,6 +22,36 @@ class CanvasPlotter(VisualPlotter):
             },
             'shapes': []
         }
+
+
+    def format_to_dict(self, shape_format: PlotableFormat):
+        """
+        Creates simplified dict version of the object to allow JSON serialisation within template.
+
+        :param shape_format:
+        :return:
+        """
+        shape_format_dict = {
+            "line_style": {
+                "line_color": (
+                    shape_format.line_format.line_color.red,
+                    shape_format.line_format.line_color.green,
+                    shape_format.line_format.line_color.blue,
+                    shape_format.line_format.line_color.alpha
+                ),
+                "line_thickness": shape_format.line_format.line_thickness,
+                "line_style": shape_format.line_format.line_style.name
+            },
+            "fill_style": {
+                "fill_color": (
+                    shape_format.fill_format.fill_color.red,
+                    shape_format.fill_format.fill_color.green,
+                    shape_format.fill_format.fill_color.blue,
+                    shape_format.fill_format.fill_color.alpha
+                )
+            }
+        }
+        return shape_format_dict
 
     def plot_visual(self, visual: Visual):
         """
@@ -53,10 +84,10 @@ class CanvasPlotter(VisualPlotter):
                     'left': item.left,
                     'width': item.width,
                     'height': item.height
-                }
+                },
+                'shape_format': self.format_to_dict(item.format)
             }
         }
-
 
         self.browser_data['shapes'].append(activity_record)
 

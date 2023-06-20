@@ -97,6 +97,7 @@ class RectangleBasedPlotable(Plotable):
         self.width = width
         self.height = height
         self.shape = shape
+        self.format = format
 
     def get_top(self):
         return self.top

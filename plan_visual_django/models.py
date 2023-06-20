@@ -2,9 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint
-from plan_visual_django.services.drawing.plan_visual_plotter_types import Renderer
 from plan_visual_django.services.general.date_utilities import date_from_string
-from plan_visual_django.services.visual.formatting import VerticalPositioningOption
 
 # Choices Definitions
 
@@ -313,7 +311,10 @@ class PlanVisual(models.Model):
             activity_record['unique_id_from_plan'] = activity.unique_id_from_plan
             activity_record['swimlane'] = activity.swimlane.swim_lane_name
             activity_record['plotable_shape'] = activity.plotable_shape.shape_type.name
+
+            from plan_visual_django.services.visual.formatting import VerticalPositioningOption
             activity_record['vertical_positioning_type'] = VerticalPositioningOption(activity.vertical_positioning_type)
+
             activity_record['vertical_positioning_value'] = activity.vertical_positioning_value
             activity_record['height_in_tracks'] = activity.height_in_tracks
             activity_record['text_horizontal_alignment'] = activity.text_horizontal_alignment

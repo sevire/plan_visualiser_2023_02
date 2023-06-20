@@ -286,7 +286,9 @@ def layout_visual(request, visual_id):
             "swimlane",
             "vertical_positioning_type",
             "vertical_positioning_value",
-            "plotable_shape"
+            "height_in_tracks",
+            "plotable_shape",
+            "plotable_style"
         ),
         extra=0,
         can_delete=False,

@@ -169,6 +169,7 @@ class ActivityManager:
 
         # Second parse calculates the shape, dimensions and position for each activity in the visual.
         for activity_record in activities_plus_tracks:
+            # First create the activity shape, then the text object
             activity = activity_record["activity"]
             track_number = activity_record["track_number"]
             top, height = self.calculate_vertical_position(activity, track_number)
@@ -180,7 +181,7 @@ class ActivityManager:
                 left = self.date_plotter.left(activity['start_date'])
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
             shape = ShapeType[activity['plotable_shape']]
-            plotable_format = PlotableFormat.default()
+            plotable_format = PlotableFormat.from_db_choice(activity['plotable_style'])
             plotable = PlotableFactory.get_plotable(
                 shape,
                 top=top,
