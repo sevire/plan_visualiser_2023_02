@@ -51,14 +51,21 @@ class TextHorizontalAlign(Enum):
 
 
 class TextVerticalAlign(Enum):
-    TOP = 1
-    MIDDLE = 2
-    BOTTOM = 3
+    TOP = "TOP"
+    MIDDLE = "MIDDLE"
+    BOTTOM = "BOTTOM"
 
 
 class TextLayout(Enum):
     NOWRAP = 1
     WRAP = 2
+
+
+class TextFlow(Enum):
+    FLOW_TO_LEFT = "LFLOW"
+    FLOW_TO_RIGHT = "RFLOW"
+    FLOW_WITHIN_SHAPE = "WSHAPE"
+    FLOW_CLIPPED = "CLIPPED"
 
 
 @dataclass

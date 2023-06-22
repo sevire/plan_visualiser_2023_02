@@ -4,7 +4,7 @@ from typing import Iterable, Tuple, Set
 
 from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
 from plan_visual_django.services.visual.formatting import VerticalPositioningOption, PlotableFormat, LineFormat, \
-    FillFormat, PlotableColor
+    FillFormat, PlotableColor, TextVerticalAlign, TextFlow
 from plan_visual_django.services.visual.visual import Visual, Plotable, VisualPlotter, PlotableFactory, \
     PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
@@ -169,7 +169,6 @@ class ActivityManager:
 
         # Second parse calculates the shape, dimensions and position for each activity in the visual.
         for activity_record in activities_plus_tracks:
-            # First create the activity shape, then the text object
             activity = activity_record["activity"]
             track_number = activity_record["track_number"]
             top, height = self.calculate_vertical_position(activity, track_number)
@@ -182,13 +181,21 @@ class ActivityManager:
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
             shape = ShapeType[activity['plotable_shape']]
             plotable_format = PlotableFormat.from_db_choice(activity['plotable_style'])
+
+            text_vertical_alignment = TextVerticalAlign(activity['text_vertical_alignment'])
+            text_flow = TextFlow(activity['text_flow'])
+            text = activity['activity_name']
+
             plotable = PlotableFactory.get_plotable(
                 shape,
                 top=top,
                 left=left,
                 width=width,
                 height=height,
-                format=plotable_format
+                format=plotable_format,
+                text_vertical_alignment=text_vertical_alignment,
+                text_flow=text_flow,
+                text=text
             )
             self.activity_collection.add_plotable(plotable)
 
@@ -414,7 +421,10 @@ class SwimlaneManager:
                 left=left,
                 width=width,
                 height=height,
-                format=plotable_format
+                format=plotable_format,
+                text_vertical_alignment = TextVerticalAlign.TOP,
+                text_flow = TextFlow.FLOW_TO_RIGHT,
+                text = name
             )
 
             collection.add_plotable(swimlane_plotable)
