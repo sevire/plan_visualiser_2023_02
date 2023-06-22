@@ -6,6 +6,7 @@ interface PlotFunctionData {
     ctx: CanvasRenderingContext2D;
     shape_data: any;
     shape_format: any
+    text: string
 }
 
 function color_to_fill_style(color: any) {
@@ -38,6 +39,9 @@ function plot_rectangle(plot_data: PlotFunctionData) {
         plot_data.shape_data.top,
         plot_data.shape_data.width,
         plot_data.shape_data.height);
+
+
+    plot_text(plot_data)
 }
 
 function plot_diamond(plot_data: PlotFunctionData) {
@@ -62,9 +66,20 @@ function plot_diamond(plot_data: PlotFunctionData) {
 
     context.fillStyle = "red";
     context.fill();
+
+    plot_text(plot_data)
 }
 
-function plot_text(context:CanvasRenderingContext2D, text:string) {
+function plot_text(data: PlotFunctionData) {
+     // ToDo: Replace with appropriate font color from layout
+    const line_color_string = color_to_fill_style(data.shape_format.line_style.line_color)
+
+    const text_middle = data.shape_data.top + data.shape_data.height / 2
+    data.ctx.textBaseline = "middle";
+    data.ctx.fillStyle = line_color_string;
+    data.ctx.font = "8px Arial";
+
+    data.ctx.fillText(data.text, data.shape_data.left+5, text_middle)
 
 }
 
@@ -80,6 +95,7 @@ export function plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings:
         const shape_name: ShapeName = shape_details.shape_name as keyof typeof dispatch_table;
         let shape_plot_dims:BoxShapeDimensions = shape.shape_details.shape_plot_dims
         const shape_format: any = shape.shape_details.shape_format
+        const text = shape_details.text
 
         // Scale all dimensions by scale_factor
         let k: keyof typeof shape_plot_dims
@@ -89,10 +105,7 @@ export function plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings:
 
         const plot_function = dispatch_table[shape_name]
 
-        const params:PlotFunctionData = {ctx: ctx, shape_data: shape_plot_dims, shape_format: shape_format}
+        const params:PlotFunctionData = {ctx: ctx, shape_data: shape_plot_dims, shape_format: shape_format, text: text}
         plot_function(params)
-
-        // Now plot text
-        plot_text(ctx, "")
     }
 }

@@ -4,7 +4,7 @@ from functools import reduce
 from typing import Union, List
 
 from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import PlotableFormat
+from plan_visual_django.services.visual.formatting import PlotableFormat, TextFlow, TextVerticalAlign
 
 
 class Plotable(ABC):
@@ -89,15 +89,30 @@ class RectangleBasedPlotable(Plotable):
     shape specific behaviour.
     """
 
-    def __init__(self, shape: ShapeType, top: float, left: float, width: float, height: float, format: PlotableFormat):
+    def __init__(
+            self,
+            shape: ShapeType,
+            top: float,
+            left: float,
+            width: float,
+            height: float,
+            format: PlotableFormat,
+            text_vertical_alignment: TextVerticalAlign,
+            text_flow: TextFlow,
+            text: str
+    ):
         super().__init__(shape)
 
+        self.text_vertical_alignment = text_vertical_alignment
         self.top = top
         self.left = left
         self.width = width
         self.height = height
         self.shape = shape
         self.format = format
+        self.text_flow = text_flow
+        self.text = text
+
 
     def get_top(self):
         return self.top

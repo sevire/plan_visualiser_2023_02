@@ -1,6 +1,6 @@
 from typing import Type
 
-from plan_visual_django.services.visual.formatting import PlotableFormat
+from plan_visual_django.services.visual.formatting import PlotableFormat, TextVerticalAlign, TextFlow
 from plan_visual_django.services.visual.visual import VisualPlotter, Visual, Plotable, PlotableCollection, \
     RectangleBasedPlotable
 
@@ -23,8 +23,12 @@ class CanvasPlotter(VisualPlotter):
             'shapes': []
         }
 
-
-    def format_to_dict(self, shape_format: PlotableFormat):
+    def format_to_dict(
+            self,
+            shape_format: PlotableFormat,
+            text_vertical_alignment: TextVerticalAlign,
+            text_flow: TextFlow,
+    ):
         """
         Creates simplified dict version of the object to allow JSON serialisation within template.
 
@@ -49,6 +53,10 @@ class CanvasPlotter(VisualPlotter):
                     shape_format.fill_format.fill_color.blue,
                     shape_format.fill_format.fill_color.alpha
                 )
+            },
+            "text_format": {
+                "vertical_align": text_vertical_alignment.name,
+                "text_flow": text_flow.name
             }
         }
         return shape_format_dict
@@ -85,7 +93,8 @@ class CanvasPlotter(VisualPlotter):
                     'width': item.width,
                     'height': item.height
                 },
-                'shape_format': self.format_to_dict(item.format)
+                'text': item.text,
+                'shape_format': self.format_to_dict(item.format, item.text_vertical_alignment, item.text_flow)
             }
         }
 

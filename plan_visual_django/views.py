@@ -287,6 +287,8 @@ def layout_visual(request, visual_id):
             "vertical_positioning_type",
             "vertical_positioning_value",
             "height_in_tracks",
+            "text_vertical_alignment",
+            "text_flow",
             "plotable_shape",
             "plotable_style"
         ),
