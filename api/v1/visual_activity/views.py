@@ -5,9 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.v1.visual_activity.serializer import VisualActivityListSerialiser
-from plan_visual_django.models import TRACK_NUMBER, DEFAULT_VERTICAL_POSITIONING_TYPE, \
-    DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, \
-    DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
+from plan_visual_django.models import DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAULT_HEIGHT_IN_TRACKS, \
+    PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
     SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, PlotableStyle, DEFAULT_PLOTABLE_STYLE_NAME, VisualActivity, PlanVisual
 
 

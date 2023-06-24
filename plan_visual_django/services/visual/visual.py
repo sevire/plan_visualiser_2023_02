@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Union, List
 
+from plan_visual_django.models import VisualActivity, PlotableStyle
 from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import PlotableFormat, TextFlow, TextVerticalAlign
+from plan_visual_django.services.visual.formatting import PlotableFormat
 
 
 class Plotable(ABC):
@@ -96,9 +97,9 @@ class RectangleBasedPlotable(Plotable):
             left: float,
             width: float,
             height: float,
-            format: PlotableFormat,
-            text_vertical_alignment: TextVerticalAlign,
-            text_flow: TextFlow,
+            format: PlotableStyle,
+            text_vertical_alignment: VisualActivity.VerticalAlignment,
+            text_flow: VisualActivity.TextFlow,
             text: str
     ):
         super().__init__(shape)

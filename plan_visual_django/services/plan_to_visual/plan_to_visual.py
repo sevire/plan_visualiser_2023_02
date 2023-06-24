@@ -2,10 +2,11 @@ import datetime
 from dataclasses import dataclass
 from typing import Iterable, Tuple, Set
 
+from plan_visual_django.models import VisualActivity, Color, PlotableStyle, Font
 from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import VerticalPositioningOption, PlotableFormat, LineFormat, \
-    FillFormat, PlotableColor, TextVerticalAlign, TextFlow
-from plan_visual_django.services.visual.visual import Visual, Plotable, VisualPlotter, PlotableFactory, \
+from plan_visual_django.services.visual.formatting import PlotableFormat, LineFormat, \
+    FillFormat, PlotableColor
+from plan_visual_django.services.visual.visual import Visual, VisualPlotter, PlotableFactory, \
     PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
@@ -180,10 +181,10 @@ class ActivityManager:
                 left = self.date_plotter.left(activity['start_date'])
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
             shape = ShapeType[activity['plotable_shape']]
-            plotable_format = PlotableFormat.from_db_choice(activity['plotable_style'])
+            plotable_format = activity['plotable_style']
 
-            text_vertical_alignment = TextVerticalAlign(activity['text_vertical_alignment'])
-            text_flow = TextFlow(activity['text_flow'])
+            text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
+            text_flow = VisualActivity.TextFlow(activity['text_flow'])
             text = activity['activity_name']
 
             plotable = PlotableFactory.get_plotable(
@@ -318,10 +319,10 @@ class SwimlaneManager:
 
     def add_activity_to_swimlane(self, activity):
         # Calculate position and height of activity based on selected vertical positioning type.
-        v_positioning_type:VerticalPositioningOption = activity['vertical_positioning_type']
+        v_positioning_type:VisualActivity.VerticalPositioningType = activity['vertical_positioning_type']
         track_number = 0  # Will be changed by logic below
 
-        if v_positioning_type == VerticalPositioningOption.TRACK_NUMBER:
+        if v_positioning_type == VisualActivity.VerticalPositioningType.TRACK_NUMBER:
             track_number = activity['vertical_positioning_value']
             num_tracks = activity['height_in_tracks']
             swimlane_to_add = activity['swimlane']
@@ -411,9 +412,14 @@ class SwimlaneManager:
             width = self.visual_settings.width
             height = track_manager.get_height_of_tracks()
 
-            line_format = LineFormat(PlotableColor(255, 150, 150), 1)
-            fill_format = FillFormat(PlotableColor(150, 255, 150))
-            plotable_format = PlotableFormat(line_format, fill_format)
+            font = Font("Arial")
+            plotable_format = PlotableStyle(
+                fill_color=Color(250, 250, 250),
+                line_color=Color(255, 150, 150),
+                line_thickness=1,
+                font=font,
+                style_name="Not from db"
+            )
 
             swimlane_plotable = PlotableFactory.get_plotable(
                 ShapeType.RECTANGLE,
@@ -422,8 +428,8 @@ class SwimlaneManager:
                 width=width,
                 height=height,
                 format=plotable_format,
-                text_vertical_alignment = TextVerticalAlign.TOP,
-                text_flow = TextFlow.FLOW_TO_RIGHT,
+                text_vertical_alignment = VisualActivity.VerticalAlignment.TOP,
+                text_flow = VisualActivity.TextFlow.FLOW_TO_RIGHT,
                 text = name
             )
 

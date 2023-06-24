@@ -20,52 +20,8 @@ class PlotableColor:
                self.blue in range(0, 256) and self.alpha in range(0, 1)
 
 
-class VerticalPositioningOption(Enum):
-    """
-    NOTE: This needs to be aligned with what is defined in model.py.  At some point the two should be made part of the
-          same data structure but that's for the future
-
-          ToDo: Refactor this so that the CHOICES field used in the model is generated directly from this.
-    """
-    TRACK_NUMBER = "TRACK"
-    RELATIVE_TRACK = "REL_TRACK"
-    AUTO = "AUTO"
-
-
 class LineStyle(Enum):
     SOLID = 1
-
-
-class Font(Enum):
-    """
-    Simple class to store the name of a font (to begin with) for use in drawing objects.  May need to extend this
-    functionality
-    """
-    ARIAL = 1
-
-
-class TextHorizontalAlign(Enum):
-    LEFT = 1
-    RIGHT = 2
-    CENTER = 3
-
-
-class TextVerticalAlign(Enum):
-    TOP = "TOP"
-    MIDDLE = "MIDDLE"
-    BOTTOM = "BOTTOM"
-
-
-class TextLayout(Enum):
-    NOWRAP = 1
-    WRAP = 2
-
-
-class TextFlow(Enum):
-    FLOW_TO_LEFT = "LFLOW"
-    FLOW_TO_RIGHT = "RFLOW"
-    FLOW_WITHIN_SHAPE = "WSHAPE"
-    FLOW_CLIPPED = "CLIPPED"
 
 
 @dataclass
@@ -78,12 +34,6 @@ class LineFormat:
 @dataclass
 class FillFormat:
     fill_color: PlotableColor
-
-
-@dataclass
-class TextFormat:
-    left_align: TextHorizontalAlign
-    font: Font = Font.ARIAL
 
 
 @dataclass

@@ -1,6 +1,7 @@
 from typing import Type
 
-from plan_visual_django.services.visual.formatting import PlotableFormat, TextVerticalAlign, TextFlow
+from plan_visual_django.models import VisualActivity, PlotableStyle
+from plan_visual_django.services.visual.formatting import PlotableFormat
 from plan_visual_django.services.visual.visual import VisualPlotter, Visual, Plotable, PlotableCollection, \
     RectangleBasedPlotable
 
@@ -25,9 +26,9 @@ class CanvasPlotter(VisualPlotter):
 
     def format_to_dict(
             self,
-            shape_format: PlotableFormat,
-            text_vertical_alignment: TextVerticalAlign,
-            text_flow: TextFlow,
+            shape_format: PlotableStyle,
+            text_vertical_alignment: VisualActivity.VerticalAlignment,
+            text_flow: VisualActivity.TextFlow,
     ):
         """
         Creates simplified dict version of the object to allow JSON serialisation within template.
@@ -38,20 +39,19 @@ class CanvasPlotter(VisualPlotter):
         shape_format_dict = {
             "line_style": {
                 "line_color": (
-                    shape_format.line_format.line_color.red,
-                    shape_format.line_format.line_color.green,
-                    shape_format.line_format.line_color.blue,
-                    shape_format.line_format.line_color.alpha
+                    shape_format.line_color.red,
+                    shape_format.line_color.green,
+                    shape_format.line_color.blue,
+                    shape_format.line_color.alpha
                 ),
-                "line_thickness": shape_format.line_format.line_thickness,
-                "line_style": shape_format.line_format.line_style.name
+                "line_thickness": shape_format.line_thickness,
             },
             "fill_style": {
                 "fill_color": (
-                    shape_format.fill_format.fill_color.red,
-                    shape_format.fill_format.fill_color.green,
-                    shape_format.fill_format.fill_color.blue,
-                    shape_format.fill_format.fill_color.alpha
+                    shape_format.fill_color.red,
+                    shape_format.fill_color.green,
+                    shape_format.fill_color.blue,
+                    shape_format.fill_color.alpha
                 )
             },
             "text_format": {

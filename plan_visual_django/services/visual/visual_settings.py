@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from plan_visual_django.services.visual.formatting import PlotableFormat, TextHorizontalAlign, TextVerticalAlign, \
+from plan_visual_django.models import VisualActivity
+from plan_visual_django.services.visual.formatting import PlotableFormat, \
     LineFormat, PlotableColor, LineStyle, FillFormat
 
 
@@ -12,8 +13,8 @@ class SwimlaneSettings:
     swimlanes: []
     swimlane_gap: float = 5
     swimlane_formats: [PlotableFormat] = None  # Defines alternating formats where required for banded style visuals
-    swimlane_label_horizontal_alignment: TextHorizontalAlign = TextHorizontalAlign.LEFT
-    swimlane_label_vertical_alignment: TextVerticalAlign = TextVerticalAlign.TOP
+    swimlane_label_horizontal_alignment: VisualActivity.HorizontalAlignment = VisualActivity.HorizontalAlignment.LEFT
+    swimlane_label_vertical_alignment: VisualActivity.VerticalAlignment = VisualActivity.VerticalAlignment.TOP
     margin: float = 10  # Used to create space from the edge of the swimlane for the label.
     swimlanes_enabled: bool = True
 
