@@ -4,100 +4,6 @@ from django.conf import settings
 from django.db.models import UniqueConstraint
 from plan_visual_django.services.general.date_utilities import date_from_string
 
-# Choices Definitions
-
-# --- VERTICAL ALIGNMENT ---
-TOP = 'TOP'
-MIDDLE = 'MIDDLE'
-BOTTOM = 'BOTTOM'
-
-V_ALIGNMENT_CHOICES = (
-    (TOP, 'Top'),
-    (MIDDLE, 'Middle'),
-    (BOTTOM, 'Bottom')
-)
-
-# --- HORIZONTAL ALIGNMENT ---
-LEFT = 'LEFT'
-CENTER = 'CENTER'
-RIGHT = 'RIGHT'
-
-H_ALIGNMENT_CHOICES = (
-    (LEFT, 'Left'),
-    (CENTER, 'Center'),
-    (RIGHT, 'Right')
-)
-
-# --- VERTICAL POSITIONING ---
-TRACK_NUMBER = "TRACK"
-RELATIVE_TRACK = "REL_TRACK"
-AUTO = "AUTO"
-
-V_POSITIONING_CHOICES = (
-    (TRACK_NUMBER, 'Specify track #'),
-    (RELATIVE_TRACK, 'Specify relative to last positioned activity'),
-    (AUTO, 'Automatic positioning'),
-)
-
-# --- PLAN FIELD TYPES (FOR BOTH INPUT AND OUTPUT FIELDS AS PART OF PLAN READING AND PARSING) ---
-INTEGER = "INT"
-FLOAT = "FLOAT"
-STRING = "STR"
-STRING_nnd = "STR_nnd"  # Format often used to represent number of days duration
-DATE = "DATE"
-
-PLAN_FIELD_TYPES = (
-    (INTEGER, "Integer"),
-    (FLOAT, "Decimal number"),
-    (STRING, "String"),
-    (STRING_nnd, "String of form nnd where nn is an integer value"),
-    (DATE, "Date (without time)")
-)
-
-# --- TEXT FLOW ---
-FLOW_TO_LEFT = "LFLOW"  # Aligns with right edge of shape and flows out of shape to left
-FLOW_TO_RIGHT = "RFLOW"  # Aligns with left edge of shape and flows out of the shape to the right
-FLOW_WITHIN_SHAPE = "WSHAPE"  # Centre aligned, flows out of shape to both left and right
-FLOW_CLIPPED = "CLIPPED"  # Centre aligned, doesn't overflow shape (is cut off - not quite sure how to implement)
-# ToDo: Update comment once approach for clipping has been implemented.
-
-TEXT_FLOW_CHOICES = (
-    (FLOW_TO_LEFT, 'Align right, flow to left'),
-    (FLOW_TO_RIGHT, 'Align left, flow to right'),
-    (FLOW_WITHIN_SHAPE, 'Align centre, flow left/right'),
-    (FLOW_CLIPPED, 'Align centre, clipped to shape'),
-)
-
-# --- PLAN FIELDS (The fixed names for fields which are used within the app so need to be consistent in the model) ---
-STICKY_UID = "unique_sticky_activity_id"
-NAME = "activity_name"
-DURATION = "duration"
-START = "start_date"
-END = "end_date"
-LEVEL = "level"
-
-PLAN_FIELD_NAME_CHOICES = (
-    (STICKY_UID, 'Unique id for activity'),
-    (NAME, 'Name of activity'),
-    (DURATION, 'Duration of activity'),
-    (START, 'Start date of activity'),
-    (END, 'End date of activity'),
-    (LEVEL, 'The level in the hierarchy of the an activity'),
-)
-
-# Defaults to use when creating a new visual before any formatting or layout has been done.
-DEFAULT_SWIMLANE_NAME = "(default)"
-DEFAULT_VERTICAL_POSITIONING_TYPE = RELATIVE_TRACK
-DEFAULT_VERTICAL_POSITIONING_VALUE = 1
-DEFAULT_HEIGHT_IN_TRACKS = 1
-DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = LEFT
-DEFAULT_TEXT_VERTICAL_ALIGNMENT = MIDDLE
-DEFAULT_TEXT_FLOW = FLOW_TO_LEFT
-DEFAULT_PLOTABLE_SHAPE_NAME = "RECTANGLE"
-DEFAULT_PLOTABLE_STYLE_NAME = "(default)"
-
-# MODEL CLASSES
-
 
 class PlanField(models.Model):
     """
@@ -109,8 +15,22 @@ class PlanField(models.Model):
     To do this I've restricted the choices for the field, but allowed other attributes to be entered.
     """
 
-    field_name = models.CharField(max_length=50, choices=PLAN_FIELD_NAME_CHOICES, help_text="field name used in common datastructure for plan")
-    field_type = models.CharField(max_length=20, choices=PLAN_FIELD_TYPES)
+    # Classes to support Enums which drive Choices in the model and can be used in code. Neat!
+    class PlanFieldName(models.TextChoices):
+        STICKY_UID = "unique_sticky_activity_id", 'Unique id for activity'
+        NAME = "activity_name", 'Name of activity'
+        DURATION = "duration", 'Duration of activity'
+        START = "start_date", 'Start date of activity'
+        END = "end_date", 'End date of activity'
+        LEVEL = "level", 'The level in the hierarchy of the an activity'
+
+    class StoredPlanFieldType(models.TextChoices):
+        INTEGER = "INT", "Integer"
+        STRING = "STR", "String"
+        DATE = "DATE", "Date (without time)"
+
+    field_name = models.CharField(max_length=50, choices=PlanFieldName.choices, help_text="field name used in common datastructure for plan")
+    field_type = models.CharField(max_length=20, choices=StoredPlanFieldType.choices)
     field_description = models.TextField(max_length=1000)
     required_flag = models.BooleanField(default=True)
     sort_index = models.IntegerField()
@@ -118,6 +38,11 @@ class PlanField(models.Model):
     class Meta:
         ordering = ('sort_index', )
 
+    def get_plan_field_name(self):
+        return self.PlanFieldName(self.field_name)
+
+    def get_stored_plan_field_type(self):
+        return self.StoredPlanFieldType(self.field_type)
     def __str__(self):
         return f'{self.field_name}:{self.field_type}'
 
@@ -136,11 +61,20 @@ class PlanFieldMappingType(models.Model):
 
 
 class PlanMappedField(models.Model):
+    class PlanFieldType(models.TextChoices):
+        INTEGER = "INT", "Integer"
+        FLOAT = "FLOAT", "Decimal Number"
+        STRING = "STR", "String"
+        STRING_nnd = "STR_nnd", "String of form nnd where nn is an integer value"
+        DATE = "DATE", "Date (without time"
+
     plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
     mapped_field = models.ForeignKey(PlanField, on_delete=models.CASCADE)
     input_field_name = models.CharField(max_length=50)
-    input_field_type = models.CharField(max_length=20, choices=PLAN_FIELD_TYPES)
+    input_field_type = models.CharField(max_length=20, choices=PlanFieldType.choices)
 
+    def get_plan_field_type(self):
+        return self.PlanFieldType(self.input_field_type)
     def __str__(self):
         return f'{self.plan_field_mapping_type}:{self.mapped_field}:{self.input_field_name}:{self.input_field_type}'
 
@@ -244,7 +178,13 @@ class PlotableStyle(models.Model):
 
 class PlotableShapeType(models.Model):
     """
-    Eek! I'm struggling to remember why I had ShapeType and Shape!  I'm guessing that it was something like
+    Eek! I'm struggling to remember why I had ShapeType and Shape!  I'm guessing that it was something like the
+    fact that certain families of shapes use a similar set of parameters to plot them.  So for example
+    a lot (most or all in practice I suspect) of shapes are plotted by specifying...
+
+    top, left, width, height
+
+    so there will be a family of shapes with that shape type.
 
     """
     name = models.CharField(max_length=50)
@@ -312,14 +252,12 @@ class PlanVisual(models.Model):
             activity_record['swimlane'] = activity.swimlane.swim_lane_name
             activity_record['plotable_shape'] = activity.plotable_shape.shape_type.name
 
-            from plan_visual_django.services.visual.formatting import VerticalPositioningOption
-            activity_record['vertical_positioning_type'] = VerticalPositioningOption(activity.vertical_positioning_type)
-
+            activity_record['vertical_positioning_type'] = activity.get_vertical_positioning_type()
             activity_record['vertical_positioning_value'] = activity.vertical_positioning_value
             activity_record['height_in_tracks'] = activity.height_in_tracks
-            activity_record['text_horizontal_alignment'] = activity.text_horizontal_alignment
-            activity_record['text_vertical_alignment'] = activity.text_vertical_alignment
-            activity_record['text_flow'] = activity.text_flow
+            activity_record['text_horizontal_alignment'] = activity.get_horizontal_alignment()
+            activity_record['text_vertical_alignment'] = activity.get_vertical_alignment()
+            activity_record['text_flow'] = activity.get_text_flow()
             activity_record['plotable_style'] = activity.plotable_style
 
             # Now add the plan activity record data for this activity
@@ -354,17 +292,47 @@ class SwimlaneForVisual(models.Model):
 
 
 class VisualActivity(models.Model):
+    """
+    Entity which represents data about an activity which has been added to a specific visual.
+
+    Note the information in this table is mostly around the formatting and layout of the activity rather than the
+    plan related information such as start date, duration, which is held in the plan from which the visual has been
+    created, via the "unique_id_from_plan" field.
+    """
+
+    # Django provided Enums to drive the choices for fixed dropdown values.  This is very neat!
+    class TextFlow(models.TextChoices):
+        FLOW_TO_LEFT = "LFLOW", 'Align right, flow to left'
+        FLOW_TO_RIGHT = "RFLOW", 'Align left, flow to right'
+        FLOW_WITHIN_SHAPE = "WSHAPE", 'Align centre, flow left/right'
+        FLOW_CLIPPED = "CLIPPED", 'Align ce_(ntre, clipped to shape'
+
+    class VerticalPositioningType(models.TextChoices):
+        TRACK_NUMBER = "TRACK", 'Specify track #'
+        RELATIVE_TRACK = "REL_TRACK", 'Specify relative to last positioned activity'
+        AUTO = "AUTO", 'Automatic positioning'
+
+    class HorizontalAlignment(models.TextChoices):
+        LEFT = 'LEFT', 'Left',
+        CENTER = 'CENTER', 'Center',
+        RIGHT = 'RIGHT', 'Right'
+
+    class VerticalAlignment(models.TextChoices):
+        TOP = 'TOP', 'Top',
+        MIDDLE = 'MIDDLE', 'Middle',
+        BOTTOM = 'BOTTOM', 'Bottom'
+
     visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
     unique_id_from_plan = models.CharField(max_length=50)  # ID from imported plan which will not change
     enabled = models.BooleanField()
     swimlane = models.ForeignKey(SwimlaneForVisual, on_delete=models.CASCADE)
     plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    vertical_positioning_type = models.CharField(max_length=20, choices=V_POSITIONING_CHOICES)
+    vertical_positioning_type = models.CharField(max_length=20, choices=VerticalPositioningType.choices)
     vertical_positioning_value = models.FloatField()
     height_in_tracks = models.FloatField(default=1)
-    text_horizontal_alignment = models.CharField(max_length=20, choices=H_ALIGNMENT_CHOICES)
-    text_vertical_alignment = models.CharField(max_length=20, choices=V_ALIGNMENT_CHOICES)
-    text_flow = models.CharField(max_length=20, choices=TEXT_FLOW_CHOICES)
+    text_horizontal_alignment = models.CharField(max_length=20, choices=HorizontalAlignment.choices)
+    text_vertical_alignment = models.CharField(max_length=20, choices=VerticalAlignment.choices)
+    text_flow = models.CharField(max_length=20, choices=TextFlow.choices)
     plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
 
     class Meta:
@@ -373,6 +341,19 @@ class VisualActivity(models.Model):
 
     def __str__(self):
         return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'
+
+    # Several methods to return Enum value for relevant choice selection
+    def get_text_flow(self) -> TextFlow:
+        return self.TextFlow(self.text_flow)
+
+    def get_vertical_positioning_type(self) -> VerticalPositioningType:
+        return self.VerticalPositioningType(self.vertical_positioning_type)
+
+    def get_horizontal_alignment(self) -> HorizontalAlignment:
+        return self.HorizontalAlignment(self.text_horizontal_alignment)
+
+    def get_vertical_alignment(self) -> VerticalAlignment:
+        return self.VerticalAlignment(self.text_vertical_alignment)
 
     def to_json(self, plot_parameters):
         # Hard code during development
@@ -387,3 +368,15 @@ class VisualActivity(models.Model):
             'track_gap': 2
         }
         # ToDo: Come back and finish activity.to_json()
+
+
+# Defaults to use when creating a new visual before any formatting or layout has been done.
+DEFAULT_SWIMLANE_NAME = "(default)"
+DEFAULT_VERTICAL_POSITIONING_TYPE = VisualActivity.VerticalPositioningType.RELATIVE_TRACK
+DEFAULT_VERTICAL_POSITIONING_VALUE = 1
+DEFAULT_HEIGHT_IN_TRACKS = 1
+DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT
+DEFAULT_TEXT_VERTICAL_ALIGNMENT = VisualActivity.VerticalAlignment.MIDDLE
+DEFAULT_TEXT_FLOW = VisualActivity.TextFlow.FLOW_TO_LEFT
+DEFAULT_PLOTABLE_SHAPE_NAME = "RECTANGLE"
+DEFAULT_PLOTABLE_STYLE_NAME = "(default)"

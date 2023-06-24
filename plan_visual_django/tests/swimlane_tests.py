@@ -1,9 +1,8 @@
 import django.test
 from ddt import ddt, data, unpack
 
+from plan_visual_django.models import VisualActivity
 from plan_visual_django.services.plan_to_visual.plan_to_visual import SwimlaneManager
-from plan_visual_django.services.visual.formatting import VerticalPositioningOption, TextHorizontalAlign, \
-    TextVerticalAlign, TextLayout
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 from plan_visual_django.tests.utilities import date_from_string
 
@@ -31,12 +30,12 @@ swimlane_test_data = {
             'unique_id_from_plan': "UID-001",
             'swimlane': "swimlane-01",
             'plotable_shape': "RECTANGLE",
-            'vertical_positioning_type': VerticalPositioningOption.TRACK_NUMBER,
+            'vertical_positioning_type': VisualActivity.VerticalPositioningType.TRACK_NUMBER,
             'vertical_positioning_value': 1,
             'height_in_tracks': 1,
-            'text_horizontal_alignment': TextHorizontalAlign.LEFT,
-            'text_vertical_alignment': TextVerticalAlign.MIDDLE,
-            'text_flow': TextLayout.WRAP,
+            'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+            'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
+            'text_flow': VisualActivity.TextFlow.FLOW_TO_LEFT,
             'plotable_style': "dummy",
             'activity_name': "Activity 1",
             'duration': 10,
@@ -48,12 +47,12 @@ swimlane_test_data = {
             'unique_id_from_plan': "UID-003",
             'swimlane': "swimlane-01",
             'plotable_shape': "RECTANGLE",
-            'vertical_positioning_type': VerticalPositioningOption.TRACK_NUMBER,
+            'vertical_positioning_type': VisualActivity.VerticalPositioningType.TRACK_NUMBER,
             'vertical_positioning_value': 3,
             'height_in_tracks': 1,
-            'text_horizontal_alignment': TextHorizontalAlign.LEFT,
-            'text_vertical_alignment': TextVerticalAlign.MIDDLE,
-            'text_flow': TextLayout.WRAP,
+            'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+            'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
+            'text_flow': VisualActivity.TextFlow.FLOW_TO_LEFT,
             'plotable_style': "dummy",
             'activity_name': "Activity 1",
             'duration': 10,
@@ -65,12 +64,12 @@ swimlane_test_data = {
             'unique_id_from_plan': "UID-004",
             'swimlane': "swimlane-01",
             'plotable_shape': "RECTANGLE",
-            'vertical_positioning_type': VerticalPositioningOption.TRACK_NUMBER,
+            'vertical_positioning_type': VisualActivity.VerticalPositioningType.TRACK_NUMBER,
             'vertical_positioning_value': 2,
             'height_in_tracks': 4,
-            'text_horizontal_alignment': TextHorizontalAlign.LEFT,
-            'text_vertical_alignment': TextVerticalAlign.MIDDLE,
-            'text_flow': TextLayout.WRAP,
+            'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+            'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
+            'text_flow': VisualActivity.TextFlow.FLOW_TO_LEFT,
             'plotable_style': "dummy",
             'activity_name': "Activity 1",
             'duration': 10,
@@ -83,12 +82,12 @@ swimlane_test_data = {
             'unique_id_from_plan': "UID-002",
             'swimlane': "swimlane-02",
             'plotable_shape': "RECTANGLE",
-            'vertical_positioning_type': VerticalPositioningOption.TRACK_NUMBER,
+            'vertical_positioning_type': VisualActivity.VerticalPositioningType.TRACK_NUMBER,
             'vertical_positioning_value': 1,
             'height_in_tracks': 1,
-            'text_horizontal_alignment': TextHorizontalAlign.LEFT,
-            'text_vertical_alignment': TextVerticalAlign.MIDDLE,
-            'text_flow': TextLayout.WRAP,
+            'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+            'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
+            'text_flow': VisualActivity.TextFlow.FLOW_TO_LEFT,
             'plotable_style': "dummy",
             'activity_name': "Activity 2",
             'duration': 10,
