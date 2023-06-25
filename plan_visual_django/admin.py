@@ -78,6 +78,7 @@ class PlotableShapeAttributesDiamondAdmin(admin.ModelAdmin):
 class SwimlaneForVisualAdmin(admin.ModelAdmin):
     list_display = ("plan_visual", "sequence_number", "swim_lane_name")
     ordering = ("plan_visual", "sequence_number")
+    list_filter = ('plan_visual', )
 
 
 @admin.register(VisualActivity)

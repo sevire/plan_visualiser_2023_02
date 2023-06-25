@@ -224,7 +224,7 @@ class PlanVisual(models.Model):
     include_title = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.plan.original_file_name} ({self.name})"
+        return f"{self.name}"
 
     def get_visual_activities(self):
         """
@@ -374,7 +374,7 @@ class VisualActivity(models.Model):
 
 # Defaults to use when creating a new visual before any formatting or layout has been done.
 DEFAULT_SWIMLANE_NAME = "(default)"
-DEFAULT_VERTICAL_POSITIONING_TYPE = VisualActivity.VerticalPositioningType.RELATIVE_TRACK
+DEFAULT_VERTICAL_POSITIONING_TYPE = VisualActivity.VerticalPositioningType.TRACK_NUMBER
 DEFAULT_VERTICAL_POSITIONING_VALUE = 1
 DEFAULT_HEIGHT_IN_TRACKS = 1
 DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT
