@@ -324,8 +324,8 @@ class PlotVisualView(DetailView):
         visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
         visual_activity_data = visual.get_visual_activities()
 
-        swimlanes = [swimlane.swim_lane_name for swimlane in visual.swimlaneforvisual_set.all()]
-        swimlane_settings = SwimlaneSettings(swimlanes=swimlanes)
+        swimlane_data = [swimlane for swimlane in visual.swimlaneforvisual_set.all()]
+        swimlane_settings = SwimlaneSettings(swimlanes=swimlane_data)
 
         visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
 

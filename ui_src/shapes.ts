@@ -1,29 +1,8 @@
-interface ShapeTextFormat {
-    horizontal_alignment:string,
-    vertical_alignment:string,
-    text_flow:string,
-    font_name: string,
-}
-
 export interface Colour {
     red: number,
     green: number,
     blue: number,
     alpha: number
-}
-
-export interface ShapeFormat {
-    line_thickness: number,
-    fill_colour: Colour,
-    line_colour: Colour,
-}
-
-export interface ShapeFormats {
-    [index: string]: ShapeFormat
-}
-
-export interface ShapeTextFormats {
-    [index: string]: ShapeTextFormat
 }
 
 export interface Point {
