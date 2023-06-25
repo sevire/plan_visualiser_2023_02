@@ -24,8 +24,8 @@ export function initialise_canvas(settings: any) {
     console.log("devicePixelRation: " + window.devicePixelRatio)
     console.log("After scaling... canvas.width:" + canvas.width + " canvas.height" + canvas.height)
 
-    context.fillStyle = "pink";
-    context.strokeStyle = "green";
+    context.fillStyle = "rgb(244, 244, 244)";
+    context.strokeStyle = "rgb(166, 166, 166)";
     context.lineWidth = 3;
 
     context.rect(0, 0, canvas.width, canvas.height);

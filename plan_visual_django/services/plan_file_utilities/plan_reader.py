@@ -172,7 +172,6 @@ class ExcelXLSFileReader(PlanFileReader):
         sheet = wb_obj[self.sheet_name]
         start_row = 1 + skiprows
 
-        table = {}
         headings = self.get_headers(sheet, start_row)
         table = {heading: [] for heading in headings}
 

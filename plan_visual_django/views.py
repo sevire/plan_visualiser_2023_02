@@ -7,7 +7,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit
-from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity
+from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
+    PlotableStyle
 from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user
@@ -92,10 +93,15 @@ def add_visual(request, plan_id):
             messages.success(request, "New visual for plan saved successfully")
 
             # Now create default versions of objects which are required as part of any visual activity
+            # This logic assumes that there will be certain default records in the database such as Color
+            # and PlotableFormat records.
+
             # First create default swimlane
+            default_plotable_style = PlotableStyle.objects.get(style_name="(default)")
             swimlane = SwimlaneForVisual(
                 plan_visual=visual_record,
                 swim_lane_name="(default)",
+                plotable_style=default_plotable_style,
                 sequence_number=1
             ).save()
 
@@ -324,7 +330,9 @@ class PlotVisualView(DetailView):
         visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
         visual_activity_data = visual.get_visual_activities()
 
-        swimlane_data = [swimlane for swimlane in visual.swimlaneforvisual_set.all()]
+        # Only want swimlanes which have at least one activity in them.
+        all_swimlanes_for_visual = [swimlane for swimlane in visual.swimlaneforvisual_set.all()]
+        swimlane_data = [swimlane for swimlane in all_swimlanes_for_visual if swimlane.visualactivity_set.filter(enabled=True).count() > 0]
         swimlane_settings = SwimlaneSettings(swimlanes=swimlane_data)
 
         visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
