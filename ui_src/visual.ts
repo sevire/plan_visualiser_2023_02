@@ -9,14 +9,3 @@ export default function get_activity_data(): any {
         return JSON.parse(json_activities.textContent)
     }
 }
-
-interface VisualConfiguration {
-    width: number,
-    height: number,
-    background_colour: Colour,
-}
-
-interface VisualData {
-    visual_configuration: VisualConfiguration,
-    shape_data: []
-}

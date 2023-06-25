@@ -169,6 +169,7 @@ class PlotableStyle(models.Model):
     style_name = models.CharField(max_length=100)
     fill_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_fill")
     line_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_line")
+    font_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_font")
     line_thickness = models.IntegerField()
     font = models.ForeignKey(Font, on_delete=models.PROTECT)
 
@@ -281,6 +282,7 @@ class PlanVisual(models.Model):
 class SwimlaneForVisual(models.Model):
     plan_visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
     swim_lane_name = models.CharField(max_length=51)
+    plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
     sequence_number = models.IntegerField()
 
     class Meta:

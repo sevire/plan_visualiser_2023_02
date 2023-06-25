@@ -1,6 +1,6 @@
 from typing import Type
 
-from plan_visual_django.models import VisualActivity, PlotableStyle
+from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.formatting import PlotableFormat
 from plan_visual_django.services.visual.visual import VisualPlotter, Visual, Plotable, PlotableCollection, \
     RectangleBasedPlotable
@@ -24,6 +24,21 @@ class CanvasPlotter(VisualPlotter):
             'shapes': []
         }
 
+    @staticmethod
+    def color_to_tuple(color: Color):
+        """
+        Takes a color record from database which includes RGBA and returns a tuple which can be serialised
+        into JSON
+
+        :return:
+        """
+        return (
+            color.red,
+            color.green,
+            color.blue,
+            color.alpha
+        )
+
     def format_to_dict(
             self,
             shape_format: PlotableStyle,
@@ -33,30 +48,23 @@ class CanvasPlotter(VisualPlotter):
         """
         Creates simplified dict version of the object to allow JSON serialisation within template.
 
+        :param text_flow:
+        :param text_vertical_alignment:
         :param shape_format:
         :return:
         """
         shape_format_dict = {
             "line_style": {
-                "line_color": (
-                    shape_format.line_color.red,
-                    shape_format.line_color.green,
-                    shape_format.line_color.blue,
-                    shape_format.line_color.alpha
-                ),
+                "line_color": self.color_to_tuple(shape_format.line_color),
                 "line_thickness": shape_format.line_thickness,
             },
             "fill_style": {
-                "fill_color": (
-                    shape_format.fill_color.red,
-                    shape_format.fill_color.green,
-                    shape_format.fill_color.blue,
-                    shape_format.fill_color.alpha
-                )
+                "fill_color": self.color_to_tuple(shape_format.fill_color),
             },
             "text_format": {
                 "vertical_align": text_vertical_alignment.name,
-                "text_flow": text_flow.name
+                "text_flow": text_flow.name,
+                "text_color": self.color_to_tuple(shape_format.font_color),
             }
         }
         return shape_format_dict

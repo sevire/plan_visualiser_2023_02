@@ -181,7 +181,7 @@ class ActivityManager:
                 left = self.date_plotter.left(activity['start_date'])
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
             shape = ShapeType[activity['plotable_shape']]
-            plotable_format = activity['plotable_style']
+            plotable_style = activity['plotable_style']
 
             text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
             text_flow = VisualActivity.TextFlow(activity['text_flow'])
@@ -193,7 +193,7 @@ class ActivityManager:
                 left=left,
                 width=width,
                 height=height,
-                format=plotable_format,
+                format=plotable_style,
                 text_vertical_alignment=text_vertical_alignment,
                 text_flow=text_flow,
                 text=text
@@ -305,9 +305,10 @@ class SwimlaneManager:
 
         # Initialise swimlane structure to reflect the order of swimlanes specified in settings.
         for index, swimlane in enumerate(visual_settings.swimlane_settings.swimlanes):
-            self.swimlanes[swimlane] = {
+            self.swimlanes[swimlane.swim_lane_name] = {
                 'swimlane_number': index + 1,
-                'swimlane_name': swimlane,
+                'swimlane_name': swimlane.swim_lane_name,
+                'swimlane_format': swimlane.plotable_style,
                 'track_manager': TrackManager(visual_settings.track_height, visual_settings.track_gap)
             }
 
@@ -315,7 +316,7 @@ class SwimlaneManager:
     def iter_swimlanes(self):
         ordered_swimlanes = sorted(self.swimlanes.values(), key=lambda x: x["swimlane_number"])
         for swimlane_record in ordered_swimlanes:
-            yield swimlane_record['swimlane_number'], swimlane_record['swimlane_name'], swimlane_record['track_manager']
+            yield swimlane_record['swimlane_number'], swimlane_record['swimlane_name'], swimlane_record['track_manager'], swimlane_record['swimlane_format']
 
     def add_activity_to_swimlane(self, activity):
         # Calculate position and height of activity based on selected vertical positioning type.
@@ -355,7 +356,7 @@ class SwimlaneManager:
 
         # Now iterate through the swimlanes adding to the total height until we get to the one we are looking at.
         height = 0
-        for number, name, track_manager in self.iter_swimlanes():
+        for number, name, track_manager, format in self.iter_swimlanes():
             # Only process up to the named swimlane.
             if name == swimlane_name:
                 break
@@ -402,7 +403,7 @@ class SwimlaneManager:
         :return:
         """
         collection = PlotableCollection()
-        for number, name, track_manager in self.iter_swimlanes():
+        for number, name, track_manager, plotable_format in self.iter_swimlanes():
             # ToDo: Make shape for swimlane configurable at some point
             top = self.get_swimlane_top(name)
 
@@ -411,15 +412,6 @@ class SwimlaneManager:
 
             width = self.visual_settings.width
             height = track_manager.get_height_of_tracks()
-
-            font = Font("Arial")
-            plotable_format = PlotableStyle(
-                fill_color=Color(250, 250, 250),
-                line_color=Color(255, 150, 150),
-                line_thickness=1,
-                font=font,
-                style_name="Not from db"
-            )
 
             swimlane_plotable = PlotableFactory.get_plotable(
                 ShapeType.RECTANGLE,
