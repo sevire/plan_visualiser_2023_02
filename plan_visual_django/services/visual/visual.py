@@ -100,7 +100,8 @@ class RectangleBasedPlotable(Plotable):
             format: PlotableStyle,
             text_vertical_alignment: VisualActivity.VerticalAlignment,
             text_flow: VisualActivity.TextFlow,
-            text: str
+            text: str,
+            external_text_flag: bool
     ):
         super().__init__(shape)
 
@@ -113,7 +114,7 @@ class RectangleBasedPlotable(Plotable):
         self.format = format
         self.text_flow = text_flow
         self.text = text
-
+        self.external_text_flag = external_text_flag
 
     def get_top(self):
         return self.top
