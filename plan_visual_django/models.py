@@ -308,7 +308,8 @@ class VisualActivity(models.Model):
         FLOW_TO_LEFT = "LFLOW", 'Align right, flow to left'
         FLOW_TO_RIGHT = "RFLOW", 'Align left, flow to right'
         FLOW_WITHIN_SHAPE = "WSHAPE", 'Align centre, flow left/right'
-        FLOW_CLIPPED = "CLIPPED", 'Align ce_(ntre, clipped to shape'
+        FLOW_CLIPPED = "CLIPPED", 'Align centre, clipped to shape'
+        FLOW_CENTRE = "CENTRE", 'Align centre'
 
     class VerticalPositioningType(models.TextChoices):
         TRACK_NUMBER = "TRACK", 'Specify track #'

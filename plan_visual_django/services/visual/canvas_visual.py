@@ -44,10 +44,16 @@ class CanvasPlotter(VisualPlotter):
             shape_format: PlotableStyle,
             text_vertical_alignment: VisualActivity.VerticalAlignment,
             text_flow: VisualActivity.TextFlow,
+            external_text_flag
     ):
         """
         Creates simplified dict version of the object to allow JSON serialisation within template.
 
+        :param external_text_flag: Indicates that text is to be positioned outside the shape but other layout options
+                                   to be applied still.  Intended for milestone type shapes where the shape is too small
+                                   for the text to be positioned inside it.
+                                   NOTE: This isn't selected by the user, it's automatically set when converting
+                                   activities to plotables, based on whether the activity is a milestone or not.
         :param text_flow:
         :param text_vertical_alignment:
         :param shape_format:
@@ -65,6 +71,7 @@ class CanvasPlotter(VisualPlotter):
                 "vertical_align": text_vertical_alignment.name,
                 "text_flow": text_flow.name,
                 "text_color": self.color_to_tuple(shape_format.font_color),
+                "external_text_flag": external_text_flag
             }
         }
         return shape_format_dict
@@ -102,7 +109,7 @@ class CanvasPlotter(VisualPlotter):
                     'height': item.height
                 },
                 'text': item.text,
-                'shape_format': self.format_to_dict(item.format, item.text_vertical_alignment, item.text_flow)
+                'shape_format': self.format_to_dict(item.format, item.text_vertical_alignment, item.text_flow, item.external_text_flag)
             }
         }
 

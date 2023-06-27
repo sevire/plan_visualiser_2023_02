@@ -177,9 +177,15 @@ class ActivityManager:
                 # This is a milestone so we plot in the middle of the day to the specified width for a milestone.
                 left = self.date_plotter.midpoint(activity['start_date']) - self.visual_settings.milestone_width/2
                 width = self.visual_settings.milestone_width
+
+                # The text for milestones is plotted outside the shape as typically it's a small constant width shape
+                # like a diamond or triangle.
+                external_text_flag = True
             else:
                 left = self.date_plotter.left(activity['start_date'])
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
+                external_text_flag = False
+
             shape = ShapeType[activity['plotable_shape']]
             plotable_style = activity['plotable_style']
 
@@ -196,7 +202,8 @@ class ActivityManager:
                 format=plotable_style,
                 text_vertical_alignment=text_vertical_alignment,
                 text_flow=text_flow,
-                text=text
+                text=text,
+                external_text_flag=external_text_flag
             )
             self.activity_collection.add_plotable(plotable)
 
@@ -420,9 +427,10 @@ class SwimlaneManager:
                 width=width,
                 height=height,
                 format=plotable_format,
-                text_vertical_alignment = VisualActivity.VerticalAlignment.TOP,
-                text_flow = VisualActivity.TextFlow.FLOW_TO_RIGHT,
-                text = name
+                text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
+                text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
+                text=name,
+                external_text_flag=False
             )
 
             collection.add_plotable(swimlane_plotable)

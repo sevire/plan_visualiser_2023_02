@@ -2,6 +2,14 @@ import {BoxShapeDimensions, ShapeName} from "./shapes";
 
 const scale_factor:number = 1.0;  // to ensure that visual works on screen (may tweak value)
 
+// Text flow values - correspond exactly to choices in VisualActivity table in Django database
+const FLOW_TO_LEFT = "FLOW_TO_LEFT"
+const FLOW_TO_RIGHT = "FLOW_TO_RIGHT"
+const FLOW_WITHIN_SHAPE = "FLOW_WITHIN_SHAPE"
+const FLOW_CLIPPED = "FLOW_CLIPPED"
+const FLOW_CENTRE = "FLOW_CENTRE"
+
+
 interface PlotFunctionData {
     ctx: CanvasRenderingContext2D;
     shape_data: any;
@@ -48,19 +56,20 @@ function plot_rectangle(plot_data: PlotFunctionData) {
 }
 
 function plot_diamond(plot_data: PlotFunctionData) {
-    const width_height_ratio = 0.7;
+    // const width_height_ratio = 0.7;
     const shape_data = plot_data.shape_data;
     plot_data.ctx.beginPath();
-    plot_data.ctx.moveTo(shape_data.left, shape_data.top);
+    const half_width = shape_data.width / 2
+    plot_data.ctx.moveTo(shape_data.left + half_width, shape_data.top);
 
     // top left edge
-    plot_data.ctx.lineTo(shape_data.left - (shape_data.width * width_height_ratio) / 2, shape_data.top + shape_data.height / 2);
+    plot_data.ctx.lineTo(shape_data.left, shape_data.top + shape_data.height / 2);
 
     // bottom left edge
-    plot_data.ctx.lineTo(shape_data.left, shape_data.top + shape_data.height);
+    plot_data.ctx.lineTo(shape_data.left + half_width, shape_data.top + shape_data.height);
 
     // bottom right edge
-    plot_data.ctx.lineTo(shape_data.left + (shape_data.width * width_height_ratio) / 2, shape_data.top + shape_data.height / 2);
+    plot_data.ctx.lineTo(shape_data.left + shape_data.width, shape_data.top + shape_data.height / 2);
 
     // closing the path automatically creates
     // the top right edge
@@ -81,6 +90,9 @@ function plot_text(data: PlotFunctionData) {
     data.ctx.fillStyle = color_to_fill_style(text_color);
 
     const v_align = data.shape_format.text_format.vertical_align
+    const text_flow = data.shape_format.text_format.text_flow
+    console.log(`Text flow is ${text_flow}`)
+
     var text_v_position
 
     console.log(`v_align = ${v_align}`)
@@ -98,8 +110,42 @@ function plot_text(data: PlotFunctionData) {
             data.ctx.textBaseline = "bottom";
     }
 
-    console.log(`About to plot text for ${data.text}, x=${data.shape_data.left+5}, y=${text_v_position}`)
-    data.ctx.fillText(data.text, data.shape_data.left+5, text_v_position)
+    const margin = 5  // Manually adjusted for now.
+    var x_val = data.shape_data.left  // Initial/default value
+    const external_flag = data.shape_format.text_format.external_text_flag
+
+    console.log(`External flag for ${data.text} is ${external_flag}`)
+    switch (text_flow) {
+        case FLOW_TO_RIGHT:
+        case FLOW_WITHIN_SHAPE:
+        case FLOW_CLIPPED:
+            // For flow within shape and clipped default to flow right for now
+            data.ctx.textAlign = "left";
+            if (external_flag) {
+                // Need to begin the plot outside the right edge of the shape
+                x_val = data.shape_data.left + data.shape_data.width + margin;
+            } else {
+                x_val = data.shape_data.left + margin;
+            }
+            break;
+        case FLOW_TO_LEFT:
+            data.ctx.textAlign = "right";
+            if (external_flag) {
+                // Need to begin the plot outside the left edge of the shape
+                x_val = data.shape_data.left - margin;
+            } else {
+                x_val = data.shape_data.left + data.shape_data.width - margin;
+            }
+            break;
+        case FLOW_CENTRE:
+            x_val = data.shape_data.left + data.shape_data.width / 2;
+            data.ctx.textAlign = "center";
+            break;
+
+    }
+
+    console.log(`About to plot text for ${data.text}, x=${x_val}, y=${text_v_position}`)
+    data.ctx.fillText(data.text, x_val, text_v_position)
 }
 
 const dispatch_table = {
