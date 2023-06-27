@@ -6,6 +6,7 @@ from django.conf import settings
 
 
 class TestMailServices(TestCase):
+    @skip
     def test_send_smtp_email(self):
         """
         Tests normal Python email sending outside of Django - helps in initial debugging of email sending.
@@ -31,6 +32,7 @@ class TestMailServices(TestCase):
             server.login("thomas.gaylard@genonline.co.uk", password)
             server.sendmail("thomas.gaylard@genonline.co.uk", ["testing@genonline.co.uk"], message)
 
+    @skip
     def test_send_django_email(self):
         """
         Just testing basic email send capability within Django - mostly to check how it's configured.
