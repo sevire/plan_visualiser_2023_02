@@ -1,6 +1,7 @@
 import json
 import os
 from django.conf import settings
+from django.db import transaction
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -19,6 +20,7 @@ from plan_visual_django.services.visual.visual_settings import VisualSettings, S
 
 # Create your views here.
 
+@transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
 def add_plan(request):
     if request.method == "POST":
         plan_form = PlanForm(data=request.POST, files=request.FILES)

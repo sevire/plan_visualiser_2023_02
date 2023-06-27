@@ -115,6 +115,7 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             "line_color": colour_records[0],
             "line_thickness": 10,
             "font": font_records[0],
+            "font_color": colour_records[0]
         }
     ]
 
@@ -147,7 +148,8 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
     swimlane = SwimlaneForVisual.objects.create(
         plan_visual=visual_records[0],
         swim_lane_name="Swimlane-01",
-        sequence_number=1
+        sequence_number=1,
+        plotable_style=plotable_style_records[0]
     )
 
     plan_activity_data = [
@@ -192,8 +194,8 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
                     'vertical_positioning_type': "TRACK",
                     'vertical_positioning_value': 1,
                     'height_in_tracks': 1,
-                    'text_horizontal_alignment': "Left",
-                    'text_vertical_alignment': "Middle",
+                    'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+                    'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
                     'text_flow': "LFLOW",
                     'plotable_style': plotable_style_records[0],
                 },

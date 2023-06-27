@@ -21,6 +21,7 @@ class PlanFieldAdmin(admin.ModelAdmin):
 class PlanMappedFieldAdmin(admin.ModelAdmin):
     list_display = ["plan_field_mapping_type", "mapped_field", "input_field_name", "input_field_type"]
     ordering = ['plan_field_mapping_type', 'mapped_field']
+    list_filter = ('plan_field_mapping_type', )
 
 
 @admin.register(PlanFieldMappingType)

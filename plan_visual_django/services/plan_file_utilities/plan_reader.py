@@ -12,43 +12,104 @@ import openpyxl as openpyxl
 # Utility functions for parsing into every data type required by the app from every plan format
 # required to be supported.
 
+# Define conversion functions for each input/output type which needs to be supported
 
-def convert_dispatch(input_type: str, output_type: str, input_value: any) -> any:
-    # Define conversion functions for each input/output type which needs to be supported
-    # the hope is that this general approach will work in most cases, with some additional functions to deal with cases
-    # when the simple approach doesn't work - such as if a date is encoded within a string in an unusual way.
-    convert_pass_through: Callable[[Any], Any] = lambda x: x
-    convert_string_int: Callable[[str], int] = lambda string: int(string.strip())
-    convert_string_nnd_int: Callable[[str], int] = lambda string: int(('0'+string.strip())[:-1])
-    convert_string_float: Callable[[str], float] = lambda string: float(string.strip())
-    convert_string_date_dmy: Callable[[str], date] = lambda date_str: datetime.strptime(date_str, '%d:%m:%Y').date()
-    convert_int_string: Callable[[int], str] = lambda int_val: str(int_val)
-    convert_int_float: Callable[[int], float] = lambda int_val: float(int_val)
-    convert_float_string: Callable[[float], str] = lambda float_val: str(float_val)
-    convert_float_int: Callable[[float], int] = lambda float_val: int(float_val)
+
+def convert_pass_through(x):
+    return x
+
+
+def convert_str_or_int_to_str(string_or_int) -> str:
+    """
+    Mostly used in case when we are really expecting a string but sometimes, because of the way in which
+    exports from Excel are often generated, a field with digits in will come over as an integer even if
+    it was intended as a string.
+
+    If it is an integer, we want to create as simple a string representation of the integer as possible,
+    to avoid potential anomalies if we do any zero padding or other formatting as the value will need to
+    be re-created every time (for sticky UID for example).
+
+    :param string_or_int:
+    :return:
+    """
+    if isinstance(string_or_int, int):
+        return str(string_or_int)
+    elif isinstance(string_or_int, str):
+        return string_or_int
+    else:
+        raise ValueError(f"String or int expected, but got {type(string_or_int)} for {string_or_int}")
+
+
+def convert_string_int(string) -> int:
+    return int(string.strip())
+
+
+def convert_string_nnd_int(string) -> int:
+    if isinstance(string, str):
+        return int(('0' + string.strip())[:-1])
+    else:
+        raise ValueError(f"Conversion expected string of form nnd but got type {type(string)}")
+
+
+def convert_string_float(string) -> float:
+    return float(string.strip())
+
+
+def convert_string_date_dmy(date_str) -> date:
+    return datetime.strptime(date_str, '%d:%m:%Y').date()
+
+
+def convert_int_string(int_val) -> str:
+    return str(int_val)
+
+
+def convert_int_float(int_val, float):
+    return float(int_val)
+
+
+def convert_float_string(float_val) -> str:
+    return str(float_val)
+
+
+def convert_float_int(float_val) -> int:
+    return int(float_val)
 
     # Drives conversion of input types/encoding to appropriate output types.  Utility to allow input fields to be encoded
     # in different ways (e.g. dates can be encoded in a string in many ways)
-    convert_dispatch_table = {
-        'STR': {
-            'STR': convert_pass_through,
-            'INT': convert_string_int,
-            'DATE': convert_string_date_dmy,
-        },
-        'STR_nnd': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
-            'INT': convert_string_nnd_int,
-        },
-        'INT': {
-            'STR': convert_int_string,
-            'INT': convert_pass_through,
-        },
-        'FLOAT': {
-            'INT': convert_float_int,
-        },
-        'DATE': {
-            'DATE': convert_pass_through,
-        }
+convert_dispatch_table = {
+    'STR': {
+        'STR': convert_pass_through,
+        'INT': convert_string_int,
+        'DATE': convert_string_date_dmy,
+    },
+    'STR_OR_INT': {
+        'STR': convert_str_or_int_to_str,
+    },
+    'STR_nnd': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
+        'INT': convert_string_nnd_int,
+    },
+    'INT': {
+        'STR': convert_int_string,
+        'INT': convert_pass_through,
+    },
+    'FLOAT': {
+        'INT': convert_float_int,
+    },
+    'DATE': {
+        'DATE': convert_pass_through,
     }
+}
+
+
+def convert_dispatch(input_type: str, output_type: str, input_value: any) -> any:
+    """
+    Select the right conversion function to convert this input value to an appropriate output value.
+
+    :param input_type:
+    :param output_type:
+    :param input_value:
+    :return:
+    """
     convert_function = convert_dispatch_table[input_type][output_type]
     converted_value = convert_function(input_value)
 

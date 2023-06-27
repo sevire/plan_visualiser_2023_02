@@ -65,6 +65,7 @@ class PlanMappedField(models.Model):
         INTEGER = "INT", "Integer"
         FLOAT = "FLOAT", "Decimal Number"
         STRING = "STR", "String"
+        STRING_OR_INT = "STR_OR_INT", "String or integer"
         STRING_nnd = "STR_nnd", "String of form nnd where nn is an integer value"
         DATE = "DATE", "Date (without time"
 
