@@ -1,9 +1,10 @@
 from datetime import datetime
-
 from django.contrib.auth.models import User
-
 from plan_visual_django.models import PlanFieldMappingType, PlanField, PlanMappedField, PlanVisual, FileType, Plan, \
-    PlanActivity, SwimlaneForVisual, PlotableShapeType, PlotableShape, Color, Font, PlotableStyle, VisualActivity
+    PlanActivity, SwimlaneForVisual, PlotableShapeType, PlotableShape, Color, Font, PlotableStyle, VisualActivity, \
+    TimelineForVisual
+from plan_visual_django.tests.resources.data_setup.common_data import plan_fields, field_mapping_01, \
+    plotable_shape_type_data, colour_data, timeline_for_visual_data
 
 
 def setup_common_reference_data():
@@ -11,17 +12,6 @@ def setup_common_reference_data():
         name="Test-Excel-01",
         description="dummy for testing"
     )
-
-    # Set up fields and types used within the app
-    plan_fields = {
-        "unique_sticky_activity_id": {"field_type": "STR", "required": True},
-        "activity_name": {"field_type": "STR", "required": True},
-        "activity_display_name": {"field_type": "STR", "required": False},
-        "duration": {"field_type": "INT", "required": True},
-        "start_date": {"field_type": "DATE", "required": True},
-        "end_date": {"field_type": "DATE", "required": True},
-        "level": {"field_type": "INT", "required": True},
-    }
 
     for field_name, field_data in plan_fields.items():
         PlanField.objects.create(
@@ -31,15 +21,6 @@ def setup_common_reference_data():
             required_flag=field_data['required'],
             sort_index=50
         )
-
-    field_mapping_01 = {
-        "unique_sticky_activity_id": {"input_field_name": "Unique Sticky ID", "input_field_type": "STR"},
-        "level": {"input_field_name": "Level #", "input_field_type": "FLOAT"},
-        "activity_name": {"input_field_name": "Task Name", "input_field_type": "STR"},
-        "duration": {"input_field_name": "Duration", "input_field_type": "STR_nnd"},
-        "start_date": {"input_field_name": "Start", "input_field_type": "DATE"},
-        "end_date": {"input_field_name": "Finish", "input_field_type": "DATE"},
-    }
 
     for plan_field_record in PlanField.objects.all():
         plan_field_name = plan_field_record.field_name
@@ -69,12 +50,6 @@ def setup_common_reference_data():
 
     user = User.objects.create_user(username='testuser', password='12345')
 
-    plotable_shape_type_data = [
-        {
-            'name': "RECTANGLE"
-        }
-    ]
-
     plotable_shape_types = [PlotableShapeType.objects.create(**shape_data) for shape_data in plotable_shape_type_data]
     plotable_shapes = [PlotableShape.objects.create(shape_type=shape_type) for shape_type in plotable_shape_types]
 
@@ -88,16 +63,6 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
 
     :return:
     """
-    colour_data = [
-        {
-            "name": "Green",
-            "red": 0,
-            "green": 255,
-            "blue": 0,
-            "alpha": 0,
-        }
-    ]
-
     colour_records = [Color.objects.create(**colour_parameters) for colour_parameters in colour_data]
 
     font_data = [
@@ -187,7 +152,7 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             'visual': visual_records[0],
             'activities': [
                 {
-                    'unique_id_from_plan': "A-002",
+                    'unique_id_from_plan': "A-001",
                     'enabled': True,
                     'swimlane': swimlane,
                     'plotable_shape': plotable_shapes[0],
@@ -199,8 +164,31 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
                     'text_flow': "LFLOW",
                     'plotable_style': plotable_style_records[0],
                 },
+                {
+                    'unique_id_from_plan': "A-002",
+                    'enabled': True,
+                    'swimlane': swimlane,
+                    'plotable_shape': plotable_shapes[0],
+                    'vertical_positioning_type': "TRACK",
+                    'vertical_positioning_value': 1,
+                    'height_in_tracks': 1,
+                    'text_horizontal_alignment': VisualActivity.HorizontalAlignment.LEFT,
+                    'text_vertical_alignment': VisualActivity.VerticalAlignment.MIDDLE,
+                    'text_flow': "LFLOW",
+                    'plotable_style': plotable_style_records[0],
+                }
             ]
         }
+    ]
+
+    timeline_objects = [
+        TimelineForVisual.objects.create(
+            plan_visual=visual_records[0],
+            timeline_type=timeline_record["timeline_type"],
+            timeline_name=timeline_record["timeline_name"],
+            plotable_style=plotable_style_records[0]
+        )
+        for timeline_record in timeline_for_visual_data
     ]
 
     visual_activity_records = []
@@ -211,5 +199,12 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             record['visual'] = visual
             activity = VisualActivity.objects.create(**record)
             visual_activity_records.append(activity)
+
+    return plan_records, visual_records, visual_activity_records
+
+
+def setup_common_data():
+    user, file_type, plotable_shapes = setup_common_reference_data()
+    plan_records, visual_records, visual_activity_records = setup_common_plan_data(user, file_type, plotable_shapes)
 
     return plan_records, visual_records, visual_activity_records

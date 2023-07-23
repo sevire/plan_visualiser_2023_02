@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 
 from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
     PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
-    PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType, PlanActivity
+    PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType, PlanActivity, \
+    TimelineForVisual
 
 
 @admin.register(FileType)
@@ -93,3 +94,9 @@ class VisualActivityAdmin(admin.ModelAdmin):
 class PlanActivityAdmin(admin.ModelAdmin):
     list_display = ('unique_sticky_activity_id', 'activity_name', 'start_date', 'end_date')
     list_filter = ('plan',)
+
+
+@admin.register(TimelineForVisual)
+class TimelineForVisualAdmin(admin.ModelAdmin):
+    list_filter = ('plan_visual',)
+

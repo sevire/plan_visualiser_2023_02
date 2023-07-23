@@ -1,11 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from functools import reduce
-from typing import Union, List
-
-from plan_visual_django.models import VisualActivity, PlotableStyle
-from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import PlotableFormat
+from plan_visual_django.models import VisualActivity, PlotableStyle, PlotableShapeType
 
 
 class Plotable(ABC):
@@ -14,7 +9,7 @@ class Plotable(ABC):
     the visual will be actually physically plotted.  Separate components will be added through composition or
     sub-classing in order to carry out or support the actual drawing of the object.
     """
-    def __init__(self, shape: ShapeType):
+    def __init__(self, shape: PlotableShapeType.PlotableShapeTypeName):
         """
         All objects will need at least a shape.
 
@@ -92,7 +87,7 @@ class RectangleBasedPlotable(Plotable):
 
     def __init__(
             self,
-            shape: ShapeType,
+            shape: PlotableShapeType.PlotableShapeTypeName,
             top: float,
             left: float,
             width: float,
@@ -140,14 +135,14 @@ class RectangleBasedPlotable(Plotable):
 
 class PlotableFactory:
     plotable_factory_dispatch_table = {
-        ShapeType.RECTANGLE: RectangleBasedPlotable,
-        ShapeType.ROUNDED_RECTANGLE: RectangleBasedPlotable,
-        ShapeType.DIAMOND: RectangleBasedPlotable,
-        ShapeType.ISOSCELES_TRIANGLE: RectangleBasedPlotable
+        PlotableShapeType.PlotableShapeTypeName.RECTANGLE: RectangleBasedPlotable,
+        PlotableShapeType.PlotableShapeTypeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
+        PlotableShapeType.PlotableShapeTypeName.DIAMOND: RectangleBasedPlotable,
+        PlotableShapeType.PlotableShapeTypeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
     }
 
     @classmethod
-    def get_plotable(cls, shape: ShapeType, **kwargs):
+    def get_plotable(cls, shape: PlotableShapeType.PlotableShapeTypeName, **kwargs):
         """
         Decides which subclass of plotable is required based on which shape is to be plotted.
 
@@ -255,7 +250,6 @@ class Visual:
         else:
             self.visual[collection_name].append(plotable)
 
-
     def iter_collections(self):
         """
         Generator to iterate through all the collections in the visual in order of what layer they are in.
@@ -300,7 +294,7 @@ class PlotContext:
     ...
 
 
-class VisualPlotter(ABC):
+class VisualRenderer(ABC):
     """
     An object which carries out the physical plotting of objects within the visual.
     """

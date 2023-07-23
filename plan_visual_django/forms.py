@@ -23,7 +23,7 @@ class VisualFormForEdit(ModelForm):
 class VisualActivityFormForEdit(ModelForm):
     def __init__(self, *args, **kwargs):
         unique_id = kwargs['instance'].unique_id_from_plan
-        visual = kwargs['instance'].visual
+        visual = kwargs['instance'].visual_collection
         activity_from_plan = visual.plan.planactivity_set.filter(unique_sticky_activity_id=unique_id)
         activity_name = activity_from_plan[0].activity_name
 

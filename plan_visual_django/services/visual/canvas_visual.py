@@ -2,11 +2,11 @@ from typing import Type
 
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.formatting import PlotableFormat
-from plan_visual_django.services.visual.visual import VisualPlotter, Visual, Plotable, PlotableCollection, \
+from plan_visual_django.services.visual.visual import VisualRenderer, Visual, Plotable, PlotableCollection, \
     RectangleBasedPlotable
 
 
-class CanvasPlotter(VisualPlotter):
+class CanvasRenderer(VisualRenderer):
     """
     Carries out the plotting activities for plotting on a Canvas on a web page.
 

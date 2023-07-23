@@ -189,10 +189,20 @@ class PlotableShapeType(models.Model):
     so there will be a family of shapes with that shape type.
 
     """
-    name = models.CharField(max_length=50)
+
+    class PlotableShapeTypeName(models.TextChoices):
+        RECTANGLE = "RECTANGLE", "Rectangle"
+        ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rectangle"
+        DIAMOND = "DIAMOND", "Diamond"
+        ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
+
+    name = models.CharField(max_length=20, choices=PlotableShapeTypeName.choices)
 
     def __str__(self):
         return f'{self.name}'
+
+    def get_plotable_shape_type(self):
+        return self.PlotableShapeTypeName(self.name)
 
 
 class PlotableShape(models.Model):
@@ -278,6 +288,25 @@ class PlanVisual(models.Model):
 
     def get_latest_date(self):
         pass
+
+
+class TimelineForVisual(models.Model):
+    class TimelineLabelType(models.TextChoices):
+        MONTHS = "MONTHS", 'One label for each month'
+        QUARTERS = "QUARTERS", 'One label for each sequence of three months, variable start'
+
+    class TimelineLabelBandingType(models.TextChoices):
+        NO_BANDING = "NO_BANDING", 'All labels the same style'
+        ALTERNATE_AUTO_SHADE = "ALTERNATE_AUTO", "Alternate banding, second style automatically generated from first"
+        ALTERNATE_SPECIFIED_COLOR = "ALTERNATE_SPECIFIC", "Alternate banding where both styles specified"
+
+    plan_visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
+    timeline_type = models.CharField(max_length=20, choices=TimelineLabelType.choices)
+    timeline_name = models.CharField(max_length=50)
+    plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
+
+    def get_timeline_label_type(self) -> TimelineLabelType:
+        return self.TimelineLabelType(self.timeline_type)
 
 
 class SwimlaneForVisual(models.Model):
