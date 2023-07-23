@@ -2,11 +2,12 @@ import datetime
 from dataclasses import dataclass
 from typing import Iterable, Tuple, Set
 
-from plan_visual_django.models import VisualActivity, Color, PlotableStyle, Font
-from plan_visual_django.services.drawing.plan_visual_plotter_types import ShapeType
-from plan_visual_django.services.visual.formatting import PlotableFormat, LineFormat, \
-    FillFormat, PlotableColor
-from plan_visual_django.services.visual.visual import Visual, VisualPlotter, PlotableFactory, \
+from plan_visual_django.models import VisualActivity, Color, PlotableStyle, Font, PlanVisual, TimelineForVisual, \
+    PlotableShapeType
+from plan_visual_django.services.general.date_utilities import first_day_of_month, last_day_of_month, \
+    num_months_between_dates, DateIncrementUnit, increment_period
+from plan_visual_django.services.visual.canvas_visual import CanvasRenderer
+from plan_visual_django.services.visual.visual import Visual, VisualRenderer, PlotableFactory, \
     PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
@@ -186,17 +187,19 @@ class ActivityManager:
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
                 external_text_flag = False
 
-            shape = ShapeType[activity['plotable_shape']]
+            shape = PlotableShapeType.PlotableShapeTypeName[activity['plotable_shape']]
             plotable_style = activity['plotable_style']
 
             text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
             text_flow = VisualActivity.TextFlow(activity['text_flow'])
             text = activity['activity_name']
 
+            # When we create the plotable, add in the x, y offset passed in.
+
             plotable = PlotableFactory.get_plotable(
                 shape,
-                top=top,
-                left=left,
+                top=top + self.y_start,
+                left=left + self.x_start,
                 width=width,
                 height=height,
                 format=plotable_style,
@@ -404,7 +407,13 @@ class SwimlaneManager:
     def get_plotable_height(self, swimlane_name: str, num_tracks: int):
         return self.swimlanes[swimlane_name]["track_manager"].get_height_of_tracks(num_tracks)
 
-    def create_collection(self):
+    def create_collection(
+            self,
+            x_plot_start: float,
+            x_plot_end: float,
+            y_plot_start: float,
+            y_plot_end: float
+    ):
         """
         Creates a collection of plotables from what we know about the height of each swimlane
         :return:
@@ -421,9 +430,9 @@ class SwimlaneManager:
             height = track_manager.get_height_of_tracks()
 
             swimlane_plotable = PlotableFactory.get_plotable(
-                ShapeType.RECTANGLE,
-                top=top,
-                left=left,
+                PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
+                top=top + y_plot_start,
+                left=left + x_plot_start,
                 width=width,
                 height=height,
                 format=plotable_format,
@@ -436,6 +445,79 @@ class SwimlaneManager:
             collection.add_plotable(swimlane_plotable)
 
         return collection
+
+
+def timeline_configure_months(start_date: datetime.date, end_date: datetime.date):
+    """
+    Calculates information to drive timeline generator
+
+    :param start_date:
+    :param end_date:
+    :return:
+    """
+    timeline_start_date = first_day_of_month(start_date)
+    timeline_end_date = last_day_of_month(end_date)
+    increment_units = DateIncrementUnit.MONTH
+    increment_count = 1
+    num_periods = num_months_between_dates(timeline_start_date, timeline_end_date)
+
+    return timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods
+
+
+timeline_configure_dispatch_table = {
+    TimelineForVisual.TimelineLabelType.MONTHS: timeline_configure_months
+}
+class TimelineLabelSet:
+    """
+    Object which represents the labels
+    """
+    def __init__(self, label_type: TimelineForVisual.TimelineLabelType):
+        self.label_type = label_type
+
+
+    def get_parameters_for_type(self, start_date:datetime.date, end_date:datetime.date, label_type: TimelineForVisual.TimelineLabelType):
+        """
+        Depending upon the type of labels required, the start date will vary as it will need to be aligned.  For
+        example if it's quarters then start date will be the first of this month or an earlier month to align with
+        the start of a quarter (where the first quarter of a year starts in Jan)
+
+        :param label_type:
+        :return:
+        """
+        timeline_dispatch_function = timeline_configure_dispatch_table[label_type]
+        timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods = timeline_dispatch_function(start_date, end_date)
+        return timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods
+
+
+    def create_timeline_labels(self, start_date: datetime.date, end_date: datetime.date):
+        timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods = self.get_parameters_for_type(self.label_type)
+        date_plotter = DatePlotter(timeline_start_date, timeline_end_date, )
+        for period in range(1, num_periods + 1):
+            period_start_date = increment_period(timeline_start_date, increment_count, increment_units)
+            period_end_date = increment_period(timeline_start_date, increment_count + 1, increment_units) - datetime.timedelta(days=1)
+
+            shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+            top = 0
+            left = DatePlotter
+
+
+            swimlane_plotable = PlotableFactory.get_plotable(
+                PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
+                top=top + y_plot_start,
+                left=left + x_plot_start,
+                width=width,
+                height=height,
+                format=plotable_format,
+                text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
+                text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
+                text=name,
+                external_text_flag=False
+            )
+
+class TimelineLabelManager:
+    """
+    Manages the creation of a Timeline of labels for months, quarters etc.
+    """
 
 
 class VisualManager:
@@ -454,11 +536,9 @@ class VisualManager:
     Specifically converts date information to associated x coordinates/width for plotting, and layout information to y
     coordinates/heights etc.
     """
-    def __init__(
-            self,
-            visual_activity_data,
-            visual_settings: VisualSettings
-    ):
+    def __init__(self,
+            db_visual_record: PlanVisual=None,  # Can add later if preferred
+        ):
         """
         The visual is generated from the information provided to the object.  The minimum required information to
         create a visual is the visual activity data which contains all the activities to plot, and the visual settings
@@ -469,10 +549,35 @@ class VisualManager:
         :param visual_settings: Key information required to plot the visual, such as the size of the visual, required
         to convert the dates into actual coordinates for plotting.
         """
+        self.plan_visual = db_visual_record
+
         self.visual = Visual()
-        self.visual_activity_data = visual_activity_data
-        self.visual_settings = visual_settings
         self.swimlane_manager = None  # Will be created when creating activity collection of plotables.
+        self.timeline_manager = None
+        self.visual_activity_data = None
+        self.visual_settings = None
+
+    def prepare_visual(self):
+        self.visual_activity_data = self.plan_visual.get_visual_activities()
+        self.swimlane_manager = SwimlaneManager()
+
+
+        # Only want swimlanes which have at least one activity in them.
+        all_swimlanes_for_visual = [swimlane for swimlane in self.plan_visual.swimlaneforvisual_set.all()]
+        swimlane_data = [swimlane for swimlane in all_swimlanes_for_visual if swimlane.visualactivity_set.filter(enabled=True).count() > 0]
+        swimlane_settings = SwimlaneSettings(swimlanes=swimlane_data)
+
+        self.visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
+
+        self.add_timelines_to_visual()
+        self.add_activities_to_visual(0, self.visual_settings.width, 100, self.visual_settings.height)
+        self.add_swimlanes_to_visual(0, self.visual_settings.width, 100, self.visual_settings.height)
+
+
+        visual_plotter = CanvasRenderer()
+        canvas_visual_data = self.plot_visual(visual_plotter)
+
+        return canvas_visual_data
 
     def add_activities_to_visual(
             self,
@@ -495,10 +600,26 @@ class VisualManager:
         collection, self.swimlane_manager = activity_manager.create_activity_collection()
         self.visual.add_collection(collection_name="activities", collection=collection)
 
-    def add_swimlanes_to_visual(self, width):
+    def add_swimlanes_to_visual(
+            self,
+            x_plot_start: float,
+            x_plot_end: float,
+            y_plot_start: float,
+            y_plot_end: float
+    ):
         # ToDo: Stop hard-coding the layer which swimlanes go into
+        self.x_plot_start = x_plot_start
+        self.x_plot_end = x_plot_end
+        self.y_plot_start = y_plot_start
+        self.y_plot_end = y_plot_end
+
         self.visual.set_layer(1)
-        swimlane_collection = self.swimlane_manager.create_collection()
+        swimlane_collection = self.swimlane_manager.create_collection(
+            self.x_plot_start,
+            self.x_plot_end,
+            self.y_plot_start,
+            self.y_plot_end,
+        )
         self.visual.add_collection(collection_name="swimlanes", collection=swimlane_collection)
 
     def extract_visual_properties(self):
@@ -508,7 +629,8 @@ class VisualManager:
         """
         pass
 
-    def plot_visual(self, plotter: VisualPlotter):
+    def plot_visual(self, plotter: VisualRenderer):
         ret = plotter.plot_visual(self.visual)
 
         return ret
+

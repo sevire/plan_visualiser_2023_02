@@ -43,9 +43,9 @@
             axios.defaults.xsrfCookieName = 'csrftoken'
             axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
-            url_string = "/api/v1/visual_activities/{{ visual_id }}/" + element.id + "/"
+            var url_string = "/api/v1/visual_activities/{{ visual_id }}/" + element.id + "/"
 
-            vid = {{ visual_id }}
+            var vid = {{ visual_id }}
             if (element.checked === true) {
                 console.log(element.id + " is checked")
                 console.log("URL: " + url_string)

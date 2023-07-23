@@ -93,7 +93,7 @@ function plot_text(data: PlotFunctionData) {
     const text_flow = data.shape_format.text_format.text_flow
     console.log(`Text flow is ${text_flow}`)
 
-    var text_v_position
+    let text_v_position;
 
     console.log(`v_align = ${v_align}`)
     switch(v_align) {
@@ -111,7 +111,7 @@ function plot_text(data: PlotFunctionData) {
     }
 
     const margin = 5  // Manually adjusted for now.
-    var x_val = data.shape_data.left  // Initial/default value
+    let x_val = data.shape_data.left;  // Initial/default value
     const external_flag = data.shape_format.text_format.external_text_flag
 
     console.log(`External flag for ${data.text} is ${external_flag}`)

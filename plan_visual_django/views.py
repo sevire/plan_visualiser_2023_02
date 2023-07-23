@@ -14,7 +14,7 @@ from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user
 from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
-from plan_visual_django.services.visual.canvas_visual import CanvasPlotter
+from plan_visual_django.services.visual.canvas_visual import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
 
@@ -329,22 +329,8 @@ class PlotVisualView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        visual_activity_data = visual.get_visual_activities()
+        plan_visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
+        visual_manager = VisualManager(plan_visual)
+        context['activity_data'] = visual_manager.prepare_visual()
 
-        # Only want swimlanes which have at least one activity in them.
-        all_swimlanes_for_visual = [swimlane for swimlane in visual.swimlaneforvisual_set.all()]
-        swimlane_data = [swimlane for swimlane in all_swimlanes_for_visual if swimlane.visualactivity_set.filter(enabled=True).count() > 0]
-        swimlane_settings = SwimlaneSettings(swimlanes=swimlane_data)
-
-        visual_settings = VisualSettings(swimlane_settings=swimlane_settings)  # ToDo: Replace default visual settings with correct values in view.
-
-        visual_manager = VisualManager(visual_activity_data, visual_settings)
-        visual_manager.add_activities_to_visual(0, visual_settings.width, 0, visual_settings.height)
-        visual_manager.add_swimlanes_to_visual(visual_settings.width)
-
-        visual_plotter = CanvasPlotter()
-        canvas_visual_data = visual_manager.plot_visual(visual_plotter)
-
-        context['activity_data'] = canvas_visual_data
         return context

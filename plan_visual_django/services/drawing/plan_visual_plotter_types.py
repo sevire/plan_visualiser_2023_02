@@ -3,13 +3,16 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
-class ShapeType(Enum):
-    RECTANGLE = 1
-    ROUNDED_RECTANGLE = 2
-    DIAMOND = 3
-    ISOSCELES_TRIANGLE = 4
+from plan_visual_django.models import PlotableShapeType
 
 
+# class ShapeType(Enum):
+#     RECTANGLE = 1
+#     ROUNDED_RECTANGLE = 2
+#     DIAMOND = 3
+#     ISOSCELES_TRIANGLE = 4
+#
+#
 class Unit(Enum):
     Cm = (1, "Centimeters", 1.0)
     In = (2, "Inches", 1/2.54)
@@ -64,7 +67,7 @@ class Renderer(ABC):
     def plot_shape(
             self,
             plot_object,  # Will vary by medium, eg. Canvas, PPT slide object etc.
-            shape_type: ShapeType,
+            shape_type: PlotableShapeType.PlotableShapeTypeName,
             top: DistanceMeasure,
             left: DistanceMeasure,
             width: DistanceMeasure,
