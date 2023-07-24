@@ -14,8 +14,9 @@ from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user
 from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
-from plan_visual_django.services.visual.canvas_visual import CanvasRenderer
+from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
+from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
 # Create your views here.
@@ -330,7 +331,12 @@ class PlotVisualView(DetailView):
         context = super().get_context_data(**kwargs)
 
         plan_visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        visual_manager = VisualManager(plan_visual)
-        context['activity_data'] = visual_manager.prepare_visual()
+        visual_settings = VisualSettings(width=600, height=300)
+        visual_orchestrator = VisualOrchestration(plan_visual, visual_settings)
+
+        canvas_renderer = CanvasRenderer()
+        canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
+
+        context['activity_data'] = canvas_data
 
         return context

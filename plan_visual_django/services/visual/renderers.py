@@ -1,9 +1,39 @@
-from typing import Type
-
+from abc import ABC, abstractmethod
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
-from plan_visual_django.services.visual.formatting import PlotableFormat
-from plan_visual_django.services.visual.visual import VisualRenderer, Visual, Plotable, PlotableCollection, \
-    RectangleBasedPlotable
+from plan_visual_django.services.visual.plotables import RectangleBasedPlotable, Plotable
+from plan_visual_django.services.visual.visual import PlotableCollection
+from plan_visual_django.services.visual.visual_elements import VisualElementCollection, VisualElement
+
+
+class VisualRenderer(ABC):
+    """
+    An object which carries out the physical plotting of objects within the visual.
+    """
+
+    def plot_visual(self, visual: VisualElementCollection):
+        for collection in visual.collection:
+            self.plot_collection(collection)
+
+    def plot_collection(self, collection: VisualElementCollection):
+        """
+        Recursive method which iterates through a collection and either plots the object if it is a Plotable, or
+        calls this method recursively if the item is another collection.
+
+        :param collection:
+        :return:
+        """
+        for item, level in collection.iter():
+            if type(item) == type(VisualElement) or issubclass(type(item), VisualElement):
+                plotable = item.plot_element()
+                self.plot_plotable(plotable)
+            elif type(item) == type(VisualElementCollection):
+                self.plot_collection(item)
+            else:
+                raise Exception(f"Unexpected type {type(item)} when plotting visual")
+
+    @abstractmethod
+    def plot_plotable(self, item: Plotable):
+        pass
 
 
 class CanvasRenderer(VisualRenderer):
@@ -76,7 +106,7 @@ class CanvasRenderer(VisualRenderer):
         }
         return shape_format_dict
 
-    def plot_visual(self, visual: Visual):
+    def plot_visual(self, visual_collection: VisualElementCollection):
         """
         For the canvas plotter, the plot data will be accumulated in an object which then needs to be returned so that
         it can be included within the template and sent to the browser.
@@ -84,10 +114,10 @@ class CanvasRenderer(VisualRenderer):
         :param visual:
         :return:
         """
-        left, top, width, height, right, bottom = visual.get_dimensions()
+        width, height = visual_collection.get_dimensions()
         self.browser_data['settings']['canvas_width'] = width + 20  # Just adding a bit of padding for debug
         self.browser_data['settings']['canvas_height'] = height + 20
-        super().plot_visual(visual)
+        super().plot_visual(visual_collection)
         return self.browser_data
 
     def plot_plotable(self, item: RectangleBasedPlotable):
@@ -115,5 +145,5 @@ class CanvasRenderer(VisualRenderer):
 
         self.browser_data['shapes'].append(activity_record)
 
-    def plot_collection(self, collection: PlotableCollection):
+    def plot_collection(self, collection: VisualElementCollection):
         super().plot_collection(collection)

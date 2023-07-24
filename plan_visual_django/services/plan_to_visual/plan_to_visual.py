@@ -5,97 +5,12 @@ from typing import Iterable, Tuple, Set
 from plan_visual_django.models import VisualActivity, Color, PlotableStyle, Font, PlanVisual, TimelineForVisual, \
     PlotableShapeType
 from plan_visual_django.services.general.date_utilities import first_day_of_month, last_day_of_month, \
-    num_months_between_dates, DateIncrementUnit, increment_period
-from plan_visual_django.services.visual.canvas_visual import CanvasRenderer
-from plan_visual_django.services.visual.visual import Visual, VisualRenderer, PlotableFactory, \
-    PlotableCollection
+    num_months_between_dates, DateIncrementUnit, increment_period, DatePlotter
+from plan_visual_django.services.visual.renderers import CanvasRenderer, VisualRenderer
+from plan_visual_django.services.visual.visual import Visual, PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
 
-class DatePlotter:
-    """
-    Utility class which helps with calculating the x-coordinate for a visual.
-    """
-    def __init__(self, earliest_date: datetime.date, latest_date: datetime.date, x_plot_start: float, x_plot_end: float):
-        """
-        Sets up by working out the number of days the activities cover based on the supplied list of start and end
-        dates.
-
-        Then for a given date it calculates the x value to use when plotting on the visual.
-
-        """
-        self.latest_date = latest_date
-        self.earliest_date = earliest_date
-        self.num_days_in_visual = self.num_days_between_dates(earliest_date, latest_date)
-        self.x_plot_start = x_plot_start
-        self.x_plot_end = x_plot_end
-
-    @property
-    def activity_plot_width(self):
-        return self.x_plot_end - self.x_plot_start
-
-    @staticmethod
-    def get_earliest_latest_dates(activities:[]):
-        """
-        Get earliest start date and latest end date from list of tuples of start and end date
-
-        :param activities:
-        :return:
-        """
-        earliest_date = min([start_date for start_date, _ in activities])
-        latest_date = max([end_date for _, end_date in activities])
-
-        return earliest_date, latest_date
-
-
-    @staticmethod
-    def num_days_between_dates(start_date, end_date):
-        num_days = end_date - start_date + datetime.timedelta(days=1)
-
-        return num_days
-
-    def x_coordinate_for_date(self, date: datetime.date, end_flag = False, mid_point=False) -> float:
-        """
-        Calculates the x coordinate for a given date within the visual.
-
-        Note that as a date isn't a point but an interval, and the x coordinate can be used to represent either
-        the start of the day (start_date) or the end of the day (end_date) the end_flag is used to indicate
-        which case is required.
-
-        :param date:
-        :param end_flag:
-        :return:
-        """
-
-        additional_amount = datetime.timedelta(days=0)
-        if end_flag:
-            additional_amount = datetime.timedelta(days=1)
-        elif mid_point:
-            additional_amount = datetime.timedelta(hours=12)
-
-        day_number_in_activities = date - self.earliest_date + additional_amount
-        proportion_of_width = day_number_in_activities / self.num_days_in_visual
-        x = self.x_plot_start + proportion_of_width * self.activity_plot_width
-
-        return x
-
-    def left(self, date: datetime.date):
-        return self.x_coordinate_for_date(date)
-
-    def width(self, start_date: datetime.date, end_date: datetime.date):
-        width = self.x_coordinate_for_date(end_date, end_flag=True) - self.left(start_date)
-
-        return width
-
-    def midpoint(self, date):
-        """
-        Used mostly for plotting milestones (probably) - calculates the mid-point of a given day.
-
-        :param date:
-        :return:
-        """
-        midpoint = self.x_coordinate_for_date(date, mid_point=True)
-        return midpoint
 
 
 class ActivityManager:
@@ -196,19 +111,19 @@ class ActivityManager:
 
             # When we create the plotable, add in the x, y offset passed in.
 
-            plotable = PlotableFactory.get_plotable(
-                shape,
-                top=top + self.y_start,
-                left=left + self.x_start,
-                width=width,
-                height=height,
-                format=plotable_style,
-                text_vertical_alignment=text_vertical_alignment,
-                text_flow=text_flow,
-                text=text,
-                external_text_flag=external_text_flag
-            )
-            self.activity_collection.add_plotable(plotable)
+            # plotable = PlotableFactory.get_plotable(
+            #     shape,
+            #     top=top + self.y_start,
+            #     left=left + self.x_start,
+            #     width=width,
+            #     height=height,
+            #     format=plotable_style,
+            #     text_vertical_alignment=text_vertical_alignment,
+            #     text_flow=text_flow,
+            #     text=text,
+            #     external_text_flag=external_text_flag
+            # )
+            # self.activity_collection.add_plotable(plotable)
 
         return self.activity_collection, self.swimlane_manager
 
@@ -429,20 +344,20 @@ class SwimlaneManager:
             width = self.visual_settings.width
             height = track_manager.get_height_of_tracks()
 
-            swimlane_plotable = PlotableFactory.get_plotable(
-                PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
-                top=top + y_plot_start,
-                left=left + x_plot_start,
-                width=width,
-                height=height,
-                format=plotable_format,
-                text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
-                text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
-                text=name,
-                external_text_flag=False
-            )
+            # swimlane_plotable = PlotableFactory.get_plotable(
+            #     PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
+            #     top=top + y_plot_start,
+            #     left=left + x_plot_start,
+            #     width=width,
+            #     height=height,
+            #     format=plotable_format,
+            #     text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
+            #     text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
+            #     text=name,
+            #     external_text_flag=False
+            # )
 
-            collection.add_plotable(swimlane_plotable)
+            # collection.add_plotable(swimlane_plotable)
 
         return collection
 
@@ -488,31 +403,6 @@ class TimelineLabelSet:
         timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods = timeline_dispatch_function(start_date, end_date)
         return timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods
 
-
-    def create_timeline_labels(self, start_date: datetime.date, end_date: datetime.date):
-        timeline_start_date, timeline_end_date, increment_units, increment_count, num_periods = self.get_parameters_for_type(self.label_type)
-        date_plotter = DatePlotter(timeline_start_date, timeline_end_date, )
-        for period in range(1, num_periods + 1):
-            period_start_date = increment_period(timeline_start_date, increment_count, increment_units)
-            period_end_date = increment_period(timeline_start_date, increment_count + 1, increment_units) - datetime.timedelta(days=1)
-
-            shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
-            top = 0
-            left = DatePlotter
-
-
-            swimlane_plotable = PlotableFactory.get_plotable(
-                PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
-                top=top + y_plot_start,
-                left=left + x_plot_start,
-                width=width,
-                height=height,
-                format=plotable_format,
-                text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
-                text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
-                text=name,
-                external_text_flag=False
-            )
 
 class TimelineLabelManager:
     """

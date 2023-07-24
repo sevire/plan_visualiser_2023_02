@@ -90,3 +90,89 @@ def increment_period(date, num_units, unit_type: DateIncrementUnit):
     ret = increment_method(date, num_units)
 
     return ret
+
+class DatePlotter:
+    """
+    Utility class which helps with calculating the x-coordinate for a visual.
+    """
+    def __init__(self, earliest_date: datetime.date, latest_date: datetime.date, x_plot_start: float, x_plot_end: float):
+        """
+        Sets up by working out the number of days the activities cover based on the supplied list of start and end
+        dates.
+
+        Then for a given date it calculates the x value to use when plotting on the visual.
+
+        """
+        self.latest_date = latest_date
+        self.earliest_date = earliest_date
+        self.num_days_in_visual = self.num_days_between_dates(earliest_date, latest_date)
+        self.x_plot_start = x_plot_start
+        self.x_plot_end = x_plot_end
+
+    @property
+    def activity_plot_width(self):
+        return self.x_plot_end - self.x_plot_start
+
+    @staticmethod
+    def get_earliest_latest_dates(activities:[]):
+        """
+        Get earliest start date and latest end date from list of tuples of start and end date
+
+        :param activities:
+        :return:
+        """
+        earliest_date = min([start_date for start_date, _ in activities])
+        latest_date = max([end_date for _, end_date in activities])
+
+        return earliest_date, latest_date
+
+
+    @staticmethod
+    def num_days_between_dates(start_date, end_date):
+        num_days = end_date - start_date + timedelta(days=1)
+
+        return num_days
+
+    def x_coordinate_for_date(self, date: datetime.date, end_flag = False, mid_point=False) -> float:
+        """
+        Calculates the x coordinate for a given date within the visual.
+
+        Note that as a date isn't a point but an interval, and the x coordinate can be used to represent either
+        the start of the day (start_date) or the end of the day (end_date) the end_flag is used to indicate
+        which case is required.
+
+        :param date:
+        :param end_flag:
+        :return:
+        """
+
+        additional_amount = timedelta(days=0)
+        if end_flag:
+            additional_amount = timedelta(days=1)
+        elif mid_point:
+            additional_amount = timedelta(hours=12)
+
+        day_number_in_activities = date - self.earliest_date + additional_amount
+        proportion_of_width = day_number_in_activities / self.num_days_in_visual
+        x = self.x_plot_start + proportion_of_width * self.activity_plot_width
+
+        return x
+
+    def left(self, date: datetime.date):
+        return self.x_coordinate_for_date(date)
+
+    def width(self, start_date: datetime.date, end_date: datetime.date):
+        width = self.x_coordinate_for_date(end_date, end_flag=True) - self.left(start_date)
+
+        return width
+
+    def midpoint(self, date):
+        """
+        Used mostly for plotting milestones (probably) - calculates the mid-point of a given day.
+
+        :param date:
+        :return:
+        """
+        midpoint = self.x_coordinate_for_date(date, mid_point=True)
+        return midpoint
+
