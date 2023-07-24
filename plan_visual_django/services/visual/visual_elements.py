@@ -7,9 +7,8 @@ from abc import ABC, abstractmethod
 from django.db.models import QuerySet
 from plan_visual_django.models import PlotableShapeType, TimelineForVisual, VisualActivity, SwimlaneForVisual
 from plan_visual_django.services.general.date_utilities import month_increment, first_day_of_month, last_day_of_month, \
-    num_months_between_dates
-from plan_visual_django.services.plan_to_visual.plan_to_visual import DatePlotter
-from plan_visual_django.services.visual.visual import PlotableFactory, VisualRenderer, Plotable
+    num_months_between_dates, DatePlotter
+from plan_visual_django.services.visual.plotables import Plotable, PlotableFactory
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 
 
@@ -35,7 +34,11 @@ class VisualElement:
         self.left = None
         self.width = None
         self.height = None
-        self.plotable_style  = None
+        self.plotable_style = None
+        self.text_vertical_alignment = None
+        self.text_flow = None
+        self.text = None
+        self.external_text_flag = None
 
     def plot_element(self):
         plotable:Plotable = PlotableFactory.get_plotable(
@@ -44,11 +47,15 @@ class VisualElement:
             left=self.left,
             width=self.width,
             height=self.height,
-            format=self.plotable_style
+            format=self.plotable_style,
+            text_vertical_alignment=self.text_vertical_alignment,
+            text_flow=self.text_flow,
+            text=self.text,
+            external_text_flag=self.external_text_flag
         )
         return plotable
 
-    def render_element(self, renderer: VisualRenderer):
+    def render_element(self, renderer: "VisualRenderer"):
         plotable = self.plot_element()
         renderer.plot_plotable(plotable)
 
@@ -69,6 +76,9 @@ class VisualElement:
         """
         pass
 
+    def __str__(self):
+        return f"{self.shape}, {self.text}, (top: {self.top:.2f}, left: {self.left:.2f}, width: {self.width:.2f}, height: {self.height:.2f})"
+
 
 class VisualElementCollection(ABC):
     """
@@ -77,10 +87,19 @@ class VisualElementCollection(ABC):
     Examples are Activities, Swimlanes, Timeline Labels and Timeline, which is a collection of Timeline Labels
     """
     def __init__(self):
-        self.collection:[VisualElement|"VisualElementCollection"] = []
+        self._collection:[VisualElement|"VisualElementCollection"] = []
+
+    @property
+    def collection(self):
+        """
+        If a given collection sub-class uses a different structure (e.g. Activities which need a unique id) then this
+        will convert to a list like object for use in methods which require that.
+        :return:
+        """
+        return self._collection
 
     def add_visual_element(self, visual_element:VisualElement, **kwargs):
-        self.collection.append(visual_element)
+        self._collection.append(visual_element)
 
     def initialise_collection(self):
         """
@@ -91,7 +110,7 @@ class VisualElementCollection(ABC):
         """
         pass
 
-    def create_collection(self, visual_settings:VisualSettings, collection_settings: any):
+    def create_collection(self, visual_settings:VisualSettings, collection_settings: any, top_offset=0, left_offset=0):
         """
         Subclass specific method which creates a plotable for each element of this collection and adds it to the
         collection.
@@ -101,7 +120,65 @@ class VisualElementCollection(ABC):
         pass
 
     def add_collection(self, visual_element_collection:"VisualElementCollection"):
-        self.collection.append(visual_element_collection)
+        self._collection.append(visual_element_collection)
+
+    def iter(self, level:int=0, include_collections: bool=False):
+        """
+        Recursively traverses this collection and any sub-collections, essentially flattening the structure into a
+        list of VisualElements, in the right order to plot.
+
+        Optionally includes the collections in the yielded output, mostly to support debug printing of a collection.
+        :return:
+        """
+        for element in self.collection:
+            if isinstance(element, VisualElementCollection) or issubclass(type(element), VisualElementCollection):
+                # This element is another collection so - return if flag set
+                if include_collections is True:
+                    yield element, level
+
+                # Now recursively call
+                yield from element.iter(level+1, include_collections=include_collections)
+            else:
+                yield element, level
+
+    def get_dimensions(self):
+        """
+        Returns dimensions of this collection by looking at the dimensions and position of individual elements.
+
+        :return:
+        """
+        min_left = 0
+        max_right = -1
+        min_top = 0
+        max_bottom = -1
+
+        for element, level in self.iter():
+            min_left = min(min_left, element.left)
+
+            element_right = element.left + element.width
+            max_right = element_right if max_right == -1 else max(max_right, element_right)
+
+            min_top = min(min_top, element.top)
+            element_bottom = element.top + element.height
+            max_bottom = element_bottom if max_bottom == -1 else max(max_bottom, element_bottom)
+
+        width = max_right - min_left
+        height = max_bottom - min_top
+
+        return width, height
+
+    def print_collection(self):
+        """
+        Lists all the elements of all the collections in a useful way to help in debugging etc.
+        :return:
+        """
+        print(f"Printing collection...")
+        for element, level in self.iter(include_collections=True):
+            indent_string = "   " * level
+            if isinstance(element, VisualElementCollection) or issubclass(type(element), VisualElementCollection):
+                print(indent_string + f"Collection of Type {type(element).__name__}...")
+            else:
+                print(indent_string + str(element))
 
 
 class Timeline(VisualElementCollection):
@@ -158,14 +235,14 @@ class MonthTimeline(Timeline):
     def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline_record: TimelineForVisual):
         super().__init__(start_date, end_date, timeline_record)
 
-    def create_collection(self, visual_settings:VisualSettings, timeline_settings):
+    def create_collection(self, visual_settings:VisualSettings, timeline_settings, top_offset=0, left_offset=0):
         """
         By the time this method is called, the calculate_date_range method will have been called to allow the
         orchestration logic to work out the range for the whole visual.
 
         :return:
         """
-        x_plot_start = 0
+        x_plot_start = left_offset
         x_plot_end = visual_settings.width
         date_plotter = DatePlotter(self.visual_start_date, self.visual_end_date, x_plot_start, x_plot_end)
 
@@ -188,20 +265,20 @@ class MonthTimeline(Timeline):
 
             element = VisualElement()
 
-            element.shape=PlotableShapeType.PlotableShapeTypeName.RECTANGLE,
-            element.top=0,
-            element.left=left,
-            element.width=width,
-            element.height=height,
-            element.format=self.timeline_record.plotable_style,
-            element.text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE,
-            element.text_flow=VisualActivity.TextFlow.FLOW_CENTRE,
-            element.text=text,
+            element.shape=PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+            element.top=top_offset
+            element.left=left + left_offset
+            element.width=width
+            element.height=height
+            element.plotable_style=self.timeline_record.plotable_style
+            element.text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE
+            element.text_flow=VisualActivity.TextFlow.FLOW_CENTRE
+            element.text=text
             element.external_text_flag=False
 
             self.add_visual_element(element)
 
-        return self.collection
+        return self
 
     def calculate_date_range(self):
         """
@@ -222,7 +299,7 @@ class MonthTimeline(Timeline):
 
 
 class QuarterTimeline(Timeline):
-    def create_collection(self, visual_settings:VisualSettings, timeline_settings):
+    def create_collection(self, visual_settings:VisualSettings, timeline_settings, top_offset=0, left_offset=0):
         pass
 
     def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline:TimelineForVisual, month_offset=1):
@@ -303,9 +380,12 @@ class TimelineCollection(VisualElementCollection):
             timeline_object.visual_start_date = self.visual_start_date_final
             timeline_object.visual_end_date = self.visual_end_date_final
 
-    def create_collection(self, visual_settings: VisualSettings, timeline_settings: any):
+    def create_collection(self, visual_settings: VisualSettings, timeline_settings: any, top_offset=0, left_offset=0):
         for timeline_name, timeline_object in self.timeline_objects.items():
-            timeline_object.create_collection(visual_settings, timeline_settings)
+            timeline_collection = timeline_object.create_collection(visual_settings, timeline_settings, top_offset, left_offset)
+            width, height = timeline_collection.get_dimensions()
+            top_offset += height
+            left_offset += width
             self.add_collection(timeline_object)
         return self
 
@@ -333,13 +413,16 @@ class ActivityCollection(VisualElementCollection):
         self.visual_activity_records = visual_activity_records
         self.visual_settings = visual_settings
 
-        self.collection:[VisualElement|"VisualElementCollection"] = []
         self.date_plotter = DatePlotter(self.visual_start_date, self.visual_end_date, self.x_start, self.x_end)
 
         # We need to maintain the order of activities that are passed in but also need to access them by unique id
         # to allow the vertical positioning to be set from the swimlane manager.
         # NOTE: This relies on the dict being ordered, which is true for modern versions of Python.
-        self.collection: {str: (Plotable|None)} = {}
+        self._collection: {str: (Plotable|None)} = {}
+
+    @property
+    def collection(self):
+        return list(self._collection.values())
 
     def add_visual_element(self, visual_element, unique_id=None):
         """
@@ -349,7 +432,7 @@ class ActivityCollection(VisualElementCollection):
         :param visual_element:
         :return:
         """
-        self.collection[unique_id] = visual_element
+        self._collection[unique_id] = visual_element
 
     def set_activity_vertical_plot_attributes(self, unique_id: str, top: float, height: float):
         """
@@ -358,7 +441,7 @@ class ActivityCollection(VisualElementCollection):
 
         :return:
         """
-        visual_element_for_this_activity = self.collection[unique_id]
+        visual_element_for_this_activity = self._collection[unique_id]
         if visual_element_for_this_activity is None:
             raise ValueError(f"Plotable for {unique_id} not initialised - can't set top")
         visual_element_for_this_activity.top = top
@@ -367,7 +450,7 @@ class ActivityCollection(VisualElementCollection):
     def initialise_collection(self):
         pass
 
-    def create_collection(self, visual_settings: VisualSettings, collection_settings: any):
+    def create_collection(self, visual_settings: VisualSettings, collection_settings: any, top_offset=0, left_offset=0):
         for activity in self.visual_activity_records:
             # Note and height will be calculated by SwimlaneCollection.
             if activity['duration'] == 0:
@@ -394,20 +477,20 @@ class ActivityCollection(VisualElementCollection):
 
             element = VisualElement()
 
-            element.shape=shape,
-            element.top=None,
-            element.left=left,
-            element.width=width,
-            element.height=None,
-            element.format=plotable_style,
-            element.text_vertical_alignment=text_vertical_alignment,
-            element.text_flow=text_flow,
-            element.text=text,
+            element.shape=shape
+            element.top=None
+            element.left=left
+            element.width=width
+            element.height=None
+            element.plotable_style=plotable_style
+            element.text_vertical_alignment=text_vertical_alignment
+            element.text_flow=text_flow
+            element.text=text
             element.external_text_flag=external_text_flag
 
             self.add_visual_element(element, unique_id=activity["unique_id_from_plan"])
 
-        return self.collection
+        return self
 
 
 class SwimlaneCollection(VisualElementCollection):
@@ -452,7 +535,7 @@ class SwimlaneCollection(VisualElementCollection):
         self.visual_end_date = visual_end_date
         self.visual_start_date = visual_start_date
 
-    def create_collection(self, visual_settings: VisualSettings, collection_settings: any):
+    def create_collection(self, visual_settings: VisualSettings, collection_settings: any, top_offset=0, left_offset=0):
         """
         The swimlane_records passed in are from the database and include all swimlanes which were created for this
         visual.  So there shouldn't be any activities which include swimlanes which aren't in this list.  Additionally,
@@ -471,55 +554,60 @@ class SwimlaneCollection(VisualElementCollection):
         :param collection_settings:
         :return:
         """
-        swimlane_top = 0  # All vertical positions set relatively, and can be adjusted later when actually plotting.
+        swimlane_top = 0
         for index, swimlane in enumerate(self.swimlane_records):
             swimlane_name = swimlane.swim_lane_name
             activities_for_swimlane = [activity for activity in self.activity_collection.visual_activity_records if activity["swimlane"] == swimlane_name]
-            max_track_for_swimlane = 0
+            if len(activities_for_swimlane) > 0:
+                max_track_for_swimlane = 0
 
-            # If this isn't the first swimlane, add margin.
-            if index > 0:
-                swimlane_top += self.visual_settings.swimlane_gap
+                # If this isn't the first swimlane, add margin.
+                if index > 0:
+                    swimlane_top += self.visual_settings.swimlane_gap
 
-            for activity in activities_for_swimlane:
-                # We need to go through the activities for a swimlane sequentially because there will be layout options
-                # Where the vertical position of the current activity is directly related to that of the previous one.
-                v_positioning_type: VisualActivity.VerticalPositioningType = activity['vertical_positioning_type']
-                if v_positioning_type == VisualActivity.VerticalPositioningType.TRACK_NUMBER:
-                    track_number_start = activity['vertical_positioning_value']
-                    num_tracks = activity['height_in_tracks']
-                    track_number_end = track_number_start + num_tracks - 1
-                else:
-                    raise ValueError(f"Positioning type {v_positioning_type} not yet implemented")
-                max_track_for_swimlane:float = max(max_track_for_swimlane, track_number_end)
-                top = swimlane_top + self.calculate_height_of_tracks(max_track_for_swimlane)
-                height = self.calculate_height_of_tracks(num_tracks)
-                self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], top, height)
+                for activity in activities_for_swimlane:
+                    # We need to go through the activities for a swimlane sequentially because there will be layout options
+                    # Where the vertical position of the current activity is directly related to that of the previous one.
+                    v_positioning_type: VisualActivity.VerticalPositioningType = activity['vertical_positioning_type']
+                    if v_positioning_type == VisualActivity.VerticalPositioningType.TRACK_NUMBER:
+                        track_number_start = activity['vertical_positioning_value']
+                        num_tracks = activity['height_in_tracks']
+                        track_number_end = track_number_start + num_tracks - 1
+                    else:
+                        raise ValueError(f"Positioning type {v_positioning_type} not yet implemented")
+                    max_track_for_swimlane = max(max_track_for_swimlane, track_number_end)
+                    top = swimlane_top + self.calculate_height_of_tracks(max_track_for_swimlane-1)
+                    height = self.calculate_height_of_tracks(num_tracks)
+                    self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], top, height)
 
-            shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
-            plotable_style = swimlane.plotable_style
+                shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+                plotable_style = swimlane.plotable_style
 
-            text_vertical_alignment = VisualActivity.VerticalAlignment.TOP
-            text_flow = VisualActivity.TextFlow.FLOW_TO_RIGHT
-            text = swimlane_name
-            width = self.visual_settings.width
+                text_vertical_alignment = VisualActivity.VerticalAlignment.TOP
+                text_flow = VisualActivity.TextFlow.FLOW_TO_RIGHT
+                text = swimlane_name
+                width = self.visual_settings.width
+                swimlane_height = self.calculate_height_of_tracks(max_track_for_swimlane)
 
-            element = VisualElement()
+                element = VisualElement()
 
-            element.shape = shape,
-            element.top = None,
-            element.left = 0,
-            element.width = width,
-            element.height = None,
-            element.format = plotable_style,
-            element.text_vertical_alignment = text_vertical_alignment,
-            element.text_flow = text_flow,
-            element.text = text,
-            element.external_text_flag = False
+                element.shape = shape
+                element.top = swimlane_top + top_offset
+                element.left = left_offset
+                element.width = width
+                element.height = swimlane_height
+                element.plotable_style = plotable_style
+                element.text_vertical_alignment = text_vertical_alignment
+                element.text_flow = text_flow
+                element.text = text
+                element.external_text_flag = False
 
-            self.add_visual_element(element)
+                self.add_visual_element(element)
 
-        return self.collection
+                swimlane_top += swimlane_height
+
+
+        return self
 
     def calculate_height_of_tracks(self, max_track_num):
         """

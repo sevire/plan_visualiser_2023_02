@@ -1,4 +1,5 @@
 from plan_visual_django.models import PlanVisual
+from plan_visual_django.services.visual.renderers import VisualRenderer
 from plan_visual_django.services.visual.visual_elements import Timeline, TimelineCollection, VisualElementCollection, \
     SwimlaneCollection, ActivityCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings
@@ -51,6 +52,8 @@ class VisualOrchestration:
         )
         timelines.initialise_collection()
         timelines_collection = timelines.create_collection(visual_settings=self.visual_settings, timeline_settings=timeline_settings)
+        _, height = timelines_collection.get_dimensions()
+        top_offset = height
 
         self.visual_collection.add_collection(timelines_collection)
 
@@ -70,7 +73,11 @@ class VisualOrchestration:
             self.visual_settings.height
         )
         activity_collection.initialise_collection()
-        created_activity_collection = activity_collection.create_collection(visual_settings=self.visual_settings, collection_settings=None)
+        created_activity_collection = activity_collection.create_collection(
+            visual_settings=self.visual_settings,
+            collection_settings=None,
+            top_offset=top_offset
+        )
 
         swimlanes = SwimlaneCollection(
             timelines.visual_start_date,
@@ -82,10 +89,9 @@ class VisualOrchestration:
         )
 
         swimlanes.initialise_collection()
-        swimlanes_collection = swimlanes.create_collection(visual_settings=self.visual_settings, collection_settings=None)
+        swimlanes_collection = swimlanes.create_collection(visual_settings=self.visual_settings, collection_settings=None, top_offset=top_offset)
 
         self.visual_collection.add_collection(swimlanes_collection)
-
         self.visual_collection.add_collection(created_activity_collection)
 
-        pass
+        self.visual_collection.print_collection()
