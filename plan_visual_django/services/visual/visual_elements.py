@@ -300,7 +300,43 @@ class MonthTimeline(Timeline):
 
 class QuarterTimeline(Timeline):
     def create_collection(self, visual_settings:VisualSettings, timeline_settings, top_offset=0, left_offset=0):
-        pass
+        x_plot_start = left_offset
+        x_plot_end = visual_settings.width
+        date_plotter = DatePlotter(self.visual_start_date, self.visual_end_date, x_plot_start, x_plot_end)
+
+        num_periods = num_months_between_dates(self.visual_start_date, self.visual_end_date) // 3
+        for period_num in range(0, num_periods):
+            period_start_date = month_increment(self.visual_start_date, period_num * 3)
+            period_end_date = last_day_of_month(month_increment(period_start_date, 3-1))
+
+            # ToDo: Implement settings to specify format of month text
+            text = f'{period_start_date.strftime("%b")} - {period_end_date.strftime("%b")}'
+
+            left = date_plotter.left(period_start_date)
+            width = date_plotter.width(period_start_date, period_end_date)
+
+            # ToDo: Implement settings to specify height of timeline elements
+            height = timeline_settings["timeline_height"]
+
+            # ToDo: Refactor vertical alignment and text flow so it isn't defined inside VisualActivity
+            # ToDo: Replace hard-coded vertical alignment and text flow with config from database
+
+            element = VisualElement()
+
+            element.shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+            element.top = top_offset
+            element.left = left + left_offset
+            element.width = width
+            element.height = height
+            element.plotable_style = self.timeline_record.plotable_style
+            element.text_vertical_alignment = VisualActivity.VerticalAlignment.MIDDLE
+            element.text_flow = VisualActivity.TextFlow.FLOW_CENTRE
+            element.text = text
+            element.external_text_flag = False
+
+            self.add_visual_element(element)
+
+        return self
 
     def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline:TimelineForVisual, month_offset=1):
         super().__init__(start_date, end_date, timeline)
@@ -385,7 +421,7 @@ class TimelineCollection(VisualElementCollection):
             timeline_collection = timeline_object.create_collection(visual_settings, timeline_settings, top_offset, left_offset)
             width, height = timeline_collection.get_dimensions()
             top_offset += height
-            left_offset += width
+            left_offset = 0
             self.add_collection(timeline_object)
         return self
 
@@ -554,7 +590,7 @@ class SwimlaneCollection(VisualElementCollection):
         :param collection_settings:
         :return:
         """
-        swimlane_top = 0
+        swimlane_top = top_offset
         for index, swimlane in enumerate(self.swimlane_records):
             swimlane_name = swimlane.swim_lane_name
             activities_for_swimlane = [activity for activity in self.activity_collection.visual_activity_records if activity["swimlane"] == swimlane_name]
