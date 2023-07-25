@@ -83,7 +83,7 @@ class VisualOrchestration:
             timelines.visual_start_date,
             timelines.visual_end_date,
             swimlane_records,
-            activity_collection,
+            created_activity_collection,
             self.visual_settings,
             swimlane_settings
         )
