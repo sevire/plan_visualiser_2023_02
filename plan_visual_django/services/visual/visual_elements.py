@@ -591,6 +591,7 @@ class SwimlaneCollection(VisualElementCollection):
         :return:
         """
         swimlane_top = top_offset
+        first = True
         for index, swimlane in enumerate(self.swimlane_records):
             swimlane_name = swimlane.swim_lane_name
             activities_for_swimlane = [activity for activity in self.activity_collection.visual_activity_records if activity["swimlane"] == swimlane_name]
@@ -598,7 +599,9 @@ class SwimlaneCollection(VisualElementCollection):
                 max_track_for_swimlane = 0
 
                 # If this isn't the first swimlane, add margin.
-                if index > 0:
+                if first is True:
+                    first = False
+                else:
                     swimlane_top += self.visual_settings.swimlane_gap
 
                 for activity in activities_for_swimlane:
@@ -612,9 +615,9 @@ class SwimlaneCollection(VisualElementCollection):
                     else:
                         raise ValueError(f"Positioning type {v_positioning_type} not yet implemented")
                     max_track_for_swimlane = max(max_track_for_swimlane, track_number_end)
-                    top = swimlane_top + self.calculate_height_of_tracks(max_track_for_swimlane-1)
+                    activity_top = swimlane_top + self.calculate_height_of_tracks(track_number_start-1)
                     height = self.calculate_height_of_tracks(num_tracks)
-                    self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], top, height)
+                    self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], activity_top, height)
 
                 shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
                 plotable_style = swimlane.plotable_style
@@ -628,7 +631,7 @@ class SwimlaneCollection(VisualElementCollection):
                 element = VisualElement()
 
                 element.shape = shape
-                element.top = swimlane_top + top_offset
+                element.top = swimlane_top
                 element.left = left_offset
                 element.width = width
                 element.height = swimlane_height
@@ -650,7 +653,10 @@ class SwimlaneCollection(VisualElementCollection):
         Calculates the height of a sequence of tracks within a swimlane - doesn't include any margins.
         :return:
         """
-        track_height = self.visual_settings.track_height
-        height = max_track_num * track_height + (max_track_num - 1) * self.visual_settings.track_gap
+        if max_track_num == 0:
+            return 0
+        else:
+            track_height = self.visual_settings.track_height
+            height = max_track_num * track_height + (max_track_num - 1) * self.visual_settings.track_gap
 
-        return height
+            return height
