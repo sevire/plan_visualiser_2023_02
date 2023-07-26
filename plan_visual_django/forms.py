@@ -29,7 +29,7 @@ class VisualActivityFormForEdit(ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        self.fields['activity'] = CharField(max_length=50)
+        self.fields['activity'] = CharField(max_length=200)
         self.fields['unique_id_from_plan'] = CharField(max_length=50)
         self.fields['swimlane'].queryset = SwimlaneForVisual.objects.filter(plan_visual=visual)
         self.initial['activity'] = activity_name

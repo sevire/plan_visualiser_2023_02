@@ -2,6 +2,7 @@
 Module which reads in plan data from the file in any supported format, and
 then parses the data to extract information for each activity.
 """
+import re
 from abc import ABC, abstractmethod
 from datetime import datetime, date
 from pathlib import Path
@@ -13,6 +14,22 @@ import openpyxl as openpyxl
 # required to be supported.
 
 # Define conversion functions for each input/output type which needs to be supported
+
+
+def regex_extract(input_string: str, regex_string: str, type: type):
+    matches = re.match(regex_string, input_string)
+    if len(matches.groups()) > 0:
+        parsed_string = matches.group(1)
+    else:
+        raise ValueError(f"Invalid string {input_string}")
+    if type == str:
+        return parsed_string
+    elif type == int:
+        return int(parsed_string)
+    elif type == float:
+        return float(parsed_string)
+    else:
+        raise ValueError(f"Unsupported conversion type for regex {input_string}")
 
 
 def convert_pass_through(x):
@@ -51,12 +68,52 @@ def convert_string_nnd_int(string) -> int:
         raise ValueError(f"Conversion expected string of form nnd but got type {type(string)}")
 
 
+def convert_string_msp_duration_int(string) -> int:
+    """
+    Parse a string of the form 'nn day', 'nn days', 'nn hour', 'nn hours' or 'nn week', 'nn weeks' with an optional ? at the end to an
+    integer number of days.
+
+    :param string:
+    :return:
+    """
+    if string is None:
+        # Special case for now - return 0 if the string is None
+        print("Warning: convert_string_msp_duration_int called with None value")
+        return 0
+    if isinstance(string, str):
+        matches = re.match(r"(\d+) (\w+)", string.strip())
+        if matches is not None:
+            duration = int(matches.group(1))
+            if matches.group(2) == 'day' or matches.group(2) == 'days':
+                return duration
+            elif matches.group(2) == 'hour' or matches.group(2) == 'hours' or matches.group(2) == 'hr' or matches.group(2) == 'hrs':
+                return duration // 24 + 1
+            elif matches.group(2) == 'week' or matches.group(2) == 'weeks':
+                return duration * 7
+            else:
+                raise ValueError(f"Unsupported duration unit {matches.group(2)}")
+        else:
+            raise ValueError(f"Invalid string {string}")
+    else:
+        raise ValueError(f"Conversion expected string of form nnd but got type {type(string)}")
+
+
 def convert_string_float(string) -> float:
     return float(string.strip())
 
 
-def convert_string_date_dmy(date_str) -> date:
+def convert_string_date_dmy_01(date_str) -> date:
     return datetime.strptime(date_str, '%d:%m:%Y').date()
+
+
+def convert_string_date_dmy_02(date_str) -> date:
+    """
+    Format: '10 June 2022 08:00'
+    :param date_str:
+    :return:
+    """
+
+    return datetime.strptime(date_str, '%d %B %Y %H:%M').date()
 
 
 def convert_int_string(int_val) -> str:
@@ -80,13 +137,21 @@ convert_dispatch_table = {
     'STR': {
         'STR': convert_pass_through,
         'INT': convert_string_int,
-        'DATE': convert_string_date_dmy,
+    },
+    "STR_DATE_DMY_01": {
+        'DATE': convert_string_date_dmy_01
+    },
+    "STR_DATE_DMY_02": {
+        'DATE': convert_string_date_dmy_02
     },
     'STR_OR_INT': {
         'STR': convert_str_or_int_to_str,
     },
     'STR_nnd': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
         'INT': convert_string_nnd_int,
+    },
+    'STR_duration_msp': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
+        'INT': convert_string_msp_duration_int,
     },
     'INT': {
         'STR': convert_int_string,
@@ -139,28 +204,36 @@ class PlanParser():
 
         for plan_record in data:
             parsed_data_record = {}
+            ignore_record = False
             # Iterate through the fields for a plan map field name and input type from the plan file that has been read.
             for plan_field in plan_fields:
-                field_present = True  # Adjust if there is no column for the field, and it is optional
-                mapped_field_column = None
-                # Should get exactly one match unless the field is optional and not included in the mapping
-                try:
-                    mapped_field_column = self.column_mapping.planmappedfield_set.get(
-                        mapped_field__field_name=plan_field.field_name)
-                except PlanMappedField.DoesNotExist as e:
-                    # No mapping record for this plan field.  Ok if it's optional, otherwise an error
-                    if plan_field.required_flag:
-                        raise Exception(f"Missing compulsory mapping for field {plan_field.field_name}")
-                    else:
-                        field_present = False
-                finally:
-                    if field_present:
-                        mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
-                        field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
-                        parsed_data_record[plan_field.field_name] = field_parsed_value
-                    else:
-                        parsed_data_record[plan_field] = "(n/a)"
-            parsed_data.append(parsed_data_record)
+                if not ignore_record:
+                    field_present = True  # Adjust if there is no column for the field, and it is optional
+                    mapped_field_column = None
+                    # Should get exactly one match unless the field is optional and not included in the mapping
+                    try:
+                        mapped_field_column = self.column_mapping.planmappedfield_set.get(
+                            mapped_field__field_name=plan_field.field_name)
+                    except PlanMappedField.DoesNotExist as e:
+                        # No mapping record for this plan field.  Ok if it's optional, otherwise an error
+                        if plan_field.required_flag:
+                            raise Exception(f"Missing compulsory mapping for field {plan_field.field_name}")
+                        else:
+                            field_present = False
+                    finally:
+                        if field_present:
+                            mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
+                            try:
+                                field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
+                            except (ValueError, TypeError) as e:
+                                print(f"Error parsing record {plan_record}, ignoring record)")
+                                ignore_record = True
+                            else:
+                                parsed_data_record[plan_field.field_name] = field_parsed_value
+                        else:
+                            parsed_data_record[plan_field] = "(n/a)"
+            if not ignore_record:
+                parsed_data.append(parsed_data_record)
 
         return parsed_data
 
@@ -215,7 +288,13 @@ class PlanFileReader(ABC):
 
 
 class ExcelXLSFileReader(PlanFileReader):
-    def __init__(self, sheet_name: str):
+    def __init__(self, sheet_name: str=None):
+        """
+        If sheet name is None then use name of only sheet which exists.  If is more than one sheet
+        it's an error.
+
+        :param sheet_name:
+        """
 
         super().__init__()
         self.sheet_name = sheet_name
@@ -230,7 +309,11 @@ class ExcelXLSFileReader(PlanFileReader):
         skiprows = 0
 
         wb_obj = openpyxl.load_workbook(file_path, data_only=True)
-        sheet = wb_obj[self.sheet_name]
+
+        if self.sheet_name is None:
+            sheet = wb_obj.active
+        else:
+            sheet = wb_obj[self.sheet_name]
         start_row = 1 + skiprows
 
         headings = self.get_headers(sheet, start_row)
