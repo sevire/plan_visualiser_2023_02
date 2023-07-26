@@ -67,7 +67,10 @@ class PlanMappedField(models.Model):
         STRING = "STR", "String"
         STRING_OR_INT = "STR_OR_INT", "String or integer"
         STRING_nnd = "STR_nnd", "String of form nnd where nn is an integer value"
-        DATE = "DATE", "Date (without time"
+        STRING_nn_Days = "STR_duration_msp", "String representing duration from MSP project in Excel"
+        STRING_DATE_DMY_01 = "STR_DATE_DMY_01", "String of form dd MMM YYYY"
+        STRING_DATE_DMY_02 = "STR_DATE_DMY_02", "String of form dd MMMMM YYYY HH:MM"
+        DATE = "DATE", "Date (without time)"
 
     plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
     mapped_field = models.ForeignKey(PlanField, on_delete=models.CASCADE)

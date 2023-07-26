@@ -51,9 +51,8 @@ def add_plan(request):
                 mapping_type = plan.file_type.plan_field_mapping_type
 
                 plan_file = plan.file.path
-                sheet_name, _ = os.path.splitext(plan.original_file_name)
 
-                file_reader = ExcelXLSFileReader(sheet_name)
+                file_reader = ExcelXLSFileReader()
                 raw_data = file_reader.read(plan_file)
                 parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
                 for activity in parsed_data:
@@ -64,7 +63,7 @@ def add_plan(request):
                         duration=activity['duration'],
                         start_date=activity['start_date'],
                         end_date=activity['end_date'],
-                        level=activity['level'],
+                        level=activity['level'] if 'level' in activity else 1,
                     )
                     record.save()
 
@@ -320,8 +319,7 @@ def layout_visual(request, visual_id):
             formset.save()
             return redirect(f'/pv/layout-visual/{visual_id}')
         else:
-            pass
-            return redirect(f'/pv/layout-visual/{visual_id}')
+            raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 
 class PlotVisualView(DetailView):
