@@ -79,7 +79,9 @@ class PlanMappedField(models.Model):
 
     def get_plan_field_type(self):
         return self.PlanFieldType(self.input_field_type)
+
     def __str__(self):
+
         return f'{self.plan_field_mapping_type}:{self.mapped_field}:{self.input_field_name}:{self.input_field_type}'
 
 
@@ -122,7 +124,7 @@ class PlanActivity(models.Model):
     duration = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
-    level = models.IntegerField()
+    level = models.IntegerField(default=1)
 
     class Meta:
         verbose_name_plural = " Plan activities"

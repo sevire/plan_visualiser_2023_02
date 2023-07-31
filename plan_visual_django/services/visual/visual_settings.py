@@ -46,9 +46,9 @@ class VisualSettings:
     """
     width: float = 600
     height: float = 400
-    track_height: float = 10
+    track_height: float = 20
     track_gap: float = 2
-    milestone_width = 6
+    milestone_width = 12
     swimlane_gap: float = 5
 
     swimlane_settings: SwimlaneSettings = SwimlaneSettings(swimlanes=["Default"], swimlane_gap=5)

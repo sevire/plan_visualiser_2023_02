@@ -7,12 +7,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
-from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit
+from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
+    ReUploadPlanForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle
 from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user
+from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
@@ -74,6 +76,100 @@ def add_plan(request):
         return HttpResponseRedirect(reverse('manage_plans'))
     elif request.method == "GET":
         form = PlanForm()
+        return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
+    else:
+        raise Exception("Unrecognised METHOD {request['METHOD']}")\
+
+
+@transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
+def re_upload_plan(request, pk):
+    """
+    Re uploads an existing plan to reflect changes made to the plan.  This is useful if the user has made changes to
+    the plan in Excel and wants to see the changes reflected in the visual.
+
+    The processing required is:
+    - Read in each line of the plan and check if the unique_sticky_activity_id exists in the database.
+    - If it does then update the record with the new values.
+    - If it doesn't then add a new record.
+    - If the unique_sticky_activity_id exists in the database but not in the plan then delete the record.
+
+    :param pk:
+    :param request:
+    :return:
+    """
+    plan_record = Plan.objects.get(id=pk)
+    if request.method == "POST":
+        plan_form = ReUploadPlanForm(data=request.POST, files=request.FILES, instance=plan_record)
+        if plan_form.is_valid():
+            current_user = get_current_user(request, default_if_logged_out=True)
+            # The user may have uploaded a file with a different name from the original file, which is fine, as long
+            # as the file is for the same plan.
+
+            # Save fields from form but don't commit so can modify other fields before committing.
+            plan = plan_form.save(commit=False)
+
+            # Uploaded file will be given a unique name - so need to store the name of the file the user chose, which
+            # may be different from the name when the file was last uploaded for this plan.
+            plan.original_file_name = plan.file.name
+
+            # Add user to record (currently hard-coded)
+            # ToDo: Replace hard-coded user with actual user.
+            plan.user = current_user
+
+            # Now can save the record
+            plan.save()
+
+            # Have saved the record, now parse the plan and store activities.
+            # Only store fields which are part of the plan for the given file type.
+
+            mapping_type = plan.file_type.plan_field_mapping_type
+
+            plan_file = plan.file.path
+
+            file_reader = ExcelXLSFileReader()
+            raw_data = file_reader.read(plan_file)
+            parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+            new_activities, updated_activities, deleted_sticky_ids = update_plan_data(parsed_data, plan)
+            for activity in new_activities:
+                record = PlanActivity(
+                    plan=plan,
+                    unique_sticky_activity_id=activity['unique_sticky_activity_id'],
+                    activity_name=activity['activity_name'],
+                    duration=activity['duration'],
+                    start_date=activity['start_date'],
+                    end_date=activity['end_date'],
+                    level=activity['level'] if 'level' in activity else 1,
+                )
+                record.save()
+            for activity in updated_activities:
+                record = PlanActivity.objects.get(plan=plan, unique_sticky_activity_id=activity['unique_sticky_activity_id'])
+                record.activity_name = activity['activity_name']
+                record.duration = activity['duration']
+                record.start_date = activity['start_date']
+                record.end_date = activity['end_date']
+                record.level = activity['level'] if 'level' in activity else 1
+                record.save()
+            for deleted_sticky_id in deleted_sticky_ids:
+                # Need to remove from the plan and from any visuals
+
+                # Remove from plan
+                record = PlanActivity.objects.get(plan=plan, unique_sticky_activity_id=deleted_sticky_id)
+                record.delete()
+
+                # Remove from visuals
+                visuals = PlanVisual.objects.filter(plan=plan)
+                for visual in visuals:
+                    visual_activities = VisualActivity.objects.filter(visual=visual, unique_id_from_plan=deleted_sticky_id)
+                    for visual_activity in visual_activities:
+                        visual_activity.delete()
+
+            messages.success(request, "New version of plan saved successfully")
+        else:
+            messages.error(request, "New version of plan upload failed validation")
+
+        return HttpResponseRedirect(reverse('manage_plans'))
+    elif request.method == "GET":
+        form = ReUploadPlanForm(instance=plan_record)
         return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
@@ -329,7 +425,7 @@ class PlotVisualView(DetailView):
         context = super().get_context_data(**kwargs)
 
         plan_visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        visual_settings = VisualSettings(width=600, height=300)
+        visual_settings = VisualSettings(width=1200, height=600)
         visual_orchestrator = VisualOrchestration(plan_visual, visual_settings)
 
         canvas_renderer = CanvasRenderer()
