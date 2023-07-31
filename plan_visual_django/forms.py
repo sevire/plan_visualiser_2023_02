@@ -8,6 +8,12 @@ class PlanForm(ModelForm):
         fields = ("file", "file_type")
 
 
+class ReUploadPlanForm(ModelForm):
+    class Meta:
+        model = Plan
+        fields = ("file",)
+
+
 class VisualFormForAdd(ModelForm):
     class Meta:
         model = PlanVisual

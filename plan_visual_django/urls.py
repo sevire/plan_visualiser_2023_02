@@ -6,6 +6,7 @@ from plan_visual_django import views
 urlpatterns = [
     path("", RedirectView.as_view(url='manage-plans', permanent=False), name='index'),
     path("add-plan", views.add_plan),
+    path("re-upload-plan/<int:pk>", views.re_upload_plan),
     path("add-visual/<int:plan_id>", views.add_visual),
     path("edit-visual/<int:visual_id>", views.edit_visual),
     path("manage-plans", views.manage_plans, name="manage_plans"),
