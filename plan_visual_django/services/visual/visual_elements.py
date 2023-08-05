@@ -615,7 +615,15 @@ class SwimlaneCollection(VisualElementCollection):
                     else:
                         raise ValueError(f"Positioning type {v_positioning_type} not yet implemented")
                     max_track_for_swimlane = max(max_track_for_swimlane, track_number_end)
-                    activity_top = swimlane_top + self.calculate_height_of_tracks(track_number_start-1)
+
+                    # ToDo: Remove this hack for the track gap and make the code work properly!
+                    if track_number_start > 1:
+                        gap_if_required = visual_settings.track_gap
+                    else:
+                        gap_if_required = 0
+
+                    activity_top = swimlane_top + self.calculate_height_of_tracks(track_number_start-1) + gap_if_required
+
                     height = self.calculate_height_of_tracks(num_tracks)
                     self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], activity_top, height)
 
