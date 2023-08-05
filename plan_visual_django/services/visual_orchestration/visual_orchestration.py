@@ -40,22 +40,31 @@ class VisualOrchestration:
         # Get all the timelines configured for this visual
         timeline_records = self.plan_visual.timelineforvisual_set.all()
 
-        timeline_settings = {
-            "timeline_height": 10,
-        }
+        # Only create the timelines if there are any configured for this visual
+        if timeline_records:
+            timeline_settings = {
+                "timeline_height": 10,
+            }
 
-        timelines = TimelineCollection(
-            self.earliest_activity_start,
-            self.latest_activity_end,
-            timeline_records,
-            timeline_settings
-        )
-        timelines.initialise_collection()
-        timelines_collection = timelines.create_collection(visual_settings=self.visual_settings, timeline_settings=timeline_settings)
-        _, height = timelines_collection.get_dimensions()
-        top_offset = height
+            timelines = TimelineCollection(
+                self.earliest_activity_start,
+                self.latest_activity_end,
+                timeline_records,
+                timeline_settings
+            )
+            timelines.initialise_collection()
+            timelines_collection = timelines.create_collection(visual_settings=self.visual_settings, timeline_settings=timeline_settings)
+            _, height = timelines_collection.get_dimensions()
+            top_offset = height
 
-        self.visual_collection.add_collection(timelines_collection)
+            self.visual_collection.add_collection(timelines_collection)
+
+            visual_start_date = timelines.visual_start_date_final
+            visual_end_date = timelines.visual_end_date_final
+        else:
+            visual_start_date = self.earliest_activity_start
+            visual_end_date = self.latest_activity_end
+            top_offset = 0
 
         swimlane_records = self.plan_visual.swimlaneforvisual_set.all()
         swimlane_settings = {}
@@ -63,8 +72,8 @@ class VisualOrchestration:
         # We need to create the Activity Collection before working out the swimlanes because creating the swimlane
         # collection will include calculating the vertical positions for all the activities in the visual.
         activity_collection = ActivityCollection(
-            timelines.visual_start_date_final,
-            timelines.visual_end_date_final,
+            visual_start_date,
+            visual_end_date,
             self.visual_activities,
             self.visual_settings,
             0,
@@ -80,8 +89,8 @@ class VisualOrchestration:
         )
 
         swimlanes = SwimlaneCollection(
-            timelines.visual_start_date,
-            timelines.visual_end_date,
+            visual_start_date,
+            visual_end_date,
             swimlane_records,
             created_activity_collection,
             self.visual_settings,
