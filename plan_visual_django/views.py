@@ -57,12 +57,20 @@ def add_plan(request):
                 file_reader = ExcelXLSFileReader()
                 raw_data = file_reader.read(plan_file)
                 parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+
                 for activity in parsed_data:
+                    # Note that the duration field isn't stored, but used to work out whether the activity is a
+                    # milestone.
+                    if activity['duration'] == 0:
+                        milestone_flag = True
+                    else:
+                        milestone_flag = False
+
                     record = PlanActivity(
                         plan=plan,
                         unique_sticky_activity_id=activity['unique_sticky_activity_id'],
                         activity_name=activity['activity_name'],
-                        duration=activity['duration'],
+                        milestone_flag=milestone_flag,
                         start_date=activity['start_date'],
                         end_date=activity['end_date'],
                         level=activity['level'] if 'level' in activity else 1,

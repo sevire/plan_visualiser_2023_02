@@ -489,7 +489,7 @@ class ActivityCollection(VisualElementCollection):
     def create_collection(self, visual_settings: VisualSettings, collection_settings: any, top_offset=0, left_offset=0):
         for activity in self.visual_activity_records:
             # Note and height will be calculated by SwimlaneCollection.
-            if activity['duration'] == 0:
+            if activity['milestone_flag'] is True:
                 # This is a milestone so we plot in the middle of the day to the specified width for a milestone.
                 left = self.date_plotter.midpoint(activity['start_date']) - self.visual_settings.milestone_width / 2
                 width = self.visual_settings.milestone_width

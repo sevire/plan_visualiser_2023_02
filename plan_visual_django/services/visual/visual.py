@@ -129,19 +129,3 @@ class Visual:
         # As the min top and left will always be zero the max bottom and left are also height wnd width.
         # left, top, width, height, right, bottom
         return 0, 0, max_right, max_bottom, max_right, max_bottom
-
-
-class PlotContext:
-    """
-    An object which will provide the relevant information to physically plot a visual, based on the medium in which it
-    is to be plotted.  .
-
-    Example use cases:
-
-    1. Plotting on the Canvas element of a web page while laying out the visual, it will include the dimensions of the
-       canvas element to allow objects to be scaled appropriately.
-    2. Plotting into a PowerPoint slide, it would include a slide object to plot shapes onto and dimension information.
-    """
-    ...
-
-
