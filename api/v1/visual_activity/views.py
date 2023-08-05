@@ -9,7 +9,7 @@ from plan_visual_django.models import DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAUL
     PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
     SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, PlotableStyle, DEFAULT_PLOTABLE_STYLE_NAME, VisualActivity, PlanVisual, \
     DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, \
-    DEFAULT_TEXT_FLOW
+    DEFAULT_TEXT_FLOW, DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME
 
 
 class VisualActivityListAPI(APIView):
@@ -51,8 +51,14 @@ class VisualActivityAPI(APIView):
         try:
             visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
         except VisualActivity.DoesNotExist:
-            # Need to create a new record for this activity in this visual
-            initial_plotable_shape = PlotableShape.objects.get(shape_type__name=DEFAULT_PLOTABLE_SHAPE_NAME)
+            # Need to create a new record for this activity in this visual.
+
+            # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
+            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
+            if plan_activity.milestone_flag is True:
+                initial_plotable_shape = PlotableShape.objects.get(shape_type__name=DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME)
+            else:
+                initial_plotable_shape = PlotableShape.objects.get(shape_type__name=DEFAULT_PLOTABLE_SHAPE_NAME)
 
             # Check whether there is already a default swimlane for this visual.  If not create one.
             try:

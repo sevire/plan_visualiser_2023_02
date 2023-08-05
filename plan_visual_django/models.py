@@ -17,17 +17,25 @@ class PlanField(models.Model):
 
     # Classes to support Enums which drive Choices in the model and can be used in code. Neat!
     class PlanFieldName(models.TextChoices):
-        STICKY_UID = "unique_sticky_activity_id", 'Unique id for activity'
-        NAME = "activity_name", 'Name of activity'
-        DURATION = "duration", 'Duration of activity'
-        START = "start_date", 'Start date of activity'
-        END = "end_date", 'End date of activity'
-        LEVEL = "level", 'The level in the hierarchy of the an activity'
+        STICKY_UID = "unique_sticky_activity_id", True, 'Unique id for activity'
+        NAME = "activity_name", True, 'Name of activity'
+        DURATION = "duration", False, 'Work effort for activity (not stored, used to work out whether this is a milestone)'
+        MILESTONE_FLAG = "milestone_flag", True, 'Is this activity a milestone'
+        START = "start_date", True, 'Start date of activity'
+        END = "end_date", True, 'End date of activity'
+        LEVEL = "level", True, 'The level in the hierarchy of the an activity'
+
+        def __new__(cls, value, is_stored):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.is_stored = is_stored
+            return obj
 
     class StoredPlanFieldType(models.TextChoices):
         INTEGER = "INT", "Integer"
         STRING = "STR", "String"
         DATE = "DATE", "Date (without time)"
+        BOOL = "BOOL", "Boolean"
 
     field_name = models.CharField(max_length=50, choices=PlanFieldName.choices, help_text="field name used in common datastructure for plan")
     field_type = models.CharField(max_length=20, choices=StoredPlanFieldType.choices)
@@ -47,8 +55,8 @@ class PlanField(models.Model):
         return f'{self.field_name}:{self.field_type}'
 
     @staticmethod
-    def plan_headings():
-        headings = [field.field_name for field in PlanField.objects.all()]
+    def plan_headings(include_not_stored=False):
+        headings = [field.field_name for field in PlanField.objects.all() if field.get_plan_field_name().is_stored is True]
         return headings
 
 
@@ -121,7 +129,7 @@ class PlanActivity(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     unique_sticky_activity_id = models.CharField(max_length=50)
     activity_name = models.CharField(max_length=200)
-    duration = models.IntegerField()
+    milestone_flag = models.BooleanField()
     start_date = models.DateField()
     end_date = models.DateField()
     level = models.IntegerField(default=1)
@@ -279,7 +287,7 @@ class PlanVisual(models.Model):
 
             # Now add the plan activity record data for this activity
             activity_record['activity_name'] = plan_activity.activity_name
-            activity_record['duration'] = plan_activity.duration
+            activity_record['milestone_flag'] = plan_activity.milestone_flag
             activity_record['start_date'] = plan_activity.start_date
             activity_record['end_date'] = plan_activity.end_date
             activity_record['level'] = plan_activity.level
@@ -417,4 +425,5 @@ DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT
 DEFAULT_TEXT_VERTICAL_ALIGNMENT = VisualActivity.VerticalAlignment.MIDDLE
 DEFAULT_TEXT_FLOW = VisualActivity.TextFlow.FLOW_TO_LEFT
 DEFAULT_PLOTABLE_SHAPE_NAME = "RECTANGLE"
+DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME = "DIAMOND"
 DEFAULT_PLOTABLE_STYLE_NAME = "(default)"
