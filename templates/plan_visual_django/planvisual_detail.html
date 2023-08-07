@@ -1,13 +1,9 @@
+{% extends "plan_visual_django/pv_base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Visual Plot</title>
-    <script src="{% static 'dist/bundle.js' %}"></script>
-</head>
-<body>
+
+{% block page_heading %}Visual {{ planvisual.name }}{% endblock %}
+{% block main_content %}
     <canvas id="visual" width="900" height="450"></canvas>
     {{ activity_data | json_script:"json_activities" }}
-</body>
-</html>
+    <script src="{% static 'dist/bundle.js' %}"></script>
+{% endblock %}
