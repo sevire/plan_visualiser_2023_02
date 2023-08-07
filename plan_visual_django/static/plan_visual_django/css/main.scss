@@ -1,0 +1,24 @@
+// Theme colours
+$colour-01: #ffb8cb;
+$colour-02: #ff768e;
+
+// Theme element colours
+$main-navbar-background-color: $colour-01;
+$main-page-heading-color: $colour-02;
+
+// Site header
+header.main-header {
+  background-color: $main-navbar-background-color;
+
+  img.logo {
+    height: 70px;
+  }
+}
+
+div.page-heading {
+  background-color: $main-page-heading-color;
+
+  h1 {
+    color: white;
+  }
+}

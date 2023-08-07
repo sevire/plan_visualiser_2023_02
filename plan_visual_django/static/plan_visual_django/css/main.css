@@ -1,0 +1,15 @@
+header.main-header {
+  background-color: #ffb8cb;
+}
+header.main-header img.logo {
+  height: 70px;
+}
+
+div.page-heading {
+  background-color: #ff768e;
+}
+div.page-heading h1 {
+  color: white;
+}
+
+/*# sourceMappingURL=main.css.map */

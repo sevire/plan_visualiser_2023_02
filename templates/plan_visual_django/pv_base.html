@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,12 +16,17 @@
             crossorigin="anonymous"></script>
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <!-- App Styling -->
+    <link href="{% static 'plan_visual_django/css/main.css' %}" rel="stylesheet">
 </head>
 <body>
-<header class="p-3 text-bg-dark">
-    <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">LOGO</a>
+<header class="main-header p-3">
+    <div class="container-fluid">
+        <div class="fs-3 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <img class="logo" alt="Plan on a page logo" src="{% static 'plan_visual_django/images/site_images/POAP-Logo.png' %}">
+            </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="/pv/manage-plans" class="nav-link px-2 text-white">Home</a></li>
@@ -40,8 +47,8 @@
         </div>
     </div>
 </header>
-<div class="container">
-    <div class="row"><h1>{% block page_heading %} {% endblock %}</h1></div>
+<div class="container-fluid">
+    <div class="page-heading row"><h1>{% block page_heading %} {% endblock %}</h1></div>
 </div>
 {% if messages %}
     <div class="container-fluid p-0">
