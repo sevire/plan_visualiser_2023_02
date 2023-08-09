@@ -7,6 +7,7 @@ header.main-header img.logo {
 
 div.page-heading {
   background-color: #ff768e;
+  margin-bottom: 20px;
 }
 div.page-heading h1 {
   color: white;

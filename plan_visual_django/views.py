@@ -34,12 +34,12 @@ def add_plan(request):
             plan = plan_form.save(commit=False)
 
             # Check that user hasn't already added a file with this name. Count should be zero
-            count = Plan.objects.filter(user=current_user, original_file_name=plan.file.name).count()
+            count = Plan.objects.filter(user=current_user, file_name=plan.file.name).count()
             if count > 0:
                 messages.error(request, f"Already uploaded a file called {plan.file.name}.  Record not added")
             else:
                 # Uploaded file will be given a unique name - so need to store the name of the file the user chose.
-                plan.original_file_name = plan.file.name
+                plan.file_name = plan.file.name
 
                 # Add user to record (currently hard-coded)
                 plan.user = current_user
@@ -118,7 +118,7 @@ def re_upload_plan(request, pk):
 
             # Uploaded file will be given a unique name - so need to store the name of the file the user chose, which
             # may be different from the name when the file was last uploaded for this plan.
-            plan.original_file_name = plan.file.name
+            plan.file_name = plan.file.name
 
             # Add user to record (currently hard-coded)
             # ToDo: Replace hard-coded user with actual user.
@@ -264,14 +264,14 @@ def delete_plan(request, pk):
     try:
         os.remove(plan_file_path)
     except OSError as e:
-        messages.error(request, f"Error deleting file {plan_record.original_file_name}")
+        messages.error(request, f"Error deleting file {plan_record.file_name}")
 
     try:
         plan_record.delete()
     except Exception:
-        messages.error(request, f"Error deleting plan record for {plan_record.original_file_name}")
+        messages.error(request, f"Error deleting plan record for {plan_record.file_name}")
     else:
-        messages.success(request, f"Record deleted for {plan_record.original_file_name}")
+        messages.success(request, f"Record deleted for {plan_record.file_name}")
 
     return HttpResponseRedirect(reverse('manage_plans'))
 
@@ -286,7 +286,7 @@ def delete_visual(request, pk):
         visual_record.delete()
     except Exception:
         messages.error(request,
-                       f"Error deleting visual record {visual_record.name} for {visual_record.plan.original_file_name}")
+                       f"Error deleting visual record {visual_record.name} for {visual_record.plan.file_name}")
     else:
         messages.success(request, f"Record deleted for {visual_record.name}")
 
@@ -413,6 +413,7 @@ def layout_visual(request, visual_id):
         formset = VisualActivityFormSet(instance=visual, queryset=visual.visualactivity_set.filter(enabled=True))
         # Add value of activity field for each form as won't be provided by visual
         context = {
+            'visual': visual,
             'formset': formset
         }
         return render(request, "plan_visual_django/pv_layout_visual.html", context)

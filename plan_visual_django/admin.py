@@ -32,7 +32,7 @@ class PlanFieldMappingTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ["user", "file", "file_type"]
+    list_display = ["user", "plan_name", "file_name", "file_type"]
 
 
 @admin.register(Color)
