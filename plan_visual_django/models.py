@@ -109,16 +109,17 @@ class Plan(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     # Upload files into folder under MEDIA_ROOT
-    original_file_name = models.CharField(max_length=100)
+    plan_name = models.CharField(max_length=100)  # Name for this plan - independent of file name.
+    file_name = models.CharField(max_length=100)
     file = models.FileField(upload_to="plan_files", null=True)
     file_type = models.ForeignKey(FileType, on_delete=models.CASCADE)
 
     class Meta:
         constraints: list[UniqueConstraint] = \
-            [UniqueConstraint(fields=['user', 'original_file_name'], name="unique_filename_for_user")]
+            [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.original_file_name}:{self.file_type}'
+        return f'{self.file_name}:{self.file_type}'
 
 
 class PlanActivity(models.Model):

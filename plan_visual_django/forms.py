@@ -5,7 +5,7 @@ from plan_visual_django.models import Plan, PlanVisual, VisualActivity, Swimlane
 class PlanForm(ModelForm):
     class Meta:
         model = Plan
-        fields = ("file", "file_type")
+        fields = ("plan_name", "file", "file_type")
 
 
 class ReUploadPlanForm(ModelForm):
