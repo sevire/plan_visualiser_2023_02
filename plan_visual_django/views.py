@@ -16,6 +16,7 @@ from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLS
 from plan_visual_django.services.general.user_services import get_current_user
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
+from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
@@ -315,6 +316,34 @@ def manage_visuals(request, plan_id):
     return render(request, "plan_visual_django/pv_manage_visuals.html", context)
 
 
+def create_milestone_swimlane(request, visual_id):
+    """
+    Applies logic to visual to lay out milestone visuals in a swimlane.  This is a one-off operation and once
+    done the user can edit the visual to change the layout.
+
+    After applying the changes the view will move to the visual rendering.
+
+    :param visual_settings:
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    visual = PlanVisual.objects.get(id=visual_id)
+    visual_settings = VisualSettings(visual_id=visual.id)
+    auto_layout_manager = VisualAutoLayoutManager(visual)
+
+    swimlane_plotable_style = visual_settings.default_swimlane_plotable_style
+    milestone_plotable_style = visual_settings.default_milestone_plotable_style
+    milestone_plotable_shape = visual_settings.default_milestone_shape
+
+    auto_layout_manager.create_milestone_swimlane(
+        swimlane_plotable_style=swimlane_plotable_style,
+        milestone_plotable_style=milestone_plotable_style,
+        milestone_plotable_shape=milestone_plotable_shape
+    )
+    return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
+
+
 def configure_visual_activities(request, visual_id):
     """
     Gets all the plan activities related to the plan for which this visual was added and displays in tabular form to
@@ -434,9 +463,9 @@ class PlotVisualView(DetailView):
         context = super().get_context_data(**kwargs)
 
         plan_visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        visual_settings = VisualSettings(width=1200, height=600)
+        plan_visual_id = plan_visual.id
+        visual_settings = VisualSettings(plan_visual_id)
         visual_orchestrator = VisualOrchestration(plan_visual, visual_settings)
-
         canvas_renderer = CanvasRenderer()
         canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
 

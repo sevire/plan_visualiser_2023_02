@@ -17,13 +17,43 @@ class ReUploadPlanForm(ModelForm):
 class VisualFormForAdd(ModelForm):
     class Meta:
         model = PlanVisual
-        fields = ("name",)
+        fields = (
+            "name",
+            "width",
+            "max_height",
+            "include_title",
+            "max_height",
+            "default_activity_shape",
+            "default_milestone_shape",
+            "track_height",
+            "track_gap",
+            "milestone_width",
+            "swimlane_gap",
+            "default_activity_plotable_style",
+            "default_milestone_plotable_style",
+            "default_swimlane_plotable_style",
+        )
 
 
 class VisualFormForEdit(ModelForm):
     class Meta:
         model = PlanVisual
-        fields = ("name", "width", "max_height","include_title","max_height")
+        fields = (
+            "name",
+            "width",
+            "max_height",
+            "include_title",
+            "max_height",
+            "default_activity_shape",
+            "default_milestone_shape",
+            "track_height",
+            "track_gap",
+            "milestone_width",
+            "swimlane_gap",
+            "default_activity_plotable_style",
+            "default_milestone_plotable_style",
+            "default_swimlane_plotable_style",
+        )
 
 
 class VisualActivityFormForEdit(ModelForm):
