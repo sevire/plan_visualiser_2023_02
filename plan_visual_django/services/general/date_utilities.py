@@ -37,12 +37,37 @@ def month_increment(date:date, num_months):
 
 
 def day_increment(in_date, num_days):
+    """
+    Increments a date by a number of days.
+
+    Must be an integer number of days.  If the value passed in is not an int then take the floor of the value.
+    :param in_date:
+    :param num_days:
+    :return:
+    """
+    if not isinstance(num_days, int):
+        num_days = int(num_days)
     return in_date + relativedelta(days=num_days)
 
 
 def num_months_between_dates(start_date, end_date):
     r = relativedelta(end_date, start_date)
     return r.years * 12 + r.months + 1
+
+
+def proportion_between_dates(start_date, end_date, proportion):
+    """
+    Returns a date which is proportion of the way between start_date and end_date
+    :param start_date:
+    :param end_date:
+    :param proportion:
+    :return:
+    """
+    num_days = days_between_dates(start_date, end_date)
+    num_days_to_add = num_days * proportion
+    ret = day_increment(start_date, num_days_to_add)
+
+    return ret
 
 
 def iterate_months(date, num_months):

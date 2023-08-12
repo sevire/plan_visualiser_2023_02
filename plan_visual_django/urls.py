@@ -15,5 +15,6 @@ urlpatterns = [
     path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage_visuals'),
     path("configure-visual-activities/<int:visual_id>/", views.configure_visual_activities, name='configure-visual'),
     path("layout-visual/<int:visual_id>/", views.layout_visual, name='layout-visual'),
+    path("create-milestone-swimlane/<int:visual_id>/", views.create_milestone_swimlane, name='create-milestone-swimlane'),
     path("visual/<int:pk>/", views.PlotVisualView.as_view(), name='plot-visual'),
 ]

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from plan_visual_django.models import VisualActivity
+from plan_visual_django.models import VisualActivity, PlotableShape, PlotableShapeType, PlanVisual
 from plan_visual_django.services.visual.formatting import PlotableFormat, \
     LineFormat, PlotableColor, LineStyle, FillFormat
 
@@ -37,18 +37,27 @@ class SwimlaneSettings:
         return self.swimlane_formats[(swimlane_number - 1) % self.num_swimlane_formats]
 
 
-@dataclass
 class VisualSettings:
     """
     Holds key information about the visual which is required to physically plot it.
 
-    Largely size and shape information.
+    Most of this will come from the VisualActivity object, but some will be hard-coded or calculated.
     """
-    width: float = 600
-    height: float = 400
-    track_height: float = 20
-    track_gap: float = 2
-    milestone_width = 12
-    swimlane_gap: float = 5
 
-    swimlane_settings: SwimlaneSettings = SwimlaneSettings(swimlanes=["Default"], swimlane_gap=5)
+
+    def __init__(self, visual_id: int):
+        self.visual_id = visual_id
+        self.visual = PlanVisual.objects.get(id=visual_id)
+
+        self.width: float = self.visual.width
+        self.height: float = self.visual.max_height
+        self.track_height: float = self.visual.track_height
+        self.track_gap: float = self.visual.track_gap
+        self.milestone_width = self.visual.milestone_width
+        self.swimlane_gap: float = self.visual.swimlane_gap
+
+        self.default_milestone_shape = self.visual.default_milestone_shape
+        self.default_activity_shape = self.visual.default_activity_shape
+        self.default_activity_plotable_style = self.visual.default_activity_plotable_style
+        self.default_milestone_plotable_style = self.visual.default_milestone_plotable_style
+        self.default_swimlane_plotable_style = self.visual.default_swimlane_plotable_style

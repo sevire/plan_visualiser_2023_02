@@ -130,7 +130,7 @@ class PlanActivity(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     unique_sticky_activity_id = models.CharField(max_length=50)
     activity_name = models.CharField(max_length=200)
-    milestone_flag = models.BooleanField()
+    milestone_flag = models.BooleanField(default=False)
     start_date = models.DateField()
     end_date = models.DateField()
     level = models.IntegerField(default=1)
@@ -246,7 +246,18 @@ class PlanVisual(models.Model):
     name = models.CharField(max_length=100)
     width = models.FloatField(default=30)
     max_height = models.FloatField(default=20)
+
     include_title = models.BooleanField(default=True)
+    track_height = models.FloatField(default=20)
+    track_gap = models.FloatField(default=4)
+    milestone_width = models.FloatField(default=10)
+    swimlane_gap = models.FloatField(default=5)
+
+    default_milestone_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_milestone_shape")
+    default_activity_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_activity_shape")
+    default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")
+    default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
+    default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
 
     def __str__(self):
         return f"{self.name}"
