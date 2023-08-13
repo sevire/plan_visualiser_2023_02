@@ -2,13 +2,13 @@ import json
 import os
 from django.conf import settings
 from django.db import transaction
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm
+    ReUploadPlanForm, VisualSwimlaneFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle
 from django.contrib import messages
@@ -314,6 +314,45 @@ def manage_visuals(request, plan_id):
         'visuals': plan_visuals
     }
     return render(request, "plan_visual_django/pv_manage_visuals.html", context)
+
+
+def manage_swimlanes_for_visual(request, visual_id):
+    """
+    Displays swimlanes for this visual and allows user to edit details of any swimlane, or add a new one.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    VisualSwimlaneFormSet = inlineformset_factory(
+        PlanVisual,
+        SwimlaneForVisual,
+
+        fields=(
+            "sequence_number",
+            "swim_lane_name",
+            "plotable_style",
+        ),
+        extra=1,
+        can_delete=True,
+        form=VisualSwimlaneFormForEdit
+    )
+    visual = PlanVisual.objects.get(pk=visual_id)
+    if request.method == 'GET':
+        formset = VisualSwimlaneFormSet(instance=visual)
+        context = {
+            'visual': visual,
+            'formset': formset
+        }
+        return render(request, "plan_visual_django/pv_manage_swimlanes.html", context)
+
+    if request.method == 'POST':
+        formset = VisualSwimlaneFormSet(request.POST, instance=visual)
+        if formset.is_valid():
+            formset.save()
+            return redirect(f'/pv/manage-swimlanes-for-visual/{visual_id}')
+        else:
+            raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 
 def create_milestone_swimlane(request, visual_id):

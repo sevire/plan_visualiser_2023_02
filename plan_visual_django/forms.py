@@ -76,3 +76,8 @@ class VisualActivityFormForEdit(ModelForm):
         model = VisualActivity
         fields = "__all__"
 
+
+class VisualSwimlaneFormForEdit(ModelForm):
+    class Meta:
+        model = SwimlaneForVisual
+        fields = "__all__"
