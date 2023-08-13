@@ -8,9 +8,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit
+    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle
+    PlotableStyle, TimelineForVisual
 from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user
@@ -354,6 +354,44 @@ def manage_swimlanes_for_visual(request, visual_id):
         else:
             raise Exception(f"Fatal error saving layout, {formset.errors}")
 
+
+def manage_timelines_for_visual(request, visual_id):
+    """
+    Displays swimlanes for this visual and allows user to edit details of any swimlane, or add a new one.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    VisualTimelineFormSet = inlineformset_factory(
+        PlanVisual,
+        TimelineForVisual,
+
+        fields=(
+            "timeline_type",
+            "timeline_name",
+            "plotable_style",
+        ),
+        extra=1,
+        can_delete=True,
+        form=VisualTimelineFormForEdit
+    )
+    visual = PlanVisual.objects.get(pk=visual_id)
+    if request.method == 'GET':
+        formset = VisualTimelineFormSet(instance=visual)
+        context = {
+            'visual': visual,
+            'formset': formset
+        }
+        return render(request, "plan_visual_django/pv_manage_timelines.html", context)
+
+    if request.method == 'POST':
+        formset = VisualTimelineFormSet(request.POST, instance=visual)
+        if formset.is_valid():
+            formset.save()
+            return redirect(f'/pv/manage-timelines-for-visual/{visual_id}')
+        else:
+            raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 def create_milestone_swimlane(request, visual_id):
     """
