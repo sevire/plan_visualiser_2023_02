@@ -44,7 +44,6 @@ class VisualSettings:
     Most of this will come from the VisualActivity object, but some will be hard-coded or calculated.
     """
 
-
     def __init__(self, visual_id: int):
         self.visual_id = visual_id
         self.visual = PlanVisual.objects.get(id=visual_id)

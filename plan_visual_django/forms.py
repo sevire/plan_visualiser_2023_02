@@ -1,5 +1,5 @@
 from django.forms import ModelForm, CharField
-from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual
+from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual
 
 
 class PlanForm(ModelForm):
@@ -80,4 +80,10 @@ class VisualActivityFormForEdit(ModelForm):
 class VisualSwimlaneFormForEdit(ModelForm):
     class Meta:
         model = SwimlaneForVisual
+        fields = "__all__"
+
+
+class VisualTimelineFormForEdit(ModelForm):
+    class Meta:
+        model = TimelineForVisual
         fields = "__all__"
