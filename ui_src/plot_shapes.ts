@@ -86,7 +86,10 @@ function plot_text(data: PlotFunctionData) {
     const text_color = data.shape_format.text_format.text_color
     console.log(`Font color for ${data.text} is ${text_color}`)
 
-    data.ctx.font = "8px Arial";
+    const font_string = `${data.shape_format.text_format.font_size}px ${data.shape_format.text_format.font}`
+    console.log(`Font string for ${data.text} is ${font_string}`)
+
+    data.ctx.font = font_string;
     data.ctx.fillStyle = color_to_fill_style(text_color);
 
     const v_align = data.shape_format.text_format.vertical_align

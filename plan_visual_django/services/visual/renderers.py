@@ -101,7 +101,9 @@ class CanvasRenderer(VisualRenderer):
                 "vertical_align": text_vertical_alignment.name,
                 "text_flow": text_flow.name,
                 "text_color": self.color_to_tuple(shape_format.font_color),
-                "external_text_flag": external_text_flag
+                "external_text_flag": external_text_flag,
+                "font": shape_format.font.font_name,
+                "font_size": shape_format.font_size,
             }
         }
         return shape_format_dict

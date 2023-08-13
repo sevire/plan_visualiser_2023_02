@@ -370,6 +370,7 @@ def manage_timelines_for_visual(request, visual_id):
         fields=(
             "timeline_type",
             "timeline_name",
+            "timeline_height",
             "plotable_style",
         ),
         extra=1,
