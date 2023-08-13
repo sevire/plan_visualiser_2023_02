@@ -187,6 +187,7 @@ class PlotableStyle(models.Model):
     font_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_font")
     line_thickness = models.IntegerField()
     font = models.ForeignKey(Font, on_delete=models.PROTECT)
+    font_size = models.IntegerField(default=10)  # Font size in points (probably!)
 
     def __str__(self):
         return f'{self.style_name}, fill:{self.fill_color.name}, line:{self.line_color.name}'
@@ -328,6 +329,7 @@ class TimelineForVisual(models.Model):
     plan_visual = models.ForeignKey(PlanVisual, on_delete=models.CASCADE)
     timeline_type = models.CharField(max_length=20, choices=TimelineLabelType.choices)
     timeline_name = models.CharField(max_length=50)
+    timeline_height = models.FloatField(default=10)
     plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
 
     def get_timeline_label_type(self) -> TimelineLabelType:

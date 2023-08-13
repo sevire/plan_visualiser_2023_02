@@ -257,8 +257,7 @@ class MonthTimeline(Timeline):
             left = date_plotter.left(period_start_date)
             width = date_plotter.width(period_start_date, period_end_date)
 
-            # ToDo: Implement settings to specify height of timeline elements
-            height = timeline_settings["timeline_height"]
+            height = self.timeline_record.timeline_height
 
             # ToDo: Refactor vertical alignment and text flow so it isn't defined inside VisualActivity
             # ToDo: Replace hard-coded vertical alignment and text flow with config from database
@@ -315,8 +314,7 @@ class QuarterTimeline(Timeline):
             left = date_plotter.left(period_start_date)
             width = date_plotter.width(period_start_date, period_end_date)
 
-            # ToDo: Implement settings to specify height of timeline elements
-            height = timeline_settings["timeline_height"]
+            height = self.timeline_record.timeline_height
 
             # ToDo: Refactor vertical alignment and text flow so it isn't defined inside VisualActivity
             # ToDo: Replace hard-coded vertical alignment and text flow with config from database
