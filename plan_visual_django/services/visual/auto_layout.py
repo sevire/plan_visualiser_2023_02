@@ -5,6 +5,9 @@ The main algorithm is the following:
 1. All milestones in a single swimlane laid out chronologically.
 2. Creating swimlanes and activities by using the structure of the plan. (that is Level information).
 """
+from django.db import IntegrityError
+
+from plan_visual_django.exceptions import DuplicateSwimlaneException
 from plan_visual_django.models import SwimlaneForVisual, VisualActivity
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
 from plan_visual_django.services.visual.visual_settings import VisualSettings
@@ -34,12 +37,16 @@ class VisualAutoLayoutManager:
         :return:
         """
         # Create swimlane for all Milestones.  If there already is one we can't proceed as we don't know what's in it.
-        swimlane = SwimlaneForVisual.objects.create(
-            plan_visual=self.visual_for_plan,
-            swim_lane_name="Milestones",
-            plotable_style=swimlane_plotable_style,
-            sequence_number=500
-        )
+        try:
+            swimlane = SwimlaneForVisual.objects.create(
+                plan_visual=self.visual_for_plan,
+                swim_lane_name="Milestones",
+                plotable_style=swimlane_plotable_style,
+                sequence_number=500
+            )
+        except IntegrityError as e:
+            raise DuplicateSwimlaneException("Swimlane already exists for milestones") from e
+
         milestone_plan_activities = self.plan_activities.filter(milestone_flag=True).order_by('start_date')
 
         # Only proceed if there is at least one milestone

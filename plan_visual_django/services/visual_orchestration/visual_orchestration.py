@@ -1,3 +1,4 @@
+from plan_visual_django.exceptions import NoActivitiesInVisualException
 from plan_visual_django.models import PlanVisual
 from plan_visual_django.services.visual.renderers import VisualRenderer
 from plan_visual_django.services.visual.visual_elements import Timeline, TimelineCollection, VisualElementCollection, \
@@ -18,6 +19,8 @@ class VisualOrchestration:
         self.visual_collection = VisualElementCollection()
 
         self.visual_activities = self.plan_visual.get_visual_activities()
+        if len(self.visual_activities) == 0:
+            raise NoActivitiesInVisualException("No activities in visual")
 
         # We need to know the earliest start and latest end date from the activities as that will be used to drive the
         # calculation of the timelines.
