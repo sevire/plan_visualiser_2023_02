@@ -2,6 +2,7 @@ import json
 import os
 from django.conf import settings
 from django.db import transaction
+from django.db.models import FilteredRelation, OuterRef, Q
 from django.forms import inlineformset_factory, modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -523,7 +524,8 @@ def layout_visual(request, visual_id):
     )
     visual = PlanVisual.objects.get(pk=visual_id)
     if request.method == 'GET':
-        formset = VisualActivityFormSet(instance=visual, queryset=visual.visualactivity_set.filter(enabled=True))
+        queryset = visual.visualactivity_set.filter(enabled=True)
+        formset = VisualActivityFormSet(instance=visual, queryset=queryset)
         # Add value of activity field for each form as won't be provided by visual
         context = {
             'visual': visual,
