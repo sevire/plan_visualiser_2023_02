@@ -1,14 +1,16 @@
-<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-    <div id="visual-button-group" class="btn-group mr-2" role="group">
-        <a href="/pv/manage-visuals/{{ visual.plan.id }}" class="btn btn-info">Manage Visuals</a>
+<div id=main-toolbar" class="btn-toolbar" role="toolbar" aria-label="Actions for visuals or plan">
+    <div id="plan-button-group" class="btn-group btn-group-sm me-2" role="group" aria-label="Plan actions">
+        <a href="/pv/manage-visuals/{{ visual.plan.id }}" class="btn btn-info">Visuals</a>
     </div>
-    <div id="visual-button-group" class="btn-group" role="group">
-        <a href="/pv/edit-visual/{{ visual.id }}" class="settings btn btn-primary">Edit Settings</a>
+    <div id="visual-button-group" class="btn-group btn-group-sm me-2" role="group" aria-label="Visual actions">
+        <a href="/pv/edit-visual/{{ visual.id }}" class="settings btn btn-primary">Settings</a>
+        <a href="/pv/configure-visual-activities/{{ visual.id }}" class="configure btn btn-primary">Select</a>
+        <a href="/pv/manage-swimlanes-for-visual/{{ visual.id }}" class="swimlanes btn btn-primary">Swimlanes</a>
         <a href="/pv/layout-visual/{{ visual.id }}" class="layout btn btn-primary">Layout</a>
-        <a href="/pv/configure-visual-activities/{{ visual.id }}" class="configure btn btn-primary">Select Activities</a>
-        <a href="/pv/manage-swimlanes-for-visual/{{ visual.id }}" class="swimlanes btn btn-primary">Manage Swimlanes</a>
-        <a href="/pv/manage-timelines-for-visual/{{ visual.id }}" class="timelines btn btn-primary">Manage Timelines</a>
-        <a href="/pv/create-milestone-swimlane/{{ visual.id }}" class="milestones btn btn-primary">Create Milestone Swimlane</a>
-        <a href="/pv/visual/{{ visual.id }}" class="view btn btn-primary">View Visual</a>
+        <a href="/pv/manage-timelines-for-visual/{{ visual.id }}" class="timelines btn btn-primary">Timelines</a>
+        <a href="/pv/visual/{{ visual.id }}" class="view btn btn-primary">View</a>
+    </div>
+    <div id="autolayout-button-group" class="btn-group btn-group-sm" role="group" aria-label="Auto layout">
+        <a href="/pv/create-milestone-swimlane/{{ visual.id }}" class="milestones btn btn-warning">Milestones</a>
     </div>
 </div>
