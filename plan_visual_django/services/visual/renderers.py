@@ -117,8 +117,8 @@ class CanvasRenderer(VisualRenderer):
         :return:
         """
         width, height = visual_collection.get_dimensions()
-        self.browser_data['settings']['canvas_width'] = width + 20  # Just adding a bit of padding for debug
-        self.browser_data['settings']['canvas_height'] = height + 20
+        self.browser_data['settings']['canvas_width'] = width + 10  # Just adding a bit of padding for debug
+        self.browser_data['settings']['canvas_height'] = height + 10
         super().plot_visual(visual_collection)
         return self.browser_data
 

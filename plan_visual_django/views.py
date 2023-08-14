@@ -7,6 +7,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
+
+from plan_visual_django.exceptions import DuplicateSwimlaneException, NoActivitiesInVisualException
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
@@ -415,11 +417,14 @@ def create_milestone_swimlane(request, visual_id):
     milestone_plotable_style = visual_settings.default_milestone_plotable_style
     milestone_plotable_shape = visual_settings.default_milestone_shape
 
-    auto_layout_manager.create_milestone_swimlane(
-        swimlane_plotable_style=swimlane_plotable_style,
-        milestone_plotable_style=milestone_plotable_style,
-        milestone_plotable_shape=milestone_plotable_shape
-    )
+    try:
+        auto_layout_manager.create_milestone_swimlane(
+            swimlane_plotable_style=swimlane_plotable_style,
+            milestone_plotable_style=milestone_plotable_style,
+            milestone_plotable_shape=milestone_plotable_shape
+        )
+    except DuplicateSwimlaneException as e:
+        messages.error(request, "Milestone swimlane already exists")
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
 
 
@@ -535,20 +540,23 @@ def layout_visual(request, visual_id):
             raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 
-class PlotVisualView(DetailView):
-    model = PlanVisual
+def plot_visual(request, visual_id):
+    """
+    This view is used to plot the visual.  It will be called by the browser when the page is loaded and will return
+    the data required to plot the visual.
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    visual = PlanVisual.objects.get(id=visual_id)
 
-        visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        plan_visual_id = visual.id
-        visual_settings = VisualSettings(plan_visual_id)
+    if visual.visualactivity_set.count() == 0:
+        messages.error(request, "No activities selected for visual")
+        return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
+    else:
+        visual_settings = VisualSettings(visual_id)
         visual_orchestrator = VisualOrchestration(visual, visual_settings)
         canvas_renderer = CanvasRenderer()
         canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-
-        context['activity_data'] = canvas_data
-        context['visual'] = visual
-
-        return context
+        return render(request, "plan_visual_django/planvisual_detail.html", context={'activity_data': canvas_data, 'visual': visual})
