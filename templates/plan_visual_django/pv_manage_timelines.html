@@ -3,6 +3,9 @@
 {% block page_heading %}Manage Timelines for Plan:Visual - {{ plan.plan_name }}:{{ visual.name }}{% endblock %}
 
 {% block main_content %}
+    <div id="timelines">
+        {% include 'plan_visual_django/_visual_buttons.html' %}
+    </div>
     <div class="row">
         <div class="col-md-12">
             <form action="" method="POST">

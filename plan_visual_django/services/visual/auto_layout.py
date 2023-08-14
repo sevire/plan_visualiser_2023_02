@@ -53,7 +53,7 @@ class VisualAutoLayoutManager:
 
         for index, plan_activity_for_milestone in enumerate(milestone_plan_activities):
             # For now just have one milestone per track and add them in date order.
-            track_number = index + 1
+            track_number = index + 2  # Start at 2 as 1 is the swimlane header
 
             # Set some attributes which we will need later
             unique_id_from_plan = plan_activity_for_milestone.unique_sticky_activity_id
