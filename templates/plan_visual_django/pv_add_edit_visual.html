@@ -2,6 +2,11 @@
 
 {% block page_heading %}{{ add_or_edit }} Visual{% endblock %}
 {% block main_content %}
+
+<div id="settings">
+    {% include 'plan_visual_django/_visual_buttons.html' %}
+</div>
+
 <div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}

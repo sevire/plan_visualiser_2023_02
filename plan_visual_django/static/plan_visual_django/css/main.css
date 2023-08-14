@@ -13,4 +13,20 @@ div.page-heading h1 {
   color: white;
 }
 
+div#visual-button-group {
+  margin-bottom: 20px;
+}
+
+div#settings a.settings,
+div#layout a.layout,
+div#configure a.configure,
+div#swimlanes a.swimlanes,
+div#timelines a.timelines,
+div#milestones a.milestones,
+div#view a.view {
+  pointer-events: none;
+  background-color: #86b7fe;
+  color: #0d6efd;
+}
+
 /*# sourceMappingURL=main.css.map */

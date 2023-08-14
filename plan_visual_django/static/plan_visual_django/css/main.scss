@@ -1,3 +1,6 @@
+@import '../bootstrap/bootstrap-5.0.2/scss/_functions.scss';
+@import '../bootstrap/bootstrap-5.0.2/scss/_variables.scss';
+
 // Theme colours
 $colour-01: #ffb8cb;
 $colour-02: #ff768e;
@@ -22,4 +25,21 @@ div.page-heading {
   h1 {
     color: white;
   }
+}
+
+div#visual-button-group {
+  margin-bottom: 20px;
+}
+
+// Select child element which has a class the same as the id of the parent
+div#settings a.settings,
+div#layout a.layout,
+div#configure a.configure,
+div#swimlanes a.swimlanes,
+div#timelines a.timelines,
+div#milestones a.milestones,
+div#view a.view {
+  pointer-events: none;
+  background-color: tint-color($primary, 50%);
+  color: $primary;
 }

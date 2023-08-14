@@ -2,10 +2,11 @@
 
 {% block page_heading %}Configure Activities For Visual{% endblock %}
 {% block main_content %}
+    <div id="configure">
+        {% include 'plan_visual_django/_visual_buttons.html' %}
+    </div>
     <div class="row">
         <div class="col-md-12">
-            <a class="btn btn-primary" href="/pv/layout-visual/{{ visual_id }}">Layout</a>
-            <a class="btn btn-primary" href="/pv/visual/{{ visual_id }}">View</a>
             <table class="table responsive table-sm">
                 <thead>
                     <tr>
@@ -47,7 +48,7 @@
 
             var url_string = "/api/v1/visual_activities/{{ visual_id }}/" + element.id + "/"
 
-            var vid = {{ visual_id }}
+            var vid = {{ visual.id }}
             if (element.checked === true) {
                 console.log(element.id + " is checked")
                 console.log("URL: " + url_string)

@@ -238,6 +238,7 @@ def edit_visual(request, visual_id):
     elif request.method == "GET":
         form = VisualFormForEdit(instance=instance)
         context = {
+            'visual': instance,
             'add_or_edit': 'Edit',
             'form': form
         }
@@ -475,7 +476,7 @@ def configure_visual_activities(request, visual_id):
         plan_activities_list.append(activity_data)
 
     context = {
-        'visual_id': visual.id,
+        'visual': visual,
         'headings': PlanField.plan_headings(),
         'plan_activities': plan_activities_list
     }
@@ -540,13 +541,14 @@ class PlotVisualView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        plan_visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
-        plan_visual_id = plan_visual.id
+        visual: PlanVisual = self.get_object()  # Retrieve DB instance which is being viewed.
+        plan_visual_id = visual.id
         visual_settings = VisualSettings(plan_visual_id)
-        visual_orchestrator = VisualOrchestration(plan_visual, visual_settings)
+        visual_orchestrator = VisualOrchestration(visual, visual_settings)
         canvas_renderer = CanvasRenderer()
         canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
 
         context['activity_data'] = canvas_data
+        context['visual'] = visual
 
         return context
