@@ -13,10 +13,6 @@ div.page-heading h1 {
   color: white;
 }
 
-div#main-toolbar {
-  margin-bottom: 20px;
-}
-
 div#settings a.settings,
 div#layout a.layout,
 div#configure a.configure,

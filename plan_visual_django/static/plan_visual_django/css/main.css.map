@@ -1,1 +1,1 @@
-{"version":3,"sourceRoot":"","sources":["main.scss","../bootstrap/bootstrap-5.0.2/scss/_variables.scss"],"names":[],"mappings":"AAYA;EACE,kBATU;;AAWV;EACE;;;AAIJ;EACE,kBAhBU;EAiBV;;AAEA;EACE;;;AAIJ;EACE;;;AAIF;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;EAOE;EACA;EACA,OCLQ","file":"main.css"}
+{"version":3,"sourceRoot":"","sources":["main.scss","../bootstrap/bootstrap-5.0.2/scss/_variables.scss"],"names":[],"mappings":"AAYA;EACE,kBATU;;AAWV;EACE;;;AAIJ;EACE,kBAhBU;EAiBV;;AAEA;EACE;;;AAKJ;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;EAOE;EACA;EACA,OCDQ","file":"main.css"}
