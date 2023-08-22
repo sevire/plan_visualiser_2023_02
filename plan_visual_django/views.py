@@ -1,6 +1,7 @@
 import json
 import os
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import FilteredRelation, OuterRef, Q
 from django.forms import inlineformset_factory, modelformset_factory
@@ -16,7 +17,7 @@ from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity,
     PlotableStyle, TimelineForVisual
 from django.contrib import messages
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.services.general.user_services import get_current_user
+from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
@@ -25,8 +26,7 @@ from plan_visual_django.services.visual.visual_settings import VisualSettings, S
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
-# Create your views here.
-
+@login_required
 @transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
 def add_plan(request):
     if request.method == "POST":
@@ -93,6 +93,7 @@ def add_plan(request):
         raise Exception("Unrecognised METHOD {request['METHOD']}")\
 
 
+@login_required
 @transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
 def re_upload_plan(request, pk):
     """
@@ -181,12 +182,17 @@ def re_upload_plan(request, pk):
 
         return HttpResponseRedirect(reverse('manage_plans'))
     elif request.method == "GET":
-        form = ReUploadPlanForm(instance=plan_record)
-        return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
+        if not can_access_plan(request.user, pk):
+            messages.error(request, "Plan does not exist or you do not have access")
+            return HttpResponseRedirect(reverse('manage-plans'))
+        else:
+            form = ReUploadPlanForm(instance=plan_record)
+            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
+@login_required
 def add_visual(request, plan_id):
     if request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
@@ -217,43 +223,56 @@ def add_visual(request, plan_id):
 
         return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
     elif request.method == "GET":
-        form = VisualFormForAdd()
-        context = {
-            'add_or_edit': 'Add',
-            'form': form
-        }
-        return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+        if not can_access_plan(request.user, plan_id):
+            messages.error(request, "Plan does not exist or you do not have access")
+            return HttpResponseRedirect(reverse('manage-plans'))
+        else:
+            form = VisualFormForAdd()
+            context = {
+                'add_or_edit': 'Add',
+                'form': form
+            }
+            return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
+@login_required
 def edit_visual(request, visual_id):
-    instance = PlanVisual.objects.get(id=visual_id)
-    plan_id = instance.plan.id
-    if request.method == "POST":
-        visual_form = VisualFormForEdit(data=request.POST, files=request.FILES, instance=instance)
-        if visual_form.is_valid():
-            # Save fields from form but don't commit so can modify other fields before comitting.
-            visual_record = visual_form.save()
-            messages.success(request, "Visual updated successfully")
-
-        return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
-    elif request.method == "GET":
-        form = VisualFormForEdit(instance=instance)
-        context = {
-            'visual': instance,
-            'add_or_edit': 'Edit',
-            'form': form
-        }
-        return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
     else:
-        raise Exception("Unrecognised METHOD {request['METHOD']}")
+        instance = PlanVisual.objects.get(id=visual_id)
+        plan_id = instance.plan.id
+        if request.method == "POST":
+            visual_form = VisualFormForEdit(data=request.POST, files=request.FILES, instance=instance)
+            if visual_form.is_valid():
+                # Save fields from form but don't commit so can modify other fields before comitting.
+                visual_record = visual_form.save()
+                messages.success(request, "Visual updated successfully")
+
+            return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
+        elif request.method == "GET":
+            form = VisualFormForEdit(instance=instance)
+            context = {
+                'visual': instance,
+                'add_or_edit': 'Edit',
+                'form': form
+            }
+            return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+        else:
+            raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
+@login_required
 def manage_plans(request):
-    user = get_current_user(request, default_if_logged_out=True)
-    plan_files = Plan.objects.filter(user=user)
+    user = get_current_user(request)
+    if user is None:
+        messages.error(request, "No user logged in")
+        return HttpResponseRedirect('/accounts/login')
 
+    plan_files = Plan.objects.filter(user=user)
     context = {
         'user': user,
         'plan_files': plan_files
@@ -261,65 +280,80 @@ def manage_plans(request):
     return render(request, "plan_visual_django/pv_manage_plans.html", context)
 
 
+@login_required
 def delete_plan(request, pk):
-    plan_record = Plan.objects.get(id=pk)
-
-    # Before deleting record from database delete the file which was uploaded
-    plan_file_path = os.path.join(settings.MEDIA_ROOT, plan_record.file.path)
-    try:
-        os.remove(plan_file_path)
-    except OSError as e:
-        messages.error(request, f"Error deleting file {plan_record.file_name}")
-
-    try:
-        plan_record.delete()
-    except Exception:
-        messages.error(request, f"Error deleting plan record for {plan_record.file_name}")
+    # ToDo: refactor to be consistent in naming of pk and plan_id (and other examples)
+    if not can_access_plan(request.user, pk):
+        messages.error(request, "Plan does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
     else:
-        messages.success(request, f"Record deleted for {plan_record.file_name}")
+        plan_record = Plan.objects.get(id=pk)
 
-    return HttpResponseRedirect(reverse('manage_plans'))
+        # Before deleting record from database delete the file which was uploaded
+        plan_file_path = os.path.join(settings.MEDIA_ROOT, plan_record.file.path)
+        try:
+            os.remove(plan_file_path)
+        except OSError as e:
+            messages.warning(request, f"Error deleting file {plan_record.file_name}")
+
+        try:
+            plan_record.delete()
+        except Exception:
+            messages.error(request, f"Error deleting plan record for {plan_record.file_name}")
+        else:
+            messages.success(request, f"Record deleted for {plan_record.file_name}")
+
+        return HttpResponseRedirect(reverse('manage_plans'))
 
 
+@login_required
 def delete_visual(request, pk):
-    visual_record = PlanVisual.objects.get(id=pk)
-    # We need to know which plan this visual was attached to so that we can return to the manage visuals page after
-    # deleting the visual.
-    plan_id = visual_record.plan.id
-
-    try:
-        visual_record.delete()
-    except Exception:
-        messages.error(request,
-                       f"Error deleting visual record {visual_record.name} for {visual_record.plan.file_name}")
+    if not can_access_visual(request.user, pk):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
     else:
-        messages.success(request, f"Record deleted for {visual_record.name}")
+        visual_record = PlanVisual.objects.get(id=pk)
+        # We need to know which plan this visual was attached to so that we can return to the manage visuals page after
+        # deleting the visual.
+        plan_id = visual_record.plan.id
 
-    return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
+        try:
+            visual_record.delete()
+        except Exception:
+            messages.error(request,
+                           f"Error deleting visual record {visual_record.name} for {visual_record.plan.file_name}")
+        else:
+            messages.success(request, f"Record deleted for {visual_record.name}")
+
+        return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
 
 
+@login_required
 def manage_visuals(request, plan_id):
     """
     View for managing the visuals associated with a given uploaded plan, for the current user.
+
+    If plan doesn't exist or if user doesn't have permission to access the plan then a page not found error will
+    be displayed.
 
     :param request:
     :param plan_id:
     :return:
     """
-    # ToDo decide what user validation is required here
-    # Get plan record for the plan whose visuals we are managing.
-    plan_record = Plan.objects.get(id=plan_id)
+    if not can_access_plan(request.user, plan_id):
+        messages.error(request, "Plan does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+    else:
+        plan_record = Plan.objects.get(id=plan_id)
+        visuals = plan_record.planvisual_set.all()
+        context = {
+            'plan': plan_record,
+            'visuals': visuals
+        }
+        return render(request, "plan_visual_django/pv_manage_visuals.html", context)
 
-    # Get all visuals associated with this plan
-    plan_visuals = plan_record.planvisual_set.all()
 
-    context = {
-        'plan': plan_record,
-        'visuals': plan_visuals
-    }
-    return render(request, "plan_visual_django/pv_manage_visuals.html", context)
-
-
+@login_required
 def manage_swimlanes_for_visual(request, visual_id):
     """
     Displays swimlanes for this visual and allows user to edit details of any swimlane, or add a new one.
@@ -328,6 +362,10 @@ def manage_swimlanes_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
     VisualSwimlaneFormSet = inlineformset_factory(
         PlanVisual,
         SwimlaneForVisual,
@@ -359,6 +397,7 @@ def manage_swimlanes_for_visual(request, visual_id):
             raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 
+@login_required
 def manage_timelines_for_visual(request, visual_id):
     """
     Displays swimlanes for this visual and allows user to edit details of any swimlane, or add a new one.
@@ -367,6 +406,10 @@ def manage_timelines_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
     VisualTimelineFormSet = inlineformset_factory(
         PlanVisual,
         TimelineForVisual,
@@ -398,6 +441,7 @@ def manage_timelines_for_visual(request, visual_id):
         else:
             raise Exception(f"Fatal error saving layout, {formset.errors}")
 
+@login_required
 def create_milestone_swimlane(request, visual_id):
     """
     Applies logic to visual to lay out milestone visuals in a swimlane.  This is a one-off operation and once
@@ -410,6 +454,9 @@ def create_milestone_swimlane(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
     visual_settings = VisualSettings(visual_id=visual.id)
     auto_layout_manager = VisualAutoLayoutManager(visual)
@@ -429,6 +476,7 @@ def create_milestone_swimlane(request, visual_id):
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
 
 
+@login_required
 def configure_visual_activities(request, visual_id):
     """
     Gets all the plan activities related to the plan for which this visual was added and displays in tabular form to
@@ -448,6 +496,9 @@ def configure_visual_activities(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)  # get() returns exactly one result or raises an exception
     plan = visual.plan
     plan_activities = plan.planactivity_set.all()
@@ -490,6 +541,7 @@ def configure_visual_activities(request, visual_id):
     return render(request, "plan_visual_django/pv_configure_visual_activities.html", context)
 
 
+@login_required
 def layout_visual(request, visual_id):
     """
     Used to specify layout and formatting attributes for each of the activities selected to be in the visual.  Only the
@@ -502,6 +554,10 @@ def layout_visual(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
     VisualActivityFormSet = inlineformset_factory(
         PlanVisual,
         VisualActivity,
@@ -542,6 +598,7 @@ def layout_visual(request, visual_id):
             raise Exception(f"Fatal error saving layout, {formset.errors}")
 
 
+@login_required
 def plot_visual(request, visual_id):
     """
     This view is used to plot the visual.  It will be called by the browser when the page is loaded and will return
@@ -551,6 +608,10 @@ def plot_visual(request, visual_id):
     :param visual_id:
     :return:
     """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
     visual = PlanVisual.objects.get(id=visual_id)
 
     if visual.visualactivity_set.count() == 0:

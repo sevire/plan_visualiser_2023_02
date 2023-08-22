@@ -11,7 +11,7 @@ urlpatterns = [
     path("manage-swimlanes-for-visual/<int:visual_id>/", views.manage_swimlanes_for_visual, name="manage-swimlanes"),
     path("manage-timelines-for-visual/<int:visual_id>/", views.manage_timelines_for_visual, name="manage-timelines"),
     path("edit-visual/<int:visual_id>", views.edit_visual),
-    path("manage-plans", views.manage_plans, name="manage_plans"),
+    path("manage-plans", views.manage_plans, name="manage-plans"),
     path("delete-plan/<int:pk>/", views.delete_plan, name='delete_plan'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete_visual'),
     path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage_visuals'),
