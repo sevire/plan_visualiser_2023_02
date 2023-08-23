@@ -7,7 +7,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <table class="table responsive table-sm">
+            <table class="activity-table table responsive table-sm">
                 <thead>
                     <tr>
                         {% for heading in headings %}
@@ -18,10 +18,11 @@
                 </thead>
                 <tbody>
                 {% for activity_data in plan_activities %}
-                    <tr>
+                    <tr class="align-middle level-0{{ activity_data.field_list.level }}">
                         <td>{{ activity_data.unique_sticky_id }}</td>
                         <!-- Layout fields for each activity from the plan -->
-                        {% for name, value in activity_data.field_list %}
+                        {% for name, value in activity_data.field_list.items %}
+                            <!-- For enalbed flag add a checkbox to enable/disable the activity for this visual -->
                             {% if name == "enabled" %}
                                 <td>
                                     <label for="{{ activity_data.unique_sticky_id }}"></label>
@@ -30,7 +31,7 @@
                                            {{ value|yesno:"checked,unchecked" }}>
                                 </td>
                             {%  else %}
-                                <td>{{ value }}</td>
+                                <td>{{ value|safe }}</td>
                             {% endif %}
                         {% endfor %}
                         <!-- Add widgets to add or remove activities for this visual -->

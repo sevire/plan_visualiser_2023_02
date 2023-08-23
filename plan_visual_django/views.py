@@ -16,6 +16,8 @@ from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEd
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle, TimelineForVisual
 from django.contrib import messages
+
+from plan_visual_django.services.general.string_utilities import indent
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
@@ -477,7 +479,7 @@ def create_milestone_swimlane(request, visual_id):
 
 
 @login_required
-def configure_visual_activities(request, visual_id):
+def select_visual_activities(request, visual_id):
     """
     Gets all the plan activities related to the plan for which this visual was added and displays in tabular form to
     allow user to select which activities are to appear on the visual.  For every record which is selected, a visual
@@ -511,17 +513,22 @@ def configure_visual_activities(request, visual_id):
     for activity in plan_activities:
         activity_data = {
             "unique_sticky_id": activity.unique_sticky_activity_id,
-            "field_list": [],
+            "field_list": {},
         }
+        # Need to extract level early as needed to calculate indent
+        level = activity.level
         for field_name in PlanField.plan_headings():
             if field_name != "unique_sticky_activity_id":  # Already included this
-                activity_data['field_list'].append((field_name, getattr(activity, field_name)))
+                if field_name == "activity_name":
+                    activity_data['field_list'][field_name] = indent(getattr(activity, field_name), level-1, ch='&nbsp;', multiple=3)
+                else:
+                    activity_data['field_list'][field_name] = getattr(activity, field_name)
 
         # Now add the flag to say whether this activity is in or out of the visual.
         # If the record doesn't exist then the activity has never been added so is absent.
         # If the record does exist then check the enabled flag as may have been added and then disabled.
         try:
-            # Get record for this activity if it exists.  There will be one or no records.
+            # Get record for this activity within the visual, if it exists.  There will be one or no records.
             visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity.unique_sticky_activity_id)
         except VisualActivity.DoesNotExist:
             # No record so activity not currently in visual
@@ -529,7 +536,7 @@ def configure_visual_activities(request, visual_id):
         else:
             enabled = visual_activity.enabled
 
-        activity_data['field_list'].append(("enabled", enabled))
+        activity_data['field_list']['enabled'] = enabled
         plan_activities_list.append(activity_data)
 
     context = {

@@ -9,6 +9,48 @@ $colour-02: #ff768e;
 $main-navbar-background-color: $colour-01;
 $main-page-heading-color: $colour-02;
 
+// Plan activity level colouring
+$activity-level-01: #fa7799;
+
+$activity-level-02: shift-color($activity-level-01, -10%);
+$activity-level-03: shift-color($activity-level-01, -20%);
+$activity-level-04: shift-color($activity-level-01, -30%);
+$activity-level-05: shift-color($activity-level-01, -40%);
+$activity-level-06: shift-color($activity-level-01, -50%);
+$activity-level-07: shift-color($activity-level-01, -60%);
+$activity-level-08: shift-color($activity-level-01, -70%);
+$activity-level-09: shift-color($activity-level-01, -80%);
+
+table.activity-table {
+  tr.level-01 {
+    background-color: $activity-level-01;
+  }
+  tr.level-02 {
+      background-color: $activity-level-02;
+  }
+    tr.level-03 {
+        background-color: $activity-level-03;
+    }
+    tr.level-04 {
+        background-color: $activity-level-04;
+    }
+    tr.level-05 {
+        background-color: $activity-level-05;
+    }
+    tr.level-06 {
+        background-color: $activity-level-06;
+    }
+    tr.level-07 {
+        background-color: $activity-level-07;
+    }
+    tr.level-08 {
+        background-color: $activity-level-08;
+    }
+    tr.level-09 {
+        background-color: $activity-level-09;
+    }
+}
+
 // Site header
 header.main-header {
   background-color: $main-navbar-background-color;
