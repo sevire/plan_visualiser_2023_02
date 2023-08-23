@@ -1,3 +1,31 @@
+table.activity-table tr.level-01 {
+  background-color: #fa7799;
+}
+table.activity-table tr.level-02 {
+  background-color: #fb85a3;
+}
+table.activity-table tr.level-03 {
+  background-color: #fb92ad;
+}
+table.activity-table tr.level-04 {
+  background-color: #fca0b8;
+}
+table.activity-table tr.level-05 {
+  background-color: #fcadc2;
+}
+table.activity-table tr.level-06 {
+  background-color: #fdbbcc;
+}
+table.activity-table tr.level-07 {
+  background-color: #fdc9d6;
+}
+table.activity-table tr.level-08 {
+  background-color: #fed6e0;
+}
+table.activity-table tr.level-09 {
+  background-color: #fee4eb;
+}
+
 header.main-header {
   background-color: #ffb8cb;
 }
