@@ -1,27 +1,26 @@
 import json
 import os
+from typing import List, Dict, Any
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import FilteredRelation, OuterRef, Q
-from django.forms import inlineformset_factory, modelformset_factory
+from django.db.models import ProtectedError
+from django.forms import inlineformset_factory, modelformset_factory, formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import DetailView
-
 from plan_visual_django.exceptions import DuplicateSwimlaneException, NoActivitiesInVisualException
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit
+    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual
+    PlotableStyle, TimelineForVisual, Color
 from django.contrib import messages
-
+from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.general.string_utilities import indent
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
-from plan_visual_django.services.plan_to_visual.plan_to_visual import VisualManager
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
@@ -630,3 +629,87 @@ def plot_visual(request, visual_id):
         canvas_renderer = CanvasRenderer()
         canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
         return render(request, "plan_visual_django/planvisual_detail.html", context={'activity_data': canvas_data, 'visual': visual})
+
+
+@login_required
+def manage_colors(request, visual_id):
+    """
+    This view is used to define the colors used in the visual for a user.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    extra_rows_on_form = 1
+    ColorFormset = formset_factory(ColorForm, extra=extra_rows_on_form, can_delete=True)
+
+    colors_for_user = Color.objects.filter(user=request.user)
+
+    # Set initial data which is used on form to show existing values and when processing the form to detect changed
+    # rows. Note that as the color widget on the ColorForm has an initial value of #000000, the form will always
+    # be flagged as changed unless the initial values are set to include that value.
+
+    initial_for_extra: list[dict[str, Any]] = [
+        {
+            'hex_color': '#000000'
+        } for i in range(extra_rows_on_form)
+    ]
+
+    if colors_for_user.count() == 0:
+        initial = []
+    else:
+        initial: list[dict[str, Any]] = [
+            {
+                "id": record.id,
+                "name": record.name,
+                "hex_color": ColorLib.from_rgb_255(record.red, record.green, record.blue).to_hex6()
+            }
+            for record in colors_for_user
+        ]
+
+    if request.method == "POST":
+        # ToDo: Look for better way of doing this, not sure I am detecting new, changed and deleted record correctly
+        formset = ColorFormset(request.POST, initial=initial)
+        if formset.is_valid():
+            # First process deleted records
+            for form in formset.deleted_forms:
+                id = form.cleaned_data.get('id')
+                name = form.cleaned_data.get('name')
+                if id:
+                    try:
+                        object_to_delete = Color.objects.get(id=id)
+                        object_to_delete.delete()
+                    except ProtectedError:
+                        messages.error(request, f"Cannot delete color {name} as it is in use")
+                    else:
+                        messages.info(request, f"Deleted color {name}")
+            for form in formset:
+                if len(form.changed_data) > 0 and form not in formset.deleted_forms:
+                    id = form.cleaned_data.get('id')
+                    name = form.cleaned_data.get('name')
+                    hex_color = form.cleaned_data.get('hex_color')
+                    color = ColorLib.from_hex6(hex_color)
+                    red, green, blue = color.to_rgb_255()
+                    if name and hex_color:
+                        Color.objects.update_or_create(
+                            id=id,
+                            user=request.user,
+                            defaults={
+                                "name": name,
+                                "red": red,
+                                "green": green,
+                                "blue": blue
+                            }
+                        )
+            return HttpResponseRedirect(reverse('manage-colors', args=[visual_id]))
+        else:
+            raise Exception(f"Fatal error saving colors, {formset.errors}")
+    else:
+        formset = ColorFormset(
+            initial=initial
+        )
+        return render(request, 'plan_visual_django/manage_colors.html', context={"formset": formset})
