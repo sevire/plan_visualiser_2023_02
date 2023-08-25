@@ -143,6 +143,7 @@ class PlanActivity(models.Model):
 
 
 class Color(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
     red = models.IntegerField(null=False, default=0)
     green = models.IntegerField(null=False, default=0)
