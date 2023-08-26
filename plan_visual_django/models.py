@@ -144,7 +144,7 @@ class PlanActivity(models.Model):
 
 class Color(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False)
     red = models.IntegerField(null=False, default=0)
     green = models.IntegerField(null=False, default=0)
     blue = models.IntegerField(null=False, default=0)
@@ -152,6 +152,7 @@ class Color(models.Model):
 
     class Meta:
         constraints = [
+            UniqueConstraint(fields=['user', 'name'], name="unique-color-name-for-user"),
             models.CheckConstraint(
                 check=models.Q(red__gte=0) & models.Q(red__lte=255),
                 name="Red component must be between 0 and 255 (inclusive)",
@@ -190,6 +191,11 @@ class PlotableStyle(models.Model):
     line_thickness = models.IntegerField()
     font = models.ForeignKey(Font, on_delete=models.PROTECT)
     font_size = models.IntegerField(default=10)  # Font size in points (probably!)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['user', 'style_name'], name="unique-style-name-for-user")
+        ]
 
     def __str__(self):
         return f'{self.style_name}, fill:{self.fill_color.name}, line:{self.line_color.name}'

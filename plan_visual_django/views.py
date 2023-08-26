@@ -670,7 +670,7 @@ def plot_visual(request, visual_id):
 
 
 @login_required
-def manage_colors(request, visual_id):
+def manage_colors(request):
     """
     This view is used to define the colors used in the visual for a user.
 
@@ -678,10 +678,6 @@ def manage_colors(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
-        messages.error(request, "Visual does not exist or you do not have access")
-        return HttpResponseRedirect(reverse('manage-plans'))
-
     extra_rows_on_form = 1
     ColorFormset = formset_factory(ColorForm, extra=extra_rows_on_form, can_delete=True)
 
@@ -743,7 +739,7 @@ def manage_colors(request, visual_id):
                                 "blue": blue
                             }
                         )
-            return HttpResponseRedirect(reverse('manage-colors', args=[visual_id]))
+            return HttpResponseRedirect(reverse('manage-colors'))
         else:
             raise Exception(f"Fatal error saving colors, {formset.errors}")
     else:
