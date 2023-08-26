@@ -19,6 +19,6 @@ urlpatterns = [
     path("layout-visual/<int:visual_id>/", views.layout_visual, name='layout-visual'),
     path("create-milestone-swimlane/<int:visual_id>/", views.create_milestone_swimlane, name='create-milestone-swimlane'),
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
-    path("manage-colors/<int:visual_id>/", views.manage_colors, name='manage-colors'),
+    path("manage-colors/", views.manage_colors, name='manage-colors'),
     path("manage-plotable-styles/", views.manage_plotable_styles, name='manage-styles'),
 ]
