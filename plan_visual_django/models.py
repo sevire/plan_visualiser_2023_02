@@ -171,7 +171,7 @@ class Color(models.Model):
         ]
 
     def __str__(self):
-        return f"([{self.name}]-{self.red},{self.green},{self.blue},{self.alpha})"
+        return f"{self.name}"
 
 
 class Font(models.Model):
@@ -182,6 +182,7 @@ class Font(models.Model):
 
 
 class PlotableStyle(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     style_name = models.CharField(max_length=100)
     fill_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_fill")
     line_color = models.ForeignKey(Color, on_delete=models.PROTECT, related_name="plotablestyle_line")

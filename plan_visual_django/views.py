@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import inlineformset_factory, modelformset_factory, formset_factory
@@ -12,7 +13,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from plan_visual_django.exceptions import DuplicateSwimlaneException, NoActivitiesInVisualException
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm
+    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle, TimelineForVisual, Color
 from django.contrib import messages
@@ -441,6 +442,43 @@ def manage_timelines_for_visual(request, visual_id):
             return redirect(f'/pv/manage-timelines-for-visual/{visual_id}')
         else:
             raise Exception(f"Fatal error saving layout, {formset.errors}")
+
+
+@login_required()
+def manage_plotable_styles(request):
+    """
+    Displays plotable styles for this user and allows user to edit details of any plotable style, or add a new one.
+
+    Get current logged in user and manage plotable styles for that user.
+
+    :param request:
+    :return:
+    """
+    user = get_current_user(request)
+    PlotableStyleFormset = inlineformset_factory(
+        User,
+        PlotableStyle,
+        fields="__all__",
+        extra=1,
+        can_delete=True,
+        form=PlotableStyleForm
+    )
+    if request.method == 'GET':
+        formset = PlotableStyleFormset(instance=user)
+        context = {
+            'formset': formset
+        }
+        return render(request, "plan_visual_django/pv_manage_plotable_styles.html", context)
+
+    if request.method == 'POST':
+        formset = PlotableStyleFormset(request.POST, instance=user)
+        if formset.is_valid():
+            formset.save()
+            return redirect(f'/pv/manage-plotable-styles')
+        else:
+            messages.error(request, "Error saving plotable styles")
+            return HttpResponseRedirect(reverse('manage-styles'))
+
 
 @login_required
 def create_milestone_swimlane(request, visual_id):

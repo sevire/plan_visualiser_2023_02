@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm, CharField, Form, IntegerField
-from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual
+from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
+    PlotableStyle
 
 
 class PlanForm(ModelForm):
@@ -95,3 +96,9 @@ class ColorForm(Form):
     name = CharField(max_length=50)
     hex_color = forms.CharField(label='hex_color', max_length=7, initial="#000000",
                                 widget=forms.TextInput(attrs={'type': 'color'}))
+
+
+class PlotableStyleForm(ModelForm):
+    class Meta:
+        model = PlotableStyle
+        fields = "__all__"
