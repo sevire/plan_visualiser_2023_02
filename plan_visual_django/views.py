@@ -87,7 +87,7 @@ def add_plan(request):
         else:
             messages.error(request, "Failed validation")
 
-        return HttpResponseRedirect(reverse('manage_plans'))
+        return HttpResponseRedirect(reverse('manage-plans'))
     elif request.method == "GET":
         form = PlanForm()
         return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
