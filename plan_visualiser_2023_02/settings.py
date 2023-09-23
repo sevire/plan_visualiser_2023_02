@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,13 +22,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
+# Find out whether we are working in a development or production environment
+# by checking the environment variable DJANGO_ENVIRONMENT.
+# If it is equal to 'production', then we are in production mode.
+# Otherwise, we are in development mode.
+DJANGO_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if DJANGO_ENVIRONMENT == 'production':
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = os.getenv('SECRET_KEY')
+
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = os.getenv('DEBUG')
+else:
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
+
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1']
 
 
 # Application definition
@@ -78,13 +94,28 @@ WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if DJANGO_ENVIRONMENT == 'production':
+    print("Using PostgreSQL database in production")
+    # Use the PostgreSQL database in production
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_NAME'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': 'db',
+            'PORT': '5432',
+        }
     }
-}
-
+else:
+    print("Using SQLite database in development")
+    # Use the SQLite database in development
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -120,8 +151,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = "/static/"
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+if DJANGO_ENVIRONMENT == 'production':
+    STATIC_ROOT = "/static/"
+else:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
