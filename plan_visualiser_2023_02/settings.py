@@ -43,7 +43,7 @@ else:
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://http://138.68.160.214']
 
 
 # Application definition
