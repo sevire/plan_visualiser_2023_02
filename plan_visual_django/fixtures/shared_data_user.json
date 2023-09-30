@@ -1,0 +1,20 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$ao4vbWDdsHUIxcpMDomlzp$pIA9HD2A1dyGa2sTI5WSunkd4RNpj59etveYj5Ot8bM=",
+      "last_login": "2023-09-23T16:54:34.950Z",
+      "is_superuser": true,
+      "username": "app_shared_data_user",
+      "first_name": "Automated",
+      "last_name": "Data",
+      "email": "tbg-pv-automateddatauser@genonline.co.uk",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2023-02-26T13:28:31.857Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

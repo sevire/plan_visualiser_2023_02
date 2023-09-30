@@ -1,0 +1,122 @@
+[
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 1,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 1,
+      "input_field_name": "Unique Sticky ID",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 2,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 2,
+      "input_field_name": "Task Name",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 3,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 3,
+      "input_field_name": "Duration",
+      "input_field_type": "STR_nnd"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 4,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 4,
+      "input_field_name": "Start",
+      "input_field_type": "DATE"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 5,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 5,
+      "input_field_name": "Finish",
+      "input_field_type": "DATE"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 6,
+    "fields": {
+      "plan_field_mapping_type": 1,
+      "mapped_field": 6,
+      "input_field_name": "Level #",
+      "input_field_type": "INT"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 7,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 1,
+      "input_field_name": "ID",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 8,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 2,
+      "input_field_name": "Task_Name",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 9,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 3,
+      "input_field_name": "Duration",
+      "input_field_type": "STR_duration_msp"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 10,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 4,
+      "input_field_name": "Start_Date",
+      "input_field_type": "STR_DATE_DMY_02"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 11,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 5,
+      "input_field_name": "Finish_Date",
+      "input_field_type": "STR_DATE_DMY_02"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 12,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 6,
+      "input_field_name": "Outline_Level",
+      "input_field_type": "STR"
+    }
+  }
+]

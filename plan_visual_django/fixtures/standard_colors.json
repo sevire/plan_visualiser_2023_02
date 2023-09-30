@@ -1,0 +1,266 @@
+[
+  {
+    "model": "plan_visual_django.color",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "Red",
+      "red": 240,
+      "green": 65,
+      "blue": 91,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "name": "Green",
+      "red": 110,
+      "green": 173,
+      "blue": 70,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "name": "Blue",
+      "red": 0,
+      "green": 0,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "name": "Cyan",
+      "red": 0,
+      "green": 176,
+      "blue": 240,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "name": "Amber---------",
+      "red": 48,
+      "green": 190,
+      "blue": 162,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "name": "Amber+",
+      "red": 244,
+      "green": 176,
+      "blue": 131,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "name": "Amber++",
+      "red": 245,
+      "green": 200,
+      "blue": 171,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "name": "Amber-",
+      "red": 198,
+      "green": 89,
+      "blue": 16,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "name": "Amber--",
+      "red": 131,
+      "green": 39,
+      "blue": 12,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "name": "Green+",
+      "red": 163,
+      "green": 207,
+      "blue": 142,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 11,
+    "fields": {
+      "user": 1,
+      "name": "Green++",
+      "red": 215,
+      "green": 235,
+      "blue": 212,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 12,
+    "fields": {
+      "user": 1,
+      "name": "Green-",
+      "red": 78,
+      "green": 130,
+      "blue": 53,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 13,
+    "fields": {
+      "user": 1,
+      "name": "Green--",
+      "red": 46,
+      "green": 86,
+      "blue": 35,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 14,
+    "fields": {
+      "user": 1,
+      "name": "Pink",
+      "red": 255,
+      "green": 64,
+      "blue": 251,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 15,
+    "fields": {
+      "user": 1,
+      "name": "Pink+",
+      "red": 254,
+      "green": 119,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 16,
+    "fields": {
+      "user": 1,
+      "name": "Pink++",
+      "red": 255,
+      "green": 188,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 17,
+    "fields": {
+      "user": 1,
+      "name": "Pink-",
+      "red": 227,
+      "green": 31,
+      "blue": 221,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 18,
+    "fields": {
+      "user": 1,
+      "name": "Pink--",
+      "red": 161,
+      "green": 0,
+      "blue": 163,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 24,
+    "fields": {
+      "user": 1,
+      "name": "Dummy5",
+      "red": 255,
+      "green": 179,
+      "blue": 70,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 25,
+    "fields": {
+      "user": 1,
+      "name": "Dummy 6",
+      "red": 40,
+      "green": 207,
+      "blue": 240,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 26,
+    "fields": {
+      "user": 2,
+      "name": "Blud",
+      "red": 170,
+      "green": 18,
+      "blue": 18,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 27,
+    "fields": {
+      "user": 2,
+      "name": "Blue",
+      "red": 101,
+      "green": 122,
+      "blue": 230,
+      "alpha": 0.0
+    }
+  }
+]

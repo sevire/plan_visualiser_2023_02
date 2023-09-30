@@ -1,0 +1,9 @@
+[
+  {
+    "model": "plan_visual_django.plotableshapetype",
+    "pk": 1,
+    "fields": {
+      "name": "RECTANGLE-BASED"
+    }
+  }
+]

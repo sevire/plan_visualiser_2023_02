@@ -1,0 +1,18 @@
+[
+  {
+    "model": "plan_visual_django.plotableshape",
+    "pk": 1,
+    "fields": {
+      "shape_type": 1,
+      "name": "RECTANGLE"
+    }
+  },
+  {
+    "model": "plan_visual_django.plotableshape",
+    "pk": 2,
+    "fields": {
+      "shape_type": 1,
+      "name": "DIAMOND"
+    }
+  }
+]
