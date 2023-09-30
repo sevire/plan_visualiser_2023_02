@@ -2,7 +2,6 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-
 from plan_visual_django.models import PlotableShapeType
 
 
