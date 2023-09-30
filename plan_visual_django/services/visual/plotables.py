@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from plan_visual_django.models import PlotableShapeType, PlotableStyle, VisualActivity
+from plan_visual_django.models import PlotableShapeType, PlotableStyle, VisualActivity, PlotableShape
 
 
 class Plotable(ABC):
@@ -9,7 +9,7 @@ class Plotable(ABC):
     the visual will be actually physically plotted.  Separate components will be added through composition or
     sub-classing in order to carry out or support the actual drawing of the object.
     """
-    def __init__(self, shape: PlotableShapeType.PlotableShapeTypeName):
+    def __init__(self, shape: PlotableShape.PlotableShapeName):
         """
         All objects will need at least a shape.
 
@@ -87,7 +87,7 @@ class RectangleBasedPlotable(Plotable):
 
     def __init__(
             self,
-            shape: PlotableShapeType.PlotableShapeTypeName,
+            shape: PlotableShape.PlotableShapeName,
             top: float,
             left: float,
             width: float,
@@ -135,14 +135,14 @@ class RectangleBasedPlotable(Plotable):
 
 class PlotableFactory:
     plotable_factory_dispatch_table = {
-        PlotableShapeType.PlotableShapeTypeName.RECTANGLE: RectangleBasedPlotable,
-        PlotableShapeType.PlotableShapeTypeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
-        PlotableShapeType.PlotableShapeTypeName.DIAMOND: RectangleBasedPlotable,
-        PlotableShapeType.PlotableShapeTypeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
+        PlotableShape.PlotableShapeName.RECTANGLE: RectangleBasedPlotable,
+        PlotableShape.PlotableShapeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
+        PlotableShape.PlotableShapeName.DIAMOND: RectangleBasedPlotable,
+        PlotableShape.PlotableShapeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
     }
 
     @classmethod
-    def get_plotable(cls, shape: PlotableShapeType.PlotableShapeTypeName, **kwargs):
+    def get_plotable(cls, shape: PlotableShape.PlotableShapeName, **kwargs):
         """
         Decides which subclass of plotable is required based on which shape is to be plotted.
 

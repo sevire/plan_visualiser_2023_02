@@ -203,36 +203,48 @@ class PlotableStyle(models.Model):
 
 class PlotableShapeType(models.Model):
     """
-    Eek! I'm struggling to remember why I had ShapeType and Shape!  I'm guessing that it was something like the
-    fact that certain families of shapes use a similar set of parameters to plot them.  So for example
-    a lot (most or all in practice I suspect) of shapes are plotted by specifying...
+    I'm re-factoring this as I move the app to a server for alpha testing.  I'm struggling to remember how I originally
+    envisaged this working but I have decide how I now think it should work and am re-working around that.
 
-    top, left, width, height
+    So...
 
-    so there will be a family of shapes with that shape type.
+    A Shape Type is a category which indicates the way a shape is defined.  For example, almost every shape
+    I will use in the visual (or even every shape) will be based around a rectangle and be defined by the scheme:
 
+    - top
+    - left
+    - width
+    - height
+
+    There may be additional parameters which impact things like corner radius for a rounded rectangle which
+    will be added through shape specific models.
+
+    At some point I may introduce more sophisticate shape types, to allow less regular shapes to be used (although I'm
+    not sure whether that will really be necessary), such as shapes defined by a set of points, or svg shapes.
+
+    Then each shape will fit into one of the defined shape types.
     """
-
-    class PlotableShapeTypeName(models.TextChoices):
-        RECTANGLE = "RECTANGLE", "Rectangle"
-        ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rectangle"
-        DIAMOND = "DIAMOND", "Diamond"
-        ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
-
-    name = models.CharField(max_length=20, choices=PlotableShapeTypeName.choices)
+    name = models.CharField(max_length=20)
 
     def __str__(self):
         return f'{self.name}'
 
-    def get_plotable_shape_type(self):
-        return self.PlotableShapeTypeName(self.name)
-
 
 class PlotableShape(models.Model):
+    class PlotableShapeName(models.TextChoices):
+        RECTANGLE = "RECTANGLE", "Rectangle"
+        ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rounded Rectangle"
+        DIAMOND = "DIAMOND", "Diamond"
+        ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
+
     shape_type = models.ForeignKey(PlotableShapeType, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, choices=PlotableShapeName.choices)
+
+    def get_plotable_shape(self):
+        return self.PlotableShapeName(self.name)
 
     def __str__(self):
-        return self.shape_type.name
+        return self.name
 
     def to_json(self):
         return self.shape_type
@@ -296,7 +308,7 @@ class PlanVisual(models.Model):
             # Start with the positioning and formatting fields for this activity
             activity_record['unique_id_from_plan'] = activity.unique_id_from_plan
             activity_record['swimlane'] = activity.swimlane.swim_lane_name
-            activity_record['plotable_shape'] = activity.plotable_shape.shape_type.name
+            activity_record['plotable_shape'] = activity.plotable_shape.name
 
             activity_record['vertical_positioning_type'] = activity.get_vertical_positioning_type()
             activity_record['vertical_positioning_value'] = activity.vertical_positioning_value

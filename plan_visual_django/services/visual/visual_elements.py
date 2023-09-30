@@ -5,7 +5,8 @@ that object and on demand, will create the specific Plotable for that element.
 from datetime import date, datetime
 from abc import ABC, abstractmethod
 from django.db.models import QuerySet
-from plan_visual_django.models import PlotableShapeType, TimelineForVisual, VisualActivity, SwimlaneForVisual
+from plan_visual_django.models import PlotableShapeType, TimelineForVisual, VisualActivity, SwimlaneForVisual, \
+    PlotableShape
 from plan_visual_django.services.general.date_utilities import month_increment, first_day_of_month, last_day_of_month, \
     num_months_between_dates, DatePlotter
 from plan_visual_django.services.visual.plotables import Plotable, PlotableFactory
@@ -264,7 +265,7 @@ class MonthTimeline(Timeline):
 
             element = VisualElement()
 
-            element.shape=PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+            element.shape=PlotableShape.PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset
             element.width=width
@@ -321,7 +322,7 @@ class QuarterTimeline(Timeline):
 
             element = VisualElement()
 
-            element.shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+            element.shape = PlotableShape.PlotableShapeName.RECTANGLE
             element.top = top_offset
             element.left = left + left_offset
             element.width = width
@@ -500,7 +501,7 @@ class ActivityCollection(VisualElementCollection):
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
                 external_text_flag = False
 
-            shape = PlotableShapeType.PlotableShapeTypeName[activity['plotable_shape']]
+            shape = PlotableShape.PlotableShapeName[activity['plotable_shape']]
             plotable_style = activity['plotable_style']
 
             text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
@@ -625,7 +626,7 @@ class SwimlaneCollection(VisualElementCollection):
                     height = self.calculate_height_of_tracks(num_tracks)
                     self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], activity_top, height)
 
-                shape = PlotableShapeType.PlotableShapeTypeName.RECTANGLE
+                shape = PlotableShape.PlotableShapeName.RECTANGLE
                 plotable_style = swimlane.plotable_style
 
                 text_vertical_alignment = VisualActivity.VerticalAlignment.TOP
