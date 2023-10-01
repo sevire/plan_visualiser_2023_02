@@ -27,7 +27,7 @@ class PlanMappedFieldAdmin(admin.ModelAdmin):
 
 @admin.register(PlanFieldMappingType)
 class PlanFieldMappingTypeAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ['id', 'name', 'description']
 
 
 @admin.register(Plan)
@@ -37,7 +37,8 @@ class PlanAdmin(admin.ModelAdmin):
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ["user", "name", "red", "green", "blue", "alpha"]
+    list_filter = ['user']
 
 
 @admin.register(Font)
@@ -47,8 +48,7 @@ class FontAdmin(admin.ModelAdmin):
 
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
-    exclude = []
-
+    list_display = ['user', 'style_name']
 
 @admin.register(PlanVisual)
 class PlanVisualAdmin(admin.ModelAdmin):
