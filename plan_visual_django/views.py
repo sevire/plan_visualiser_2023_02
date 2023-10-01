@@ -1,7 +1,6 @@
 import json
 import os
 from typing import List, Dict, Any
-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -455,6 +454,8 @@ def manage_plotable_styles(request):
     :return:
     """
     user = get_current_user(request)
+    shared_data_user_name = settings.SHARED_DATA_USER_NAME
+    shared_data_user = User.objects.get(username=shared_data_user_name)
     PlotableStyleFormset = inlineformset_factory(
         User,
         PlotableStyle,
@@ -463,15 +464,16 @@ def manage_plotable_styles(request):
         can_delete=True,
         form=PlotableStyleForm
     )
+    form_kwargs = {'users': [request.user, shared_data_user]}
     if request.method == 'GET':
-        formset = PlotableStyleFormset(instance=user)
+        formset = PlotableStyleFormset(instance=user,  form_kwargs=form_kwargs)
         context = {
             'formset': formset
         }
         return render(request, "plan_visual_django/pv_manage_plotable_styles.html", context)
 
     if request.method == 'POST':
-        formset = PlotableStyleFormset(request.POST, instance=user)
+        formset = PlotableStyleFormset(request.POST, instance=user, form_kwargs=form_kwargs)
         if formset.is_valid():
             formset.save()
             return redirect(f'/pv/manage-plotable-styles')
