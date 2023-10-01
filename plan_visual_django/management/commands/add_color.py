@@ -1,5 +1,4 @@
 from django.core.management import BaseCommand
-
 from plan_visual_django.models import Color
 
 
