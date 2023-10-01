@@ -1,7 +1,8 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.forms import ModelForm, CharField, Form, IntegerField
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
-    PlotableStyle
+    PlotableStyle, Color
 
 
 class PlanForm(ModelForm):
@@ -102,3 +103,20 @@ class PlotableStyleForm(ModelForm):
     class Meta:
         model = PlotableStyle
         fields = "__all__"
+
+    def __init__(self, *args, users:[User], **kwargs):
+        """
+        users will either be None, or empty or contain one or more Users whose colours should be included in the
+        colour dropdown.  This is to allow standard colors to be included for any user by adding a common user
+        where the standard colours are mapped to.
+
+        :param args:
+        :param user:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        if users is not None and len(users) > 0:
+            queryset = Color.objects.filter(user__in=users)
+            self.fields['fill_color'].queryset = queryset
+            self.fields['line_color'].queryset = queryset
+            self.fields['font_color'].queryset = queryset
