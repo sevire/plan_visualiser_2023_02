@@ -95,7 +95,7 @@ WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 if DJANGO_ENVIRONMENT == 'production':
-    print("Using PostgreSQL database in production")
+    # print("Using PostgreSQL database in production")
     # Use the PostgreSQL database in production
     DATABASES = {
         'default': {
@@ -108,7 +108,7 @@ if DJANGO_ENVIRONMENT == 'production':
         }
     }
 else:
-    print("Using SQLite database in development")
+    # print("Using SQLite database in development")
     # Use the SQLite database in development
     DATABASES = {
         "default": {
@@ -176,3 +176,7 @@ EMAIL_HOST_PASSWORD = "(secret)"
 EMAIL_USE_SSL = True
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SHARED_DATA_USER_NAME = 'shared_data_user'
+SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
+SHARED_DATA_PREFIX = "AAA"
