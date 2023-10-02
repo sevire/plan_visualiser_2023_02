@@ -61,6 +61,11 @@ class PlanField(models.Model):
 
 
 class PlanFieldMappingType(models.Model):
+    """
+    Schema which defines how input fields from a plan are mapped to stored fields for that plan.
+    In practice there will be a PlanMappedField record for every input field which references
+    the appropriate mapping type as a foreign key.
+    """
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
 
@@ -95,6 +100,15 @@ class PlanMappedField(models.Model):
 
 class FileType(models.Model):
     """
+    Each plan is assigned a given file type, which encapsulates two properties of the plan, which are:
+    - What is the technical format that the plan is provided in, which is needed in order to dispatch the file
+      to the right logic to read it correctly.
+    - What is the mapping schema for the plan, which maps input fields to the fields needed in the app which
+      define the plan.
+
+    NOTE: At the time of writing we only support Excel input files so we only need to store the mapping type
+          for now.
+
     The File Type describes the technical format within which the plan data is expected to be provided for a given plan.
     """
     file_type_name = models.CharField(max_length=50)
