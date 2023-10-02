@@ -5,12 +5,13 @@ from functools import partial
 from django.conf import settings
 from django.contrib.auth.models import User
 from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, PlanField, \
-    PlotableShapeType, PlotableShape
+    PlotableShapeType, PlotableShape, FileType
 
 root = settings.BASE_DIR
 json_dir = 'plan_visual_django/fixtures'
 
 plan_fields = 'plan_fields.json'
+file_types = 'file_type.json'
 mapped_fields = 'mapped_fields.json'
 field_mapping_types = 'mapping_types.json'
 
@@ -114,6 +115,29 @@ def add_plan_mapped_fields():
             print_status_partial(f"Creating mapped field with name {fields['input_field_name']}...")
             PlanMappedField.objects.create(**fields)
             print_status_partial(f"Mapped field with name {fields['input_field_name']} created")
+
+
+def add_file_type():
+    print_status_partial = partial(print_status, "add_file_types")
+
+    with open(json_pathname(file_types), 'r') as f:
+        file_type_records = json.load(f)
+    for file_type in file_type_records:
+        fields = file_type['fields']
+        fields['pk'] = file_type['pk']
+
+        # Check whether mapped field with this name and mapping type already exists
+        if FileType.objects.filter(
+            file_type_name=fields['file_type_name']
+        ).exists():
+            print_status_partial(f"File type with name {fields['file_type_name']} already exists")
+        else:
+            fields['plan_field_mapping_type_id'] = fields["plan_field_mapping_type"]
+            del fields["plan_field_mapping_type"]
+
+            print_status_partial(f"Creating file type with name {fields['file_type_name']}...")
+            FileType.objects.create(**fields)
+            print_status_partial(f"File type with name {fields['file_type_name']} created")
 
 
 def create_shared_data_user():

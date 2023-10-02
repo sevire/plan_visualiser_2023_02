@@ -1,0 +1,20 @@
+[
+  {
+    "model": "plan_visual_django.filetype",
+    "pk": 1,
+    "fields": {
+      "file_type_name": "Excel (modern) Smartsheet Export",
+      "file_type_description": "Modern Excel Format",
+      "plan_field_mapping_type": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.filetype",
+    "pk": 2,
+    "fields": {
+      "file_type_name": "Excel (modern) MSP Export",
+      "file_type_description": "Project export format 01",
+      "plan_field_mapping_type": 2
+    }
+  }
+]
