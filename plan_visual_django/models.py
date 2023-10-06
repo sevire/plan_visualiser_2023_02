@@ -185,6 +185,8 @@ class Color(models.Model):
             ),
         ]
 
+        ordering = ["user", "name"]
+
     def __str__(self):
         return f"{self.name}"
 
@@ -207,6 +209,7 @@ class PlotableStyle(models.Model):
     font_size = models.IntegerField(default=10)  # Font size in points (probably!)
 
     class Meta:
+        ordering = ["user", "style_name"]
         constraints = [
             UniqueConstraint(fields=['user', 'style_name'], name="unique-style-name-for-user")
         ]
