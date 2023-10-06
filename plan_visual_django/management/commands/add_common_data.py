@@ -1,6 +1,5 @@
 from django.core.management import BaseCommand
-from plan_visual_django.services.initialisation.db_initialisation import create_shared_data_user, apply_standard_colors, \
-    add_plan_fields, add_plan_field_mapping_types, add_plan_mapped_fields, add_shape_types, add_shapes, add_file_type
+from plan_visual_django.services.initialisation.db_initialisation import create_shared_data_user, add_initial_data
 
 
 class Command(BaseCommand):
@@ -13,6 +12,9 @@ class Command(BaseCommand):
     """
     help = "Add set of common data items required by all users."
 
+    def add_arguments(self, parser):
+        parser.add_argument("--delete", action='store_true')
+
     def handle(self, *args, **options):
         """
         Creates standard shared data for following:
@@ -21,14 +23,13 @@ class Command(BaseCommand):
         - Field mapping types
         - Field mappings
         """
-        user = create_shared_data_user()
+        delete = options['delete']
 
-        add_plan_fields()
-        add_plan_field_mapping_types()
-        add_plan_mapped_fields()
-        add_file_type()
+        # If we are deleting then we delete the shared user after all the other records
 
-        apply_standard_colors(user=user)
-
-        add_shape_types()
-        add_shapes()
+        if delete is True:
+            add_initial_data(None, delete)
+            create_shared_data_user(delete=True)
+        else:
+            user = create_shared_data_user(delete=False)
+            add_initial_data(user, delete)
