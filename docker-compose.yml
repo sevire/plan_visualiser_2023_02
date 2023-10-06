@@ -15,7 +15,6 @@ services:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
         - SECRET_KEY='c*48+8)np*$4ohvxr38x=)(w4vw3!shqm*+m+%v$uzn!q@wk%+'
-        - SHARED_DATA_USER_PASSWORD='password'
         - DEBUG=True
         - DJANGO_ENVIRONMENT=production
     nginx:
