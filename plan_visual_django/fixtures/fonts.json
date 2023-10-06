@@ -1,0 +1,9 @@
+[
+  {
+    "model": "plan_visual_django.font",
+    "pk": 1,
+    "fields": {
+      "font_name": 1
+    }
+  }
+]
