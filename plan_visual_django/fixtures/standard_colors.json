@@ -4,10 +4,10 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "name": "Red",
+      "name": "[01]Red",
       "red": 240,
       "green": 65,
-      "blue": 91,
+      "blue": 90,
       "alpha": 0.0
     }
   },
@@ -16,10 +16,10 @@
     "pk": 2,
     "fields": {
       "user": 1,
-      "name": "Green",
-      "red": 110,
-      "green": 173,
-      "blue": 70,
+      "name": "[02]Red-",
+      "red": 215,
+      "green": 51,
+      "blue": 51,
       "alpha": 0.0
     }
   },
@@ -28,10 +28,10 @@
     "pk": 3,
     "fields": {
       "user": 1,
-      "name": "Blue",
-      "red": 0,
-      "green": 0,
-      "blue": 255,
+      "name": "[03]Red--",
+      "red": 173,
+      "green": 51,
+      "blue": 51,
       "alpha": 0.0
     }
   },
@@ -40,10 +40,10 @@
     "pk": 4,
     "fields": {
       "user": 1,
-      "name": "Cyan",
-      "red": 0,
-      "green": 176,
-      "blue": 240,
+      "name": "[04]Red+",
+      "red": 255,
+      "green": 116,
+      "blue": 116,
       "alpha": 0.0
     }
   },
@@ -52,10 +52,10 @@
     "pk": 5,
     "fields": {
       "user": 1,
-      "name": "Amber---------",
-      "red": 48,
-      "green": 190,
-      "blue": 162,
+      "name": "[05]Red++",
+      "red": 251,
+      "green": 188,
+      "blue": 188,
       "alpha": 1.0
     }
   },
@@ -64,10 +64,10 @@
     "pk": 6,
     "fields": {
       "user": 1,
-      "name": "Amber+",
-      "red": 244,
-      "green": 176,
-      "blue": 131,
+      "name": "[06]Amber",
+      "red": 255,
+      "green": 186,
+      "blue": 0,
       "alpha": 1.0
     }
   },
@@ -76,10 +76,10 @@
     "pk": 7,
     "fields": {
       "user": 1,
-      "name": "Amber++",
-      "red": 245,
-      "green": 200,
-      "blue": 171,
+      "name": "[07]Amber-",
+      "red": 236,
+      "green": 173,
+      "blue": 3,
       "alpha": 1.0
     }
   },
@@ -88,10 +88,10 @@
     "pk": 8,
     "fields": {
       "user": 1,
-      "name": "Amber-",
-      "red": 198,
-      "green": 89,
-      "blue": 16,
+      "name": "[08]Amber--",
+      "red": 184,
+      "green": 135,
+      "blue": 0,
       "alpha": 1.0
     }
   },
@@ -100,10 +100,10 @@
     "pk": 9,
     "fields": {
       "user": 1,
-      "name": "Amber--",
-      "red": 131,
-      "green": 39,
-      "blue": 12,
+      "name": "[09]Amber+",
+      "red": 253,
+      "green": 203,
+      "blue": 67,
       "alpha": 1.0
     }
   },
@@ -112,10 +112,10 @@
     "pk": 10,
     "fields": {
       "user": 1,
-      "name": "Green+",
-      "red": 163,
-      "green": 207,
-      "blue": 142,
+      "name": "[10]Amber++",
+      "red": 251,
+      "green": 222,
+      "blue": 141,
       "alpha": 1.0
     }
   },
@@ -124,10 +124,10 @@
     "pk": 11,
     "fields": {
       "user": 1,
-      "name": "Green++",
-      "red": 215,
-      "green": 235,
-      "blue": 212,
+      "name": "[11]Green",
+      "red": 49,
+      "green": 250,
+      "blue": 0,
       "alpha": 1.0
     }
   },
@@ -136,10 +136,10 @@
     "pk": 12,
     "fields": {
       "user": 1,
-      "name": "Green-",
-      "red": 78,
-      "green": 130,
-      "blue": 53,
+      "name": "[12]Green-",
+      "red": 43,
+      "green": 204,
+      "blue": 0,
       "alpha": 1.0
     }
   },
@@ -148,10 +148,10 @@
     "pk": 13,
     "fields": {
       "user": 1,
-      "name": "Green--",
-      "red": 46,
-      "green": 86,
-      "blue": 35,
+      "name": "[13]Green--",
+      "red": 25,
+      "green": 135,
+      "blue": 2,
       "alpha": 1.0
     }
   },
@@ -160,10 +160,10 @@
     "pk": 14,
     "fields": {
       "user": 1,
-      "name": "Pink",
-      "red": 255,
-      "green": 64,
-      "blue": 251,
+      "name": "[14]Green+",
+      "red": 135,
+      "green": 255,
+      "blue": 112,
       "alpha": 0.0
     }
   },
@@ -172,10 +172,10 @@
     "pk": 15,
     "fields": {
       "user": 1,
-      "name": "Pink+",
-      "red": 254,
-      "green": 119,
-      "blue": 255,
+      "name": "[15]Green++",
+      "red": 132,
+      "green": 255,
+      "blue": 156,
       "alpha": 0.0
     }
   },
@@ -184,9 +184,9 @@
     "pk": 16,
     "fields": {
       "user": 1,
-      "name": "Pink++",
-      "red": 255,
-      "green": 188,
+      "name": "[16]Blue",
+      "red": 0,
+      "green": 122,
       "blue": 255,
       "alpha": 0.0
     }
@@ -196,10 +196,10 @@
     "pk": 17,
     "fields": {
       "user": 1,
-      "name": "Pink-",
-      "red": 227,
-      "green": 31,
-      "blue": 221,
+      "name": "[17]Blue-",
+      "red": 0,
+      "green": 89,
+      "blue": 184,
       "alpha": 0.0
     }
   },
@@ -208,10 +208,70 @@
     "pk": 18,
     "fields": {
       "user": 1,
-      "name": "Pink--",
-      "red": 161,
-      "green": 0,
-      "blue": 163,
+      "name": "[18]Blue--",
+      "red": 0,
+      "green": 74,
+      "blue": 153,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 19,
+    "fields": {
+      "user": 1,
+      "name": "[19]Blue+",
+      "red": 61,
+      "green": 154,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 20,
+    "fields": {
+      "user": 1,
+      "name": "[20]Blue++",
+      "red": 112,
+      "green": 230,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 21,
+    "fields": {
+      "user": 1,
+      "name": "[21]Grey",
+      "red": 186,
+      "green": 186,
+      "blue": 186,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 22,
+    "fields": {
+      "user": 1,
+      "name": "[22]Grey-",
+      "red": 130,
+      "green": 130,
+      "blue": 130,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 23,
+    "fields": {
+      "user": 1,
+      "name": "[23]Grey--",
+      "red": 64,
+      "green": 64,
+      "blue": 64,
       "alpha": 0.0
     }
   },
@@ -220,10 +280,10 @@
     "pk": 24,
     "fields": {
       "user": 1,
-      "name": "Dummy5",
-      "red": 255,
-      "green": 179,
-      "blue": 70,
+      "name": "[24]Grey+",
+      "red": 214,
+      "green": 214,
+      "blue": 214,
       "alpha": 0.0
     }
   },
@@ -232,10 +292,10 @@
     "pk": 25,
     "fields": {
       "user": 1,
-      "name": "Dummy 6",
-      "red": 40,
-      "green": 207,
-      "blue": 240,
+      "name": "[25]Grey++",
+      "red": 235,
+      "green": 234,
+      "blue": 234,
       "alpha": 0.0
     }
   },
@@ -243,11 +303,11 @@
     "model": "plan_visual_django.color",
     "pk": 26,
     "fields": {
-      "user": 2,
-      "name": "Blud",
-      "red": 170,
-      "green": 18,
-      "blue": 18,
+      "user": 1,
+      "name": "[00]White",
+      "red": 255,
+      "green": 255,
+      "blue": 255,
       "alpha": 0.0
     }
   },
@@ -255,11 +315,11 @@
     "model": "plan_visual_django.color",
     "pk": 27,
     "fields": {
-      "user": 2,
-      "name": "Blue",
-      "red": 101,
-      "green": 122,
-      "blue": 230,
+      "user": 1,
+      "name": "[00]Black",
+      "red": 0,
+      "green": 0,
+      "blue": 0,
       "alpha": 0.0
     }
   }
