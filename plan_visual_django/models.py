@@ -297,6 +297,9 @@ class PlanVisual(models.Model):
     default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
     default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
 
+    class Meta:
+        unique_together = ["plan", "name"]
+
     def __str__(self):
         return f"{self.name}"
 
