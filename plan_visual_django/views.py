@@ -213,14 +213,15 @@ def add_visual(request, plan_id):
             # This logic assumes that there will be certain default records in the database such as Color
             # and PlotableFormat records.
 
+            style_for_swimlane = visual_record.default_swimlane_plotable_style
+
             # First create default swimlane
-            default_plotable_style = PlotableStyle.objects.get(style_name="(default)")
-            swimlane = SwimlaneForVisual(
+            default_swimlane = SwimlaneForVisual.objects.create(
                 plan_visual=visual_record,
                 swim_lane_name="(default)",
-                plotable_style=default_plotable_style,
-                sequence_number=1
-            ).save()
+                plotable_style=style_for_swimlane,
+                sequence_number=1,
+            )
 
         return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
     elif request.method == "GET":
