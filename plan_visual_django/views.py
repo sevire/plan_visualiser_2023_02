@@ -198,6 +198,16 @@ def add_visual(request, plan_id):
     if request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
         if visual_form.is_valid():
+            # Before attempting to save, check whether the name of this visual already exists for this plan
+            if PlanVisual.objects.filter(plan_id=plan_id, name=visual_form.cleaned_data["name"]).exists():
+                messages.error(request, f"Name for new visual {visual_form.cleaned_data['name']} already exists - choose another one.")
+                form = VisualFormForAdd()
+                context = {
+                    'add_or_edit': 'Add',
+                    'form': visual_form
+                }
+                return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+
             # Save fields from form but don't commit so can modify other fields before comitting.
             visual_record = visual_form.save(commit=False)
 
@@ -205,7 +215,7 @@ def add_visual(request, plan_id):
             plan = Plan.objects.get(id=plan_id)
             visual_record.plan = plan
 
-            # Now can save the record
+            # Now can save and commit the record
             visual_record.save()
             messages.success(request, "New visual for plan saved successfully")
 
