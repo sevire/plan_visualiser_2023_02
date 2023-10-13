@@ -56,9 +56,11 @@ class VisualActivityAPI(APIView):
             # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
             plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
             if plan_activity.milestone_flag is True:
-                initial_plotable_shape = PlotableShape.objects.get(shape_type__name=DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME)
+                initial_plotable_shape = visual.default_milestone_shape
+                initial_plotable_style = visual.default_milestone_plotable_style
             else:
-                initial_plotable_shape = PlotableShape.objects.get(shape_type__name=DEFAULT_PLOTABLE_SHAPE_NAME)
+                initial_plotable_shape = visual.default_activity_shape
+                initial_plotable_style = visual.default_activity_plotable_style
 
             # Check whether there is already a default swimlane for this visual.  If not create one.
             try:
@@ -73,7 +75,6 @@ class VisualActivityAPI(APIView):
                 )
                 initial_swimlane.save()
 
-            initial_style = PlotableStyle.objects.get(style_name=DEFAULT_PLOTABLE_STYLE_NAME)
 
             new_visual_activity = VisualActivity(
                 visual=visual,
@@ -84,8 +85,8 @@ class VisualActivityAPI(APIView):
                 text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
                 text_vertical_alignment=DEFAULT_TEXT_VERTICAL_ALIGNMENT,
                 text_flow=DEFAULT_TEXT_FLOW,
-                plotable_shape_id=initial_plotable_shape.id,
-                plotable_style_id=initial_style.id,
+                plotable_shape=initial_plotable_shape,
+                plotable_style=initial_plotable_style,
                 swimlane_id=initial_swimlane.id,
                 enabled=True
             )
