@@ -149,7 +149,7 @@ def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag
     field_name_for_messages = data_driver['field_name_for_messages']
     foreign_keys = [] if 'foreign_keys' not in data_driver else data_driver['foreign_keys']
 
-    print_status_partial = partial(print_status, f"Add {model.__name__} records", delete_flag=delete_flag)
+    print_status_partial = partial(print_status, f"{model.__name__} records", delete_flag=delete_flag)
 
     with open(json_pathname(file), 'r') as f:
         records = json.load(f)
@@ -201,7 +201,7 @@ def print_status(phase, message, delete_flag=False):
     :return:
     """
     action = "delete" if delete_flag else "add"
-    print(f"{(action + '_' + phase):<35} : {message}")
+    print(f"{(action.capitalize() + ' ' + phase):<35} : {message}")
 
 
 def json_pathname(filename):
