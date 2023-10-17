@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from plan_visual_django.services.initialisation.db_initialisation import create_shared_data_user, add_initial_data
+from plan_visual_django.services.initialisation.db_initialisation import create_initial_users, add_initial_data
 
 
 class Command(BaseCommand):
@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
         if delete is True:
             add_initial_data(None, delete)
-            create_shared_data_user(delete=True)
+            create_initial_users(delete=True)
         else:
-            user = create_shared_data_user(delete=False)
+            user = create_initial_users(delete=False)
             add_initial_data(user, delete)
