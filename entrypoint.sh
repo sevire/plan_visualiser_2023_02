@@ -2,7 +2,8 @@
 
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
-python manage.py makesuperuser
+
+# Add common data and initial users
 python manage.py add_common_data
 
 # Reset pk sequence after adding common data with hard-coded pks.

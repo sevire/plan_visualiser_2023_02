@@ -92,6 +92,26 @@ initial_data_driver = [
     }
 ]
 
+initial_users = [
+    {
+        'username': "shared_data_user",
+        'email': 'shared_data_user@genonline.co.uk',
+        'superuser_flag': False,
+        'id': 1,  # Id needs to be fixed only for shared_data_user as used as foreign key in some shared data items.
+        'return': True  # User will be returned for use in creating initial data
+    },
+    {
+        'username': "admin",
+        'email': 'admin_user@genonline.co.uk',
+        'superuser_flag': True
+    },
+    {
+        'username': "app_user_01",
+        'email': 'initial_app_user@genonline.co.uk',
+        'superuser_flag': False
+    }
+]
+
 
 def add_initial_data(shared_data_user, delete_flag=False):
     """
@@ -188,51 +208,69 @@ def json_pathname(filename):
     return os.path.join(root, json_dir, filename)
 
 
-def create_shared_data_user(delete=False):
+def create_initial_users(delete=False):
     """
-    Creates the user which is to be used as the owner of standard data which requires a user, such as colours
-    and styles.
+    Creates users which are required when setting up a new environment.  Which are:
+    - A superuser which can be used for admin related activities
+    - A shared data user which is used for common data (colours etc) to be related to.
+    - An initial user of the app which can be used for manual testing of the app.
 
-    If delete flag is set, delete user, rather than add it (for resetting - use carefully)
+    Passwords will be generated at random and printed out at creation to avoid having to store the passwords.
+
+    If delete flag is set, delete users, rather than adding them (for resetting - use carefully)
 
     :param delete:
     :return:
     """
-    prompt_string = "shared_data_user"
-    print_status_partial = partial(print_status, "shared_data_user", delete_flag=delete)
+    prompt_string = "initial_users"
+    print_status_partial = partial(print_status, prompt_string, delete_flag=delete)
+    user_to_return = None  # Will be populated by which ever record has the return flag set
 
-    shared_data_user_name = settings.SHARED_DATA_USER_NAME
-    shared_data_user_email = settings.SHARED_DATA_USER_EMAIL
+    for user_data in initial_users:
+        print_status_partial(f"Setting up user {user_data['username']}...")
+        return_flag = user_data.get("return", False)
 
-    # Check whether this user exists
-    try:
-        shared_user = User.objects.get(username=shared_data_user_name)
-    except User.DoesNotExist:
-        if delete:
-            # Nothing to do delete and that's fine.
-            print_status_partial(f"Shared data user ({shared_data_user_name}) does not exist, no need to delete")
-            return
+        # Check whether this user exists
+        try:
+            user = User.objects.get(username=user_data['username'])
+        except User.DoesNotExist:
+            if delete:
+                # Nothing to do delete and that's fine.
+                print_status_partial(f"User ({[user_data['username']]}) does not exist, no need to delete")
+            else:
+                # No record so let's create one
+                print_status_partial(f"About to create  user ({user_data['username']})...")
+                # Password is random but printed out on creation so user can capture and login to change password
+                user_data['password'] = get_random_string(10)
+                print_status_partial(f"Password for user {user_data['username']} is {user_data['password']}")
+
+                # Choose function to use for creating user depending upon whether superuser is required or not
+                if user_data['superuser_flag'] is True:
+                    function = User.objects.create_superuser
+                else:
+                    function = User.objects.create_user
+
+                # Remove superuser flag and return flag from user_data as it's not a recognised keyword and we are using it as kwargs.
+                del user_data['superuser_flag']
+                if "return" in user_data:
+                    del user_data['return']
+
+                user = function(**user_data)
+                print_status_partial(f"User ({user}) created")
+                if return_flag is True:
+                    print_status_partial(f"Setting user to return {user}")
+                    user_to_return = user
         else:
-            # No record so let's create one
-            user_password = os.getenv('SHARED_DATA_USER_PASSWORD', 'dummy987')
+            # User exists, so either delete or leave
+            if delete:
+                print_status_partial(f"User ({user_data['username']}) exists, deleting...")
+                user.delete()
+                print_status_partial(f"User ({user_data['username']}) exists, deleted...")
+            else:
+                print_status_partial(f"User ({user}) already exists")
+                if return_flag is True:
+                    print_status_partial(f"Setting user to return {user}")
+                    user_to_return = user
 
-            print_status_partial(f"Creating shared data user ({shared_data_user_name})...")
-            # Password can be random, we don't need to login (can use admin to examine database)
-            password = get_random_string(10)
-            user = User.objects.create_user(
-                id=1,
-                username=shared_data_user_name,
-                email=shared_data_user_email,
-                password=password
-            )
-            print_status_partial(f"Shared data user ({shared_data_user_name}) created")
-            return user
-    else:
-        # User exists, so either delete or leave
-        if delete:
-            print_status_partial(f"Shared data user ({shared_data_user_name}) exists, deleting...")
-            shared_user.delete()
-            print_status_partial(f"Shared data user ({shared_data_user_name}) exists, deleted...")
-        else:
-            print_status_partial(f"Shared data user ({shared_data_user_name}) already exists")
-            return User.objects.get(username=shared_data_user_name)
+    if not delete:
+        return user_to_return

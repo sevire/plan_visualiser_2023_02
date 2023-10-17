@@ -177,6 +177,7 @@ EMAIL_USE_SSL = True
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SHARED_DATA_USER_NAME = 'shared_data_user'
+SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user in initial_users within add_common_data command
+# ToDo: Remove duplication of shared_data_user name between settings and add_common_data command
 SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
 SHARED_DATA_PREFIX = "AAA"
