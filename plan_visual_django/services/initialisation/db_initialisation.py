@@ -1,12 +1,10 @@
 import json
 import os.path
 from functools import partial
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils.crypto import get_random_string
-
 from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, PlanField, \
     PlotableShapeType, PlotableShape, FileType, Font
 
