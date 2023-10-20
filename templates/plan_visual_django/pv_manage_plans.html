@@ -12,6 +12,9 @@
             <th>Plan Name</th>
             <th>File Name</th>
             <th>File Type</th>
+            <th># Activities</th>
+            <th># Milestones</th>
+            <th># Levels</th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +23,9 @@
             <td>{{ plan.plan_name }}</td>
             <td>{{ plan.file_name }}</td>
             <td>{{ plan.file_type }}</td>
+            <td>{{ plan.get_plan_summary_data.number_of_activities }}</td>
+            <td>{{ plan.get_plan_summary_data.number_of_milestones }}</td>
+            <td>{{ plan.get_plan_summary_data.levels }}</td>
             <td><a href="manage-visuals/{{ plan.id }}" class="badge bg-primary">Manage Visuals</a></td>
             <td><a href="re-upload-plan/{{ plan.id }}" class="badge bg-primary">Upload Latest</a></td>
             <td><a href="delete-plan/{{ plan.id }}" class="badge bg-danger" onclick="return confirm('Are you sure you want to delete this?')">Delete</a></td>

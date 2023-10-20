@@ -1,10 +1,26 @@
 {% extends "plan_visual_django/pv_base.html" %}
 
-{% block page_heading %}Manage Visuals for Plan - {{ plan.file_name }}{% endblock %}
+{% block page_heading %}Manage Visuals for Plan - {{ plan.plan_name }}{% endblock %}
 
 {% block main_content %}
+    <table class="table table-sm w-auto mb-5">
+        <thead>
+            <tr>
+                <th colspan="2" class="table-light text-center">Plan Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for summary_data in plan_summary_data_display %}
+                <tr>
+                    <th scope="row">{{ summary_data.0 }}</th>
+                    <td>{{ summary_data.1 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-visual/{{ plan.id }}'">Add Visual</button>
-    <table class="table">
+    <table class="table table-sm w-auto">
         <thead>
             <tr>
                 <th>Visual Name</th>
