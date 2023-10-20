@@ -57,9 +57,7 @@ def add_plan(request):
                 # Only store fields which are part of the plan for the given file type.
 
                 mapping_type = plan.file_type.plan_field_mapping_type
-
                 plan_file = plan.file.path
-
                 file_reader = ExcelXLSFileReader()
 
                 try:
