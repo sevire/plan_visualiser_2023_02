@@ -10,7 +10,7 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from plan_visual_django.exceptions import DuplicateSwimlaneException, NoActivitiesInVisualException
+from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
@@ -18,6 +18,7 @@ from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity,
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.general.string_utilities import indent
+from plan_visual_django.services.plan_file_utilities.plan_parsing import parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
@@ -60,27 +61,11 @@ def add_plan(request):
                 plan_file = plan.file.path
 
                 file_reader = ExcelXLSFileReader()
-                raw_data = file_reader.read(plan_file)
-                parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
 
-                for activity in parsed_data:
-                    # Note that the duration field isn't stored, but used to work out whether the activity is a
-                    # milestone.
-                    if activity['duration'] == 0:
-                        milestone_flag = True
-                    else:
-                        milestone_flag = False
-
-                    record = PlanActivity(
-                        plan=plan,
-                        unique_sticky_activity_id=activity['unique_sticky_activity_id'],
-                        activity_name=activity['activity_name'],
-                        milestone_flag=milestone_flag,
-                        start_date=activity['start_date'],
-                        end_date=activity['end_date'],
-                        level=activity['level'] if 'level' in activity else 1,
-                    )
-                    record.save()
+                try:
+                    parse_plan(plan, plan_file, mapping_type, file_reader)
+                except PlanParseError as e:
+                    messages.error(request, f"Plan parse error parsing {plan_file}, {e}")
 
                 messages.success(request, "New plan saved successfully")
         else:
