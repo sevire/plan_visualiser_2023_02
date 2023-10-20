@@ -343,9 +343,14 @@ def manage_visuals(request, plan_id):
     else:
         plan_record = Plan.objects.get(id=plan_id)
         visuals = plan_record.planvisual_set.all()
+        plan_summary_data = plan_record.get_plan_summary_data()
+
+        plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
+
         context = {
             'plan': plan_record,
-            'visuals': visuals
+            'visuals': visuals,
+            'plan_summary_data_display': plan_summary_data_display
         }
         return render(request, "plan_visual_django/pv_manage_visuals.html", context)
 
