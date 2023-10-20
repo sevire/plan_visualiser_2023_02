@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint
 from plan_visual_django.services.general.date_utilities import date_from_string
+from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 
 
 class PlanField(models.Model):
@@ -133,7 +134,14 @@ class Plan(models.Model):
             [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.file_name}:{self.file_type}'
+        return f'{self.plan_name}({self.file_name}:{self.file_type})'
+
+    def get_plan_summary_data(self):
+        """
+        Extracts summary information from the plan. This is used to populate the plan summary page.
+        """
+        summary = extract_summary_plan_info(self)
+        return summary
 
 
 class PlanActivity(models.Model):

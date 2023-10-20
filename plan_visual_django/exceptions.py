@@ -4,3 +4,7 @@ class DuplicateSwimlaneException(Exception):
 
 class NoActivitiesInVisualException(Exception):
     pass
+
+
+class PlanParseError(Exception):
+    pass
