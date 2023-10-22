@@ -41,7 +41,6 @@ def extract_summary_plan_info(plan) -> dict:
     from plan_visual_django.models import PlanActivity
     activities = PlanActivity.objects.filter(plan=plan)
     milestones = activities.filter(milestone_flag=True)
-    non_milestones = activities.filter(milestone_flag=False)
     earliest_start_date = activities.order_by('start_date').first().start_date
     latest_end_date = activities.order_by('-end_date').first().end_date
     duration = latest_end_date - earliest_start_date
