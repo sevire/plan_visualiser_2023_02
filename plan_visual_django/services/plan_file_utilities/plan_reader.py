@@ -205,8 +205,14 @@ class PlanParser():
         for plan_record in data:
             parsed_data_record = {}
             ignore_record = False
-            # Iterate through the fields for a plan map field name and input type from the plan file that has been read.
+
+            # Depending upon the mapping type, we will be expecting to see a particular set of fields for each record.
+            # So we iterate through the expected fields and look for a field in the input record with the associated
+            # input field name.  If we don't find it, but that field is compulsory, then we will flag an error as we
+            # can't process the file.
             for plan_field in plan_fields:
+                # If we've had an error on this record then we will ignore remaining fields and not include the record
+                # in the plan.
                 if not ignore_record:
                     field_present = True  # Adjust if there is no column for the field, and it is optional
                     mapped_field_column = None
