@@ -1,2508 +1,1066 @@
 [
-{
+  {
     "model": "plan_visual_django.planfield",
     "pk": 1,
     "fields": {
-        "field_name": "unique_sticky_activity_id",
-        "field_type": "STR",
-        "field_description": "xxx",
-        "required_flag": true,
-        "sort_index": 100
+      "field_name": "unique_sticky_activity_id",
+      "field_type": "STR",
+      "field_description": "xxx",
+      "required_flag": true,
+      "sort_index": 100
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planfield",
     "pk": 2,
     "fields": {
-        "field_name": "activity_name",
-        "field_type": "STR",
-        "field_description": "The name of the activity which will be displayed on the visual.",
-        "required_flag": true,
-        "sort_index": 200
+      "field_name": "activity_name",
+      "field_type": "STR",
+      "field_description": "The name of the activity which will be displayed on the visual.",
+      "required_flag": true,
+      "sort_index": 200
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planfield",
     "pk": 3,
     "fields": {
-        "field_name": "duration",
-        "field_type": "INT",
-        "field_description": "Number of days duration for the activity.  Zero means that the activity is a milestone.",
-        "required_flag": true,
-        "sort_index": 300
+      "field_name": "duration",
+      "field_type": "INT",
+      "field_description": "Number of days duration for the activity.  Zero means that the activity is a milestone.",
+      "required_flag": true,
+      "sort_index": 300
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planfield",
     "pk": 4,
     "fields": {
-        "field_name": "start_date",
-        "field_type": "DATE",
-        "field_description": "The start date of the activity (date only, no time element).",
-        "required_flag": true,
-        "sort_index": 400
+      "field_name": "start_date",
+      "field_type": "DATE",
+      "field_description": "The start date of the activity (date only, no time element).",
+      "required_flag": true,
+      "sort_index": 400
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planfield",
     "pk": 5,
     "fields": {
-        "field_name": "end_date",
-        "field_type": "DATE",
-        "field_description": "End date of activity.",
-        "required_flag": true,
-        "sort_index": 500
+      "field_name": "end_date",
+      "field_type": "DATE",
+      "field_description": "End date of activity.",
+      "required_flag": true,
+      "sort_index": 500
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planfield",
     "pk": 6,
     "fields": {
-        "field_name": "level",
-        "field_type": "INT",
-        "field_description": "Level of this activity - to help construct the hierarchy within the plan which will then drive option in the visualisation functionality.",
-        "required_flag": false,
-        "sort_index": 600
+      "field_name": "level",
+      "field_type": "INT",
+      "field_description": "Level of this activity - to help construct the hierarchy within the plan which will then drive option in the visualisation functionality.",
+      "required_flag": false,
+      "sort_index": 600
     }
-},
-{
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 7,
+    "fields": {
+      "field_name": "milestone_flag",
+      "field_type": "BOOL",
+      "field_description": "Not required in input file, is derived from duration and is True if duration is zero.",
+      "required_flag": false,
+      "sort_index": 250
+    }
+  },
+  {
     "model": "plan_visual_django.planfieldmappingtype",
     "pk": 1,
     "fields": {
-        "name": "Excel (SmartSheetDefault)",
-        "description": "This represents the standard fields output from SmartSheet (but with the level formula added)"
+      "name": "Excel (SmartSheetDefault)",
+      "description": "This represents the standard fields output from SmartSheet (but with the level formula added)"
     }
-},
-{
+  },
+  {
+    "model": "plan_visual_django.planfieldmappingtype",
+    "pk": 2,
+    "fields": {
+      "name": "Excel (MS Project Default)",
+      "description": "MS Project standard export"
+    }
+  },
+  {
+    "model": "plan_visual_django.planfieldmappingtype",
+    "pk": 3,
+    "fields": {
+      "name": "test",
+      "description": "tert"
+    }
+  },
+  {
+    "model": "plan_visual_django.planfieldmappingtype",
+    "pk": 4,
+    "fields": {
+      "name": "test1",
+      "description": "test1"
+    }
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 1,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 1,
-        "input_field_name": "Unique Sticky ID",
-        "input_field_type": "STR"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 1,
+      "input_field_name": "Unique Sticky ID",
+      "input_field_type": "STR"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 2,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 2,
-        "input_field_name": "Task Name",
-        "input_field_type": "STR"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 2,
+      "input_field_name": "Task Name",
+      "input_field_type": "STR"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 3,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 3,
-        "input_field_name": "Duration",
-        "input_field_type": "STR_nnd"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 3,
+      "input_field_name": "Duration",
+      "input_field_type": "STR_nnd"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 4,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 4,
-        "input_field_name": "Start",
-        "input_field_type": "DATE"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 4,
+      "input_field_name": "Start",
+      "input_field_type": "DATE"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 5,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 5,
-        "input_field_name": "Finish",
-        "input_field_type": "DATE"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 5,
+      "input_field_name": "Finish",
+      "input_field_type": "DATE"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planmappedfield",
     "pk": 6,
     "fields": {
-        "plan_field_mapping_type": 1,
-        "mapped_field": 6,
-        "input_field_name": "Level #",
-        "input_field_type": "INT"
+      "plan_field_mapping_type": 1,
+      "mapped_field": 6,
+      "input_field_name": "Level #",
+      "input_field_type": "INT"
     }
-},
-{
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 7,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 1,
+      "input_field_name": "ID",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 8,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 2,
+      "input_field_name": "Task_Name",
+      "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 9,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 3,
+      "input_field_name": "Duration",
+      "input_field_type": "STR_duration_msp"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 10,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 4,
+      "input_field_name": "Start_Date",
+      "input_field_type": "STR_DATE_DMY_02"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 11,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 5,
+      "input_field_name": "Finish_Date",
+      "input_field_type": "STR_DATE_DMY_02"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 12,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 6,
+      "input_field_name": "Outline_Level",
+      "input_field_type": "STR"
+    }
+  },
+  {
     "model": "plan_visual_django.filetype",
     "pk": 1,
     "fields": {
-        "file_type_name": "Excel (.xlsx)",
-        "file_type_description": "Modern Excel Format",
-        "plan_field_mapping_type": 1
+      "file_type_name": "Excel (modern) Smartsheet Export",
+      "file_type_description": "Modern Excel Format",
+      "plan_field_mapping_type": 1
     }
-},
-{
+  },
+  {
+    "model": "plan_visual_django.filetype",
+    "pk": 2,
+    "fields": {
+      "file_type_name": "Excel (modern) MSP Export",
+      "file_type_description": "Project export format 01",
+      "plan_field_mapping_type": 2
+    }
+  },
+  {
     "model": "plan_visual_django.plan",
-    "pk": 11,
-    "fields": {
-        "user": 2,
-        "original_file_name": "PV-Test-01.xlsx",
-        "file": "plan_files/PV-Test-01_1cZjSCM.xlsx",
-        "file_type": 1
-    }
-},
-{
-    "model": "plan_visual_django.plan",
-    "pk": 13,
-    "fields": {
-        "user": 1,
-        "original_file_name": "PV-Test-01.xlsx",
-        "file": "plan_files/PV-Test-01_JeKBNAa.xlsx",
-        "file_type": 1
-    }
-},
-{
-    "model": "plan_visual_django.plan",
-    "pk": 25,
-    "fields": {
-        "user": 1,
-        "original_file_name": "87-763-RePlan-2022-06-07.xlsx",
-        "file": "plan_files/87-763-RePlan-2022-06-07.xlsx",
-        "file_type": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 8,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0007",
-        "activity_name": "Project Start",
-        "duration": 0,
-        "start_date": "2023-01-01",
-        "end_date": "2023-01-01",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 9,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0001",
-        "activity_name": "Activity 1",
-        "duration": 15,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-20",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 10,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0002",
-        "activity_name": "Activity 2",
-        "duration": 15,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-20",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 11,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0005",
-        "activity_name": "Activity 5",
-        "duration": 10,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-13",
-        "level": 2
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 12,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0006",
-        "activity_name": "Another activity",
-        "duration": 5,
-        "start_date": "2023-01-16",
-        "end_date": "2023-01-20",
-        "level": 2
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 13,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0003",
-        "activity_name": "Activity 3",
-        "duration": 5,
-        "start_date": "2023-01-23",
-        "end_date": "2023-01-27",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 14,
-    "fields": {
-        "plan": 11,
-        "unique_sticky_activity_id": "ID-0004",
-        "activity_name": "Activity 4",
-        "duration": 10,
-        "start_date": "2023-01-30",
-        "end_date": "2023-02-10",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 22,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0007",
-        "activity_name": "Project Start",
-        "duration": 0,
-        "start_date": "2023-01-01",
-        "end_date": "2023-01-01",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 23,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0001",
-        "activity_name": "Activity 1",
-        "duration": 15,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-20",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 24,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0002",
-        "activity_name": "Activity 2",
-        "duration": 15,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-20",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 25,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0005",
-        "activity_name": "Activity 5",
-        "duration": 10,
-        "start_date": "2023-01-02",
-        "end_date": "2023-01-13",
-        "level": 2
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 26,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0006",
-        "activity_name": "Another activity",
-        "duration": 5,
-        "start_date": "2023-01-16",
-        "end_date": "2023-01-20",
-        "level": 2
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 27,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0003",
-        "activity_name": "Activity 3",
-        "duration": 5,
-        "start_date": "2023-01-23",
-        "end_date": "2023-01-27",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 28,
-    "fields": {
-        "plan": 13,
-        "unique_sticky_activity_id": "ID-0004",
-        "activity_name": "Activity 4",
-        "duration": 10,
-        "start_date": "2023-01-30",
-        "end_date": "2023-02-10",
-        "level": 0
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 169,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-2",
-        "activity_name": "Financier Upgrade",
-        "duration": 115,
-        "start_date": "2022-06-01",
-        "end_date": "2022-11-08",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 170,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-3",
-        "activity_name": "Environment Build and Management",
-        "duration": 18,
-        "start_date": "2022-06-01",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 171,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-4",
-        "activity_name": "MGMT",
-        "duration": 15,
-        "start_date": "2022-06-06",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 172,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-5",
-        "activity_name": "Complete RDS Configuration",
-        "duration": 15,
-        "start_date": "2022-06-06",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 173,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-6",
-        "activity_name": "Web Help complete network routing configuration",
-        "duration": 0,
-        "start_date": "2022-06-24",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 174,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-7",
-        "activity_name": "Wait for Web Help to carry out configuration",
-        "duration": 14,
-        "start_date": "2022-06-06",
-        "end_date": "2022-06-23",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 175,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-8",
-        "activity_name": "Complete RDS configuration",
-        "duration": 1,
-        "start_date": "2022-06-24",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 176,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-9",
-        "activity_name": "MGMT Environment Available for Testing",
-        "duration": 0,
-        "start_date": "2022-06-24",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 177,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-10",
-        "activity_name": "ACPT",
-        "duration": 10,
-        "start_date": "2022-06-01",
-        "end_date": "2022-06-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 178,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-11",
-        "activity_name": "Complete tasks to switch from 9.0 to 9.8",
-        "duration": 10,
-        "start_date": "2022-06-01",
-        "end_date": "2022-06-14",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 179,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-12",
-        "activity_name": "ACPT environment available",
-        "duration": 0,
-        "start_date": "2022-06-15",
-        "end_date": "2022-06-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 180,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-13",
-        "activity_name": "PERF/PROD",
-        "duration": 6,
-        "start_date": "2022-06-10",
-        "end_date": "2022-06-17",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 181,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-14",
-        "activity_name": "Sign off of PERF/PROD Visio / Spec",
-        "duration": 0,
-        "start_date": "2022-06-10",
-        "end_date": "2022-06-10",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 182,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-15",
-        "activity_name": "Complete build of PERF/PROD (to WD deployment)",
-        "duration": 5,
-        "start_date": "2022-06-13",
-        "end_date": "2022-06-17",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 183,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-16",
-        "activity_name": "PERF/PROD Environment Available for Testing",
-        "duration": 0,
-        "start_date": "2022-06-17",
-        "end_date": "2022-06-17",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 184,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-17",
-        "activity_name": "All environments build complete",
-        "duration": 0,
-        "start_date": "2022-06-24",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 185,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-18",
-        "activity_name": "Testing",
-        "duration": 65,
-        "start_date": "2022-06-15",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 186,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-19",
-        "activity_name": "MGMT",
-        "duration": 35,
-        "start_date": "2022-06-27",
-        "end_date": "2022-08-12",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 187,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-20",
-        "activity_name": "Carry out UAT (MGMT)",
-        "duration": 35,
-        "start_date": "2022-06-27",
-        "end_date": "2022-08-12",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 188,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-21",
-        "activity_name": "Testing (MGMT) Complete",
-        "duration": 0,
-        "start_date": "2022-08-12",
-        "end_date": "2022-08-12",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 189,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-22",
-        "activity_name": "ACPT",
-        "duration": 40,
-        "start_date": "2022-06-15",
-        "end_date": "2022-08-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 190,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-23",
-        "activity_name": "Carry out UAT (ACPT)",
-        "duration": 40,
-        "start_date": "2022-06-15",
-        "end_date": "2022-08-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 191,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-24",
-        "activity_name": "Testing (ACPT) Complete",
-        "duration": 0,
-        "start_date": "2022-08-09",
-        "end_date": "2022-08-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 192,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-25",
-        "activity_name": "PERF/PROD",
-        "duration": 62,
-        "start_date": "2022-06-20",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 193,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-26",
-        "activity_name": "Smoke/System Test (PERF/PROD)",
-        "duration": 10,
-        "start_date": "2022-06-20",
-        "end_date": "2022-07-01",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 194,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-27",
-        "activity_name": "Carry out UAT (PERF/PROD)",
-        "duration": 52,
-        "start_date": "2022-07-04",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 195,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-28",
-        "activity_name": "UAT (PERF/PROD Part 1)",
-        "duration": 10,
-        "start_date": "2022-07-04",
-        "end_date": "2022-07-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 196,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-29",
-        "activity_name": "Non-Function Test (Early)",
-        "duration": 6,
-        "start_date": "2022-07-18",
-        "end_date": "2022-07-25",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 197,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-30",
-        "activity_name": "UAT (PERF/PROD Part 2)",
-        "duration": 20,
-        "start_date": "2022-07-26",
-        "end_date": "2022-08-22",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 198,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-31",
-        "activity_name": "Non-Function (Late)",
-        "duration": 6,
-        "start_date": "2022-08-23",
-        "end_date": "2022-08-30",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 199,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-32",
-        "activity_name": "UAT (PERF/PROD Part 3)",
-        "duration": 10,
-        "start_date": "2022-08-31",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 200,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-33",
-        "activity_name": "Testing (PERF/PROD) Complete",
-        "duration": 0,
-        "start_date": "2022-09-13",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 201,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-34",
-        "activity_name": "All (non-prod) Testing Complete",
-        "duration": 0,
-        "start_date": "2022-09-13",
-        "end_date": "2022-09-13",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 202,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-35",
-        "activity_name": "Go Live Readiness",
-        "duration": 20,
-        "start_date": "2022-09-14",
-        "end_date": "2022-10-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 203,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-36",
-        "activity_name": "Go Live (without Genesis Impact)",
-        "duration": 0,
-        "start_date": "2022-10-11",
-        "end_date": "2022-10-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 204,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-37",
-        "activity_name": "Estimated Genesis Impact",
-        "duration": 20,
-        "start_date": "2022-10-12",
-        "end_date": "2022-11-08",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 205,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-38",
-        "activity_name": "Go Live (with Genesis impact)",
-        "duration": 0,
-        "start_date": "2022-11-08",
-        "end_date": "2022-11-08",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 206,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-39",
-        "activity_name": "New FS Product",
-        "duration": 200,
-        "start_date": "2022-05-02",
-        "end_date": "2023-02-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 207,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-40",
-        "activity_name": "Plan Start",
-        "duration": 0,
-        "start_date": "2022-05-02",
-        "end_date": "2022-05-02",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 208,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-41",
-        "activity_name": "IOOP Business Design",
-        "duration": 95,
-        "start_date": "2022-05-02",
-        "end_date": "2022-09-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 209,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-42",
-        "activity_name": "Other business design activities (consumer duty etc)",
-        "duration": 65,
-        "start_date": "2022-05-02",
-        "end_date": "2022-07-29",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 210,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-43",
-        "activity_name": "Carry out other design acitivities",
-        "duration": 60,
-        "start_date": "2022-05-02",
-        "end_date": "2022-07-22",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 211,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-44",
-        "activity_name": "Review / sign off other design activities",
-        "duration": 5,
-        "start_date": "2022-07-25",
-        "end_date": "2022-07-29",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 212,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-45",
-        "activity_name": "Research (Chetwood, Market and Behavioural)",
-        "duration": 65,
-        "start_date": "2022-06-13",
-        "end_date": "2022-09-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 213,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-46",
-        "activity_name": "Conduct Chetwoork research)",
-        "duration": 60,
-        "start_date": "2022-06-13",
-        "end_date": "2022-09-02",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 214,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-47",
-        "activity_name": "Review / sign off requirements from Chetwood research",
-        "duration": 5,
-        "start_date": "2022-09-05",
-        "end_date": "2022-09-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 215,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-48",
-        "activity_name": "High level business requirements baselined",
-        "duration": 0,
-        "start_date": "2022-06-24",
-        "end_date": "2022-06-24",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 216,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-49",
-        "activity_name": "v1 Detailed business requirements baselined",
-        "duration": 0,
-        "start_date": "2022-07-29",
-        "end_date": "2022-07-29",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 217,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-50",
-        "activity_name": "v2 Detailed business requirements baselined",
-        "duration": 0,
-        "start_date": "2022-09-09",
-        "end_date": "2022-09-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 218,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-51",
-        "activity_name": "Business Implementation (training/comms etc)",
-        "duration": 60,
-        "start_date": "2022-11-14",
-        "end_date": "2023-02-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 219,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-52",
-        "activity_name": "IOOP Technology",
-        "duration": 120,
-        "start_date": "2022-07-01",
-        "end_date": "2022-12-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 220,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-53",
-        "activity_name": "IT Core System Changes",
-        "duration": 81,
-        "start_date": "2022-07-22",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 221,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-54",
-        "activity_name": "Define requirements for new set of terms",
-        "duration": 10,
-        "start_date": "2022-08-01",
-        "end_date": "2022-08-12",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 222,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-55",
-        "activity_name": "Get definition of changes to Charge File from Welcom",
-        "duration": 0,
-        "start_date": "2022-07-22",
-        "end_date": "2022-07-22",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 223,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-56",
-        "activity_name": "Define other requirements (RTI, charge file, statements/credit, other)",
-        "duration": 30,
-        "start_date": "2022-08-08",
-        "end_date": "2022-09-16",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 224,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-57",
-        "activity_name": "Define requirements to drive changes to charge file",
-        "duration": 30,
-        "start_date": "2022-08-08",
-        "end_date": "2022-09-16",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 225,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-58",
-        "activity_name": "Define requirements to drive RTI changes",
-        "duration": 30,
-        "start_date": "2022-08-08",
-        "end_date": "2022-09-16",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 226,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-59",
-        "activity_name": "Define requirements to drive statements and credit agreement changes",
-        "duration": 30,
-        "start_date": "2022-08-08",
-        "end_date": "2022-09-16",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 227,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-60",
-        "activity_name": "Define other requirements",
-        "duration": 30,
-        "start_date": "2022-08-08",
-        "end_date": "2022-09-16",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 228,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-61",
-        "activity_name": "IT Core system changes (new set of terms)",
-        "duration": 20,
-        "start_date": "2022-08-15",
-        "end_date": "2022-09-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 229,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-62",
-        "activity_name": "IT Core system changes (other)",
-        "duration": 40,
-        "start_date": "2022-09-19",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 230,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-63",
-        "activity_name": "Digital Changes",
-        "duration": 45,
-        "start_date": "2022-09-12",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 231,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-64",
-        "activity_name": "Carry out digital changes",
-        "duration": 45,
-        "start_date": "2022-09-12",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 232,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-65",
-        "activity_name": "Welcom",
-        "duration": 120,
-        "start_date": "2022-07-01",
-        "end_date": "2022-12-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 233,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-66",
-        "activity_name": "Receive scoping document (high level requirements + ownership)",
-        "duration": 0,
-        "start_date": "2022-07-01",
-        "end_date": "2022-07-01",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 234,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-67",
-        "activity_name": "Issue draft RFC",
-        "duration": 0,
-        "start_date": "2022-07-08",
-        "end_date": "2022-07-08",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 235,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-68",
-        "activity_name": "Sign off RFC",
-        "duration": 0,
-        "start_date": "2022-07-15",
-        "end_date": "2022-07-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 236,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-69",
-        "activity_name": "Provide spec for changes to Charge File (TBD)",
-        "duration": 0,
-        "start_date": "2022-07-22",
-        "end_date": "2022-07-22",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 237,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-70",
-        "activity_name": "Carry out changes to Management Centre",
-        "duration": 20,
-        "start_date": "2022-09-14",
-        "end_date": "2022-10-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 238,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-71",
-        "activity_name": "Consultancy Support",
-        "duration": 30,
-        "start_date": "2022-07-15",
-        "end_date": "2022-08-25",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 239,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-72",
-        "activity_name": "Environment and testing support",
-        "duration": 80,
-        "start_date": "2022-08-26",
-        "end_date": "2022-12-15",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 240,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-73",
-        "activity_name": "Environments",
-        "duration": 120,
-        "start_date": "2022-06-27",
-        "end_date": "2022-12-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 241,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-74",
-        "activity_name": "Build PERF environment",
-        "duration": 30,
-        "start_date": "2022-06-27",
-        "end_date": "2022-08-05",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 242,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-75",
-        "activity_name": "Prep PERF for IOOP testing",
-        "duration": 5,
-        "start_date": "2022-11-07",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 243,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-76",
-        "activity_name": "Prep MGMT environment",
-        "duration": 10,
-        "start_date": "2022-10-31",
-        "end_date": "2022-11-11",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 244,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-77",
-        "activity_name": "Prep ACPT environment",
-        "duration": 10,
-        "start_date": "2022-11-14",
-        "end_date": "2022-11-25",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 245,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-78",
-        "activity_name": "Build TRNG environment",
-        "duration": 10,
-        "start_date": "2022-11-28",
-        "end_date": "2022-12-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 246,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-79",
-        "activity_name": "Testing",
-        "duration": 50,
-        "start_date": "2022-11-14",
-        "end_date": "2023-01-20",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 247,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-80",
-        "activity_name": "PERF Regression Testing",
-        "duration": 10,
-        "start_date": "2022-11-14",
-        "end_date": "2022-11-25",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 248,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-81",
-        "activity_name": "ACPT Acquisition and Order Auth UAT",
-        "duration": 10,
-        "start_date": "2022-11-28",
-        "end_date": "2022-12-09",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 249,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-82",
-        "activity_name": "Business UAT (MGMT)",
-        "duration": 50,
-        "start_date": "2022-11-14",
-        "end_date": "2023-01-20",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 250,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-83",
-        "activity_name": "Implementation",
-        "duration": 30,
-        "start_date": "2023-01-23",
-        "end_date": "2023-03-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 251,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-84",
-        "activity_name": "Go Live Readiness",
-        "duration": 10,
-        "start_date": "2023-01-23",
-        "end_date": "2023-02-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 252,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-85",
-        "activity_name": "Go Live (without Genesis impact)",
-        "duration": 0,
-        "start_date": "2023-02-03",
-        "end_date": "2023-02-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 253,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-86",
-        "activity_name": "Estimated Genesis Impact",
-        "duration": 20,
-        "start_date": "2023-02-06",
-        "end_date": "2023-03-03",
-        "level": 1
-    }
-},
-{
-    "model": "plan_visual_django.planactivity",
-    "pk": 254,
-    "fields": {
-        "plan": 25,
-        "unique_sticky_activity_id": "ID-87",
-        "activity_name": "Go Live (with Genesis impact)",
-        "duration": 0,
-        "start_date": "2023-03-03",
-        "end_date": "2023-03-03",
-        "level": 1
-    }
-},
-{
+    "pk": 2,
+    "fields": {
+      "user": 7,
+      "plan_name": "Plan 1",
+      "file_name": "SmartSheetVisualProject-01-3.xlsx",
+      "file": "plan_files/SmartSheetVisualProject-01-3_XzjZ4ZL.xlsx",
+      "file_type": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 471,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-026",
+      "activity_name": "Project Start",
+      "milestone_flag": true,
+      "start_date": "2023-09-01",
+      "end_date": "2023-09-01",
+      "level": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 472,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-001",
+      "activity_name": "Activity 1",
+      "milestone_flag": false,
+      "start_date": "2023-09-01",
+      "end_date": "2023-10-26",
+      "level": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 473,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-002",
+      "activity_name": "Activity 2",
+      "milestone_flag": false,
+      "start_date": "2023-09-01",
+      "end_date": "2023-09-14",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 474,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-003",
+      "activity_name": "Activity 3",
+      "milestone_flag": false,
+      "start_date": "2023-09-15",
+      "end_date": "2023-10-12",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 475,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-004",
+      "activity_name": "Activity 4",
+      "milestone_flag": false,
+      "start_date": "2023-10-13",
+      "end_date": "2023-10-26",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 476,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-005",
+      "activity_name": "Milestone 2",
+      "milestone_flag": true,
+      "start_date": "2023-10-26",
+      "end_date": "2023-10-26",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 477,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-006",
+      "activity_name": "Activity 6",
+      "milestone_flag": false,
+      "start_date": "2023-10-27",
+      "end_date": "2023-10-30",
+      "level": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 478,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-007",
+      "activity_name": "Activity 7",
+      "milestone_flag": false,
+      "start_date": "2023-10-27",
+      "end_date": "2023-10-27",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 479,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-008",
+      "activity_name": "Activity 8",
+      "milestone_flag": false,
+      "start_date": "2023-10-30",
+      "end_date": "2023-10-30",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 480,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-009",
+      "activity_name": "Milestone 3",
+      "milestone_flag": true,
+      "start_date": "2023-10-30",
+      "end_date": "2023-10-30",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 481,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-010",
+      "activity_name": "Activity 10",
+      "milestone_flag": false,
+      "start_date": "2023-10-30",
+      "end_date": "2024-04-24",
+      "level": 1
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 482,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-011",
+      "activity_name": "Activity 11",
+      "milestone_flag": false,
+      "start_date": "2023-10-30",
+      "end_date": "2023-11-01",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 483,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-012",
+      "activity_name": "Activity 12",
+      "milestone_flag": false,
+      "start_date": "2023-11-02",
+      "end_date": "2023-11-08",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 484,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-013",
+      "activity_name": "Activity 13",
+      "milestone_flag": false,
+      "start_date": "2023-11-09",
+      "end_date": "2023-11-22",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 485,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-014",
+      "activity_name": "Activity 14",
+      "milestone_flag": false,
+      "start_date": "2023-11-02",
+      "end_date": "2023-11-22",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 486,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-015",
+      "activity_name": "Milestone 4",
+      "milestone_flag": true,
+      "start_date": "2023-11-22",
+      "end_date": "2023-11-22",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 487,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-016",
+      "activity_name": "Activity 16",
+      "milestone_flag": false,
+      "start_date": "2023-11-23",
+      "end_date": "2024-03-27",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 488,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-017",
+      "activity_name": "Activity 17",
+      "milestone_flag": false,
+      "start_date": "2023-11-23",
+      "end_date": "2023-12-20",
+      "level": 3
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 489,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-018",
+      "activity_name": "Activity 18",
+      "milestone_flag": false,
+      "start_date": "2023-11-23",
+      "end_date": "2024-01-17",
+      "level": 3
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 490,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-019",
+      "activity_name": "Activity 19",
+      "milestone_flag": false,
+      "start_date": "2023-11-23",
+      "end_date": "2023-11-29",
+      "level": 4
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 491,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-020",
+      "activity_name": "Milestone 5",
+      "milestone_flag": true,
+      "start_date": "2023-11-29",
+      "end_date": "2023-11-29",
+      "level": 4
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 492,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-021",
+      "activity_name": "Activity 21",
+      "milestone_flag": false,
+      "start_date": "2023-11-23",
+      "end_date": "2024-01-17",
+      "level": 4
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 493,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-022",
+      "activity_name": "Activity 22",
+      "milestone_flag": false,
+      "start_date": "2024-01-18",
+      "end_date": "2024-03-27",
+      "level": 3
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 494,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-023",
+      "activity_name": "Activity 23",
+      "milestone_flag": false,
+      "start_date": "2024-03-28",
+      "end_date": "2024-04-24",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 495,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-024",
+      "activity_name": "Activity 24",
+      "milestone_flag": false,
+      "start_date": "2024-01-18",
+      "end_date": "2024-01-31",
+      "level": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.planactivity",
+    "pk": 496,
+    "fields": {
+      "plan": 2,
+      "unique_sticky_activity_id": "ID-025",
+      "activity_name": "Milestone 6",
+      "milestone_flag": true,
+      "start_date": "2024-01-31",
+      "end_date": "2024-01-31",
+      "level": 2
+    }
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 1,
     "fields": {
-        "name": "Red",
-        "red": 255,
-        "green": 0,
-        "blue": 0,
-        "alpha": 0.0
+      "user": 1,
+      "name": "[01]Red",
+      "red": 240,
+      "green": 65,
+      "blue": 90,
+      "alpha": 0.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 2,
     "fields": {
-        "name": "Green",
-        "red": 112,
-        "green": 173,
-        "blue": 71,
-        "alpha": 0.0
+      "user": 1,
+      "name": "[02]Red-",
+      "red": 215,
+      "green": 51,
+      "blue": 51,
+      "alpha": 0.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 3,
     "fields": {
-        "name": "Blue",
-        "red": 0,
-        "green": 0,
-        "blue": 255,
-        "alpha": 0.0
+      "user": 1,
+      "name": "[03]Red--",
+      "red": 173,
+      "green": 51,
+      "blue": 51,
+      "alpha": 0.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 4,
     "fields": {
-        "name": "Cyan",
-        "red": 0,
-        "green": 176,
-        "blue": 240,
-        "alpha": 0.0
+      "user": 1,
+      "name": "[04]Red+",
+      "red": 255,
+      "green": 116,
+      "blue": 116,
+      "alpha": 0.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 5,
     "fields": {
-        "name": "Amber",
-        "red": 237,
-        "green": 125,
-        "blue": 49,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[05]Red++",
+      "red": 251,
+      "green": 188,
+      "blue": 188,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 6,
     "fields": {
-        "name": "Amber+",
-        "red": 244,
-        "green": 176,
-        "blue": 132,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[06]Amber",
+      "red": 255,
+      "green": 186,
+      "blue": 0,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 7,
     "fields": {
-        "name": "Amber++",
-        "red": 248,
-        "green": 203,
-        "blue": 173,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[07]Amber-",
+      "red": 236,
+      "green": 173,
+      "blue": 3,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 8,
     "fields": {
-        "name": "Amber-",
-        "red": 198,
-        "green": 89,
-        "blue": 17,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[08]Amber--",
+      "red": 184,
+      "green": 135,
+      "blue": 0,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 9,
     "fields": {
-        "name": "Amber--",
-        "red": 131,
-        "green": 60,
-        "blue": 12,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[09]Amber+",
+      "red": 253,
+      "green": 203,
+      "blue": 67,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 10,
     "fields": {
-        "name": "Green+",
-        "red": 169,
-        "green": 208,
-        "blue": 142,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[10]Amber++",
+      "red": 251,
+      "green": 222,
+      "blue": 141,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 11,
     "fields": {
-        "name": "Green++",
-        "red": 226,
-        "green": 239,
-        "blue": 218,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[11]Green",
+      "red": 49,
+      "green": 250,
+      "blue": 0,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 12,
     "fields": {
-        "name": "Green-",
-        "red": 84,
-        "green": 130,
-        "blue": 53,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[12]Green-",
+      "red": 43,
+      "green": 204,
+      "blue": 0,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.color",
     "pk": 13,
     "fields": {
-        "name": "Green--",
-        "red": 55,
-        "green": 86,
-        "blue": 35,
-        "alpha": 1.0
+      "user": 1,
+      "name": "[13]Green--",
+      "red": 25,
+      "green": 135,
+      "blue": 2,
+      "alpha": 1.0
     }
-},
-{
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 14,
+    "fields": {
+      "user": 1,
+      "name": "[14]Green+",
+      "red": 135,
+      "green": 255,
+      "blue": 112,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 15,
+    "fields": {
+      "user": 1,
+      "name": "[15]Green++",
+      "red": 132,
+      "green": 255,
+      "blue": 156,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 16,
+    "fields": {
+      "user": 1,
+      "name": "[16]Blue",
+      "red": 0,
+      "green": 122,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 17,
+    "fields": {
+      "user": 1,
+      "name": "[17]Blue-",
+      "red": 0,
+      "green": 89,
+      "blue": 184,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 18,
+    "fields": {
+      "user": 1,
+      "name": "[18]Blue--",
+      "red": 0,
+      "green": 74,
+      "blue": 153,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 19,
+    "fields": {
+      "user": 1,
+      "name": "[19]Blue+",
+      "red": 61,
+      "green": 154,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 20,
+    "fields": {
+      "user": 1,
+      "name": "[20]Blue++",
+      "red": 112,
+      "green": 230,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 21,
+    "fields": {
+      "user": 1,
+      "name": "[21]Grey",
+      "red": 186,
+      "green": 186,
+      "blue": 186,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 22,
+    "fields": {
+      "user": 1,
+      "name": "[22]Grey-",
+      "red": 130,
+      "green": 130,
+      "blue": 130,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 23,
+    "fields": {
+      "user": 1,
+      "name": "[23]Grey--",
+      "red": 64,
+      "green": 64,
+      "blue": 64,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 24,
+    "fields": {
+      "user": 1,
+      "name": "[24]Grey+",
+      "red": 214,
+      "green": 214,
+      "blue": 214,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 25,
+    "fields": {
+      "user": 1,
+      "name": "[25]Grey++",
+      "red": 235,
+      "green": 234,
+      "blue": 234,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 26,
+    "fields": {
+      "user": 1,
+      "name": "[00]White",
+      "red": 255,
+      "green": 255,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 27,
+    "fields": {
+      "user": 1,
+      "name": "[00]Black",
+      "red": 0,
+      "green": 0,
+      "blue": 0,
+      "alpha": 0.0
+    }
+  },
+  {
     "model": "plan_visual_django.font",
     "pk": 1,
     "fields": {
-        "font_name": "Ariel"
+      "font_name": "1"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 1,
     "fields": {
-        "style_name": "(default)",
-        "fill_color": 9,
-        "line_color": 8,
-        "font_color": 3,
-        "line_thickness": 3,
-        "font": 1
+      "user": 1,
+      "style_name": "[01]Milestone Default 1",
+      "fill_color": 1,
+      "line_color": 2,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 2,
     "fields": {
-        "style_name": "Activity 1",
-        "fill_color": 2,
-        "line_color": 3,
-        "font_color": 3,
-        "line_thickness": 2,
-        "font": 1
+      "user": 1,
+      "style_name": "[02]Milestone Default 2",
+      "fill_color": 16,
+      "line_color": 17,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 3,
     "fields": {
-        "style_name": "Milestone 1",
-        "fill_color": 1,
-        "line_color": 3,
-        "font_color": 11,
-        "line_thickness": 2,
-        "font": 1
+      "user": 1,
+      "style_name": "[03]Activity Default 1",
+      "fill_color": 6,
+      "line_color": 7,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 4,
     "fields": {
-        "style_name": "Cyan-01",
-        "fill_color": 4,
-        "line_color": 1,
-        "font_color": 3,
-        "line_thickness": 3,
-        "font": 1
+      "user": 1,
+      "style_name": "[04]Activity Default 2",
+      "fill_color": 11,
+      "line_color": 12,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 15
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 5,
     "fields": {
-        "style_name": "Amber",
-        "fill_color": 5,
-        "line_color": 8,
-        "font_color": 9,
-        "line_thickness": 2,
-        "font": 1
+      "user": 1,
+      "style_name": "[05]Swimlane-odd Default 1",
+      "fill_color": 25,
+      "line_color": 25,
+      "font_color": 23,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotablestyle",
     "pk": 6,
     "fields": {
-        "style_name": "Green+",
-        "fill_color": 10,
-        "line_color": 2,
-        "font_color": 13,
-        "line_thickness": 3,
-        "font": 1
+      "user": 1,
+      "style_name": "[06]Swimlane-even Default 1",
+      "fill_color": 24,
+      "line_color": 24,
+      "font_color": 23,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
     }
-},
-{
-    "model": "plan_visual_django.plotablestyle",
-    "pk": 7,
-    "fields": {
-        "style_name": "Green-",
-        "fill_color": 12,
-        "line_color": 13,
-        "font_color": 11,
-        "line_thickness": 3,
-        "font": 1
-    }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotableshapetype",
     "pk": 1,
     "fields": {
-        "name": "RECTANGLE"
+      "name": "RECTANGLE_BASED"
     }
-},
-{
-    "model": "plan_visual_django.plotableshapetype",
-    "pk": 2,
-    "fields": {
-        "name": "DIAMOND"
-    }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotableshape",
     "pk": 1,
     "fields": {
-        "shape_type": 1
+      "shape_type": 1,
+      "name": "RECTANGLE"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.plotableshape",
     "pk": 2,
     "fields": {
-        "shape_type": 2
+      "shape_type": 1,
+      "name": "DIAMOND"
     }
-},
-{
+  },
+  {
     "model": "plan_visual_django.planvisual",
-    "pk": 9,
+    "pk": 4,
     "fields": {
-        "plan": 13,
-        "name": "TestVisual-01",
-        "width": 30.0,
-        "max_height": 20.0,
-        "include_title": true
+      "plan": 2,
+      "name": "Visual 01-01",
+      "width": 1000.0,
+      "max_height": 20.0,
+      "include_title": true,
+      "track_height": 20.0,
+      "track_gap": 4.0,
+      "milestone_width": 10.0,
+      "swimlane_gap": 5.0,
+      "default_milestone_shape": 2,
+      "default_activity_shape": 1,
+      "default_activity_plotable_style": 3,
+      "default_milestone_plotable_style": 1,
+      "default_swimlane_plotable_style": 5
     }
-},
-{
-    "model": "plan_visual_django.planvisual",
-    "pk": 10,
-    "fields": {
-        "plan": 13,
-        "name": "TestVisual-02",
-        "width": 30.0,
-        "max_height": 20.0,
-        "include_title": true
-    }
-},
-{
-    "model": "plan_visual_django.planvisual",
-    "pk": 16,
-    "fields": {
-        "plan": 25,
-        "name": "FGH-Visual-03",
-        "width": 30.0,
-        "max_height": 20.0,
-        "include_title": true
-    }
-},
-{
-    "model": "plan_visual_django.timelineforvisual",
-    "pk": 1,
-    "fields": {
-        "plan_visual": 10,
-        "timeline_type": "MONTHS",
-        "timeline_name": "Month Labels",
-        "plotable_style": 4
-    }
-},
-{
-    "model": "plan_visual_django.timelineforvisual",
-    "pk": 2,
-    "fields": {
-        "plan_visual": 10,
-        "timeline_type": "QUARTERS",
-        "timeline_name": "Quarter Labels",
-        "plotable_style": 2
-    }
-},
-{
+  },
+  {
     "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 11,
+    "pk": 4,
     "fields": {
-        "plan_visual": 9,
-        "swim_lane_name": "(default)",
-        "plotable_style": 4,
-        "sequence_number": 1
+      "plan_visual": 4,
+      "swim_lane_name": "(default)",
+      "plotable_style": 5,
+      "sequence_number": 1
     }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 12,
-    "fields": {
-        "plan_visual": 10,
-        "swim_lane_name": "Swimlane 1",
-        "plotable_style": 5,
-        "sequence_number": 2
-    }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 13,
-    "fields": {
-        "plan_visual": 10,
-        "swim_lane_name": "Swimlane 2",
-        "plotable_style": 4,
-        "sequence_number": 1
-    }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 17,
-    "fields": {
-        "plan_visual": 16,
-        "swim_lane_name": "(default)",
-        "plotable_style": 1,
-        "sequence_number": 1
-    }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 18,
-    "fields": {
-        "plan_visual": 16,
-        "swim_lane_name": "Environments",
-        "plotable_style": 7,
-        "sequence_number": 1
-    }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 19,
-    "fields": {
-        "plan_visual": 16,
-        "swim_lane_name": "Testing",
-        "plotable_style": 6,
-        "sequence_number": 2
-    }
-},
-{
-    "model": "plan_visual_django.swimlaneforvisual",
-    "pk": 20,
-    "fields": {
-        "plan_visual": 16,
-        "swim_lane_name": "Implementation",
-        "plotable_style": 7,
-        "sequence_number": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 38,
-    "fields": {
-        "visual": 9,
-        "unique_id_from_plan": "ID-0007",
-        "enabled": true,
-        "swimlane": 11,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 1.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 39,
-    "fields": {
-        "visual": 9,
-        "unique_id_from_plan": "ID-0001",
-        "enabled": true,
-        "swimlane": 11,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 40,
-    "fields": {
-        "visual": 9,
-        "unique_id_from_plan": "ID-0002",
-        "enabled": true,
-        "swimlane": 11,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 4.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 41,
-    "fields": {
-        "visual": 9,
-        "unique_id_from_plan": "ID-0005",
-        "enabled": true,
-        "swimlane": 11,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "REL_TRACK",
-        "vertical_positioning_value": 1.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 44,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0004",
-        "enabled": true,
-        "swimlane": 12,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 2.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "BOTTOM",
-        "text_flow": "LFLOW",
-        "plotable_style": 4
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 45,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0007",
-        "enabled": true,
-        "swimlane": 12,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 2
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 46,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0002",
-        "enabled": true,
-        "swimlane": 13,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 2
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 47,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0006",
-        "enabled": true,
-        "swimlane": 12,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 4
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 48,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0001",
-        "enabled": true,
-        "swimlane": 13,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 2
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 49,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0005",
-        "enabled": true,
-        "swimlane": 13,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 4.0,
-        "height_in_tracks": 2.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 50,
-    "fields": {
-        "visual": 10,
-        "unique_id_from_plan": "ID-0003",
-        "enabled": true,
-        "swimlane": 12,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 4
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 54,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-4",
-        "enabled": true,
-        "swimlane": 18,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 55,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-10",
-        "enabled": true,
-        "swimlane": 18,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "RFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 56,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-13",
-        "enabled": true,
-        "swimlane": 18,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 4.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 57,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-17",
-        "enabled": true,
-        "swimlane": 18,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 5.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "RFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 58,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-19",
-        "enabled": false,
-        "swimlane": 17,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 1.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 59,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-21",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 60,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-25",
-        "enabled": false,
-        "swimlane": 17,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 1.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 1
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 61,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-20",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "CENTRE",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 62,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-23",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 1.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 63,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-24",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 4.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "RFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 64,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-26",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 5.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "RFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 65,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-27",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 6.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 66,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-28",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 7.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 67,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-29",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 8.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 68,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-30",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 7.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 69,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-31",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 8.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 70,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-32",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 7.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "RFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 71,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-33",
-        "enabled": true,
-        "swimlane": 19,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 9.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 72,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-87",
-        "enabled": false,
-        "swimlane": 20,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 73,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-85",
-        "enabled": false,
-        "swimlane": 20,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 74,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-35",
-        "enabled": true,
-        "swimlane": 20,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 75,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-34",
-        "enabled": true,
-        "swimlane": 20,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 2.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 76,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-36",
-        "enabled": true,
-        "swimlane": 20,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 4.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 77,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-37",
-        "enabled": true,
-        "swimlane": 20,
-        "plotable_shape": 1,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 3.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 5
-    }
-},
-{
-    "model": "plan_visual_django.visualactivity",
-    "pk": 78,
-    "fields": {
-        "visual": 16,
-        "unique_id_from_plan": "ID-38",
-        "enabled": true,
-        "swimlane": 20,
-        "plotable_shape": 2,
-        "vertical_positioning_type": "TRACK",
-        "vertical_positioning_value": 5.0,
-        "height_in_tracks": 1.0,
-        "text_horizontal_alignment": "LEFT",
-        "text_vertical_alignment": "MIDDLE",
-        "text_flow": "LFLOW",
-        "plotable_style": 3
-    }
-}
+  }
 ]
