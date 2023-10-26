@@ -96,6 +96,7 @@ class PlanMappedField(models.Model):
         STRING_nn_Days = "STR_duration_msp", "String representing duration from MSP project in Excel"
         STRING_DATE_DMY_01 = "STR_DATE_DMY_01", "String of form dd MMM YYYY"
         STRING_DATE_DMY_02 = "STR_DATE_DMY_02", "String of form dd MMMMM YYYY HH:MM"
+        STRING_MILESTONE_YES_NO = "STR_MSTONE_YES_NO", "Milestone flag as string, Yes or No"
         DATE = "DATE", "Date (without time)"
 
     plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
