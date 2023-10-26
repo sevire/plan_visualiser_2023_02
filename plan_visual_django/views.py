@@ -46,8 +46,6 @@ def add_plan(request):
             else:
                 # Uploaded file will be given a unique name - so need to store the name of the file the user chose.
                 plan.file_name = plan.file.name
-
-                # Add user to record (currently hard-coded)
                 plan.user = current_user
 
                 # Now can save the record
