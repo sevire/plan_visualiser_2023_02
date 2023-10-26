@@ -124,7 +124,7 @@
     "fields": {
       "plan_field_mapping_type": 1,
       "mapped_field": 2,
-      "input_field_name": "Task Name",
+      "input_field_name": "Name",
       "input_field_type": "STR"
     }
   },
@@ -184,8 +184,18 @@
     "fields": {
       "plan_field_mapping_type": 2,
       "mapped_field": 2,
-      "input_field_name": "Task_Name",
+      "input_field_name": "Name",
       "input_field_type": "STR"
+    }
+  },
+  {
+    "model": "plan_visual_django.planmappedfield",
+    "pk": 13,
+    "fields": {
+      "plan_field_mapping_type": 2,
+      "mapped_field": 7,
+      "input_field_name": "Milestone",
+      "input_field_type": "STR_MSTONE_YES_NO"
     }
   },
   {

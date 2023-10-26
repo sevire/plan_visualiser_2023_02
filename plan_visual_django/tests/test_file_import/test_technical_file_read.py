@@ -13,7 +13,7 @@ from ddt import ddt, data, unpack
 from django.test import TestCase
 
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.tests.test_settings import TEST_INPUT_FILE_FOLDER, EXCEL_PLAN_FILE_FOLDER
+from plan_visual_django.tests.test_settings import EXCEL_PLAN_FILE_FOLDER
 from plan_visual_django.tests.utilities import date_from_string
 
 # Define input file paramters and expected results separately as we may want the same data in various different input
