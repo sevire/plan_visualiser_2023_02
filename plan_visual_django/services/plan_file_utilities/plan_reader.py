@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, date
 from pathlib import Path
 from typing import List, Dict, Callable, Any
+from plan_visual_django.exceptions import SuppliedPlanIncompleteError, PlanMappingIncompleteError
 from plan_visual_django.models import PlanField, PlanFieldMappingType, PlanMappedField
 import openpyxl as openpyxl
 
@@ -55,6 +56,20 @@ def convert_str_or_int_to_str(string_or_int) -> str:
         return string_or_int
     else:
         raise ValueError(f"String or int expected, but got {type(string_or_int)} for {string_or_int}")
+
+def convert_str_yes_no_to_bool(string_yes_no) -> bool:
+    """
+    Used initially for MS Project export to decode the Milestone flag which exports to a string with 'Yes' or 'No'
+
+    :param string_or_int:
+    :return:
+    """
+    if string_yes_no == "Yes":
+        return True
+    elif string_yes_no == "No":
+        return False
+    else:
+        raise ValueError(f"String value 'Yes' or 'No' expected, but got {type(string_yes_no)} for {string_yes_no}")
 
 
 def convert_string_int(string) -> int:
@@ -146,6 +161,9 @@ convert_dispatch_table = {
     },
     'STR_OR_INT': {
         'STR': convert_str_or_int_to_str,
+    },
+    'STR_MSTONE_YES_NO': {
+        'BOOL': convert_str_yes_no_to_bool,
     },
     'STR_nnd': {  # Typically used to decode a duration encoded as a number of days e.g. '345d'
         'INT': convert_string_nnd_int,
