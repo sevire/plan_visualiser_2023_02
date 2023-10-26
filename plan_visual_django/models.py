@@ -73,6 +73,16 @@ class PlanFieldMappingType(models.Model):
     def __str__(self):
         return self.name
 
+    def is_complete(self):
+        """
+        Checks whether all the compulsoary fields have a mapping.
+        :return:
+        """
+        mapped_compulsory_fields = self.planmappedfield_set.filter(mapped_field__required_flag=True)
+        expected_compulsory_fields = PlanField.objects.filter(required_flag=True)
+
+        return mapped_compulsory_fields.count() == expected_compulsory_fields.count()
+
 
 class PlanMappedField(models.Model):
     class PlanFieldType(models.TextChoices):
