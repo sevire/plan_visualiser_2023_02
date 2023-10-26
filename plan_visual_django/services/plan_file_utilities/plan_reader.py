@@ -197,8 +197,25 @@ class PlanParser():
         """
         self.column_mapping = plan_field_mapping
 
-    def parse(self, data: List[Dict]) -> List[Dict]:
-        plan_fields = PlanField.objects.all()
+        # Check whether the mapping has been defined for all compulsory fields, no point continuing otherwise.
+        if not self.column_mapping.is_complete():
+            raise PlanMappingIncompleteError(f"Mapping {plan_field_mapping} is incomplete")
+
+    def parse(self, data: List[Dict], headings: List) -> List[Dict]:
+        """
+        Take raw data from the plan and parse it into the correct type and value for each field required in order to
+        construct the plan in the database.
+
+        :param data:
+        :param headings:
+        :return:
+        """
+        # Check that the fields that are supplied in the input file include all compulsory fields needed for the plan.
+        supplied_fields = [field.mapped_field for field in self.column_mapping.planmappedfield_set.all() if field.input_field_name in headings]
+        compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
+        missing_compulsory_fields = [field for field in compulsory_plan_fields if field not in supplied_fields]
+        if len(missing_compulsory_fields) > 0:
+            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_fields}")
 
         parsed_data = []
 
@@ -210,34 +227,25 @@ class PlanParser():
             # So we iterate through the expected fields and look for a field in the input record with the associated
             # input field name.  If we don't find it, but that field is compulsory, then we will flag an error as we
             # can't process the file.
-            for plan_field in plan_fields:
-                # If we've had an error on this record then we will ignore remaining fields and not include the record
-                # in the plan.
-                if not ignore_record:
-                    field_present = True  # Adjust if there is no column for the field, and it is optional
-                    mapped_field_column = None
-                    # Should get exactly one match unless the field is optional and not included in the mapping
-                    try:
-                        mapped_field_column = self.column_mapping.planmappedfield_set.get(
-                            mapped_field__field_name=plan_field.field_name)
-                    except PlanMappedField.DoesNotExist as e:
-                        # No mapping record for this plan field.  Ok if it's optional, otherwise an error
-                        if plan_field.required_flag:
-                            raise Exception(f"Missing compulsory mapping for field {plan_field.field_name}")
+            for plan_field in supplied_fields:
+                # Check whether this field is included in the mapping, and ignore field if not.
+                mapped_field_column = self.column_mapping.planmappedfield_set.get(
+                    mapped_field__field_name = plan_field.field_name)
+                if mapped_field_column.input_field_name not in headings:
+                    parsed_data_record[plan_field.field_name] = "(n/a)"
+                else:
+                    # If we've had an error on this record then we will ignore remaining fields and not include the record
+                    # in the plan.
+                    if not ignore_record:
+                        # Should get exactly one match unless the field is optional and not included in the mapping
+                        mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
+                        try:
+                            field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
+                        except (ValueError, TypeError) as e:
+                            print(f"Error parsing record {plan_record}, ignoring record)")
+                            ignore_record = True
                         else:
-                            field_present = False
-                    finally:
-                        if field_present:
-                            mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
-                            try:
-                                field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
-                            except (ValueError, TypeError) as e:
-                                print(f"Error parsing record {plan_record}, ignoring record)")
-                                ignore_record = True
-                            else:
-                                parsed_data_record[plan_field.field_name] = field_parsed_value
-                        else:
-                            parsed_data_record[plan_field] = "(n/a)"
+                            parsed_data_record[plan_field.field_name] = field_parsed_value
             if not ignore_record:
                 parsed_data.append(parsed_data_record)
 
@@ -281,11 +289,11 @@ class PlanFileReader(ABC):
         pass
 
     @abstractmethod
-    def read(self, pathname: str) -> List[Dict]:
+    def read(self, pathname: str) -> (List[Dict],List):
         """
         Override with code to read records from specific format
         :param pathname:
-        :return:
+        :return: List of records and list of heading names of input file
         """
         pass
 
@@ -305,7 +313,7 @@ class ExcelXLSFileReader(PlanFileReader):
         super().__init__()
         self.sheet_name = sheet_name
 
-    def read(self, file_path: str) -> List[Dict]:
+    def read(self, file_path: str) -> (List[Dict], List):
         """
         For now the only logic here is to hard code the sheet name that the plan is located within.  This is only
         temporary and this will have to be replaced by file type specific data fields within the database.
@@ -335,11 +343,11 @@ class ExcelXLSFileReader(PlanFileReader):
             read_row_num += 1
 
         iterable_by_row = self.iterrows(table)
-        return iterable_by_row
+        return iterable_by_row, headings
 
-    def parse(self, raw_data, plan_field_mapping):
+    def parse(self, raw_data, raw_data_headers, plan_field_mapping):
         parser = self.parser(plan_field_mapping=plan_field_mapping)
-        return parser.parse(raw_data)
+        return parser.parse(raw_data, raw_data_headers)
 
     @staticmethod
     def read_row(table_row_num, sheet, headings, table, skiprows=0):

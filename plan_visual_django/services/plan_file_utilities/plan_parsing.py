@@ -1,13 +1,20 @@
 def parse_plan(plan, plan_file, mapping_type, file_reader):
-    raw_data = file_reader.read(plan_file)
-    parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+    raw_data, headers = file_reader.read(plan_file)
+    parsed_data = file_reader.parse(raw_data, headers, plan_field_mapping=mapping_type)
     for activity in parsed_data:
-        # Note that the duration field isn't stored, but used to work out whether the activity is a
-        # milestone.
-        if activity['duration'] == 0:
-            milestone_flag = True
+        # NOTE - the following is a temporary hack.
+        # ToDo: Refactor to more generically handle the mapping of the input data to the plan fields for milestones.
+        # If the input file includes a milestone flag then use that to set the milestone flag in the plan.
+        # If not then use the duration to set the milestone flag.
+
+        from plan_visual_django.models import PlanField
+        if PlanField.PlanFieldName.MILESTONE_FLAG in activity:
+            milestone_flag = activity[PlanField.PlanFieldName.MILESTONE_FLAG]
         else:
-            milestone_flag = False
+            if activity[PlanField.PlanFieldName.DURATION] == 0:
+                milestone_flag = True
+            else:
+                milestone_flag = False
 
         from plan_visual_django.models import PlanActivity
         record = PlanActivity(
