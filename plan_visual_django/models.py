@@ -410,6 +410,17 @@ class SwimlaneForVisual(models.Model):
     def __str__(self):
         return self.swim_lane_name
 
+    def get_next_unused_track_number(self):
+        """
+        Returns the next track number to be used for a new activity in the given swimlane.
+        :return:
+        """
+        if self.visualactivity_set.count() > 0:
+            max_track_number = max([activity.vertical_positioning_value for activity in self.visualactivity_set.all()])
+            return max_track_number + 1
+        else:
+            return 1
+
 
 class VisualActivity(models.Model):
     """

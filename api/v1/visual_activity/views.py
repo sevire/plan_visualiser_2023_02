@@ -80,7 +80,7 @@ class VisualActivityAPI(APIView):
                 visual=visual,
                 unique_id_from_plan=unique_id,
                 vertical_positioning_type=DEFAULT_VERTICAL_POSITIONING_TYPE,
-                vertical_positioning_value=DEFAULT_VERTICAL_POSITIONING_VALUE,
+                vertical_positioning_value=initial_swimlane.get_next_unused_track_number(),
                 height_in_tracks=DEFAULT_HEIGHT_IN_TRACKS,
                 text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
                 text_vertical_alignment=DEFAULT_TEXT_VERTICAL_ALIGNMENT,
@@ -90,8 +90,6 @@ class VisualActivityAPI(APIView):
                 swimlane_id=initial_swimlane.id,
                 enabled=True
             )
-
-
             new_visual_activity.save()
             return Response(status=status.HTTP_201_CREATED)
         else:
