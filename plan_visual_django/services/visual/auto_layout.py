@@ -8,16 +8,17 @@ The main algorithm is the following:
 from django.db import IntegrityError
 
 from plan_visual_django.exceptions import DuplicateSwimlaneException
-from plan_visual_django.models import SwimlaneForVisual, VisualActivity
+from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 
 
 class VisualAutoLayoutManager:
-    def __init__(self, visual_for_plan):
-        self.visual_for_plan = visual_for_plan
-        self.plan = visual_for_plan.plan
-        self.plan_activities = self.plan.planactivity_set.all()
+    def __init__(self, visual_id_for_plan):
+        self.visual_for_plan = PlanVisual.objects.get(id=visual_id_for_plan)
+        self.plan = self.visual_for_plan.plan
+        self.plan_activities = self.plan.planactivity_set.all()  # Note this creates a queryset which may be modified.
+        self.visual_settings = VisualSettings(visual_id_for_plan)
 
     def create_milestone_swimlane(
         self,
@@ -100,3 +101,52 @@ class VisualAutoLayoutManager:
                 plan_activity_for_milestone.track_number = track_number
 
                 plan_activity_for_milestone.save()
+
+    def add_delete_activities(self, level:int, swimlane:SwimlaneForVisual, delete_flag:bool):
+        """
+        Selects activities (not milestones) from the plan at the specified level and adds them or deletes them to/from the visual.
+        :param level:
+        :param swimlane:
+        :param delete_flag:
+        :return:
+        """
+        # If delete_flag is set then simply set the disabled flag on all the activities in the visual at the specified level
+        if delete_flag:
+            visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False)
+            for visual_activity in visual_activities:
+                if visual_activity.level == level:
+                    visual_activity.enabled = False
+                    visual_activity.save()
+            return
+
+        # Get all the activities from the plan at the specified level
+        plan_activities = self.plan_activities.filter(level=level, milestone_flag=False)
+        visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False, include_disabled=True)
+
+        for activity in plan_activities:
+            # Any activities which are already in the visual will be left where they are, so if they are in a different
+            # swimlane they will be left there.
+            activities = [visual_activity.unique_id_from_plan for visual_activity in visual_activities]
+
+            if activity.unique_sticky_activity_id in activities:
+                continue
+
+            # The activity is not already in the visual so add it.
+            VisualActivity.objects.create(
+                visual=self.visual_for_plan,
+                swimlane=swimlane,
+                unique_id_from_plan=activity.unique_sticky_activity_id,
+                enabled=True,
+                plotable_shape=self.visual_settings.default_activity_shape,
+                vertical_positioning_type=VisualActivity.VerticalPositioningType.TRACK_NUMBER,
+                vertical_positioning_value=swimlane.get_next_unused_track_number(),
+                height_in_tracks=1,
+                text_horizontal_alignment=VisualActivity.HorizontalAlignment.CENTER,
+                text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE,
+                text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
+                plotable_style=self.visual_settings.default_activity_plotable_style,
+            )
+
+
+
+

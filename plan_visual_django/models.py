@@ -324,7 +324,7 @@ class PlanVisual(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def get_visual_activities(self):
+    def get_visual_activities(self, to_dict=True, include_disabled=False):
         """
         Only return activities which have been selected for this visual.
 
@@ -334,7 +334,14 @@ class PlanVisual(models.Model):
         :return:
         """
         # First get all the visual activity records for this visual (which are enabled)
-        activities = self.visualactivity_set.filter(enabled=True)
+        if include_disabled:
+            activities = self.visualactivity_set.all()
+        else:
+            activities = self.visualactivity_set.filter(enabled=True)
+
+        # If caller doesn't need the data as a dict then just return the queryset
+        if not to_dict:
+            return activities
 
         # Now consolidate them into an array of dicts (not using comprehension for this is it's likely to be unreadable)
         # ToDo: Look for ways to simplify and improve performance of consolidation of activity data
