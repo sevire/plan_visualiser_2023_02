@@ -1,13 +1,17 @@
 <div id=main-toolbar" class="btn-toolbar mb-2" role="toolbar" aria-label="Auto-layout add/delete for visuals or plan">
     <div id=main-toolbar" class="btn-toolbar mb-2" role="toolbar" aria-label="Actions for visuals or plan">
-        <form action="/pv/add-or-delete-level/{{ visual.id }}/1/add"  method="post" enctype="multipart/form-data">
+        <form action="/pv/add-or-delete-level/{{ visual.id }}/"  method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <table class="table">
             {{ swimlane_dropdown_form.as_table }}
         </table>
-        <input type="submit" name="Level 1" value="Add Level 1">
-        <input type="submit" name="Level 2" value="Add Level 2">
-        <input type="submit" name="Level 3" value="Add Level 3">
+        <input type="submit" name="Add Level 1" value="Add Level 1">
+        <input type="submit" name="Add Level 2" value="Add Level 2">
+        <input type="submit" name="Add Level 3" value="Add Level 3">
+        <input type="submit" name="Remove Level 1" value="Remove Level 1">
+        <input type="submit" name="Remove Level 2" value="Remove Level 2">
+        <input type="submit" name="Remove Level 3" value="Remove Level 3">
+        <input type="submit" name="Remove Level ALL" value="Remove ALL">
         </form>
     </div>
 </div>

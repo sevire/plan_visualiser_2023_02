@@ -661,7 +661,7 @@ def plot_visual(request, visual_id):
 
     visual = PlanVisual.objects.get(id=visual_id)
 
-    if visual.visualactivity_set.count() == 0:
+    if visual.activity_count() == 0:
         messages.error(request, "No activities selected for visual")
         return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
     else:
@@ -758,19 +758,24 @@ def manage_colors(request):
         return render(request, 'plan_visual_django/manage_colors.html', context={"formset": formset})
 
 
-def add_or_delete_level(request, visual_id, level, action):
+def add_or_delete_level(request, visual_id):
     if request.method == "POST":
-        if "Level 1" in request.POST:
-            level = 1
-            action = "add"
-        elif "Level 2" in request.POST:
-            level = 2
-            action = "add"
-        elif "Level 3" in request.POST:
-            level = 3
-            action = "add"
+        # Extract level from POST
+        level_post_entry = [entry for entry in request.POST if entry.startswith("Add") or entry.startswith("Remove")]
+
+        # Check exactly one match
+        if len(level_post_entry) == 0:
+            raise ValueError(f"Unexpected missing entry for level in POST {request.POST}")
+        elif len(level_post_entry) > 1:
+            raise ValueError(f"Unexpectedly more than one entry for level in POST {request.POST}")
         else:
-            raise ValueError(f"Unrecognised action when adding activities to swimlane {action}")
+            # Extract action and level from form element name.
+            action, _, level = tuple(level_post_entry[0].split(" "))
+            action = action.lower()
+            if level == "ALL": level = "0"
+            level = int(level)
+
+
         visual = PlanVisual.objects.get(id=visual_id)
         swimlane_form = SwimlaneDropdownForm(data=request.POST, instance=visual)
         if swimlane_form.is_valid():
@@ -778,6 +783,8 @@ def add_or_delete_level(request, visual_id, level, action):
             auto_layout_manager = VisualAutoLayoutManager(visual_id)
             if action == "add":
                 auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=False)
-            else:
+            elif action == 'remove':
                 auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=True)
+            else:
+                raise ValueError(f"Unknown action {action} during level based action")
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
