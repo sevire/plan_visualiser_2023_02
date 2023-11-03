@@ -80,9 +80,27 @@ class VisualActivityFormForEdit(ModelForm):
         fields = "__all__"
 
 
+class SwimlaneDropdownForm(ModelForm):
+    """
+    This form is used to create a dropdown list of swimlanes within a visual for the user to select. Will be used when
+    selecting the swimlane for an action to apply to.
+
+    We are using ModelForm here because we want to use the queryset functionality to filter the list of swimlanes to
+    only those which are in the visual.
+    """
+    def __init__(self, *args, **kwargs):
+        visual = kwargs['instance']
+        super().__init__(*args, **kwargs)
+        self.fields['swimlane'].queryset = SwimlaneForVisual.objects.filter(plan_visual=visual)
+
+    class Meta:
+        model = VisualActivity
+        fields = ("swimlane",)
+
+
 class VisualSwimlaneFormForEdit(ModelForm):
     class Meta:
-        model = SwimlaneForVisual
+        model = PlanVisual
         fields = "__all__"
 
 

@@ -12,7 +12,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm
+    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
+    SwimlaneDropdownForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle, TimelineForVisual, Color
 from django.contrib import messages
@@ -497,7 +498,7 @@ def create_milestone_swimlane(request, visual_id):
         return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
     visual_settings = VisualSettings(visual_id=visual.id)
-    auto_layout_manager = VisualAutoLayoutManager(visual)
+    auto_layout_manager = VisualAutoLayoutManager(visual_id_for_plan=visual_id)
 
     swimlane_plotable_style = visual_settings.default_swimlane_plotable_style
     milestone_plotable_style = visual_settings.default_milestone_plotable_style
@@ -625,10 +626,13 @@ def layout_visual(request, visual_id):
     if request.method == 'GET':
         queryset = visual.visualactivity_set.filter(enabled=True)
         formset = VisualActivityFormSet(instance=visual, queryset=queryset)
+        swimlane_form = SwimlaneDropdownForm(instance=visual)
+
         # Add value of activity field for each form as won't be provided by visual
         context = {
             'visual': visual,
-            'formset': formset
+            'formset': formset,
+            'swimlane_dropdown_form': swimlane_form
         }
         return render(request, "plan_visual_django/pv_layout_visual.html", context)
 
@@ -665,7 +669,13 @@ def plot_visual(request, visual_id):
         visual_orchestrator = VisualOrchestration(visual, visual_settings)
         canvas_renderer = CanvasRenderer()
         canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-        return render(request, "plan_visual_django/planvisual_detail.html", context={'activity_data': canvas_data, 'visual': visual})
+        swimlane_form = SwimlaneDropdownForm(instance=visual)
+        context = {
+            'activity_data': canvas_data,
+            'visual': visual,
+            'swimlane_dropdown_form': swimlane_form
+        }
+        return render(request, "plan_visual_django/planvisual_detail.html", context)
 
 
 @login_required
@@ -746,3 +756,28 @@ def manage_colors(request):
             initial=initial
         )
         return render(request, 'plan_visual_django/manage_colors.html', context={"formset": formset})
+
+
+def add_or_delete_level(request, visual_id, level, action):
+    if request.method == "POST":
+        if "Level 1" in request.POST:
+            level = 1
+            action = "add"
+        elif "Level 2" in request.POST:
+            level = 2
+            action = "add"
+        elif "Level 3" in request.POST:
+            level = 3
+            action = "add"
+        else:
+            raise ValueError(f"Unrecognised action when adding activities to swimlane {action}")
+        visual = PlanVisual.objects.get(id=visual_id)
+        swimlane_form = SwimlaneDropdownForm(data=request.POST, instance=visual)
+        if swimlane_form.is_valid():
+            swimlane = swimlane_form.cleaned_data['swimlane']
+            auto_layout_manager = VisualAutoLayoutManager(visual_id)
+            if action == "add":
+                auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=False)
+            else:
+                auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=True)
+    return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
