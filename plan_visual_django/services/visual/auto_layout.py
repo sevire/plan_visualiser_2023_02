@@ -105,6 +105,8 @@ class VisualAutoLayoutManager:
     def add_delete_activities(self, level:int, swimlane:SwimlaneForVisual, delete_flag:bool):
         """
         Selects activities (not milestones) from the plan at the specified level and adds them or deletes them to/from the visual.
+        Level 0 implies all activities.
+
         :param level:
         :param swimlane:
         :param delete_flag:
@@ -114,22 +116,38 @@ class VisualAutoLayoutManager:
         if delete_flag:
             visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False)
             for visual_activity in visual_activities:
-                if visual_activity.level == level:
+                # Check whether plan activity for this visual activity has the right level
+                plan_activity_for_visual_activity = self.plan_activities.filter(unique_sticky_activity_id=visual_activity.unique_id_from_plan)[0]
+
+                if level == 0 or plan_activity_for_visual_activity.level == level:
                     visual_activity.enabled = False
                     visual_activity.save()
             return
 
         # Get all the activities from the plan at the specified level
         plan_activities = self.plan_activities.filter(level=level, milestone_flag=False)
-        visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False, include_disabled=True)
+
+        # We want to know which activities are already in the visual and enabled.
+        visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False, include_disabled=False)
+        disabled_activities = self.visual_for_plan.visualactivity_set.filter(enabled=False)
+        enabled_ids_from_visual = [visual_activity.unique_id_from_plan for visual_activity in visual_activities]
+        disabled_ids_from_visual = [visual_activity.unique_id_from_plan for visual_activity in disabled_activities]
 
         for activity in plan_activities:
             # Any activities which are already in the visual will be left where they are, so if they are in a different
             # swimlane they will be left there.
-            activities = [visual_activity.unique_id_from_plan for visual_activity in visual_activities]
 
-            if activity.unique_sticky_activity_id in activities:
+            if activity.unique_sticky_activity_id in enabled_ids_from_visual:
                 continue
+
+            if activity.unique_sticky_activity_id in disabled_ids_from_visual:
+                # The visual already exists but has been disabled so re-enable and switch to this swimlane
+                visual_activity = self.visual_for_plan.visualactivity_set.filter(unique_id_from_plan=activity.unique_sticky_activity_id)[0]
+                visual_activity.enabled = True
+                visual_activity.swimlane = swimlane
+                visual_activity.save()
+                continue
+
 
             # The activity is not already in the visual so add it.
             VisualActivity.objects.create(

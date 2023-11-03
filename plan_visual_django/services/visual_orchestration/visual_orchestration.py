@@ -19,7 +19,7 @@ class VisualOrchestration:
         self.visual_collection = VisualElementCollection()
 
         self.visual_activities = self.plan_visual.get_visual_activities()
-        if len(self.visual_activities) == 0:
+        if visual.activity_count() == 0:
             raise NoActivitiesInVisualException("No activities in visual")
 
         # We need to know the earliest start and latest end date from the activities as that will be used to drive the

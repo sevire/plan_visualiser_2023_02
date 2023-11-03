@@ -324,6 +324,19 @@ class PlanVisual(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def activity_count(self, include_disabled=False):
+        """
+        Counts number of activities included within this visual.  Usually we don't want those which are disabled as they
+        are not currently in the visual, but there is a flag to override this.
+
+        :param include_disabled:
+        :return:
+        """
+        if include_disabled is False:
+            return self.visualactivity_set.filter(enabled=True).count()
+        else:
+            return self.visualactivity_set.all().count()
+
     def get_visual_activities(self, to_dict=True, include_disabled=False):
         """
         Only return activities which have been selected for this visual.
