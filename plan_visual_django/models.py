@@ -430,6 +430,24 @@ class SwimlaneForVisual(models.Model):
     def __str__(self):
         return self.swim_lane_name
 
+    def get_visual_activities(self, include_disabled=False, date_order=False):
+        """
+        Returns all the visual activities for this swimlane.
+        :return:
+        """
+        if include_disabled:
+            if date_order:
+                activities = self.visualactivity_set.all()
+            else:
+                activities = self.visualactivity_set.all()
+        else:
+            if date_order:
+                activities = self.visualactivity_set.filter(enabled=True)
+            else:
+                activities = self.visualactivity_set.filter(enabled=True)
+
+        return activities
+
     def get_next_unused_track_number(self):
         """
         Returns the next track number to be used for a new activity in the given swimlane.
