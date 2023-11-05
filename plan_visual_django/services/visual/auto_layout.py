@@ -115,7 +115,7 @@ class VisualAutoLayoutManager:
         """
         # If delete_flag is set then simply set the disabled flag on all the activities in the visual at the specified level
         if delete_flag:
-            visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False)
+            visual_activities = swimlane.get_visual_activities()
             for visual_activity in visual_activities:
                 # Check whether plan activity for this visual activity has the right level
                 plan_activity_for_visual_activity = self.plan_activities.filter(unique_sticky_activity_id=visual_activity.unique_id_from_plan)[0]
