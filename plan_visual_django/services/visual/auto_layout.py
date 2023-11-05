@@ -183,7 +183,30 @@ class VisualAutoLayoutManager:
             visual_activity.save()
             track_number += 1
 
+    def compress_swimlane(self, swimlane):
+        """
+        Compresses a swimlane by removing any blank tracks between activities.
+        :param swimlane:
+        :return:
+        """
+        # Get all the activities from the visual for this swimlane, ordered by track number
+        activities = swimlane.get_visual_activities().order_by('vertical_positioning_value')
 
+        # Now go through the activities and if there is a gap between the current activity and the previous one
+        # then move the current activity up to the previous one.
+        previous_activity = None
+        for activity in activities:
+            if previous_activity is None:
+                previous_activity = activity
+                continue
+
+            if activity.vertical_positioning_value > previous_activity.vertical_positioning_value + 1:
+                # There is a gap between the current activity and the previous one so move the current activity up
+                # to the previous one.
+                activity.vertical_positioning_value = previous_activity.vertical_positioning_value + 1
+                activity.save()
+
+            previous_activity = activity
 
 
 
