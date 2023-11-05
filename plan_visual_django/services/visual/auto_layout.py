@@ -6,9 +6,10 @@ The main algorithm is the following:
 2. Creating swimlanes and activities by using the structure of the plan. (that is Level information).
 """
 from django.db import IntegrityError
+from django.db.models import Subquery, OuterRef
 
 from plan_visual_django.exceptions import DuplicateSwimlaneException
-from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual
+from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 
@@ -164,6 +165,25 @@ class VisualAutoLayoutManager:
                 text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
                 plotable_style=self.visual_settings.default_activity_plotable_style,
             )
+
+    def sort_swimlane(self, swimlane):
+        """
+        Sort all the activities within a swimlane by start date and place each activity on a different track
+        :param swimlane:
+        :return:
+        """
+        track_number = 1
+
+        # Carry out join on plan activity to get start date, using subquery.
+        activities = (VisualActivity.objects.annotate(start_date=Subquery(PlanActivity.objects.filter(
+            plan_id=OuterRef('visual__plan_id'),
+            unique_sticky_activity_id=OuterRef('unique_id_from_plan')).values('start_date')))
+                      .filter(visual_id=swimlane.plan_visual_id)).order_by('start_date')
+        for visual_activity in activities:
+            visual_activity.vertical_positioning_value = track_number
+            visual_activity.save()
+            track_number += 1
+
 
 
 

@@ -758,10 +758,27 @@ def manage_colors(request):
         return render(request, 'plan_visual_django/manage_colors.html', context={"formset": formset})
 
 
-def add_or_delete_level(request, visual_id):
+def swimlane_actions(request, visual_id):
+    """
+    Processes various different types of actions for a specific swimlane, such as add activities, sort swimlane etc.
+    :param request:
+    :param visual_id:
+    :return:
+    """
     if request.method == "POST":
+        visual = PlanVisual.objects.get(id=visual_id)
+        swimlane_form = SwimlaneDropdownForm(data=request.POST, instance=visual)
+        if swimlane_form.is_valid():
+            swimlane = swimlane_form.cleaned_data['swimlane']
+        else:
+            raise ValueError(f"Unable to read swimlane from form")
+        auto_layout_manager = VisualAutoLayoutManager(visual_id)
+
         # Extract level from POST
-        level_post_entry = [entry for entry in request.POST if entry.startswith("Add") or entry.startswith("Remove")]
+        level_post_entry = [entry for entry in request.POST if
+                            entry.startswith("Add") or
+                            entry.startswith("Remove") or
+                            entry.startswith("Sort")]
 
         # Check exactly one match
         if len(level_post_entry) == 0:
@@ -770,21 +787,20 @@ def add_or_delete_level(request, visual_id):
             raise ValueError(f"Unexpectedly more than one entry for level in POST {request.POST}")
         else:
             # Extract action and level from form element name.
-            action, _, level = tuple(level_post_entry[0].split(" "))
+            action, arg1, arg2 = tuple(level_post_entry[0].split(" "))
             action = action.lower()
-            if level == "ALL": level = "0"
-            level = int(level)
 
+        if action == "add" or action == "remove":
+            if arg2 == "ALL": arg2 = "0"
+            level = int(arg2)
 
-        visual = PlanVisual.objects.get(id=visual_id)
-        swimlane_form = SwimlaneDropdownForm(data=request.POST, instance=visual)
-        if swimlane_form.is_valid():
-            swimlane = swimlane_form.cleaned_data['swimlane']
-            auto_layout_manager = VisualAutoLayoutManager(visual_id)
             if action == "add":
                 auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=False)
             elif action == 'remove':
                 auto_layout_manager.add_delete_activities(level, swimlane, delete_flag=True)
             else:
                 raise ValueError(f"Unknown action {action} during level based action")
+        elif action == "sort":
+            auto_layout_manager.sort_swimlane(swimlane)
+
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
