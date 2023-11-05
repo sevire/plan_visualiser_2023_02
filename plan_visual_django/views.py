@@ -778,6 +778,7 @@ def swimlane_actions(request, visual_id):
         level_post_entry = [entry for entry in request.POST if
                             entry.startswith("Add") or
                             entry.startswith("Remove") or
+                            entry.startswith("Compress") or
                             entry.startswith("Sort")]
 
         # Check exactly one match
@@ -802,5 +803,7 @@ def swimlane_actions(request, visual_id):
                 raise ValueError(f"Unknown action {action} during level based action")
         elif action == "sort":
             auto_layout_manager.sort_swimlane(swimlane)
+        elif action == "compress":
+            auto_layout_manager.compress_swimlane(swimlane)
 
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))

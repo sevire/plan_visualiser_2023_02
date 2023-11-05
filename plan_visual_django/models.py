@@ -32,8 +32,6 @@ class PlanField(models.Model):
             obj.is_stored = is_stored
             return obj
 
-
-
     class StoredPlanFieldType(models.TextChoices):
         INTEGER = "INT", "Integer"
         STRING = "STR", "String"
