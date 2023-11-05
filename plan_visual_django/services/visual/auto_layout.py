@@ -149,7 +149,6 @@ class VisualAutoLayoutManager:
                 visual_activity.save()
                 continue
 
-
             # The activity is not already in the visual so add it.
             VisualActivity.objects.create(
                 visual=self.visual_for_plan,
