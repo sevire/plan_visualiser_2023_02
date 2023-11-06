@@ -448,11 +448,12 @@ class SwimlaneForVisual(models.Model):
 
     def get_next_unused_track_number(self):
         """
-        Returns the next track number to be used for a new activity in the given swimlane.
+        Returns the next track number to be used for a new activity in the given swimlane.  Don't count disabled
+        activities as they are not currently in the visual.
         :return:
         """
         if self.visualactivity_set.count() > 0:
-            max_track_number = max([activity.vertical_positioning_value for activity in self.visualactivity_set.all()])
+            max_track_number = max([activity.vertical_positioning_value for activity in self.visualactivity_set.all().filter(enabled=True)])
             return max_track_number + 1
         else:
             return 1
