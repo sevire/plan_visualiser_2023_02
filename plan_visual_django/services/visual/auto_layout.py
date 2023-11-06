@@ -135,17 +135,24 @@ class VisualAutoLayoutManager:
         disabled_ids_from_visual = [visual_activity.unique_id_from_plan for visual_activity in disabled_activities]
 
         for activity in plan_activities:
-            # Any activities which are already in the visual will be left where they are, so if they are in a different
-            # swimlane they will be left there.
+            # There are three cases:
+            # 1. The activity is already in the visual and enabled.  In this case we do nothing.
+            # 2. The activity is already in the visual but disabled.  In this case we enable it and move to unused track.
+            # 3. The activity is not in the visual.  In this case we add it.
+
+            # Select the track number where this activity will go.
+            track_number = swimlane.get_next_unused_track_number()
 
             if activity.unique_sticky_activity_id in enabled_ids_from_visual:
+                # The activity is already in the visual and enabled so do nothing.
                 continue
 
             if activity.unique_sticky_activity_id in disabled_ids_from_visual:
-                # The visual already exists but has been disabled so re-enable and switch to this swimlane
+                # The visual already exists but has been disabled so re-enable, switch to this swimlane and set track number.
                 visual_activity = self.visual_for_plan.visualactivity_set.filter(unique_id_from_plan=activity.unique_sticky_activity_id)[0]
                 visual_activity.enabled = True
                 visual_activity.swimlane = swimlane
+                visual_activity.vertical_positioning_value = track_number
                 visual_activity.save()
                 continue
 
@@ -157,7 +164,7 @@ class VisualAutoLayoutManager:
                 enabled=True,
                 plotable_shape=self.visual_settings.default_activity_shape,
                 vertical_positioning_type=VisualActivity.VerticalPositioningType.TRACK_NUMBER,
-                vertical_positioning_value=swimlane.get_next_unused_track_number(),
+                vertical_positioning_value=track_number,
                 height_in_tracks=1,
                 text_horizontal_alignment=VisualActivity.HorizontalAlignment.CENTER,
                 text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE,
@@ -207,6 +214,3 @@ class VisualAutoLayoutManager:
                 activity.save()
 
             previous_activity = activity
-
-
-
