@@ -610,7 +610,6 @@ def layout_visual(request, visual_id):
         # part of the form. (e.g. Activity name)
         fields=(
             "swimlane",
-            "vertical_positioning_type",
             "vertical_positioning_value",
             "height_in_tracks",
             "text_vertical_alignment",
