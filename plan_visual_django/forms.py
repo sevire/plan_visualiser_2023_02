@@ -78,6 +78,7 @@ class VisualActivityFormForEdit(ModelForm):
         self.fields['swimlane'].queryset = SwimlaneForVisual.objects.filter(plan_visual=visual)
         self.initial['activity'] = activity_name
         self.fields['unique_id_from_plan'].label = "Id"
+        self.fields['vertical_positioning_value'].label = "Track #"
         self.initial['unique_id_from_plan'] = unique_id
 
         # Set the order of fields in the form with activity first

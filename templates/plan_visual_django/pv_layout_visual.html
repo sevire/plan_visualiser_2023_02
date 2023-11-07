@@ -14,8 +14,8 @@
                 {{ formset.non_form_errors.as_ul }}
                 {{ formset.management_form }}
 
-                <table id="formset" class="table small form w-auto">
                 <input type="submit" name="Submit">
+                <table id="formset" class="table small form w-auto">
 
                 {% for form in formset.forms %}
                   {% if forloop.first %}
@@ -43,11 +43,6 @@
                   </tr>
                 {% endfor %}
                 </table>
-{#                <table class="table">#}
-{#                    {{ formset }}#}
-{#                </table>#}
-
-                <input type="submit" name="Submit">
             </form>
         </div>
 
