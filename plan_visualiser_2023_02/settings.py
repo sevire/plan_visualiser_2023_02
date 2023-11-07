@@ -181,3 +181,5 @@ SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user
 # ToDo: Remove duplication of shared_data_user name between settings and add_common_data command
 SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
 SHARED_DATA_PREFIX = "AAA"
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
