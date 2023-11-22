@@ -8,4 +8,12 @@
     <canvas id="visual" width="900" height="450"></canvas>
     {{ activity_data | json_script:"json_activities" }}
     <script src="{% static 'dist/bundle.js' %}"></script>
+    <script>
+        const visual = get_activity_data()
+        const visual_settings = visual['settings']
+        const visual_activities = visual['shapes']
+        let context = initialise_canvas(visual_settings);
+        plot_visual(context, visual_activities, visual_settings);
+
+    </script>
 {% endblock %}

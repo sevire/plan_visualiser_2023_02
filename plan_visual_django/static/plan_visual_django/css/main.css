@@ -53,4 +53,8 @@ div#view a.view {
   color: #0d6efd;
 }
 
+table#activities_table tr.selected {
+  background-color: #ffd3d8;
+}
+
 /*# sourceMappingURL=main.css.map */
