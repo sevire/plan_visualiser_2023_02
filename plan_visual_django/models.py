@@ -335,6 +335,37 @@ class PlanVisual(models.Model):
         else:
             return self.visualactivity_set.all().count()
 
+    def get_visual_activity(self, unique_id):
+        visual_activity = self.visualactivity_set.filter(unique_id_from_plan=unique_id)[0]
+        activity_record = {}
+        # Get the record from the plan for this visual to get at the plan data (dates etc.)
+        plan_activity = PlanActivity.objects.get(plan_id=self.plan_id,
+                                                 unique_sticky_activity_id=visual_activity.unique_id_from_plan)
+
+        # Now set up each field we want to be included
+
+        # Start with the positioning and formatting fields for this activity
+        activity_record['unique_id_from_plan'] = visual_activity.unique_id_from_plan
+        activity_record['swimlane'] = visual_activity.swimlane.swim_lane_name
+        activity_record['plotable_shape'] = visual_activity.plotable_shape.name
+
+        activity_record['vertical_positioning_type'] = visual_activity.get_vertical_positioning_type()
+        activity_record['vertical_positioning_value'] = visual_activity.vertical_positioning_value
+        activity_record['height_in_tracks'] = visual_activity.height_in_tracks
+        activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
+        activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
+        activity_record['text_flow'] = visual_activity.get_text_flow()
+        activity_record['plotable_style'] = visual_activity.plotable_style
+
+        # Now add the plan activity record data for this activity
+        activity_record['activity_name'] = plan_activity.activity_name
+        activity_record['milestone_flag'] = plan_activity.milestone_flag
+        activity_record['start_date'] = plan_activity.start_date
+        activity_record['end_date'] = plan_activity.end_date
+        activity_record['level'] = plan_activity.level
+
+        return activity_record
+
     def get_visual_activities(self, to_dict=True, include_disabled=False):
         """
         Only return activities which have been selected for this visual.
@@ -346,7 +377,7 @@ class PlanVisual(models.Model):
         """
         # First get all the visual activity records for this visual (which are enabled)
         if include_disabled:
-            activities = self.visualactivity_set.all()
+            activities = self.visualactivity_set()
         else:
             activities = self.visualactivity_set.filter(enabled=True)
 
@@ -354,38 +385,10 @@ class PlanVisual(models.Model):
         if not to_dict:
             return activities
 
+        activity_unique_ids = list(activities.values('unique_id_from_plan'))
         # Now consolidate them into an array of dicts (not using comprehension for this is it's likely to be unreadable)
         # ToDo: Look for ways to simplify and improve performance of consolidation of activity data
-        activities_consolidated = []
-        for activity in activities:
-            activity_record = {}
-            # Get the record from the plan for this visual to get at the plan data (dates etc.)
-            plan_activity = PlanActivity.objects.get(plan_id=self.plan_id, unique_sticky_activity_id=activity.unique_id_from_plan)
-
-            # Now set up each field we want to be included
-
-            # Start with the positioning and formatting fields for this activity
-            activity_record['unique_id_from_plan'] = activity.unique_id_from_plan
-            activity_record['swimlane'] = activity.swimlane.swim_lane_name
-            activity_record['plotable_shape'] = activity.plotable_shape.name
-
-            activity_record['vertical_positioning_type'] = activity.get_vertical_positioning_type()
-            activity_record['vertical_positioning_value'] = activity.vertical_positioning_value
-            activity_record['height_in_tracks'] = activity.height_in_tracks
-            activity_record['text_horizontal_alignment'] = activity.get_horizontal_alignment()
-            activity_record['text_vertical_alignment'] = activity.get_vertical_alignment()
-            activity_record['text_flow'] = activity.get_text_flow()
-            activity_record['plotable_style'] = activity.plotable_style
-
-            # Now add the plan activity record data for this activity
-            activity_record['activity_name'] = plan_activity.activity_name
-            activity_record['milestone_flag'] = plan_activity.milestone_flag
-            activity_record['start_date'] = plan_activity.start_date
-            activity_record['end_date'] = plan_activity.end_date
-            activity_record['level'] = plan_activity.level
-
-            activities_consolidated.append(activity_record)
-
+        activities_consolidated = [self.get_visual_activity(activity["unique_id_from_plan"]) for activity in activity_unique_ids]
         return activities_consolidated
 
     def get_earliest_date(self):
@@ -452,8 +455,8 @@ class SwimlaneForVisual(models.Model):
         activities as they are not currently in the visual.
         :return:
         """
-        if self.visualactivity_set.count() > 0:
-            max_track_number = max([activity.vertical_positioning_value for activity in self.visualactivity_set.all().filter(enabled=True)])
+        if self.get_visual_activities().count() > 0:
+            max_track_number = max([activity.vertical_positioning_value for activity in self.get_visual_activities()])
             return max_track_number + 1
         else:
             return 1

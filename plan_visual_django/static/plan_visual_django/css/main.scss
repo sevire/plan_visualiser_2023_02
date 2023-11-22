@@ -81,3 +81,7 @@ div#view a.view {
   background-color: tint-color($primary, 50%);
   color: $primary;
 }
+
+table#activities_table tr.selected {
+  background-color: #ffd3d8;
+}
