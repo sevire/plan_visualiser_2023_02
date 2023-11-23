@@ -52,6 +52,15 @@ function selectRow(tr) {
 
 }
 
+function selectRowByIndex(index) {
+  // Select the activity whose index is passed in (starting from 1)
+    console.log("selectRowByIndex called with index: " + index)
+    let layout_table = document.getElementById("layout_table")
+    console.log("layout_table: " + layout_table)
+    index_row = layout_table.rows[index-1]
+    selectRow(index_row)
+}
+
 function move(direction) {
   // Move the selected activity in the specified direction
   console.log("move called with direction: " + direction)
@@ -219,14 +228,3 @@ function get_activities(visual_id) {
       }
     );
 }
-
-document.onkeydown = checkKey
-let selected_shape_index = -1  // No shape is currently selected
-
-
-
-
-
-
-
-
