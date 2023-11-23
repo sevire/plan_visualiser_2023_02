@@ -38,13 +38,13 @@
   </div>
     <script src="{% static 'dist/bundle.js' %}"></script>
     <script type="application/javascript">
-        body_element = document.getElementsByTagName("body")[0]
-        body_element.setAttribute("id", {{ visual.id }})
-        document.onkeydown = window.checkKey
+        body_element = document.getElementsByTagName("body")[0];
+        body_element.setAttribute("id", {{ visual.id }});
+        document.onkeydown = window.checkKey;
         window.addEventListener('load', function() {
-            window.get_activities({{ visual.id }});
+            console.log("window loaded");
+            window.get_activities_from_server({{ visual.id }});
             }
         );
     </script>
-
 {% endblock %}

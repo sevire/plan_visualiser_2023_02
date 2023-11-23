@@ -123,8 +123,8 @@ def re_upload_plan(request, pk):
             plan_file = plan.file.path
 
             file_reader = ExcelXLSFileReader()
-            raw_data = file_reader.read(plan_file)
-            parsed_data = file_reader.parse(raw_data, plan_field_mapping=mapping_type)
+            raw_data, headers = file_reader.read(plan_file)
+            parsed_data = file_reader.parse(raw_data, headers, plan_field_mapping=mapping_type)
             new_activities, updated_activities, deleted_sticky_ids = update_plan_data(parsed_data, plan)
             for activity in new_activities:
                 record = PlanActivity(
@@ -163,7 +163,7 @@ def re_upload_plan(request, pk):
         else:
             messages.error(request, "New version of plan upload failed validation")
 
-        return HttpResponseRedirect(reverse('manage_plans'))
+        return HttpResponseRedirect(reverse('manage-plans'))
     elif request.method == "GET":
         if not can_access_plan(request.user, pk):
             messages.error(request, "Plan does not exist or you do not have access")
@@ -676,6 +676,38 @@ def plot_visual(request, visual_id):
         }
         return render(request, "plan_visual_django/planvisual_detail.html", context)
 
+
+@login_required
+def plot_visual_02(request, visual_id):
+    """
+    This view is used to plot the visual.  It will be called by the browser when the page is loaded and will return
+    the data required to plot the visual.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if visual.activity_count() == 0:
+        messages.error(request, "No activities selected for visual")
+        return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
+    else:
+        visual_settings = VisualSettings(visual_id)
+        visual_orchestrator = VisualOrchestration(visual, visual_settings)
+        canvas_renderer = CanvasRenderer()
+        canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
+        swimlane_form = SwimlaneDropdownForm(instance=visual)
+        context = {
+            'activity_data': canvas_data,
+            'visual': visual,
+            'swimlane_dropdown_form': swimlane_form
+        }
+        return render(request, "plan_visual_django/planvisual_detail_02.html", context)
 
 @login_required
 def manage_colors(request):
