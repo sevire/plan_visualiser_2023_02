@@ -1,2 +1,9 @@
 /node_modules/
 /plan_files/
+
+# Ignore the build directory
+/plan_visual_django/static/dist/
+/**/.ds_store
+/**/__pycache__/
+
+db.sqlite3
