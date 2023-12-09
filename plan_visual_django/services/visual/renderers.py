@@ -133,7 +133,7 @@ class CanvasRenderer(VisualRenderer):
 
         activity_record = {
             'shape_details': {
-                'shape_name': item.shape.name,
+                'shape_name': item.shape,
                 'shape_plot_dims': {
                     'top': item.top,
                     'left': item.left,

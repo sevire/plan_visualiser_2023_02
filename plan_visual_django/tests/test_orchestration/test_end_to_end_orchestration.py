@@ -15,7 +15,7 @@ class TestEndToEndOrchestration(TestCase):
         self.plan_records, self.visual_records, self.visual_activity_records = setup_common_data()
 
     def test_end_to_end(self):
-        visual_settings = VisualSettings(width=600, height=300)
+        visual_settings = VisualSettings(self.visual_records[0].id)
         visual_orchestrator = VisualOrchestration(self.visual_records[0], visual_settings)
 
         canvas_renderer = CanvasRenderer()

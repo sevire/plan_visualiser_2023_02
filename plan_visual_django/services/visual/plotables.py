@@ -142,7 +142,7 @@ class PlotableFactory:
     }
 
     @classmethod
-    def get_plotable(cls, shape: PlotableShape.PlotableShapeName, **kwargs):
+    def get_plotable(cls, shape_name: PlotableShape.PlotableShapeName, **kwargs):
         """
         Decides which subclass of plotable is required based on which shape is to be plotted.
 
@@ -150,7 +150,7 @@ class PlotableFactory:
 
         :return:
         """
-        class_to_use = cls.plotable_factory_dispatch_table[shape]
-        return class_to_use(shape, **kwargs)
+        class_to_use = cls.plotable_factory_dispatch_table[shape_name]
+        return class_to_use(shape_name, **kwargs)
 
 

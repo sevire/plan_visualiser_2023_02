@@ -4,7 +4,7 @@ from plan_visual_django.models import PlanFieldMappingType, PlanField, PlanMappe
     PlanActivity, SwimlaneForVisual, PlotableShapeType, PlotableShape, Color, Font, PlotableStyle, VisualActivity, \
     TimelineForVisual
 from plan_visual_django.tests.resources.data_setup.common_data import plan_fields, field_mapping_01, \
-    plotable_shape_type_data, colour_data, timeline_for_visual_data
+    plotable_shape_type_data, colour_data, timeline_for_visual_data, plotable_shape_data
 
 
 def setup_common_reference_data():
@@ -29,10 +29,11 @@ def setup_common_reference_data():
         if plan_field_name in field_mapping_01:
             input_field_name = field_mapping_01[plan_field_name]["input_field_name"]
             input_field_type = field_mapping_01[plan_field_name]["input_field_type"]
-
+            mapped_fields = PlanField.objects.filter(field_name=plan_field_name)  # Should only be one!
+            print(f"Num mapped fields for {plan_field_name} = {len(mapped_fields)}")
             PlanMappedField.objects.create(
                 plan_field_mapping_type=plan_field_mapping_type,
-                mapped_field=PlanField.objects.get(field_name=plan_field_name),
+                mapped_field=mapped_fields[0],
                 input_field_name=input_field_name,
                 input_field_type=input_field_type
             )
@@ -51,7 +52,7 @@ def setup_common_reference_data():
     user = User.objects.create_user(username='testuser', password='12345')
 
     plotable_shape_types = [PlotableShapeType.objects.create(**shape_data) for shape_data in plotable_shape_type_data]
-    plotable_shapes = [PlotableShape.objects.create(shape_type=shape_type) for shape_type in plotable_shape_types]
+    plotable_shapes = [PlotableShape.objects.create(shape_type=plotable_shape_types[0], **shape_data) for shape_data in plotable_shape_data]
 
     # Return objects which may be needed in other test setup activities
     return user, file_type, plotable_shapes
@@ -63,7 +64,10 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
 
     :return:
     """
-    colour_records = [Color.objects.create(**colour_parameters) for colour_parameters in colour_data]
+    colour_records = []
+    for colour_parameters in colour_data:
+        colour_parameters.update({'user_id': user.id})
+        colour_records.append(Color.objects.create(**colour_parameters))
 
     font_data = [
         {
@@ -75,6 +79,7 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
 
     plotable_style_data = [
         {
+            "user_id": user.id,
             "style_name": "style-01",
             "fill_color": colour_records[0],
             "line_color": colour_records[0],
@@ -90,7 +95,7 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
     plan_data = [
         {
             'user': user,
-            'original_file_name': "dummy",
+            'file_name': "dummy",
             'file': "dummy",
             'file_type': file_type
         }
@@ -105,6 +110,15 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             'width': 400,
             'max_height': 300,
             'include_title': True,
+            'track_height': 10,
+            'track_gap': 3,
+            'milestone_width': 8,
+            'swimlane_gap': 3,
+            'default_milestone_shape': plotable_shapes[0],
+            'default_activity_shape': plotable_shapes[0],
+            'default_activity_plotable_style': plotable_style_records[0],
+            'default_milestone_plotable_style': plotable_style_records[0],
+            'default_swimlane_plotable_style': plotable_style_records[0],
         }
     ]
 
@@ -124,7 +138,6 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
                 {
                     "unique_sticky_activity_id": "A-001",
                     "activity_name": "Activity-01",
-                    "duration": 10,
                     "start_date": datetime(year=2023, month=1, day=1),
                     "end_date": datetime(year=2023, month=1, day=10),
                     "level": 1,
@@ -132,7 +145,6 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
                 {
                     "unique_sticky_activity_id": "A-002",
                     "activity_name": "Activity-02",
-                    "duration": 10,
                     "start_date": datetime(year=2023, month=1, day=10),
                     "end_date": datetime(year=2023, month=1, day=20),
                     "level": 1,
@@ -200,11 +212,11 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             activity = VisualActivity.objects.create(**record)
             visual_activity_records.append(activity)
 
-    return plan_records, visual_records, visual_activity_records
+    return plan_records, visual_records, visual_activity_records, timeline_objects
 
 
 def setup_common_data():
     user, file_type, plotable_shapes = setup_common_reference_data()
-    plan_records, visual_records, visual_activity_records = setup_common_plan_data(user, file_type, plotable_shapes)
+    plan_records, visual_records, visual_activity_records, timeline_records = setup_common_plan_data(user, file_type, plotable_shapes)
 
     return plan_records, visual_records, visual_activity_records

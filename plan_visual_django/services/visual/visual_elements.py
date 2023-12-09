@@ -43,7 +43,7 @@ class VisualElement:
 
     def plot_element(self):
         plotable:Plotable = PlotableFactory.get_plotable(
-            shape=self.shape,
+            shape_name=self.shape,
             top=self.top,
             left=self.left,
             width=self.width,
@@ -501,7 +501,7 @@ class ActivityCollection(VisualElementCollection):
                 width = self.date_plotter.width(activity['start_date'], activity['end_date'])
                 external_text_flag = False
 
-            shape = PlotableShape.PlotableShapeName[activity['plotable_shape']]
+            shape = activity['plotable_shape']
             plotable_style = activity['plotable_style']
 
             text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])

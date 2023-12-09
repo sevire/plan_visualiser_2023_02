@@ -12,8 +12,8 @@ class TestReadExcelFile(TestCase):
         file = "plan_visual_django/tests/resources/input_files/excel_plan_files/PV-Test-01.xlsx"
 
         file_reader = ExcelXLSFileReader(sheet_name="PV-Test-01")
-        raw_data = file_reader.read(file)
+        raw_data, headers = file_reader.read(file)
         plan_field_mapping_type = PlanFieldMappingType.objects.all()[0]
-        parsed_data = file_reader.parse(raw_data, plan_field_mapping=plan_field_mapping_type)
+        parsed_data = file_reader.parse(raw_data, headers, plan_field_mapping=plan_field_mapping_type)
 
         pass

@@ -303,13 +303,11 @@ class PlanVisual(models.Model):
     name = models.CharField(max_length=100)
     width = models.FloatField(default=30)
     max_height = models.FloatField(default=20)
-
     include_title = models.BooleanField(default=True)
     track_height = models.FloatField(default=20)
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
-
     default_milestone_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_milestone_shape")
     default_activity_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_activity_shape")
     default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")

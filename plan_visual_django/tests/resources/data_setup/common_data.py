@@ -22,7 +22,13 @@ field_mapping_01 = {
 
 plotable_shape_type_data = [
     {
-        'name': "RECTANGLE"
+        'name': "RECTANGLE_BASED"
+    }
+]
+
+plotable_shape_data = [
+    {
+        'name': "RECTANGLE",
     }
 ]
 
