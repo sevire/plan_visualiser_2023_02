@@ -206,7 +206,7 @@ class TestTechnicalFileFormat(TestCase):
 
         # Now check the results of the file read.  Note, won't get here if we were expecting a failure.
         if not file_error_expected:
-            input_data_from_file = file_reader.read(file_name)
+            input_data_from_file, headings = file_reader.read(file_name)
 
             if test_type == "file_level":
                 if expected_result_name == "num_valid_activities":
