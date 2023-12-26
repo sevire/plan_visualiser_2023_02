@@ -15,6 +15,7 @@ from django.test import TestCase
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.test_settings import EXCEL_PLAN_FILE_FOLDER
 from plan_visual_django.tests.utilities import date_from_string
+from resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 # Define input file paramters and expected results separately as we may want the same data in various different input
 # file variants (e.g. sheet name different), but the expected results will be the same - we don't want to have to copy
@@ -164,8 +165,8 @@ def test_data_gen():
 @ddt
 class TestTechnicalFileFormat(TestCase):
     fixtures = [
-        'plan_visual_django/tests/test_fixtures/auth_test_fixtures.json',
-        'plan_visual_django/tests/test_fixtures/test_fixtures.json'
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'auth_test_fixtures.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'test_fixtures.json')
     ]
 
     @data(*test_data_gen())

@@ -109,7 +109,7 @@ swimlane_test_data = {
 
 
 @ddt
-class SwimlaneTests(django.test.TestCase):
+class TestSwimlane(django.test.TestCase):
     """
     Tests the ability to manage activities within a number of swimlanes and correctly calculate the vertical position
     of the tracks within each swim lane and the shape and position of each swimlane.
