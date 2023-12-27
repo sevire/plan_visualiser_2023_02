@@ -1,9 +1,12 @@
 """
 Tests the ability to parse raw data from an Excel import and convert it to a set of PlanActivity records
 """
+import os
+
 from ddt import ddt, data, unpack
 from django.test import TestCase
 from plan_visual_django.models import PlanFieldMappingType, PlanMappedField, PlanField
+from resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 # Data for different field mapping schemas to test completeness validation
 plan_mapped_field_data_cases = [
@@ -121,8 +124,8 @@ plan_mapped_field_data_cases = [
 @ddt
 class TestPlanActivity(TestCase):
     fixtures = [
-        'plan_visual_django/tests_new/resources/fixtures/plan_field_mapping_types.json',
-        'plan_visual_django/tests_new/resources/fixtures/plan_fields.json'
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_field_mapping_types.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_fields.json')
     ]
 
     @data(*plan_mapped_field_data_cases)
