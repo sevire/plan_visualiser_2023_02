@@ -1,12 +1,14 @@
+import os
 from unittest import skip
 
 import django.test
 from ddt import ddt, data, unpack
 
 from plan_visual_django.models import VisualActivity
-from plan_visual_django.services.plan_to_visual.plan_to_visual import ActivityManager, DatePlotter
+from plan_visual_django.services.plan_to_visual.plan_to_visual import DatePlotter
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 from plan_visual_django.tests.utilities import date_from_string
+from resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 # Collection of start and end dates together with total visual width to test calculation of x values for plotables
 test_date_plotter = [
@@ -20,6 +22,7 @@ test_date_plotter = [
     }
 ]
 
+
 def test_date_plotter_gen():
     """
     Generator to provide start date, end date, and expected left, right and width values for calculated plotable
@@ -32,6 +35,7 @@ def test_date_plotter_gen():
         for start_end_dates in dates:
             start_date, end_date, width, left, right = start_end_dates
             yield dates_for_data_plotter, visual_width, start_date, end_date, width, left, right
+
 
 test_plan_to_visal_test_data = [
     {
@@ -53,6 +57,7 @@ test_plan_to_visal_test_data = [
     }
 ]
 
+
 def get_swimlanes_from_test_data(test_data):
     swimlanes = [record['swimlane'] for record in test_data]
     return swimlanes
@@ -63,15 +68,6 @@ class TestPlanToVisual(django.test.TestCase):
     """
     Test conversion from plan elements to visual elements, including sizing and positioning.
     """
-    @skip
-    def test_activity_to_plotable(self):
-        swimlane_settings = SwimlaneSettings(get_swimlanes_from_test_data(test_plan_to_visal_test_data))
-        visual_settings = VisualSettings(swimlane_settings=swimlane_settings)
-        activity_manager = ActivityManager(test_plan_to_visal_test_data, 0, 600, 0, 300, visual_settings)
-        activity_plotables = activity_manager.create_activity_collection()
-
-        pass
-        self.assertTrue(True)
 
     @data(*test_date_plotter_gen())
     @unpack
