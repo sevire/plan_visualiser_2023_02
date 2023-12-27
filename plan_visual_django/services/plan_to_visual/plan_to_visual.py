@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass
-from typing import Iterable, Tuple, Set
+from typing import Set
 
 from plan_visual_django.models import VisualActivity, Color, PlotableStyle, Font, PlanVisual, TimelineForVisual, \
     PlotableShapeType
@@ -10,122 +10,6 @@ from plan_visual_django.services.visual.renderers import CanvasRenderer, VisualR
 from plan_visual_django.services.visual.visual import Visual, PlotableCollection
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 
-
-
-
-class ActivityManager:
-    """
-    Utility class which helps to create the activity plotables to add to the visual.
-    """
-    def __init__(
-            self,
-            activities: [],
-            x_plot_start: float,
-            x_plot_end: float,
-            y_plot_start: float,
-            y_plot_end: float,
-            visual_settings: VisualSettings
-    ):
-        self.x_start = x_plot_start
-        self.y_start = y_plot_start
-        self.x_end = x_plot_end
-        self.y_end = y_plot_end
-        self.visual_settings = visual_settings
-
-        self.swimlane_manager = SwimlaneManager(visual_settings)
-
-        self.activity_collection: PlotableCollection = PlotableCollection()
-        self.activities = activities
-        dates = [(activity['start_date'], activity['end_date']) for activity in self.activities]
-        earliest, latest = DatePlotter.get_earliest_latest_dates(dates)
-        self.date_plotter = DatePlotter(earliest, latest, x_plot_start, x_plot_end)
-
-    def calculate_vertical_position(self, activity, track_number: int):
-        """
-        Calculates where an activity should sit vertically within a swimlane based on the layout information provided
-        by the user.
-
-        NOTE: This is a very simple initial implementation which doesn't allow for sophisticated layout options.
-
-        ToDo: Come back and add other use cases (swimlanes, relative positioning etc)
-
-        :param track_number:
-        :param activity:
-        :return:
-        """
-        top = self.swimlane_manager.get_track_top_within_swimlane(activity['swimlane'], track_number)
-        height = self.swimlane_manager.get_plotable_height(
-            swimlane_name=activity['swimlane'],
-            num_tracks=activity['height_in_tracks'])
-
-        return top, height
-
-    def create_activity_collection(self):
-        """
-        Turn activities with dates into plotable objects with precise coordinates.
-
-        Also involves creation of swimlanes and laying out of objects on tracks.  Note that the track number isn't
-        always specified by the user as layout options include (or will include) options to position relative to
-        the previous activity or just to auto calculate the layout.
-        :return:
-        """
-
-        # Parse activities twice - first time to calculate swimlanes and tracks, then to calculate plotables
-
-        # First calculate swimlanes and add track_number for each activity so that we can calculate vertical position
-        # of each activity correctly when we add them to the visual.
-        activities_plus_tracks = []
-        for activity in self.activities:
-            # The returned track number will be either that specified by user or calculated by logic of preferred layout
-            # option selected.
-            track_number = self.swimlane_manager.add_activity_to_swimlane(activity)
-            activities_plus_tracks.append({
-                'track_number': track_number,
-                'activity': activity
-            })
-
-        # Second parse calculates the shape, dimensions and position for each activity in the visual.
-        for activity_record in activities_plus_tracks:
-            activity = activity_record["activity"]
-            track_number = activity_record["track_number"]
-            top, height = self.calculate_vertical_position(activity, track_number)
-            if activity['duration'] == 0:
-                # This is a milestone so we plot in the middle of the day to the specified width for a milestone.
-                left = self.date_plotter.midpoint(activity['start_date']) - self.visual_settings.milestone_width/2
-                width = self.visual_settings.milestone_width
-
-                # The text for milestones is plotted outside the shape as typically it's a small constant width shape
-                # like a diamond or triangle.
-                external_text_flag = True
-            else:
-                left = self.date_plotter.left(activity['start_date'])
-                width = self.date_plotter.width(activity['start_date'], activity['end_date'])
-                external_text_flag = False
-
-            shape = PlotableShapeType.PlotableShapeTypeName[activity['plotable_shape']]
-            plotable_style = activity['plotable_style']
-
-            text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
-            text_flow = VisualActivity.TextFlow(activity['text_flow'])
-            text = activity['activity_name']
-
-            # When we create the plotable, add in the x, y offset passed in.
-
-            # plotable = PlotableFactory.get_plotable(
-            #     shape,
-            #     top=top + self.y_start,
-            #     left=left + self.x_start,
-            #     width=width,
-            #     height=height,
-            #     format=plotable_style,
-            #     text_vertical_alignment=text_vertical_alignment,
-            #     text_flow=text_flow,
-            #     text=text,
-            #     external_text_flag=external_text_flag
-            # )
-            # self.activity_collection.add_plotable(plotable)
-
-        return self.activity_collection, self.swimlane_manager
 
 @dataclass
 class TrackManager:
