@@ -1,17 +1,21 @@
 """
 Create unit tests to test the creation of PlanField entries from the django model
 """
+import os
+
 from ddt import ddt, data, unpack
 from django.test import TestCase
-from model_bakery import baker
 
 from plan_visual_django.models import PlanField
-from plan_visual_django.tests_new.resources.utilities import generate_test_data_field_stream
+from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from resources.utilities import generate_test_data_field_stream
 
 
 @ddt
 class TestPlanFieldCreation(TestCase):
-    fixtures = ['plan_visual_django/tests_new/resources/fixtures/plan_fields.json']
+    fixtures = [
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_fields.json')
+    ]
 
     def test_plan_field_creation(self):
         self.plan_fields = PlanField.objects.all()
