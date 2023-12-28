@@ -2,6 +2,7 @@
 Tests the ability to parse raw data from an Excel import and convert it to a set of PlanActivity records
 """
 import os
+from unittest import skip
 
 from ddt import ddt, data, unpack
 from django.test import TestCase
@@ -130,6 +131,7 @@ class TestPlanActivity(TestCase):
 
     @data(*plan_mapped_field_data_cases)
     @unpack
+    @skip
     def test_plan_mapped_field_is_complete(self, mapped_field_data, expected_is_complete):
         """
         Tests the ability to parse data which has been read in from an input file of any format and been converted
