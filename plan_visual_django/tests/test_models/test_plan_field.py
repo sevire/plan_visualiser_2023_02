@@ -7,8 +7,8 @@ from ddt import ddt, data, unpack
 from django.test import TestCase
 
 from plan_visual_django.models import PlanField
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
-from resources.utilities import generate_test_data_field_stream
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream
 
 
 @ddt
