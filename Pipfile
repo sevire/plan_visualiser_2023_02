@@ -9,6 +9,7 @@ openpyxl = "*"
 djangorestframework = "*"
 ddt = "*"
 colour = "*"
+coverage = "*"
 
 [dev-packages]
 

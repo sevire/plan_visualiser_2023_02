@@ -19,7 +19,7 @@ from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity,
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.general.string_utilities import indent
-from plan_visual_django.services.plan_file_utilities.plan_parsing import parse_plan
+from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
@@ -60,7 +60,7 @@ def add_plan(request):
                 file_reader = ExcelXLSFileReader()
 
                 try:
-                    parse_plan(plan, plan_file, mapping_type, file_reader)
+                    read_and_parse_plan(plan, plan_file, mapping_type, file_reader)
                 except PlanParseError as e:
                     messages.error(request, f"Plan parse error parsing {plan_file}, {e}")
 

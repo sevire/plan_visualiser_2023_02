@@ -1,3 +1,6 @@
+import os
+import smtplib
+import ssl
 from unittest import skip
 
 from django.core.mail import send_mail
@@ -12,9 +15,9 @@ class TestMailServices(TestCase):
         Tests normal Python email sending outside of Django - helps in initial debugging of email sending.
         :return:
         """
-        import smtplib, ssl, os
 
-        port = os.environ.get("EMAIL_PORT")
+        port = settings.EMAIL_PORT
+        host = os.environ.get("EMAIL_HOST")
         password = os.environ.get("EMAIL_PASSWORD")
         username = os.environ.get("EMAIL_USERNAME")
 
@@ -28,8 +31,8 @@ class TestMailServices(TestCase):
 
         message = f'Subject: {SUBJECT}\n\n{TEXT}'
 
-        with smtplib.SMTP_SSL("mail.genonline.co.uk", port, context=context) as server:
-            server.login("thomas.gaylard@genonline.co.uk", password)
+        with smtplib.SMTP_SSL(host=host, port=port, context=context) as server:
+            server.login(user=username, password=password)
             server.sendmail("thomas.gaylard@genonline.co.uk", ["testing@genonline.co.uk"], message)
 
     @skip

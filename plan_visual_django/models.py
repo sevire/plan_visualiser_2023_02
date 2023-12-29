@@ -26,6 +26,10 @@ class PlanField(models.Model):
         END = "end_date", True, 'End date of activity'
         LEVEL = "level", True, 'The level in the hierarchy of the an activity'
 
+
+        """
+        Controls creation of a PlanFieldName object so that it stores the 
+        """
         def __new__(cls, value, is_stored):
             obj = str.__new__(cls, value)
             obj._value_ = value
@@ -107,7 +111,7 @@ class PlanMappedField(models.Model):
 
     def __str__(self):
 
-        return f'{self.plan_field_mapping_type}:{self.mapped_field}:{self.input_field_name}:{self.input_field_type}'
+        return f'{self.plan_field_mapping_type}:{self.mapped_field} -> {self.input_field_name}:{self.input_field_type}'
 
 
 class FileType(models.Model):
