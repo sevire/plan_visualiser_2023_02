@@ -7,7 +7,7 @@
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/plan_visual_django/static" />
             <path value="file://$PROJECT_DIR$/plan_visual_django/tests/resources" />
-            <path value="file://$PROJECT_DIR$/plan_visual_django/tests/test_fixtures" />
+            <path value="file://$PROJECT_DIR$/plan_visual_django/tests/resources/test_fixtures" />
           </resourceRoots>
         </entryData>
       </entry>

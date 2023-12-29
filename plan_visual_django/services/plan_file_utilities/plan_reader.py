@@ -228,12 +228,7 @@ class PlanParser():
         :param headings:
         :return:
         """
-        # Check that the fields that are supplied in the input file include all compulsory fields needed for the plan.
-        supplied_fields = [field.mapped_field for field in self.column_mapping.planmappedfield_set.all() if field.input_field_name in headings]
-        compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
-        missing_compulsory_fields = [field for field in compulsory_plan_fields if field not in supplied_fields]
-        if len(missing_compulsory_fields) > 0:
-            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_fields}")
+        supplied_fields = self.validate_input_fields(headings)
 
         parsed_data = []
 
@@ -268,6 +263,21 @@ class PlanParser():
                 parsed_data.append(parsed_data_record)
 
         return parsed_data
+
+    def validate_input_fields(self, headings):
+        """
+        Check that the fields that are supplied in the input file include all compulsory fields needed for the plan.
+
+        :param headings:
+        :return:
+        """
+        supplied_fields = [field.mapped_field for field in self.column_mapping.planmappedfield_set.all() if
+                           field.input_field_name in headings]
+        compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
+        missing_compulsory_fields = [field for field in compulsory_plan_fields if field not in supplied_fields]
+        if len(missing_compulsory_fields) > 0:
+            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_fields}")
+        return supplied_fields
 
 
 class PlanFileReader(ABC):
