@@ -1,0 +1,79 @@
+[
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 1,
+    "fields": {
+      "field_name": "unique_sticky_activity_id",
+      "field_type": "STR",
+      "field_description": "xxx",
+      "required_flag": true,
+      "sort_index": 100
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 2,
+    "fields": {
+      "field_name": "activity_name",
+      "field_type": "STR",
+      "field_description": "The name of the activity which will be displayed on the visual.",
+      "required_flag": true,
+      "sort_index": 200
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 3,
+    "fields": {
+      "field_name": "duration",
+      "field_type": "INT",
+      "field_description": "Number of days duration for the activity.  Zero means that the activity is a milestone.",
+      "required_flag": true,
+      "sort_index": 300
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 4,
+    "fields": {
+      "field_name": "start_date",
+      "field_type": "DATE",
+      "field_description": "The start date of the activity (date only, no time element).",
+      "required_flag": true,
+      "sort_index": 400
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 5,
+    "fields": {
+      "field_name": "end_date",
+      "field_type": "DATE",
+      "field_description": "End date of activity.",
+      "required_flag": true,
+      "sort_index": 500
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 6,
+    "fields": {
+      "field_name": "level",
+      "field_type": "INT",
+      "field_description": "Level of this activity - to help construct the hierarchy within the plan which will then drive option in the visualisation functionality.",
+      "required_flag": false,
+      "sort_index": 600
+    }
+  },
+  {
+    "model": "plan_visual_django.planfield",
+    "pk": 7,
+    "fields": {
+      "field_name": "milestone_flag",
+      "field_type": "BOOL",
+      "field_description": "Not required in input file, is derived from duration and is True if duration is zero.",
+      "required_flag": false,
+      "sort_index": 250
+    }
+  }
+]
