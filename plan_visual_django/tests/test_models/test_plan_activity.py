@@ -7,7 +7,7 @@ from unittest import skip
 from ddt import ddt, data, unpack
 from django.test import TestCase
 from plan_visual_django.models import PlanFieldMappingType, PlanMappedField, PlanField
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 # Data for different field mapping schemas to test completeness validation
 plan_mapped_field_data_cases = [

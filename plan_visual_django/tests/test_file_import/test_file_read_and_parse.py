@@ -15,7 +15,7 @@ from plan_visual_django.models import Plan, FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.test_settings import EXCEL_PLAN_FILE_FOLDER
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 @ddt
