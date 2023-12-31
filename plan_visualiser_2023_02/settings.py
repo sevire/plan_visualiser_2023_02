@@ -29,12 +29,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DJANGO_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT')
 
 if DJANGO_ENVIRONMENT == 'production':
+    print('Using production environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = os.getenv('DEBUG')
+    DEBUG = False
 else:
+    print('Using development environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
 

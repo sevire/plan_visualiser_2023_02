@@ -8,6 +8,7 @@ defusedxml==0.7.1
 Django==5.0
 djangorestframework==3.14.0
 et-xmlfile==1.1.0
+gunicorn==21.2.0
 httpie==3.2.1
 idna==3.4
 markdown-it-py==2.2.0
@@ -15,6 +16,7 @@ mdurl==0.1.2
 model-bakery==1.17.0
 multidict==6.0.4
 openpyxl==3.1.2
+packaging==23.2
 Pygments==2.14.0
 PySocks==1.7.1
 python-dateutil==2.8.2
