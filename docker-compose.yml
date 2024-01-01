@@ -4,12 +4,16 @@ services:
     django_gunicorn:
         volumes:
         - static:/static
+        - .:/app
         build:
             context: .
+
         ports:
         - "8000:8000"
+
         depends_on:
         - db
+
         environment:
         - POSTGRES_DB=postgres
         - POSTGRES_USER=postgres

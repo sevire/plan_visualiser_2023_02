@@ -4,4 +4,5 @@
 # This will complement in-IDE testing because the Docker image is more production like (PostgreSQL, Nginx etc).
 # Dummy line to ensure something to commit
 
+echo "Re-building Docker images..."
 docker compose up
