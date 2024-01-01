@@ -2,6 +2,6 @@
 
 # After commit - rebuild local Docker image, so if Docker is running it will update the app.
 # This will complement in-IDE testing because the Docker image is more production like (PostgreSQL, Nginx etc).
-# Dummy line to ensure something to commitxxxxx
+# Dummy line to ensure something to commit
 
 docker compose up
