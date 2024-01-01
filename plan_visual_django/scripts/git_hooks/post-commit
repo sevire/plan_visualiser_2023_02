@@ -2,7 +2,22 @@
 
 # After commit - rebuild local Docker image, so if Docker is running it will update the app.
 # This will complement in-IDE testing because the Docker image is more production like (PostgreSQL, Nginx etc).
-# Dummy line to ensure something to commit x
+
 
 echo "Re-building Docker images..."
-docker compose up
+set -o errexit
+test -e .env && source .env || echo "$0: warn: no '.env' file in $(pwd): default values will be used"
+
+readonly APPNAME="${APPNAME:-myapp}"
+readonly APPVERSION="${APPVERSION:-latest}"
+
+readonly TMPDIR="/tmp/git-post-commit"
+test -d $TMPDIR || mkdir -p $TMPDIR
+
+readonly LOGFILE=$(mktemp -q ${TMPDIR}/${APPNAME}-`date '+%Y%m%d-%H%M%S'`-XXX)
+exec 1>$LOGFILE
+exec 2>&1
+
+docker build -t ${APPNAME}:${APPVERSION} -f Dockerfile .
+docker-compose -f docker-compose.yml up -d --no-deps --build
+docker system prune -f
