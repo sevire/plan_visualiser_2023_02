@@ -2,7 +2,7 @@
 
 # After commit - rebuild local Docker image, so if Docker is running it will update the app.
 # This will complement in-IDE testing because the Docker image is more production like (PostgreSQL, Nginx etc).
-# (dummyx)
+# (dummy)
 
 
 echo "Re-building Docker images..."
@@ -19,6 +19,13 @@ readonly LOGFILE=$(mktemp -q ${TMPDIR}/${APPNAME}-`date '+%Y%m%d-%H%M%S'`-XXX)
 exec 1>$LOGFILE
 exec 2>&1
 
+echo "Docker build beginning..."
 docker build -t ${APPNAME}:${APPVERSION} -f Dockerfile .
+
+echo "Docker compose beginning..."
 docker-compose -f docker-compose.yml up -d --no-deps --build
+
+echo "Docker compose complete, pruning beginning..."
 docker system prune -f
+
+echo "Deployment to local Docker environment complete."
