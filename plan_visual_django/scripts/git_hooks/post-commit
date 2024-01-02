@@ -2,7 +2,7 @@
 
 # After commit - rebuild local Docker image, so if Docker is running it will update the app.
 # This will complement in-IDE testing because the Docker image is more production like (PostgreSQL, Nginx etc).
-# (dummy)
+# (dummy) xxx
 
 
 echo "Re-building Docker images..."
