@@ -255,6 +255,7 @@ def create_initial_users(delete=False):
                 if "return" in user_data:
                     del user_data['return']
 
+                print(f"Calling {function.__name__}: {user_data}")
                 user = function(**user_data)
                 print_status_partial(f"User ({user}) created")
                 if return_flag is True:
