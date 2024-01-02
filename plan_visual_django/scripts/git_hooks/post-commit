@@ -12,7 +12,7 @@ echo "Re-building Docker images..."
 readonly TMPDIR="/tmp/git-post-commit"
 test -d $TMPDIR || mkdir -p $TMPDIR
 
-readonly LOGFILE=$(mktemp -q ${TMPDIR}/plan_visualiser-`date '+%Y%m%d-%H%M%S'`-XXX)
+readonly LOGFILE=$(mktemp -q ${TMPDIR}/plan_visualiser-"$(date '+%Y%m%d-%H%M%S')"-XXX)
 exec 1>$LOGFILE
 exec 2>&1
 
