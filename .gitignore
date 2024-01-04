@@ -8,5 +8,7 @@
 /plan_visual_django/static/dist/
 /**/.ds_store
 /**/__pycache__/
+/logs/
 
 db.sqlite3
+db.sqlite3-journal
