@@ -7,15 +7,16 @@ from django.db import IntegrityError
 from django.utils.crypto import get_random_string
 from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, PlanField, \
     PlotableShapeType, PlotableShape, FileType, Font
+import logging
+
+logger = logging.getLogger(__name__)
 
 root = settings.BASE_DIR
 json_dir = 'plan_visual_django/fixtures'
-
 plan_fields = 'plan_fields.json'
 file_types = 'file_type.json'
 mapped_fields = 'mapped_fields.json'
 field_mapping_types = 'mapping_types.json'
-
 standard_colors = 'standard_colors.json'
 standard_styles = 'standard_styles.json'
 standard_data_user = 'shared_data_user.json'
@@ -125,8 +126,14 @@ def add_initial_data(shared_data_user, delete_flag=False):
     :return:
     """
     # Reverse order if we are deleting as we need to delete child records first
+    if delete_flag:
+        logger.info("Deleting initial data from database")
+    else:
+        logger.info("Adding initial data to database")
+
     data_driver = reversed(initial_data_driver) if delete_flag else initial_data_driver
     for initial_model_data in data_driver:
+        logger.info(f"Adding data for {initial_model_data}")
         add_initial_data_for_model(shared_data_user, initial_model_data, delete_flag)
 
 
@@ -150,6 +157,8 @@ def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag
     foreign_keys = [] if 'foreign_keys' not in data_driver else data_driver['foreign_keys']
 
     print_status_partial = partial(print_status, f"{model.__name__} records", delete_flag=delete_flag)
+
+    logger.info(f"Initialising {model.__name__}, json_file_name = {file}")
 
     with open(json_pathname(file), 'r') as f:
         records = json.load(f)
@@ -201,7 +210,7 @@ def print_status(phase, message, delete_flag=False):
     :return:
     """
     action = "delete" if delete_flag else "add"
-    print(f"{(action.capitalize() + ' ' + phase):<35} : {message}")
+    logger.info(f"{(action.capitalize() + ' ' + phase):<35} : {message}")
 
 
 def json_pathname(filename):
