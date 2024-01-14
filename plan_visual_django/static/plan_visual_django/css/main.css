@@ -1,3 +1,7 @@
+li.user-action button.btn, li.user-action a.btn {
+  margin-right: 10px;
+}
+
 table.activity-table tr.level-01 {
   background-color: #fa7799;
 }
