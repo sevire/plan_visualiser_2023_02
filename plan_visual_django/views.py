@@ -27,11 +27,14 @@ from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManag
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
+import logging
 
+logger = logging.getLogger(__name__)
 
 @login_required
 @transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
 def add_plan(request):
+    logger.debug("Adding plan...")
     if request.method == "POST":
         plan_form = PlanForm(data=request.POST, files=request.FILES)
         if plan_form.is_valid():
@@ -51,6 +54,7 @@ def add_plan(request):
 
                 # Now can save the record
                 plan.save()
+                logger.info(f"Plan added for user {current_user}, name = {plan.file.name}")
 
                 # Have saved the record, now parse the plan and store activities.
                 # Only store fields which are part of the plan for the given file type.

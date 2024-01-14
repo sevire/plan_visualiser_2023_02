@@ -14,10 +14,8 @@ from pathlib import Path
 from django.contrib.messages import constants as messages
 import os
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -29,12 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DJANGO_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT')
 
 if DJANGO_ENVIRONMENT == 'production':
+    print('Using production environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = os.getenv('DEBUG')
+    DEBUG = False
 else:
+    print('Using development environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
 
@@ -44,7 +44,6 @@ else:
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://138.68.160.214']
-
 
 # Application definition
 
@@ -69,6 +68,46 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname:6} {asctime} {name} ({filename}:{lineno}): {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "logs/debug.log",
+            "formatter": "verbose"
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "propagate": False,
+        },
+        "root": {
+            "handlers": ["console", "file"],
+            "level": os.getenv("LOGGING_LEVEL", "DEBUG"),
+            "propagate": False
+        }
+    },
+}
+
 ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 
 TEMPLATES = [
@@ -89,7 +128,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -127,14 +165,13 @@ AUTH_PASSWORD_VALIDATORS = [
     # {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
-
 MESSAGE_TAGS = {
-        messages.DEBUG: 'alert-secondary',
-        messages.INFO: 'alert-info',
-        messages.SUCCESS: 'alert-success',
-        messages.WARNING: 'alert-warning',
-        messages.ERROR: 'alert-danger',
- }
+    messages.DEBUG: 'alert-secondary',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -146,7 +183,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -177,7 +213,8 @@ EMAIL_USE_SSL = True
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user in initial_users within add_common_data command
+SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user in initial_users within
+# add_common_data command
 # ToDo: Remove duplication of shared_data_user name between settings and add_common_data command
 SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
 SHARED_DATA_PREFIX = "AAA"
