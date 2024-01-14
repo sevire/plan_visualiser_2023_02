@@ -4,11 +4,16 @@
 # believe that triggers a change to the containers so they wouldn't restart just by docker compose up, but at least
 # Gunicorn needs to be restarted after code change to ensure that any caches are destroyed so changes are seen.
 
-# First check whether last commit was WIP commit.  If so then don't do anything.
-LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
-if [[ $LAST_COMMIT_MSG = *'[WIP]'* ]]; then
-    echo "Work in progress commit, not rebuilding"
-    exit 0
+# First check whether we need to override WIP test.
+if [ "$1" != "--no-wip" ]
+then
+  # Check whether last commit was WIP commit.  If so then don't do anything.
+  LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+  if [[ $LAST_COMMIT_MSG = *'[WIP]'* ]]
+  then
+      echo "Work in progress commit, not rebuilding"
+      exit 0
+  fi
 fi
 
 echo "Re-building Docker images..."
