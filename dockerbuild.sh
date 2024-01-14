@@ -3,7 +3,6 @@
 # The approach is to rebuild everything for safety.  Also note that if it's only source code that has changed, I don't
 # believe that triggers a change to the containers so they wouldn't restart just by docker compose up, but at least
 # Gunicorn needs to be restarted after code change to ensure that any caches are destroyed so changes are seen.
-# ToDo: Revisit sophistication of dockerbuild.sh to see whether more intelligence should be built into it.
 
 # First check whether last commit was WIP commit.  If so then don't do anything.
 LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
