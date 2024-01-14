@@ -104,11 +104,13 @@ initial_users = [
     {
         'username': "admin",
         'email': 'admin_user@genonline.co.uk',
+        'id': 2,  # Need to specify id as we haven't reset pk counts yet and db will try to give id of 1
         'superuser_flag': True
     },
     {
         'username': "app_user_01",
         'email': 'initial_app_user@genonline.co.uk',
+        'id': 3,  # Need to specify id as we haven't reset pk counts yet and db will try to give id of 1
         'superuser_flag': False
     }
 ]
