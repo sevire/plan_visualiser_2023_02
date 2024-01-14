@@ -19,6 +19,8 @@
       <excludeFolder url="file://$MODULE_DIR$/plan_files" />
       <excludeFolder url="file://$MODULE_DIR$/plan_visual_django/static/dist" />
       <excludeFolder url="file://$MODULE_DIR$/plan_visual_django/static/plan_visual_django/bootstrap" />
+      <excludeFolder url="file://$MODULE_DIR$/logs" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

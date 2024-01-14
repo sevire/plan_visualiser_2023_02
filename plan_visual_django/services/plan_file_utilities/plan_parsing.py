@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 def parse_activity(plan, activity):
     # NOTE - the following is a temporary hack.
     # ToDo: Refactor to more generically handle the mapping of the input data to the plan fields for milestones.
@@ -37,6 +41,7 @@ def read_plan_file(plan_file, file_reader):
 
 
 def read_and_parse_plan(plan, plan_file, plan_field_mapping, file_reader):
+    logger.debug(f'Reading plan: {plan_file}')
     raw_data, headers = read_plan_file(plan_file, file_reader)
     parsed_data = parse_plan_file(
         raw_data=raw_data,

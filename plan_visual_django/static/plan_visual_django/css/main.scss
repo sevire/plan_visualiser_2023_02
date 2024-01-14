@@ -9,6 +9,12 @@ $colour-02: #ff768e;
 $main-navbar-background-color: $colour-01;
 $main-page-heading-color: $colour-02;
 
+// Header level styling
+li.user-action button.btn, li.user-action a.btn {
+  margin-right: 10px;
+}
+
+
 // Plan activity level colouring
 $activity-level-01: #fa7799;
 
