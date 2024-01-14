@@ -79,6 +79,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose"
         },
@@ -90,13 +91,13 @@ LOGGING = {
         },
     },
     "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
+        "handlers": ["console", "file"],
+        "level": "DEBUG",
     },
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
             "propagate": False,
         },
         "root": {
