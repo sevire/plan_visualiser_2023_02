@@ -16,3 +16,9 @@ class PlanMappingIncompleteError(Exception):
 
 class SuppliedPlanIncompleteError(Exception):
     pass
+
+class ExcelPlanSheetNotFound(Exception):
+    pass
+
+class AddPlanError(Exception):
+    pass
