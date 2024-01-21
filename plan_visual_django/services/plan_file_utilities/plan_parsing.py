@@ -35,14 +35,14 @@ def parse_plan_file(raw_data, headers, file_reader, plan_field_mapping):
     return parsed_data
 
 
-def read_plan_file(plan_file, file_reader):
-    raw_data, headers = file_reader.read(plan_file)
+def read_plan_file(plan, file_reader):
+    raw_data, headers = file_reader.read(plan)
     return raw_data, headers
 
 
-def read_and_parse_plan(plan, plan_file, plan_field_mapping, file_reader):
-    logger.debug(f'Reading plan: {plan_file}')
-    raw_data, headers = read_plan_file(plan_file, file_reader)
+def read_and_parse_plan(plan, plan_field_mapping, file_reader):
+    logger.debug(f'Reading plan: {plan}')
+    raw_data, headers = read_plan_file(plan, file_reader)
     parsed_data = parse_plan_file(
         raw_data=raw_data,
         headers=headers,
