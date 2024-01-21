@@ -7,9 +7,13 @@ from abc import ABC, abstractmethod
 from datetime import datetime, date
 from pathlib import Path
 from typing import List, Dict, Callable, Any
-from plan_visual_django.exceptions import SuppliedPlanIncompleteError, PlanMappingIncompleteError
-from plan_visual_django.models import PlanField, PlanFieldMappingType, PlanMappedField
+from plan_visual_django.exceptions import SuppliedPlanIncompleteError, PlanMappingIncompleteError, \
+    ExcelPlanSheetNotFound
+from plan_visual_django.models import PlanField, PlanFieldMappingType, PlanMappedField, FileType, Plan
 import openpyxl as openpyxl
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Utility functions for parsing into every data type required by the app from every plan format
 # required to be supported.
@@ -341,22 +345,55 @@ class ExcelXLSFileReader(PlanFileReader):
         super().__init__()
         self.sheet_name = sheet_name
 
-    def read(self, file_path: str) -> (List[Dict], List):
+    def get_sheet_name(self, sheet_list: [str], file_name: str, file_type: FileType):
+        """
+        Uses some fuzzy(ish) logic to work out the sheet name to use for the plan data.
+
+        Logic is:
+        - If self.sheet_name has been set, use that.
+        - If there is only one sheet, use that.
+        - If there is more than one sheet, then test for
+          - A sheet with the same name as the workbook (this is default for SmartSheet)
+          - A sheet with the name "Task_Data" (this is default for MS Project)
+        - If none matches, then abort with fatal error (don't just try to read a random sheet!)
+
+        :param file_type: File type of the file, which provides hints as to which sheet the plan data is in.
+        :param file_name:
+        :param sheet_list:
+        :param workbook_object:
+        :return:
+        """
+        if len(sheet_list) == 1:
+            sheet_name = sheet_list[0]
+            logger.debug(f"Only one sheet in the plan, using that, sheet name = {sheet_name}")
+            return sheet_name
+        elif file_type.file_type_name == "Excel (modern) Smartsheet Export" and file_name in sheet_list:
+            sheet_name = file_name
+            logger.debug(f"Smartsheet, choosing sheet name = file name, sheet name = {sheet_name}")
+            return sheet_name
+        elif file_type.file_type_name == "Excel (modern) MSP Export" and "Task_Data" in sheet_list:
+            sheet_name = "Task_Data"
+            logger.debug(f"MS Project, choosing sheet name = {sheet_name}")
+            return sheet_name
+        else:
+            logger.error(f"Unable to determine which sheet plan is in, aborting")
+            raise ExcelPlanSheetNotFound(f"Unable to determine which sheet plan is in")
+
+    def read(self, plan: Plan) -> (List[Dict], List):
         """
         For now the only logic here is to hard code the sheet name that the plan is located within.  This is only
         temporary and this will have to be replaced by file type specific data fields within the database.
 
         :return:
         """
-        skiprows = 0
+        skip_rows = 0
 
-        wb_obj = openpyxl.load_workbook(file_path, data_only=True)
+        wb_obj = openpyxl.load_workbook(plan.file.file, data_only=True)
+        name = Path(plan.file_name).stem
 
-        if self.sheet_name is None:
-            sheet = wb_obj.active
-        else:
-            sheet = wb_obj[self.sheet_name]
-        start_row = 1 + skiprows
+        sheet_name = self.get_sheet_name(wb_obj.sheetnames, name, plan.file_type)
+        sheet = wb_obj[sheet_name]
+        start_row = 1 + skip_rows
 
         headings = self.get_headers(sheet, start_row)
         table = {heading: [] for heading in headings}
