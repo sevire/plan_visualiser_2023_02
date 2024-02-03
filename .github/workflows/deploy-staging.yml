@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout Development branch
-      uses: actions/checkout@Development
+      uses: actions/checkout@v3
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
