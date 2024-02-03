@@ -39,13 +39,13 @@ jobs:
 
     # Build a Docker image of your application in your registry and tag the image with the $GITHUB_SHA.
     - name: Build Docker image for Nginx
-      run: docker build -t $(echo $REGISTRY)//plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -t $(echo $REGISTRY)/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Build Docker image for Gunicorn
-      run: docker build -t $(echo $REGISTRY)//plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -t $(echo $REGISTRY)/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Build Docker image for Postgres
-      run: docker build -t $(echo $REGISTRY)//postgres:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -t $(echo $REGISTRY)/postgres:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
