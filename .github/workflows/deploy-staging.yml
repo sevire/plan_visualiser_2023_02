@@ -70,7 +70,6 @@ jobs:
         host: ${{ secrets.DO_DROPLET_STAGING_HOST_IP }}
         username: ${{ secrets.STAGING_DROPLET_SSH_USER_NAME }}
         key: ${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}
-        passphrase: ""
         envs: IMAGE_NAME,REGISTRY,{{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }},GITHUB_SHA
         script: |
           # Login to registry
