@@ -37,7 +37,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Build a Docker image of your application in your registry and tag the image with the $GITHUB_SHA.
+    # Build a Docker image of your application in your registry and tag the image with the $GITHUB_SHA. xxx
     - name: Build Docker image for Nginx
       run: docker build -t ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7) .
 
