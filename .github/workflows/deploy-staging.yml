@@ -64,18 +64,17 @@ jobs:
     needs: build_and_push
 
     steps:
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }}
-
-    - name: SSH to Staging server (using doctl) and pull latest code for Development branch
+    - name: run pull
       run: |
-        doctl compute ssh "PV-01"
-        # Pull latest app code
-        cd /docker_app_root/plan_visualiser_2023_02
-        git pull
-        git status
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ DO_STAGING_DROPLET_SSH_KEY }} > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
+
+    - name: connect and pull
+      run: ssh root@${{ DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && git pull"
+
+    - name:
+      run: rm -rf ~/.ssh
 
   deploy-docker-images:
     runs-on: ubuntu-latest
