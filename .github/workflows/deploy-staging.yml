@@ -75,6 +75,7 @@ jobs:
           # Pull latest app code
           cd /docker_app_root/plan_visualiser_2023_02
           git pull
+          git status
           
           # Login to registry
           docker login -u ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} -p ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} registry.digitalocean.com
