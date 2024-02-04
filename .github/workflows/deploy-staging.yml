@@ -72,6 +72,10 @@ jobs:
         key: ${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}
         envs: IMAGE_NAME,REGISTRY,{{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }},GITHUB_SHA
         script: |
+          # Pull latest app code
+          cd /docker_app_root/plan_visualiser_2023_02
+          git pull
+          
           # Login to registry
           docker login -u ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} -p ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} registry.digitalocean.com
           
