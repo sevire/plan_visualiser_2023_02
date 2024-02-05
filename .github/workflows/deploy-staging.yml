@@ -64,14 +64,14 @@ jobs:
     needs: build_and_push
 
     steps:
-    - name: run pull
+    - name: install ssh keys
       run: |
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
 
     - name: connect and pull
-      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && git pull"
+      run: ssh -vT root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && git pull"
 
     - name:
       run: rm -rf ~/.ssh
