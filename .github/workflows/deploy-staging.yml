@@ -83,23 +83,23 @@ jobs:
 
           # Stop running Nginx container and remove old container.
 
-          docker stop nginx-1
+          docker stop plan_visualiser_2023_02-nginx-1
 
-          docker rm nginx-1
+          docker rm plan_visualiser_2023_02-nginx-1
 
 
           # Stop running Gunicorn container and remove old container.
 
-          docker stop django_gunicorn-1
+          docker stop plan_visualiser_2023_02-django_gunicorn-1
 
-          docker rm django_gunicorn-1
+          docker rm plan_visualiser_2023_02-django_gunicorn-1
 
 
           # Stop running Postgres container and remove old container.
 
-          docker stop db-1
+          docker stop plan_visualiser_2023_02-db-1
 
-          docker rm db-1
+          docker rm plan_visualiser_2023_02-db-1
 
 
           # Run a new Nginx container from a new image
@@ -108,7 +108,7 @@ jobs:
 
           --restart always \
 
-          --name nginx-1 \
+          --name plan_visualiser_2023_02-nginx-1 \
 
           ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
 
@@ -119,7 +119,7 @@ jobs:
 
           --restart always \
 
-          --name django_gunicorn-1 \
+          --name plan_visualiser_2023_02-django_gunicorn-1 \
 
           ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
@@ -130,7 +130,7 @@ jobs:
 
           --restart always \
 
-          --name db-1 \
+          --name plan_visualiser_2023_02-db-1 \
 
           ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/postgres:$(echo $GITHUB_SHA | head -c7)
       - name: clean up after ssh session.
