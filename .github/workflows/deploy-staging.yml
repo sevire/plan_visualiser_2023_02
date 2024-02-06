@@ -69,9 +69,26 @@ jobs:
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
+
     - name: connect and pull
-      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && git pull"
-    - name: pull docker images and restart containers
+      run: ssh -vT root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && git pull"
+
+    - name:
+      run: rm -rf ~/.ssh
+
+  deploy-docker-images:
+    runs-on: ubuntu-latest
+    needs: deploy_code
+
+    steps:
+    - name: Deploy to Digital Ocean droplet via SSH action
+      uses: appleboy/ssh-action@v0.1.3
+      with:
+        host: ${{ secrets.DO_DROPLET_STAGING_HOST_IP }}
+        username: ${{ secrets.STAGING_DROPLET_SSH_USER_NAME }}
+        key: ${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}
+        envs: IMAGE_NAME,REGISTRY,{{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }},GITHUB_SHA
+        script: |
       run: |
         # Login to registry
         doctl registry login
