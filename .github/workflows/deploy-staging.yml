@@ -70,7 +70,7 @@ jobs:
         
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
     - name: connect and pull
-      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && sh ./deploy_on_remote.sh ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} $GITHUB_SHA"
+      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && sh deploy_on_remote.sh ${{ secrets.DO_DOCKER_REGISTRY_NAME }} $GITHUB_SHA"
 
     - name: clean up after ssh session.
       run: rm -rf ~/.ssh
