@@ -1,6 +1,9 @@
 DO_DOCKER_REGISTRY_NAME=$1
 GITHUB_SHA=$2
 
+echo $DO_DOCKER_REGISTRY_NAME
+echo $GITHUB_SHA
+
 cd /docker_app_root/plan_visualiser_2023_02 || exit
 git pull
 
