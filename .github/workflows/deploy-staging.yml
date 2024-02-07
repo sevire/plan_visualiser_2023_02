@@ -70,50 +70,7 @@ jobs:
         
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
     - name: connect and pull
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DO_DROPLET_STAGING_HOST_IP }}
-        username: root
-        key: ${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}
-        script: |
-          cd /docker_app_root/plan_visualiser_2023_02
-          git pull
-      
-          # Login to registry
-          doctl registry login
+      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && sh deploy_on_remote.sh"
 
-          docker ps
-
-          # Stop running Nginx container and remove old container.
-          docker stop plan_visualiser_2023_02-nginx-1
-          docker rm plan_visualiser_2023_02-nginx-1
-          
-          # Stop running Gunicorn container and remove old container.
-          docker stop plan_visualiser_2023_02-django_gunicorn-1
-          docker rm plan_visualiser_2023_02-django_gunicorn-1
-          
-          # Stop running Postgres container and remove old container.
-          docker stop plan_visualiser_2023_02-db-1
-          docker rm plan_visualiser_2023_02-db-1
-          
-          # Run a new Nginx container from a new image
-          docker run -d \
-          --restart always \
-          --name plan_visualiser_2023_02-nginx-1 \
-          ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
-          
-          # Run a new Gunicorn container from a new image
-          
-          docker run -d \
-          --restart always \
-          --name plan_visualiser_2023_02-django_gunicorn-1 \
-          ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
-          
-          # Run a new Postgres container from a new image
-          
-          docker run -d \
-          --restart always \
-          --name plan_visualiser_2023_02-db-1 \
-          ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/postgres:$(echo $GITHUB_SHA | head -c7)
     - name: clean up after ssh session.
       run: rm -rf ~/.ssh
