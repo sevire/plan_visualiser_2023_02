@@ -78,6 +78,8 @@ jobs:
         
         doctl registry login
         
+        docker ps
+        
         # Stop running Nginx container and remove old container.
         
         docker stop plan_visualiser_2023_02-nginx-1
