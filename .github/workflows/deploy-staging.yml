@@ -39,12 +39,13 @@ jobs:
         .
     - name: Build Docker image for Gunicorn
       run: docker build
-        --file ./devops/postgres/Dockerfile
+        --file ./devops/gunicorn/Dockerfile
         --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
         .
     - name: Build Docker image for Postgres
-      run: docker build --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/postgres:$(echo $GITHUB_SHA | head -c7)
-        --env
+      run: docker build
+        --file ./devops/postgres/Dockerfile
+        --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/postgres:$(echo $GITHUB_SHA | head -c7)
         .
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
