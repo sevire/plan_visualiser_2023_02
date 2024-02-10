@@ -2,11 +2,10 @@ version: '3.8'
 
 services:
   django_gunicorn:
+    build: ./devops/gunicorn
     volumes:
     - static:/static
     - .:/app
-    build:
-      context: .
 
     ports:
     - "8000:8000"
