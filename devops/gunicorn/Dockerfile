@@ -6,7 +6,7 @@ WORKDIR /app
 # So need to copy in requirements.txt and entrypoint.sh before they can be run
 
 COPY ../../requirements.txt .
-COPY ../../entrypoint.sh /
+COPY entrypoint.sh /
 
 RUN pip install --upgrade pip
 RUN pip install -r ./requirements.txt
