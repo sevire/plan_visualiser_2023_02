@@ -39,4 +39,5 @@ docker run -d \
 docker run -d \
 --restart always \
 --name plan_visualiser_2023_02-db-1 \
+--volume data:/var/lib/postgresql/data
 "${DO_DOCKER_REGISTRY_NAME}"/postgres:$(echo $GITHUB_SHA | head -c7)
