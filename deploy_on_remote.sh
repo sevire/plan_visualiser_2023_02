@@ -33,6 +33,7 @@ docker run -d \
 docker run -d \
 --restart always \
 --name plan_visualiser_2023_02-django_gunicorn-1 \
+--volume .:/app \
 --volume static:/static \
 "${DO_DOCKER_REGISTRY_NAME}"/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
