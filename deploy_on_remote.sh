@@ -33,11 +33,13 @@ docker run -d \
 docker run -d \
 --restart always \
 --name plan_visualiser_2023_02-django_gunicorn-1 \
+--volume static:/static \
+--volume .:/app \
 "${DO_DOCKER_REGISTRY_NAME}"/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
 # Run a new Postgres container from a new image
 docker run -d \
 --restart always \
 --name plan_visualiser_2023_02-db-1 \
---volume data:/var/lib/postgresql/data
+--volume data:/var/lib/postgresql/data \
 "${DO_DOCKER_REGISTRY_NAME}"/postgres:$(echo $GITHUB_SHA | head -c7)
