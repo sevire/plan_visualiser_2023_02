@@ -27,7 +27,7 @@ docker rm plan_visualiser_2023_02-db-1
 docker run -d \
 --restart always \
 --name plan_visualiser_2023_02-nginx-1 \
--p 80:80 \
+-p "80:80" \
 "${DO_DOCKER_REGISTRY_NAME}"/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
 
 # Run a new Gunicorn container from a new image
@@ -36,7 +36,7 @@ docker run -d \
 --name plan_visualiser_2023_02-django_gunicorn-1 \
 --volume .:/app \
 --volume static:/static \
--p 8000:8000 \
+-p "8000:8000" \
 "${DO_DOCKER_REGISTRY_NAME}"/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
 # Run a new Postgres container from a new image
