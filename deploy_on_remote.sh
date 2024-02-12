@@ -37,7 +37,7 @@ docker run -d \
 --volume .:/app \
 --volume static:/static \
 -p "8000:8000" \
-"${DO_DOCKER_REGISTRY_NAME}"/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
+"${DO_DOCKER_REGISTRY_NAME}"/django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
 # Run a new Postgres container from a new image
 docker run -d \
