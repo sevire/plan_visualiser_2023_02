@@ -33,7 +33,7 @@ docker run -d \
 # Run a new Gunicorn container from a new image
 docker run -d \
 --restart always \
---name plan_visualiser_2023_02-django_gunicorn-1 \
+--name django_gunicorn \
 --volume .:/app \
 --volume static:/static \
 -p 8000:8000 \
