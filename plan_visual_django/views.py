@@ -10,7 +10,8 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError
+from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
+    AddPlanError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
@@ -32,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 @login_required
-@transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
+@transaction.atomic
 def add_plan(request):
     logger.debug("Adding plan...")
     if request.method == "POST":
@@ -63,12 +64,18 @@ def add_plan(request):
                 plan_file = plan.file.path
                 file_reader = ExcelXLSFileReader()
 
+                # Attempt to read and parse the plan, if an error occurs log it to messages and then abort transaction
+                # to ensure there is no plan record saved without correct activities.
                 try:
-                    read_and_parse_plan(plan, plan_file, mapping_type, file_reader)
+                    read_and_parse_plan(plan, mapping_type, file_reader)
                 except PlanParseError as e:
                     messages.error(request, f"Plan parse error parsing {plan_file}, {e}")
-
-                messages.success(request, "New plan saved successfully")
+                    transaction.set_rollback(True)
+                except ExcelPlanSheetNotFound as e:
+                    messages.error(request, f"{e}")
+                    transaction.set_rollback(True)
+                else:
+                    messages.success(request, "New plan saved successfully")
         else:
             messages.error(request, "Failed validation")
 
@@ -124,10 +131,8 @@ def re_upload_plan(request, pk):
 
             mapping_type = plan.file_type.plan_field_mapping_type
 
-            plan_file = plan.file.path
-
             file_reader = ExcelXLSFileReader()
-            raw_data, headers = file_reader.read(plan_file)
+            raw_data, headers = file_reader.read(plan)
             parsed_data = file_reader.parse(raw_data, headers, plan_field_mapping=mapping_type)
             new_activities, updated_activities, deleted_sticky_ids = update_plan_data(parsed_data, plan)
             for activity in new_activities:

@@ -140,8 +140,8 @@ class Plan(models.Model):
 
     # Upload files into folder under MEDIA_ROOT
     plan_name = models.CharField(max_length=100)  # Name for this plan - independent of file name.
-    file_name = models.CharField(max_length=100)
-    file = models.FileField(upload_to="plan_files", null=True)
+    file_name = models.CharField(max_length=100)  # Name of file uploaded (may be stored with different name to make unique)
+    file = models.FileField(upload_to="plan_files", null=True)  # Includes a File object pointing to the actual file to be parsed
     file_type = models.ForeignKey(FileType, on_delete=models.CASCADE)
 
     class Meta:

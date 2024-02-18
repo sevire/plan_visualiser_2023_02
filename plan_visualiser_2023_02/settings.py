@@ -26,6 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Otherwise, we are in development mode.
 DJANGO_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT')
 
+# Read other env variables here (so they are all in one place)
+# ToDo: Gather together all environment variable reads in settings.py
+LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
+LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'DEBUG').upper()  # Handler/File
+LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
+LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
+
 if DJANGO_ENVIRONMENT == 'production':
     print('Using production environment')
     # SECURITY WARNING: keep the secret key used in production secret!
@@ -79,14 +86,16 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": LOGGING_LEVEL_H_CONSOLE,
             "class": "logging.StreamHandler",
             "formatter": "verbose"
         },
         "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
+            "level": LOGGING_LEVEL_H_FILE,
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": "logs/debug.log",
+            "maxBytes": 1024*1024*5, # 5 MB
+            "backupCount": 5,
             "formatter": "verbose"
         },
     },
@@ -97,12 +106,12 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "level": LOGGING_LEVEL_L_DJANGO,
             "propagate": False,
         },
         "root": {
             "handlers": ["console", "file"],
-            "level": os.getenv("LOGGING_LEVEL", "DEBUG"),
+            "level": LOGGING_LEVEL_L_ROOT,
             "propagate": False
         }
     },
