@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cd /docker_app_root/plan_visualiser_2023_02 || exit
+
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
