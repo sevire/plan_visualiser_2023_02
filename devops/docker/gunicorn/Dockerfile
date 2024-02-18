@@ -13,7 +13,7 @@ WORKDIR /app
 # So need to copy in requirements.txt and entrypoint.sh before they can be run
 
 COPY ../../../requirements.txt /
-COPY ./devops/gunicorn/entrypoint.sh /
+COPY ./devops/docker/gunicorn/entrypoint.sh /
 
 RUN pip install --upgrade pip
 RUN pip install -r /requirements.txt
