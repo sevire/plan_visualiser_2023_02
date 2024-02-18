@@ -5,7 +5,7 @@ version: '3.8'
 # ============================================================================
 services:
   django_gunicorn:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-nginx:18d5696
+    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     - .:/app
@@ -25,7 +25,7 @@ services:
     - DEBUG=False
     - DJANGO_ENVIRONMENT=production
   nginx:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-django_gunicorn:18d5696
+    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     ports:
