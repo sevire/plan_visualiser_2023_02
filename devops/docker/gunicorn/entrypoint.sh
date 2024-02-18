@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+echo "Echoing current directory..."
+pwd
+
+echo "Listing current directory"
+ls
+
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
