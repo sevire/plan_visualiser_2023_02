@@ -8,7 +8,7 @@ services:
     image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
-    - .:/app
+    - /docker_app_root/plan_visualiser_2023_02:/app
 
     ports:
     - "8000:8000"
