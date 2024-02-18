@@ -4,6 +4,8 @@
 
 The app is currently in pre-release mode.  Work is focussed on getting to the point where the first version of the app can be released in a state where it can be promoted.
 
+I would be interested in making contact with potential future customers of the app who can help me to prioritise features and determine when the app is in a position where it can be formally launched.
+
 *Description*
 
 This app will fulfil a single need which, as a Project Manager over many years, I have faced many times.  That is - given a Project Plan for a project which may be complex and difficult to understand, how do I create a one page summary of that plan which I can use for non project stakeholders, or to display a summary view of the plan to the project team
