@@ -5,4 +5,4 @@ git pull
 doctl registry login
 
 # Pull images and restart containers with new images
-docker compose up -f devops/docker/docker-compose-remote.yml
+docker compose -f devops/docker/docker-compose-remote.yml up
