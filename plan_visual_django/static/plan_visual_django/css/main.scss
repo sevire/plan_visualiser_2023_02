@@ -9,6 +9,12 @@ $colour-02: #ac69e3;
 $main-navbar-background-color: $colour-01;
 $main-page-heading-color: $colour-02;
 
+// Top of Screen (from pv_base)
+div#top-of-screen {
+  position: sticky;
+  top: 0;
+}
+
 // Header level styling
 li.user-action button.btn, li.user-action a.btn {
   margin-right: 10px;
