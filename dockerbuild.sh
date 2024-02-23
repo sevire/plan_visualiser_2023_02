@@ -4,6 +4,8 @@
 # believe that triggers a change to the containers so they wouldn't restart just by docker compose up, but at least
 # Gunicorn needs to be restarted after code change to ensure that any caches are destroyed so changes are seen.
 
+pwd
+
 # First check whether we need to override WIP test.
 if [ "$1" != "--no-wip" ]
 then
@@ -30,7 +32,7 @@ exec 2>&1
 #docker compose down
 
 echo "Docker compose beginning..."
-docker compose up -d --detach --build
+docker compose -f devops/docker/docker-compose.yml up --detach --build
 
 echo "Docker compose complete, pruning beginning..."
 docker system prune -f
