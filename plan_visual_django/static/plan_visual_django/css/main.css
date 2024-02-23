@@ -1,3 +1,8 @@
+div#top-of-screen {
+  position: sticky;
+  top: 0;
+}
+
 li.user-action button.btn, li.user-action a.btn {
   margin-right: 10px;
 }
