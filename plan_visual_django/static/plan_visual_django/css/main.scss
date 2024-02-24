@@ -13,6 +13,7 @@ $main-page-heading-color: $colour-02;
 div#top-of-screen {
   position: sticky;
   top: 0;
+  z-index: 1
 }
 
 // Header level styling
