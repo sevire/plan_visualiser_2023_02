@@ -1,6 +1,7 @@
 div#top-of-screen {
   position: sticky;
   top: 0;
+  z-index: 1;
 }
 
 li.user-action button.btn, li.user-action a.btn {
