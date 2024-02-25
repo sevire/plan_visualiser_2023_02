@@ -85,7 +85,10 @@ class PlanFieldMappingType(models.Model):
         mapped_compulsory_fields = self.planmappedfield_set.filter(mapped_field__required_flag=True)
         expected_compulsory_fields = PlanField.objects.filter(required_flag=True)
 
-        return mapped_compulsory_fields.count() == expected_compulsory_fields.count()
+        mapped_count = mapped_compulsory_fields.count()
+        expected_count = expected_compulsory_fields.count()
+
+        return mapped_count == expected_count
 
 
 class PlanMappedField(models.Model):
