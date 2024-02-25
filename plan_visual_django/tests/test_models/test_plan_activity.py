@@ -131,7 +131,8 @@ class TestPlanActivity(TestCase):
 
     @data(*plan_mapped_field_data_cases)
     @unpack
-    @skip
+    @skip  # Skipped because checks for complete set of fields isn't quite right yet but works for current use cases
+           # So needs more thought before re-instating these tests.
     def test_plan_mapped_field_is_complete(self, mapped_field_data, expected_is_complete):
         """
         Tests the ability to parse data which has been read in from an input file of any format and been converted
