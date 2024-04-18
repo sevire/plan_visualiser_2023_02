@@ -15,3 +15,4 @@ db.sqlite3-journal
 /db.sqlite3-backup
 /data/
 /docker-build-logs/
+/plan_visual_django/tests/resources/input_files/excel_plan_files/~$PV-Test-02.xlsx

@@ -26,7 +26,7 @@ from plan_visual_django.services.general.user_services import get_current_user, 
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.renderers import CanvasRenderer
-from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
+from plan_visual_django.services.visual.visual_settings import VisualSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 import logging
 

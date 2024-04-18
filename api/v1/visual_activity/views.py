@@ -1,70 +1,41 @@
 import json
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from plan_visual_django.models import DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAULT_HEIGHT_IN_TRACKS, \
-    PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
-    SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, PlotableStyle, DEFAULT_PLOTABLE_STYLE_NAME, VisualActivity, PlanVisual, \
+
+from api.v1.visual_activity.serializer import VisualActivityListSerialiser
+from plan_visual_django.models import DEFAULT_HEIGHT_IN_TRACKS, \
+    SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, VisualActivity, PlanVisual, \
     DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, \
-    DEFAULT_TEXT_FLOW, DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME
+    DEFAULT_TEXT_FLOW
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
-class VisualRenderAPI(APIView):
-    """
-    This API is used to render the visual for display in the browser.
-    """
-    def get(self, request, visual_id):
-        """
-        This method returns a JSON object containing the details of the visual for the supplied visual_id.
-        :param request:
-        :param visual_id:
-        :return:
-        """
-        visual = PlanVisual.objects.get(id=visual_id)
 
-        if visual.activity_count() == 0:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            visual_settings = VisualSettings(visual_id)
-            visual_orchestrator = VisualOrchestration(visual, visual_settings)
-            canvas_renderer = CanvasRenderer()
-            canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-            data = {
-                "activity_data": canvas_data,
-                "visual": visual
-            }
-            return_data = json.dumps(canvas_data)
-            return Response(return_data)
 
 
 class VisualActivityListAPI(APIView):
     def get(self, request, visual_id):
         visual = PlanVisual.objects.get(id=visual_id)
-        activities = visual.get_visual_activities()
+        visual_activities = visual.visualactivity_set.all()
+        serialiser = VisualActivityListSerialiser(visual_activities, many=True)
 
-        # ToDo: Re-factor to remove hack that replaces objects with string - just for display of activities on layout page
-        for activity in activities:
-            activity['plotable_style'] = activity['plotable_style'].style_name
-            activity['start_date'] = activity['start_date'].strftime("%m/%d/%Y")
-            activity['end_date'] = activity['end_date'].strftime("%m/%d/%Y")
-        activities_json = json.dumps(activities)
-        return Response(activities_json)
+        return JsonResponse(serialiser.data, safe=False)
 
 
 class VisualActivityAPI(APIView):
     def get(self, request, visual_id, unique_id):
         visual = PlanVisual.objects.get(id=visual_id)
-        activity_data = visual.get_visual_activity(unique_id)
+        activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
 
-        activity_data['plotable_style'] = activity_data['plotable_style'].style_name
-        activity_data['start_date'] = activity_data['start_date'].strftime("%m/%d/%Y")
-        activity_data['end_date'] = activity_data['end_date'].strftime("%m/%d/%Y")
+        activity_plotable = activity.get_plotable()
+
+        renderer = CanvasRenderer()
+        activity_data = renderer.plot_plotable(activity_plotable)
 
         activities_json = json.dumps(activity_data)
         return Response(activities_json)
