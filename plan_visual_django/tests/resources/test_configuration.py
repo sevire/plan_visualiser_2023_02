@@ -3,8 +3,7 @@ Contains information which sets up the tests.  Includes things like location of 
 etc.
 """
 import os
-
-from plan_visualiser_2023_02 import settings
+from django.conf import settings
 
 # files relative to base
 test_fixtures_folder = 'resources/test_fixtures'

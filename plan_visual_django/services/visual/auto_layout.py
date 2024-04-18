@@ -129,6 +129,7 @@ class VisualAutoLayoutManager:
         plan_activities = self.plan_activities.filter(level=level, milestone_flag=False)
 
         # We want to know which activities are already in the visual and enabled.
+        # ToDo: Re-factor this snippet, it uses different ways to get similar data (activities for visual)
         visual_activities = self.visual_for_plan.get_visual_activities(to_dict=False, include_disabled=False)
         disabled_activities = self.visual_for_plan.visualactivity_set.filter(enabled=False)
         enabled_ids_from_visual = [visual_activity.unique_id_from_plan for visual_activity in visual_activities]

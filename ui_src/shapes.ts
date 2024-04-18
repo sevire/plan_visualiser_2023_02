@@ -22,7 +22,7 @@ export interface Point {
 *
 * The ShapePlotData interface will encapsulate these various ways of representing and plotting a shape.
 * */
-export interface BoxShapeDimensions {
+export interface    BoxShapeDimensions {
     top: number,
     left: number,
     width: number,
