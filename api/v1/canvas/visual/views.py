@@ -26,6 +26,7 @@ class PlanVisualRenderAPI(APIView):
             return JsonResponse(status=status.HTTP_204_NO_CONTENT)
         else:
             visual_plotables = visual.get_plotables()
+            return JsonResponse(visual_plotables, safe=False)
 
 
 
