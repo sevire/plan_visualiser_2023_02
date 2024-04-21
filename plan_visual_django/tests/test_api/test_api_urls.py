@@ -20,9 +20,12 @@ class TestApiUrls(TestCase):
         expected_value_field_names=("status",),
 
         # Implemented tests for the full api, if a valid url is not implemented it should still recognise and return 501
+        # Note what is returned in practice will depend upon which user is logged in.  Usually will only return objects
+        # owned by currently logged in user, but if user has admin status (yet to be defined!) will return all.
+        # ToDo: Determine rules for API for different user use cases.
         test_data=[
             # Plan data from model
-            ("GET", "/api/v1/model/plans/activities/2/", None, 200),  # All activities from plan
+            ("GET", "/api/v1/model/plans/2/", None, 200),  # All activities from plan
 
             # Plan activity data from model
             ("GET", "/api/v1/model/plans/activities/2/", None, 200),  # All activities from plan
