@@ -1,7 +1,6 @@
 from django.urls import path, include
 
 urlpatterns = [
-    path('visual-activities/', include('api.v1.visual_activity.urls')),
-    path('plan-activities/', include('api.v1.plan_activity.urls')),
-    path('visual/', include('api.v1.plan_visual.urls')),
+    path('model/', include('api.v1.model.urls')),
+    path('canvas/', include('api.v1.canvas.urls')),
 ]
