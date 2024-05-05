@@ -2,7 +2,7 @@ import django.test
 from ddt import ddt, data, unpack
 from plan_visual_django.models import PlanField, PlanMappedField
 from plan_visual_django.services.plan_file_utilities.plan_reader import convert_dispatch
-from plan_visual_django.tests.utilities import date_from_string
+from resources.utilities import date_from_string
 
 """
 Tests that incoming fields from plan upload can be processed sensibly, coping when the field isn't 

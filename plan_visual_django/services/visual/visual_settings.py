@@ -22,3 +22,15 @@ class VisualSettings:
         self.default_activity_plotable_style = self.visual.default_activity_plotable_style
         self.default_milestone_plotable_style = self.visual.default_milestone_plotable_style
         self.default_swimlane_plotable_style = self.visual.default_swimlane_plotable_style
+
+class VisualSettingsCanvas(VisualSettings):
+    """
+    Sub class of VisualSettings which generates a set of settings for the visual which are specific to
+    plotting the visual on a canvas.
+    """
+    def __init__(self, visual_id):
+        """
+        No canvas specific settings for now - will probably add some related to canvas element properties
+        :param visual_id:
+        """
+        super().__init__(visual_id)

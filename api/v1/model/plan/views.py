@@ -1,14 +1,29 @@
 from django.http import JsonResponse
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
-from api.v1.model.plan.serializer import PlanActivityListSerialiser
+from api.v1.model.plan.serializer import ModelPlanSerialiser, ModelPlanListSerialiser
 from plan_visual_django.models import Plan
 
 
-class PlanActivityListAPI(APIView):
+class ModelPlanListAPI(ListAPIView):
+    def get(self, request, **kwargs):
+        # ToDo: Need to adjust to only return plans for current user
+        plans_queryset = Plan.objects.all()
+        serializer = ModelPlanListSerialiser(plans_queryset, many=True)
+
+        response = serializer.data
+        
+        return JsonResponse(response, safe=False)
+
+
+class ModelPlanAPI(APIView):
     def get(self, request, plan_id):
-        plan = Plan.objects.get(id=plan_id)
+        plan_queryset = Plan.objects.get(pk=plan_id)
+        serializer = ModelPlanSerialiser(plan_queryset)
 
-        plan_activities = plan.planactivity_set.all()
-        serializer = PlanActivityListSerialiser(plan_activities, many=True)
+        response = serializer.data
 
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(response, safe=False)
+
+
+

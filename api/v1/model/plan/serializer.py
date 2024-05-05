@@ -1,9 +1,17 @@
-from rest_framework import serializers
-from plan_visual_django.models import PlanActivity
+from rest_framework.serializers import ModelSerializer
+from plan_visual_django.models import PlanActivity, Plan
 
 
-class PlanActivityListSerialiser(serializers.ModelSerializer):
+class ModelPlanListSerialiser(ModelSerializer):
     class Meta:
-        model = PlanActivity
+        model = Plan
         fields = "__all__"
+        depth = 2
 
+
+
+class ModelPlanSerialiser(ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = "__all__"
+        depth = 1

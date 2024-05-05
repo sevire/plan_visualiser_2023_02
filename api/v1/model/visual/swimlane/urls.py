@@ -1,5 +1,7 @@
 from django.urls import path, include
+from api.v1.model.visual.swimlane.views import ModelVisualSwimlaneListAPI, ModelVisualSwimlaneAPI
 
 urlpatterns = [
-    path('xxxx/', include('api.v1.xxx')),
+    path('<int:visual_id>/', ModelVisualSwimlaneListAPI.as_view()),
+    path('<int:visual_id>/<int:swimlane_seq_num>/', ModelVisualSwimlaneAPI.as_view()),
 ]

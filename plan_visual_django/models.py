@@ -463,10 +463,15 @@ class PlanVisual(models.Model):
         # Create dictionary of timeline objects based on timeline data from database
         self.timeline_objects = {timeline.timeline_name: Timeline.from_data_record(earliest_start_date, latest_end_date, timeline) for timeline in timeline_records}
 
-        # Now ask each timeline object to calculate its earliest and latest date and calculate the true start and end
+        # If there are no timelines, then the earliest and latest dates are based on which activities are in the visual.
+        # Otherwise ask each timeline object to calculate its earliest and latest date and calculate the true start and end
         # date for the overall visual.
-        visual_start_date_final = min([start_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
-        visual_end_date_final = max([end_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
+        if len(self.timeline_objects) == 0:
+            visual_start_date_final = earliest_start_date
+            visual_end_date_final = latest_end_date
+        else:
+            visual_start_date_final = min([start_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
+            visual_end_date_final = max([end_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
 
         return visual_start_date_final, visual_end_date_final
 
@@ -521,10 +526,11 @@ class PlanVisual(models.Model):
 
     def get_visual_activity_plotables(self):
         """
-        Returns plotables for all visual activities in this visual.
+        Returns plotables for all visual activities in this visual, not including activites
+        which are not enabled.
         :return:
         """
-        visual_activities = [visual_activity.get_plotable() for visual_activity in self.visualactivity_set.all()]
+        visual_activities = [visual_activity.get_plotable() for visual_activity in self.visualactivity_set.filter(enabled=True)]
 
         return visual_activities
 

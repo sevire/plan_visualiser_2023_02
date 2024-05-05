@@ -1,10 +1,9 @@
-import json
 from coverage.annotate import os
 from django.test import TestCase
 from ddt import ddt, data, unpack
 from resources.test_configuration import test_data_base_folder, test_fixtures_folder
 from resources.utilities import generate_test_data_field_stream_multiple_inputs
-from utilities import extract_object_from_list_by_field
+from resources.utilities import extract_object_from_list_by_field
 
 
 @ddt
@@ -23,7 +22,7 @@ class TestApiModelPlanActivity(TestCase):
     ))
     @unpack
     def test_get_plan_activity_list(self, plan_id, sticky_id, approx_flag, field_name, expected_field_value):
-        response = self.client.get(f"/api/v1/plan-activities/{plan_id}/")
+        response = self.client.get(f"/api/v1/model/plans/activities/{plan_id}/")
 
         if field_name in {"status"}:
             actual_value = response.status_code

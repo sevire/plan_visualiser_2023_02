@@ -462,7 +462,7 @@ def manage_plotable_styles(request):
     """
     user = get_current_user(request)
     shared_data_user_name = settings.SHARED_DATA_USER_NAME
-    shared_data_user = User.objects.get(username=shared_data_user_name)
+    shared_data_user = User.objects.get()
     PlotableStyleFormset = inlineformset_factory(
         User,
         PlotableStyle,
@@ -575,7 +575,7 @@ def select_visual_activities(request, visual_id):
         # If the record does exist then check the enabled flag as may have been added and then disabled.
         try:
             # Get record for this activity within the visual, if it exists.  There will be one or no records.
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity.unique_sticky_activity_id)
+            visual_activity = visual.visualactivity_set.get()
         except VisualActivity.DoesNotExist:
             # No record so activity not currently in visual
             enabled = False

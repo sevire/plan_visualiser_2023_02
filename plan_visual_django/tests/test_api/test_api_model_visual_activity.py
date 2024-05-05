@@ -28,18 +28,18 @@ class TestApiModelVisualActivity(TestCase):
         Just check that test data from fixtures has been correctly placed in database.
         :return:
         """
-        response = self.client.get(f"/api/v1/visual-activities/{visual_id}/{sticky_id}/")
+        response = self.client.get(f"/api/v1/rendered/canvas/visuals/activities/{visual_id}/{sticky_id}/")
         if field_name in {"status"}:
             actual_value = response.status_code
         else:
-            content_dict = json.loads(response.json())
+            json_response = response.json()
+            content_list_of_dicts = json_response['activities']
             if field_name in {"text"}:
-                text_item = content_dict[1]  # The text object comes after the shape object
-                actual_value = text_item[field_name]
+                list_item_to_check = content_list_of_dicts[1]
+                actual_value = list_item_to_check[field_name]
             elif field_name in {"top", "left", "width", "height"}:
-                shape_item = content_dict[0]
-                plot_dims = shape_item["shape_plot_dims"]
-                actual_value = plot_dims[field_name]
+                list_item_to_check = content_list_of_dicts[0]
+                actual_value = list_item_to_check['shape_plot_dims'][field_name]
             else:
                 self.fail(f"Unexpected field name {field_name}")
 
@@ -54,27 +54,25 @@ class TestApiModelVisualActivity(TestCase):
         expected_value_field_names=("status", "text", "top", "left", "width", "height"),
         test_data=[
             # visual_id, sticky_id, activity_name, top
-            (4, 1, "ID-025", False, 200, "Milestone 6", 40+5*20+4*4+5+1*20+4, (214.5/275)*1000-5, 10, 20),
-            (4, 2, "ID-026", False, 200, "Project Start", 40+4*(20+4), (62.5/275)*1000-5, 10, 20),
+            (4, 1, "ID-026", False, 200, "Project Start", 40+4*(20+4), (62.5/275)*1000-5, 10, 20),
+            (4, 2, "ID-025", False, 200, "Milestone 6", 40+5*20+4*4+5+1*20+4, (214.5/275)*1000-5, 10, 20),
             (4, 3, "ID-024", True, 200, "Activity 24", 40 + 5*20 + 4*4 + 5 + 9*(20 + 4), (31 + 31 + 30 + 31 + 30 + 31 + 17) / 275 * 1000, (31 - 18 + 1) * 1000 / 275, 20),
         ]
     ))
     @unpack
     def test_get_visual_activities(self, visual_id, response_entry_seq_num, sticky_id, approx_flag, field_name, expected_field_value):
-        response = self.client.get(f"/api/v1/visual-activities/{visual_id}/")
+        response = self.client.get(f"/api/v1/rendered/canvas/visuals/activities/{visual_id}/")
         if field_name in {"status"}:
             actual_value = response.status_code
         else:
             json_response = response.json()
-            content_list_of_dicts = json_response
-            dict_to_check = content_list_of_dicts[response_entry_seq_num]
+            content_list_of_dicts = json_response['activities']
             if field_name in {"text"}:
-                text_item = dict_to_check[1]  # The text object comes after the shape object
-                actual_value = text_item[field_name]
+                list_item_to_check = content_list_of_dicts[(response_entry_seq_num-1)*2+1]
+                actual_value = list_item_to_check[field_name]
             elif field_name in {"top", "left", "width", "height"}:
-                shape_item = dict_to_check[0]
-                plot_dims = shape_item["shape_plot_dims"]
-                actual_value = plot_dims[field_name]
+                list_item_to_check = content_list_of_dicts[(response_entry_seq_num-1)*2]
+                actual_value = list_item_to_check['shape_plot_dims'][field_name]
             else:
                 self.fail(f"Unexpected field name {field_name}")
 
