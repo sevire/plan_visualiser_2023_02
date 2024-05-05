@@ -1,9 +1,8 @@
 from django.urls import path, include
-from api.v1.model.plan.views import PlanActivityListAPI
+from api.v1.model.plan.views import ModelPlanListAPI, ModelPlanAPI
 
 urlpatterns = [
     path('activities/', include('api.v1.model.plan.activity.urls')),
-
-    # Returns information about the plan - not the actual activities from the plan (e.g. Plan Name).
-    # path('<int:plan_id>/', PlanDetailsModelAPI.as_view()),
+    path('', ModelPlanListAPI.as_view()),
+    path('<int:plan_id>/', ModelPlanAPI.as_view()),
 ]

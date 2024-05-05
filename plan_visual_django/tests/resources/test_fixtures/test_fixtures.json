@@ -1064,6 +1064,26 @@
     }
   },
   {
+    "model": "plan_visual_django.planvisual",
+    "pk": 1,
+    "fields": {
+      "plan": 2,
+      "name": "Visual 01:02",
+      "width": 1000.0,
+      "max_height": 600.0,
+      "include_title": true,
+      "track_height": 20.0,
+      "track_gap": 4.0,
+      "milestone_width": 10.0,
+      "swimlane_gap": 5.0,
+      "default_milestone_shape": 2,
+      "default_activity_shape": 1,
+      "default_activity_plotable_style": 3,
+      "default_milestone_plotable_style": 1,
+      "default_swimlane_plotable_style": 5
+    }
+  },
+  {
     "model": "plan_visual_django.swimlaneforvisual",
     "pk": 4,
     "fields": {
@@ -1079,6 +1099,16 @@
     "fields": {
       "plan_visual": 4,
       "swim_lane_name": "Visual 01:01, Swimlane 2",
+      "plotable_style": 5,
+      "sequence_number": 2
+    }
+  },
+  {
+    "model": "plan_visual_django.swimlaneforvisual",
+    "pk": 100,
+    "fields": {
+      "plan_visual": 1,
+      "swim_lane_name": "Visual 01:02, Swimlane 1",
       "plotable_style": 5,
       "sequence_number": 2
     }
@@ -1124,7 +1154,8 @@
       "text_flow": "LFLOW",
       "plotable_style": 4
     }
-  },  {
+  },
+  {
     "model": "plan_visual_django.visualactivity",
     "pk": 2,
     "fields": {
@@ -1153,6 +1184,42 @@
       "plotable_shape": 1,
       "vertical_positioning_type": "TRACK",
       "vertical_positioning_value": 10,
+      "height_in_tracks": 1,
+      "text_horizontal_alignment":  "LEFT",
+      "text_vertical_alignment": "MIDDLE",
+      "text_flow": "LFLOW",
+      "plotable_style": 4
+    }
+  },
+  {
+    "model": "plan_visual_django.visualactivity",
+    "pk": 4,
+    "fields": {
+      "visual": 4,
+      "unique_id_from_plan": "ID-001",
+      "enabled":  false,
+      "swimlane": 5,
+      "plotable_shape": 1,
+      "vertical_positioning_type": "TRACK",
+      "vertical_positioning_value": 9,
+      "height_in_tracks": 1,
+      "text_horizontal_alignment":  "LEFT",
+      "text_vertical_alignment": "MIDDLE",
+      "text_flow": "LFLOW",
+      "plotable_style": 4
+    }
+  },
+  {
+    "model": "plan_visual_django.visualactivity",
+    "pk": 100,
+    "fields": {
+      "visual": 1,
+      "unique_id_from_plan": "ID-001",
+      "enabled":  true,
+      "swimlane": 100,
+      "plotable_shape": 1,
+      "vertical_positioning_type": "TRACK",
+      "vertical_positioning_value": 9,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",

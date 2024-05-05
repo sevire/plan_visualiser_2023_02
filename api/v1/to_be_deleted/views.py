@@ -30,7 +30,7 @@ class VisualActivityListAPI(APIView):
 class VisualActivityAPI(APIView):
     def get(self, request, visual_id, unique_id):
         visual = PlanVisual.objects.get(id=visual_id)
-        activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+        activity = visual.visualactivity_set.get()
 
         activity_plotable = activity.get_plotable()
 
@@ -69,12 +69,12 @@ class VisualActivityAPI(APIView):
 
         # We have found the visual so now check whether the activity already exists for the visual.
         try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+            visual_activity = visual.visualactivity_set.get()
         except VisualActivity.DoesNotExist:
             # Need to create a new record for this activity in this visual.
 
             # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
-            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
+            plan_activity = visual.plan.planactivity_set.get()
             if plan_activity.milestone_flag is True:
                 initial_plotable_shape = visual.default_milestone_shape
                 initial_plotable_style = visual.default_milestone_plotable_style
@@ -157,7 +157,7 @@ class VisualActivityAPI(APIView):
 
         # We have found the visual so now check that the activity exists for the visual (it should).
         try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+            visual_activity = visual.visualactivity_set.get()
         except VisualActivity.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:

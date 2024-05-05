@@ -16,14 +16,6 @@ class VisualRenderer(ABC):
         for collection in visual.collection:
             self.plot_collection(collection)
 
-
-    def render_visual_from_iterable(self, iterable: Iterable[Plotable]) -> List:
-        """
-        Will replace the original plot_visual to remove need for the Collection class.
-        :param iterable:
-        :return:
-        """
-
     def plot_collection(self, collection: VisualElementCollection):
         """
         Recursive method which iterates through a collection and either plots the object if it is a Plotable, or
@@ -142,7 +134,7 @@ class CanvasRenderer(VisualRenderer):
         else:
             raise TypeError(f"Unsupported type when rendering to Canvas {type(plotable_iterable)}")
 
-    def render_visual_from_iterable(self, visual_plotables: dict[Iterable | Plotable]):
+    def render_from_iterable(self, visual_plotables):
         """
         Replacement for original plot_visual to remove need for the Collection class.
 

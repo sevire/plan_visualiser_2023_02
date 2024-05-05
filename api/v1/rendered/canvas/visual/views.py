@@ -9,7 +9,7 @@ from plan_visual_django.services.visual.visual_settings import VisualSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
-class PlanVisualRenderAPI(APIView):
+class RenderCanvasVisualAPI(APIView):
     """
     This API is used to render the visual for display in the browser.
     """
@@ -26,7 +26,9 @@ class PlanVisualRenderAPI(APIView):
             return JsonResponse(status=status.HTTP_204_NO_CONTENT)
         else:
             visual_plotables = visual.get_plotables()
-            return JsonResponse(visual_plotables, safe=False)
+            renderer = CanvasRenderer()
+            rendered_plotables = renderer.render_from_iterable(visual_plotables)
+            return JsonResponse(rendered_plotables, safe=False)
 
 
 

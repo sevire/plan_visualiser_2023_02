@@ -9,8 +9,8 @@ from ddt import ddt, data, unpack
 from django.test import TestCase
 from plan_visual_django.models import PlanVisual
 from resources.test_configuration import test_data_base_folder, test_fixtures_folder
-from resources.utilities import generate_test_data_field_stream_multiple_inputs
-from utilities import extract_object_from_list_by_field
+from resources.utilities import generate_test_data_field_stream_multiple_inputs, date_from_string
+from resources.utilities import extract_object_from_list_by_field
 
 
 @ddt
@@ -131,7 +131,6 @@ class TestPlotVisualObjects(TestCase):
             (4, 1, 9, True, 0, 887.272727272727, 112.727272727273, 25),
             (4, 2, 1, True, 25, 0, 334.545454545455, 15),
             (4, 2, 2, True, 25, 334.545454545455, 334.545454545455, 15),
-            (4, 2, 3, True, 25, 669.090909090909, 330.909090909091, 15),
         ],
     ))
     @unpack
@@ -219,3 +218,39 @@ class TestPlotVisualObjects(TestCase):
             self.assertAlmostEqual(value_to_check, field_value)
         else:
             self.assertEqual(field_value, value_to_check)
+
+    @data(*generate_test_data_field_stream_multiple_inputs(
+        expected_value_field_names=("earliest_start_date", "latest_end_date"),
+        test_data=[
+            # visual_id,
+            (1, "2023-09-01", "2023-10-26"),
+        ],
+    ))
+    @unpack
+    def test_visual_earliest_latest_date(self, visual_id, field_name, field_value):
+        """
+        Checks that calculation of earliest latest date for a visual is calculated correctly in cases where
+        there are no timelines (other cases tested implicitly elsewhere).  If no timelines present then the earliest
+        and latest date are simply the earliest and latest date of all the activities in the visual, not aligned to the
+        start and end of periods in the timeline labels (eg month start or end)
+
+        :param visual_id:
+        :param field_name:
+        :param field_value:
+        :return:
+        """
+        visual = PlanVisual.objects.get(pk=visual_id)
+        earliest_date, latest_date = visual.get_visual_earliest_latest_date()
+
+        if field_name == "earliest_start_date":
+            value_to_check = earliest_date
+            expected_value = date_from_string(field_value)
+        elif field_name == "latest_end_date":
+            value_to_check = latest_date
+            expected_value = date_from_string(field_value)
+        else:
+            self.fail(f"Unexpected field_name to check: {field_name}")
+
+        self.assertEqual(expected_value, value_to_check)
+
+

@@ -50,7 +50,7 @@ class TestVisualOrchestration(TestCase):
         visual_plotables = visual.get_plotables()
 
         renderer = CanvasRenderer()
-        rendered_plotables = renderer.render_visual_from_iterable(visual_plotables)
+        rendered_plotables = renderer.render_from_iterable(visual_plotables)
 
         # Expect an entry for each of Timelines, Swimlanes and Visual Activities
         canvas_to_check = rendered_plotables[canvas_name]
@@ -98,7 +98,7 @@ class TestVisualOrchestration(TestCase):
 
         renderer = CanvasRenderer()
 
-        rendered_plotables = renderer.render_visual_from_iterable(visual_plotables)
+        rendered_plotables = renderer.render_from_iterable(visual_plotables)
         # Expect an entry for each of Timelines, Swimlanes and Visual Activities
         canvas_to_check = rendered_plotables[canvas_name]
         rendered_object_to_check = canvas_to_check[object_in_canvas_seq-1]

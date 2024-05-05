@@ -1,7 +1,8 @@
 from ddt import ddt, data, unpack
 from django.test import TestCase
 import os
-from api.v1.visual.serializer import VisualActivityListSerialiser
+
+from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser
 from plan_visual_django.models import PlanVisual
 from resources.test_configuration import test_data_base_folder, test_fixtures_folder
 from resources.utilities import generate_test_data_field_stream_multiple_inputs
@@ -25,7 +26,7 @@ class TestApiSerialisers(TestCase):
     def test_get_visual_activities_serialiser(self, visual_id, visual_activity_seq, approx_flag, field_name, field_value):
         visual = PlanVisual.objects.get(pk=visual_id)
         visual_activities = visual.visualactivity_set.all()
-        serialiser = VisualActivityListSerialiser(visual_activities, many=True)
+        serialiser = ModelVisualActivityListSerialiser(visual_activities, many=True)
 
         serialized_data = serialiser.data
 

@@ -1,3 +1,49 @@
+from datetime import datetime
+
+
+def date_from_string(date_string: str, datetime_flag=False):
+    """
+    Returns a date object or a datetime object from a string of allowed form.
+
+    Note: The app works with dates but when reading a file (e.g. Excel), the data type may come
+    in as a datetime so tests which check raw file read need to be able to generate a datetime object.
+
+    :param datetime_flag: If set then leave object as datetime, otherwise convert to date.
+    :param date_string: Date string of form "YYYY-MM-DD"
+    :return:
+    """
+    datetime_object = datetime.strptime(date_string, "%Y-%m-%d")
+    if not datetime_flag:
+        return datetime_object.date()
+    else:
+        return datetime_object
+
+
+def extract_object_from_list_by_field(list, value_to_test, field_name):
+    """
+    Used to extract item from list of dicts or objects for which the value of a field matches a given unique id.
+
+    Mostly used to find records in the plan or visual which match a given unique id but is written to allow any
+    field to be checked.
+
+    :param list:
+    :param value_to_test:
+    :param field_name:
+    :return:
+    """
+    should_be_one_in_list = [activity for activity in list if get_field_from_object(activity, field_name) == value_to_test]
+    if len(should_be_one_in_list) != 1:
+        return None
+    else:
+        return should_be_one_in_list[0]
+
+
+def get_field_from_object(obj, field_name):
+    if isinstance(obj, dict):  # if the object is a dictionary
+        return obj.get(field_name)
+    else:  # if the object is not a dictionary (usual Python object)
+        return getattr(obj, field_name, None)
+
 """
 Utilitiy functions to support testing.  Includes
 
@@ -50,4 +96,5 @@ def generate_test_data_field_stream_multiple_inputs(test_data, expected_value_fi
         expected_values = case[field_start:]
         for field, value in zip(expected_value_field_names, expected_values):
             yield *input_values, field, value
+
 

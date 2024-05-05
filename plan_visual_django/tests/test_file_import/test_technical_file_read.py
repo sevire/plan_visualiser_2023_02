@@ -14,7 +14,7 @@ from django.core.files import File
 from django.test import TestCase
 from plan_visual_django.models import Plan, FileType
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.tests.utilities import date_from_string
+from resources.utilities import date_from_string
 from plan_visual_django.tests.resources.test_configuration import \
     (test_data_base_folder, test_fixtures_folder, excel_input_files_folder)
 
@@ -72,8 +72,8 @@ expected_result_activity_01 = {
             'Unique Sticky ID': "ID-0007",
             'Level #': 0.0,
             'Name': 'Project Start',
-            'Start': date_from_string('2023-01-01'),
-            'Finish': date_from_string('2023-01-01'),
+            'Start': date_from_string('2023-01-01', datetime_flag=True),
+            'Finish': date_from_string('2023-01-01', datetime_flag=True),
             'Duration': "0",
         },
         {
@@ -81,8 +81,8 @@ expected_result_activity_01 = {
             'Unique Sticky ID': "ID-0005",
             'Level #': 2.0,
             'Name': 'Activity 5',
-            'Start': date_from_string('2023-01-02'),
-            'Finish': date_from_string('2023-01-13'),
+            'Start': date_from_string('2023-01-02', datetime_flag=True),
+            'Finish': date_from_string('2023-01-13', datetime_flag=True),
             'Duration': "10d",
         },
         {
@@ -90,8 +90,8 @@ expected_result_activity_01 = {
             'Unique Sticky ID': "ID-0004",
             'Level #': 0.0,
             'Name': 'Activity 4',
-            'Start': date_from_string('2023-01-30'),
-            'Finish': date_from_string('2023-02-10'),
+            'Start': date_from_string('2023-01-30', datetime_flag=True),
+            'Finish': date_from_string('2023-02-10', datetime_flag=True),
             'Duration': "10d",
         }
     ]
