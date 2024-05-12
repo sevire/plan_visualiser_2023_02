@@ -15,3 +15,7 @@ db.sqlite3-journal
 /db.sqlite3-backup
 /data/
 /docker-build-logs/
+/ui_src/manage_plan_panel.js
+/ui_src/manage_visual.js
+/ui_src/plan_visualiser_api.js
+/ui_src/plot_visual.js
