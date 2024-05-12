@@ -741,13 +741,19 @@ class SwimlaneForVisual(models.Model):
         """
         The top of a track in a swimlane is defined by:
         - The top of the swimlane
-        - The height of all the previous tracks plus the track gap.
+        - The height of all the previous tracks
+        - Plus the track gap if this isn't the first track in the swimlane
 
         :param track_number:
         :return:
         """
+
         top_of_swimlane, _, _, _, _, _ = self.get_plotable().get_dimensions()
-        top_of_track = top_of_swimlane + self.get_height_of_tracks(track_number-1) + self.plan_visual.track_gap
+
+        # If this isn't the top track then add a gap after the previous one otherwise don't.
+        additional_gap = 0 if track_number == 1 else self.plan_visual.track_gap
+
+        top_of_track = top_of_swimlane + self.get_height_of_tracks(track_number-1) + additional_gap
 
         return top_of_track
 

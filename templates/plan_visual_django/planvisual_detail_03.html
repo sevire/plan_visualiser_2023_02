@@ -1,0 +1,142 @@
+{% extends "plan_visual_django/pv_base.html" %}
+{% load static %}
+
+{% block page_heading %}Layout Visual: {{ visual.name }}, File: {{ visual.plan.file_name }}{% endblock %}
+{% block main_content %}
+
+<div id="top-row-controls" class="flex-row">
+  <div id="swimlane-data" class="panel">
+      <table>
+        <thead>
+          <tr><th colspan="2">Swimlanes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="swimlane-name"></th>
+            <td><select id="swimlane-style-0">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+          <tr>
+            <th class="swimlane-name"><label for="swimlane-style">Swimlane name 1</label></th>
+            <td><select id="swimlane-style">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+          <tr>
+            <th class="swimlane-name"><label for="swimlane-style-1">Swimlane name 2 - this is a longer one</label></th>
+            <td><select id="swimlane-style-1">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+          <tr>
+            <th class="swimlane-name"><label for="swimlane-style-2">Swimlane name 3</label></th>
+            <td><select id="swimlane-style-2">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+          <tr>
+            <th class="swimlane-name"><label for="swimlane-style-3">Swimlane name 4</label></th>
+            <td><select id="swimlane-style-3">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+          <tr>
+            <th class="swimlane-name"><label for="swimlane-style-4">Swimlane name 5</label></th>
+            <td><select id="swimlane-style-4">
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+              <option value="red">Red</option>
+            </select></td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+
+  <div id="auto-layout-buttons" class="panel"></div>
+
+  <div id="timeline-labels" class="panel">
+  </div>
+</div>
+<div class="flex-row">
+
+  <div id="left-column">
+    <div id="add-remove-activities" class="panel"></div>
+    <div id="layout-activity"  class="panel">
+      <form>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">Layout xxx</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>Id</th><td class="visual" id="unique_id_from_plan">xxx</td></tr>
+            <tr><th>Activity Name</th><td class="plan" id="activity_name">xxx</td></tr>
+            <tr><th>Milestone?</th><td class="plan" id="milestone_flag">Yes</td></tr>
+            <tr><th>Swimlane?</th><td class="visual" id="swimlane">xxxxxx</td></tr>
+            <tr><th>Track # (make this long to check ellipsis</th><td class="visual" id="vertical_positioning_value"><input type="number" min="1" value="1" step="1"/></td></tr>
+            <tr><th>Height (tracks)</th><td class="visual" id="height_in_tracks"><input type="number" min="1" value="1" step="1"/></td></tr>
+            <tr><th>Shape?</th><td class="visual" id="shape">xxxxxx</td></tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+
+  <div id="right-column">
+    <div id="visual-header" class="panel">
+      <p>Header For Visual</p>
+    </div>
+    <div id="visual-content" class="panel">
+
+      <div class="canvas-stack">
+        <canvas id="background" width="800px" height="600px"></canvas>
+        <canvas id="swimlanes" width="800px" height="600px"></canvas>
+        <canvas id="timelines" width="800px" height="600px"></canvas>
+        <canvas id="activities" width="800px" height="600px"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="{% static 'dist/bundle.js' %}"></script>
+<script type="application/javascript">
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("DOM Loaded...")
+        
+        // Load stylesheet (probably temp while refacoring)
+        let linkElement = document.createElement('link');
+
+        linkElement.rel = 'stylesheet';
+        linkElement.href = '/static/plan_visual_django/css/layout-visual-3.css';
+        
+        // Append the link element to the head of the document
+        document.head.appendChild(linkElement);
+        
+        // Get data for the visual based upon the id from body element
+        window.visual_id = {{ visual.id }}
+    
+        const root_element = document.getElementById("add-remove-activities")
+        console.log("About to call window.get_plan_activity_data")
+            
+        await window.get_plan_activity_data(window.visual_id)
+        await get_visual_activity_data(window.visual_id)
+        const plan_tree = await createPlanTree()
+        root_element.appendChild(plan_tree)
+        window.plot_visual()
+  })
+
+</script>
+{% endblock %}

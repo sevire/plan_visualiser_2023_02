@@ -57,18 +57,22 @@ class TestApiUrls(TestCase):
             #
             # # All visual activities from model assigned to this given visual, including those added and then disabled.
             ("GET", "/model/visuals/activities/4/", None, 200),
-            # # ModelVisualActivityListAPI
-            #
-            # # All visual activities from model assigned to this given visual, *NOT* including those added and then disabled.
+            # ModelVisualActivityListAPI
+
+            # All visual activities from model assigned to this given visual, *NOT* including those added and then disabled.
             ("GET", "/model/visuals/activities/enabled/4/", None, 200),
-            # # ModelVisualListAPI (with hard-coded paramter for enabled=True
-            #
-            # # Specific visual activity by sticky id.  Valid for any activity which has been added to the visual.  Client
-            # # will need to check whether activity is enabled or not.
+            # ModelVisualListAPI (with hard-coded paramter for enabled=True
+
+            # Specific visual activity by sticky id.  Valid for any activity which has been added to the visual.  Client
+            # will need to check whether activity is enabled or not.
             ("GET", "/model/visuals/activities/4/ID-025/", None, 200),
-            # # ModelVisualActivityAPI
-            #
-            # # Requests timeline information from model for this visual - all timelines in sequence order.
+            # ModelVisualActivityAPI
+
+            # Add specified activity from the plan into the visual
+            ("PUT", "/model/visuals/activities/4/ID-023/", None, 201),
+            # ModelVisualActivityAPI
+
+            # Requests timeline information from model for this visual - all timelines in sequence order.
             ("GET", "/model/visuals/timelines/4/", None, 200),
             # # ModelVisualTimelineListAPI
             #

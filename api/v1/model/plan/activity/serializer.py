@@ -7,6 +7,11 @@ class ModelPlanActivityListSerialiser(serializers.ModelSerializer):
         model = PlanActivity
         fields = "__all__"
 
+class ModelPlanActivityByVisualListSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = PlanActivity
+        fields = "__all__"
+
 
 class ModelPlanActivitySerialiser(serializers.ModelSerializer):
     class Meta:

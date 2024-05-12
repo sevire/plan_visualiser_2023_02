@@ -54,7 +54,6 @@ class VisualActivityAPI(APIView):
         or not, but it avoids using GET incorrectly or having to access data before validation which seems wrong.
 
         Note - the above means we don't even need a serializer (which seems a bit wrong).
-        ToDo: Revisit use of PUT with no data to check this is good practice.
 
         :param request:
         :param visual_id:
@@ -69,7 +68,7 @@ class VisualActivityAPI(APIView):
 
         # We have found the visual so now check whether the activity already exists for the visual.
         try:
-            visual_activity = visual.visualactivity_set.get()
+            visual_activity = visual.visualactivity_set.get(unique_id=unique_id)
         except VisualActivity.DoesNotExist:
             # Need to create a new record for this activity in this visual.
 
@@ -94,7 +93,6 @@ class VisualActivityAPI(APIView):
                     swim_lane_name=DEFAULT_SWIMLANE_NAME
                 )
                 initial_swimlane.save()
-
 
             new_visual_activity = VisualActivity(
                 visual=visual,

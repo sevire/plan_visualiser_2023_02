@@ -67,7 +67,7 @@ class TestPlotVisualObjects(TestCase):
     @data(*generate_test_data_field_stream_multiple_inputs([
         # visual_id, sticky_id, approx_flag, top, left, width, height
         (4, "ID-026", False, 40+4*(20+4), (62.5/275)*1000-5, 10, 20),
-        (4, "ID-025", False, 40+5*20+4*4+5+1*20+4, (214.5/275)*1000-5, 10, 20),
+        (4, "ID-025", False, 40 + 5*20+4*4 + 5, (214.5/275)*1000-5, 10, 20),
         (4, "ID-024", True, 40+5*20+4*4+5+9*(20+4), (31+31+30+31+30+31+17)/275*1000, (31-18+1)*1000/275, 20),
         ],
         ("top", "left", "width", "height")
@@ -181,7 +181,7 @@ class TestPlotVisualObjects(TestCase):
             (4, "Swimlane", 1, None, False, 40, 0, 1000, 116),
             (4, "Swimlane", 2, None, False, 161, 0, 1000, 236),
             (4, "Visual Activities", "Project Start", None, False, 40 + 4 * (20 + 4), (62.5 / 275) * 1000 - 5, 10, 20),
-            (4, "Visual Activities", "Milestone 6", None, False, 40 + 5 * 20 + 4 * 4 + 5 + 1 * 20 + 4, (214.5 / 275) * 1000 - 5, 10, 20),
+            (4, "Visual Activities", "Milestone 6", None, False, 40 + 5*20+4*4 + 5, (214.5 / 275) * 1000 - 5, 10, 20),
             (4, "Visual Activities", "Activity 24", None, True, 40 + 5 * 20 + 4 * 4 + 5 + 9 * (20 + 4), (31 + 31 + 30 + 31 + 30 + 31 + 17) / 275 * 1000, (31 - 18 + 1) * 1000 / 275, 20),
         ],
     ))

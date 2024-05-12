@@ -706,17 +706,41 @@ def plot_visual_02(request, visual_id):
         messages.error(request, "No activities selected for visual")
         return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
     else:
-        visual_settings = VisualSettings(visual_id)
-        visual_orchestrator = VisualOrchestration(visual, visual_settings)
-        canvas_renderer = CanvasRenderer()
-        canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-        swimlane_form = SwimlaneDropdownForm(instance=visual)
+        # visual_settings = VisualSettings(visual_id)
+        # visual_orchestrator = VisualOrchestration(visual, visual_settings)
+        # canvas_renderer = CanvasRenderer()
+        # canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
+        # swimlane_form = SwimlaneDropdownForm(instance=visual)
         context = {
-            'activity_data': canvas_data,
+            # 'activity_data': canvas_data,
             'visual': visual,
-            'swimlane_dropdown_form': swimlane_form
+            # 'swimlane_dropdown_form': swimlane_form
         }
         return render(request, "plan_visual_django/planvisual_detail_02.html", context)
+@login_required
+def plot_visual_03(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if visual.activity_count() == 0:
+        messages.error(request, "No activities selected for visual")
+        return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
+    else:
+        pass
+        context = {
+            'visual': visual,
+        }
+        return render(request, "plan_visual_django/planvisual_detail_03.html", context)
 
 @login_required
 def manage_colors(request):
