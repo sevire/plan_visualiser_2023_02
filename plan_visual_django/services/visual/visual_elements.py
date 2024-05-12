@@ -4,12 +4,9 @@ that object and on demand, will create the specific Plotable for that element.
 """
 from datetime import date, datetime
 from abc import ABC, abstractmethod
-from django.db.models import QuerySet
-from plan_visual_django.models import PlotableShapeType, TimelineForVisual, VisualActivity, SwimlaneForVisual, \
-    PlotableShape
 from plan_visual_django.services.general.date_utilities import month_increment, first_day_of_month, last_day_of_month, \
     num_months_between_dates, DatePlotter
-from plan_visual_django.services.visual.plotables import Plotable, PlotableFactory
+from plan_visual_django.services.visual.plotables import Plotable, get_plotable
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 
 
@@ -42,7 +39,7 @@ class VisualElement:
         self.external_text_flag = None
 
     def plot_element(self):
-        plotable:Plotable = PlotableFactory.get_plotable(
+        plotable:Plotable = get_plotable(
             shape_name=self.shape,
             top=self.top,
             left=self.left,
@@ -56,7 +53,7 @@ class VisualElement:
         )
         return plotable
 
-    def render_element(self, renderer: "VisualRenderer"):
+    def render_element(self, renderer):
         plotable = self.plot_element()
         renderer.plot_plotable(plotable)
 
@@ -197,14 +194,14 @@ class Timeline(VisualElementCollection):
     different timelines and then set the visual start and end date which is what the Timeline will use to calculate
     it's actual Visual Elements.
     """
-    def __init__(self, activity_start_date:datetime.date, activity_end_date:datetime.date, timeline_record: TimelineForVisual):
+    def __init__(self, activity_start_date:datetime.date, activity_end_date:datetime.date, timeline_record):
         super().__init__()
         self.activity_start_date:date = activity_start_date
         self.activity_end_date:date = activity_end_date
-        self.timeline_record:TimelineForVisual = timeline_record
+        self.timeline_record = timeline_record
 
-        self.visual_start_date:date|None = None  # Will be set from outside orchestration logic.  Can't plot without.
-        self.visual_end_date:date|None = None  # Will be set from outside orchestration logic.  Can't plot without.
+        self.visual_start_date:date|None = activity_start_date  # Will be set from outside orchestration logic.  Can't plot without.
+        self.visual_end_date:date|None = activity_end_date  # Will be set from outside orchestration logic.  Can't plot without.
 
     @abstractmethod
     def calculate_date_range(self) -> (date, date):
@@ -216,7 +213,7 @@ class Timeline(VisualElementCollection):
         pass
 
     @classmethod
-    def from_data_record(cls, start_date:date, end_date:date, timeline: TimelineForVisual):
+    def from_data_record(cls, start_date:date, end_date:date, timeline):
         """
         Works out which type of timeline to create based upon the type passed in the Timeline record from db, and
         then creates and returns that timeline.
@@ -226,6 +223,7 @@ class Timeline(VisualElementCollection):
         :param timeline:
         :return:
         """
+        from plan_visual_django.models import TimelineForVisual
         if timeline.timeline_type == TimelineForVisual.TimelineLabelType.MONTHS:
             return MonthTimeline(start_date, end_date, timeline)
         elif timeline.timeline_type == TimelineForVisual.TimelineLabelType.QUARTERS:
@@ -233,10 +231,10 @@ class Timeline(VisualElementCollection):
 
 
 class MonthTimeline(Timeline):
-    def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline_record: TimelineForVisual):
+    def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline_record):
         super().__init__(start_date, end_date, timeline_record)
 
-    def create_collection(self, visual_settings:VisualSettings, timeline_settings, top_offset=0, left_offset=0):
+    def create_collection(self, visual_settings, timeline_settings, top_offset=0, left_offset=0):
         """
         By the time this method is called, the calculate_date_range method will have been called to allow the
         orchestration logic to work out the range for the whole visual.
@@ -265,14 +263,18 @@ class MonthTimeline(Timeline):
 
             element = VisualElement()
 
+            from plan_visual_django.models import PlotableShape
             element.shape=PlotableShape.PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset
             element.width=width
             element.height=height
             element.plotable_style=self.timeline_record.plotable_style
+
+            from plan_visual_django.models import VisualActivity
             element.text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE
             element.text_flow=VisualActivity.TextFlow.FLOW_CENTRE
+
             element.text=text
             element.external_text_flag=False
 
@@ -322,12 +324,14 @@ class QuarterTimeline(Timeline):
 
             element = VisualElement()
 
+            from plan_visual_django.models import PlotableShape
             element.shape = PlotableShape.PlotableShapeName.RECTANGLE
             element.top = top_offset
             element.left = left + left_offset
             element.width = width
             element.height = height
             element.plotable_style = self.timeline_record.plotable_style
+            from plan_visual_django.models import VisualActivity
             element.text_vertical_alignment = VisualActivity.VerticalAlignment.MIDDLE
             element.text_flow = VisualActivity.TextFlow.FLOW_CENTRE
             element.text = text
@@ -337,7 +341,7 @@ class QuarterTimeline(Timeline):
 
         return self
 
-    def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline:TimelineForVisual, month_offset=1):
+    def __init__(self, start_date: datetime.date, end_date: datetime.date, timeline, month_offset=1):
         super().__init__(start_date, end_date, timeline)
         self.month_offset = month_offset
 
@@ -379,18 +383,19 @@ class TimelineCollection(VisualElementCollection):
     This class will manage the correct calculation of all the timelines within the visual.
     """
 
-    def __init__(self, visual_start_date: date, visual_end_date:date, timelines: [TimelineForVisual], timeline_settings: dict):
+    def __init__(self, visual_start_date: date, visual_end_date:date, timelines: [], timeline_settings: dict):
         super().__init__()
         self.timeline_objects = None
 
         self.visual_start_date = visual_start_date
         self.visual_end_date = visual_end_date
+        from plan_visual_django.models import TimelineForVisual
         self.timelines:[TimelineForVisual] = timelines
         self.timeline_settings = timeline_settings
 
         # The actual start and end date for the whole visual will be adjusted to ensure all the timelines fit.
-        self.visual_start_date_final = None
-        self.visual_end_date_final = None
+        self.visual_start_date_final = visual_start_date
+        self.visual_end_date_final = visual_end_date
 
     def initialise_collection(self):
         """
@@ -504,6 +509,7 @@ class ActivityCollection(VisualElementCollection):
             shape = activity['plotable_shape']
             plotable_style = activity['plotable_style']
 
+            from plan_visual_django.models import VisualActivity
             text_vertical_alignment = VisualActivity.VerticalAlignment(activity['text_vertical_alignment'])
             text_flow = VisualActivity.TextFlow(activity['text_flow'])
             text = activity['activity_name']
@@ -547,7 +553,7 @@ class SwimlaneCollection(VisualElementCollection):
             self,
             visual_start_date:date,
             visual_end_date:date,
-            swimlane_records:QuerySet[SwimlaneForVisual],
+            swimlane_records,
             activity_collection: ActivityCollection,
             visual_settings: VisualSettings,
             swimlane_settings
@@ -606,6 +612,7 @@ class SwimlaneCollection(VisualElementCollection):
                 for activity in activities_for_swimlane:
                     # We need to go through the activities for a swimlane sequentially because there will be layout options
                     # Where the vertical position of the current activity is directly related to that of the previous one.
+                    from plan_visual_django.models import VisualActivity
                     v_positioning_type: VisualActivity.VerticalPositioningType = activity['vertical_positioning_type']
                     if v_positioning_type == VisualActivity.VerticalPositioningType.TRACK_NUMBER:
                         track_number_start = activity['vertical_positioning_value']
@@ -626,6 +633,7 @@ class SwimlaneCollection(VisualElementCollection):
                     height = self.calculate_height_of_tracks(num_tracks)
                     self.activity_collection.set_activity_vertical_plot_attributes(activity['unique_id_from_plan'], activity_top, height)
 
+                from plan_visual_django.models import PlotableShape, VisualActivity
                 shape = PlotableShape.PlotableShapeName.RECTANGLE
                 plotable_style = swimlane.plotable_style
 

@@ -169,7 +169,7 @@ def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag
         if delete_flag:
             print_status_partial(f"Attempting to delete record with pk={record['pk']}...")
             try:
-                record_for_deletion = model.objects.get(pk=record['pk'])
+                record_for_deletion = model.objects.get()
             except model.DoesNotExist as e:
                 print_status_partial(f"No record found pk={record['pk']}")
             else:
@@ -243,7 +243,7 @@ def create_initial_users(delete=False):
 
         # Check whether this user exists
         try:
-            user = User.objects.get(username=user_data['username'])
+            user = User.objects.get()
         except User.DoesNotExist:
             if delete:
                 # Nothing to do delete and that's fine.

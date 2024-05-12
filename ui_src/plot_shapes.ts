@@ -157,7 +157,7 @@ const dispatch_table = {
 }
 type DispatchTableType = typeof dispatch_table
 
-export function plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings: any) {
+export function x_plot_visual(ctx:CanvasRenderingContext2D, shapes: any, settings: any) {
     for (let shape of shapes) {
         const shape_details = shape.shape_details
         const shape_name: ShapeName = shape_details.shape_name as keyof typeof dispatch_table;

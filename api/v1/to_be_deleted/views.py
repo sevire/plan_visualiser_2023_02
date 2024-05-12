@@ -1,70 +1,41 @@
 import json
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from plan_visual_django.models import DEFAULT_VERTICAL_POSITIONING_VALUE, DEFAULT_HEIGHT_IN_TRACKS, \
-    PlotableShape, PlotableShapeType, DEFAULT_PLOTABLE_SHAPE_NAME, \
-    SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, PlotableStyle, DEFAULT_PLOTABLE_STYLE_NAME, VisualActivity, PlanVisual, \
+
+from api.v1.visual.serializer import VisualActivityListSerialiser
+from plan_visual_django.models import DEFAULT_HEIGHT_IN_TRACKS, \
+    SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, VisualActivity, PlanVisual, \
     DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, \
-    DEFAULT_TEXT_FLOW, DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME
+    DEFAULT_TEXT_FLOW
 from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
-class VisualRenderAPI(APIView):
-    """
-    This API is used to render the visual for display in the browser.
-    """
-    def get(self, request, visual_id):
-        """
-        This method returns a JSON object containing the details of the visual for the supplied visual_id.
-        :param request:
-        :param visual_id:
-        :return:
-        """
-        visual = PlanVisual.objects.get(id=visual_id)
 
-        if visual.activity_count() == 0:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            visual_settings = VisualSettings(visual_id)
-            visual_orchestrator = VisualOrchestration(visual, visual_settings)
-            canvas_renderer = CanvasRenderer()
-            canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-            data = {
-                "activity_data": canvas_data,
-                "visual": visual
-            }
-            return_data = json.dumps(canvas_data)
-            return Response(return_data)
 
 
 class VisualActivityListAPI(APIView):
     def get(self, request, visual_id):
         visual = PlanVisual.objects.get(id=visual_id)
-        activities = visual.get_visual_activities()
+        visual_activities = visual.visualactivity_set.all()
+        serialiser = VisualActivityListSerialiser(visual_activities, many=True)
 
-        # ToDo: Re-factor to remove hack that replaces objects with string - just for display of activities on layout page
-        for activity in activities:
-            activity['plotable_style'] = activity['plotable_style'].style_name
-            activity['start_date'] = activity['start_date'].strftime("%m/%d/%Y")
-            activity['end_date'] = activity['end_date'].strftime("%m/%d/%Y")
-        activities_json = json.dumps(activities)
-        return Response(activities_json)
+        return JsonResponse(serialiser.data, safe=False)
 
 
 class VisualActivityAPI(APIView):
     def get(self, request, visual_id, unique_id):
         visual = PlanVisual.objects.get(id=visual_id)
-        activity_data = visual.get_visual_activity(unique_id)
+        activity = visual.visualactivity_set.get()
 
-        activity_data['plotable_style'] = activity_data['plotable_style'].style_name
-        activity_data['start_date'] = activity_data['start_date'].strftime("%m/%d/%Y")
-        activity_data['end_date'] = activity_data['end_date'].strftime("%m/%d/%Y")
+        activity_plotable = activity.get_plotable()
+
+        renderer = CanvasRenderer()
+        activity_data = renderer.plot_plotable(activity_plotable)
 
         activities_json = json.dumps(activity_data)
         return Response(activities_json)
@@ -83,7 +54,6 @@ class VisualActivityAPI(APIView):
         or not, but it avoids using GET incorrectly or having to access data before validation which seems wrong.
 
         Note - the above means we don't even need a serializer (which seems a bit wrong).
-        ToDo: Revisit use of PUT with no data to check this is good practice.
 
         :param request:
         :param visual_id:
@@ -98,12 +68,12 @@ class VisualActivityAPI(APIView):
 
         # We have found the visual so now check whether the activity already exists for the visual.
         try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+            visual_activity = visual.visualactivity_set.get(unique_id=unique_id)
         except VisualActivity.DoesNotExist:
             # Need to create a new record for this activity in this visual.
 
             # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
-            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
+            plan_activity = visual.plan.planactivity_set.get()
             if plan_activity.milestone_flag is True:
                 initial_plotable_shape = visual.default_milestone_shape
                 initial_plotable_style = visual.default_milestone_plotable_style
@@ -123,7 +93,6 @@ class VisualActivityAPI(APIView):
                     swim_lane_name=DEFAULT_SWIMLANE_NAME
                 )
                 initial_swimlane.save()
-
 
             new_visual_activity = VisualActivity(
                 visual=visual,
@@ -186,7 +155,7 @@ class VisualActivityAPI(APIView):
 
         # We have found the visual so now check that the activity exists for the visual (it should).
         try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+            visual_activity = visual.visualactivity_set.get()
         except VisualActivity.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:

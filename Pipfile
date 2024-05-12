@@ -10,6 +10,7 @@ djangorestframework = "*"
 ddt = "*"
 colour = "*"
 coverage = "*"
+pytest = "*"
 
 [dev-packages]
 
