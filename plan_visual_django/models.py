@@ -1,9 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
-from django.db.models import UniqueConstraint
-from plan_visual_django.services.general.date_utilities import date_from_string
+from django.db.models import UniqueConstraint, Max, Min, Sum
+from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
+from plan_visual_django.services.visual.plotables import get_plotable
+from plan_visual_django.services.visual.visual_elements import Timeline
 
 
 class PlanField(models.Model):
@@ -216,6 +218,13 @@ class Color(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def to_dict(self):
+        """
+        Returns a dictionary for use in API calls. Assumes that use case is for fillStyle in Canvas for now
+        :return:
+        """
+        return f"rgb({self.red},{self.green},{self.blue})"
+
 
 class Font(models.Model):
     font_name = models.CharField(max_length=100)
@@ -242,6 +251,31 @@ class PlotableStyle(models.Model):
 
     def __str__(self):
         return f'{self.style_name}, fill:{self.fill_color.name}, line:{self.line_color.name}'
+
+    def to_dict(self):
+        """
+        Create dict structure which can be converted to JSON for use in API calls.
+        :return:
+        """
+        return {
+            "user": self.user.username,
+            "style_name": self.style_name,
+            "fill_color": self.fill_color.to_dict(),
+            "line_color": self.line_color.to_dict(),
+            "font_color": self.font_color.to_dict(),
+            "line_thickness": self.line_thickness,
+            "font": self.font.font_name,
+            "font_size": self.font_size
+        }
+
+    def font_render_string(self):
+        """
+        Returns string representing the size and font, which can be used for rendering in Canvas and (probably) other
+        formats.
+
+        :return:
+        """
+        return f"{self.font_size}px {self.font.font_name}"
 
 
 class PlotableShapeType(models.Model):
@@ -350,6 +384,7 @@ class PlanVisual(models.Model):
         # Now set up each field we want to be included
 
         # Start with the positioning and formatting fields for this activity
+        activity_record['enabled'] = visual_activity.enabled
         activity_record['unique_id_from_plan'] = visual_activity.unique_id_from_plan
         activity_record['swimlane'] = visual_activity.swimlane.swim_lane_name
         activity_record['plotable_shape'] = visual_activity.plotable_shape.name
@@ -360,13 +395,14 @@ class PlanVisual(models.Model):
         activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
         activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
         activity_record['text_flow'] = visual_activity.get_text_flow()
-        activity_record['plotable_style'] = visual_activity.plotable_style
+        activity_record['plotable_style'] = visual_activity.plotable_style.to_dict()
 
         # Now add the plan activity record data for this activity
         activity_record['activity_name'] = plan_activity.activity_name
         activity_record['milestone_flag'] = plan_activity.milestone_flag
-        activity_record['start_date'] = plan_activity.start_date
-        activity_record['end_date'] = plan_activity.end_date
+
+        activity_record['start_date'] = plan_activity.start_date.isoformat()
+        activity_record['end_date'] = plan_activity.end_date.isoformat()
         activity_record['level'] = plan_activity.level
 
         return activity_record
@@ -396,11 +432,160 @@ class PlanVisual(models.Model):
         activities_consolidated = [self.get_visual_activity(activity["unique_id_from_plan"]) for activity in activity_unique_ids]
         return activities_consolidated
 
-    def get_earliest_date(self):
-        pass
+    def get_visual_earliest_latest_plan_date(self):
+        """
+        Returns the earliest start date and the latest end date for all activities in the plan.  Doesn't adjust for
+        timelines!
 
-    def get_latest_date(self):
-        pass
+        :return:
+        """
+        earliest_start_date = min(visual_activity.get_plan_activity().start_date for visual_activity in self.visualactivity_set.all())
+        latest_end_date = max(visual_activity.get_plan_activity().end_date for visual_activity in self.visualactivity_set.all())
+
+        return earliest_start_date, latest_end_date
+
+    def get_visual_earliest_latest_date(self):
+        """
+        Returns the earliest date of all activities included in the visual, adjusted to take account of the dates
+        covered by timelines - as the timelines will typically round up to a whole unit, such as month, week etc.
+        :return:
+        """
+        # Get all unique_id_from_plan values for enabled VisualActivity objects related to this PlanVisual instance
+        visual_ids = self.visualactivity_set.filter(enabled=True).values_list('unique_id_from_plan', flat=True)
+
+        # Filter PlanActivity objects by plan and unique_sticky_activity_id(from the previous query),
+        # then get the minimum start_date
+        earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
+        latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
+
+        timeline_records = self.timelineforvisual_set.all()
+
+        # Create dictionary of timeline objects based on timeline data from database
+        self.timeline_objects = {timeline.timeline_name: Timeline.from_data_record(earliest_start_date, latest_end_date, timeline) for timeline in timeline_records}
+
+        # If there are no timelines, then the earliest and latest dates are based on which activities are in the visual.
+        # Otherwise ask each timeline object to calculate its earliest and latest date and calculate the true start and end
+        # date for the overall visual.
+        if len(self.timeline_objects) == 0:
+            visual_start_date_final = earliest_start_date
+            visual_end_date_final = latest_end_date
+        else:
+            visual_start_date_final = min([start_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
+            visual_end_date_final = max([end_date for start_date, end_date in [timeline.calculate_date_range() for timeline in self.timeline_objects.values()]])
+
+        return visual_start_date_final, visual_end_date_final
+
+    def get_timelines_height(self, sequence_num=None):
+        """
+        (SHOULD BE TEMPORARY)
+        ToDo: Refactor to remove need for calculating Timeline height from visual.
+
+        Work out height of all the timelines as this is required to calculate the position of
+        swimlanes and activities.
+
+        If sequence_num is provide then calculate the height of all the timelines not including the one
+        with the supplied sequence number (used to calculate the top of current timeline)
+        :return:
+        """
+        if sequence_num is None:
+            timelines = self.timelineforvisual_set.all()
+        else:
+            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num)
+        timeline_height = timelines.aggregate(total_sum=Sum('timeline_height'))['total_sum'] or 0
+
+        return timeline_height
+
+    def get_timeline_plotables(self, sequence_number=None):
+        """
+        Works out dimensions for the timeline area on the visual.
+
+        The timeline (at the moment) is positioned at the top of the visual and that is hard-coded into the
+        logic.
+        :param top:
+        :param left:
+        :param width:
+        :param height:
+        :return:
+        """
+        if sequence_number:
+            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_number)
+        else:
+            timelines = self.timelineforvisual_set.all()
+
+        timeline_plotables = [timeline.get_plotables() for timeline in timelines]
+        return timeline_plotables
+
+    def get_swimlane_plotables(self, sequence_number=None):
+        if sequence_number:
+            swimlanes = self.swimlaneforvisual_set.filter(sequence_number__lt=sequence_number)
+        else:
+            swimlanes = self.swimlaneforvisual_set.all()
+
+        swimlane_plotables = [swimlane.get_plotable() for swimlane in swimlanes]
+        return swimlane_plotables
+
+    def get_visual_activity_plotables(self):
+        """
+        Returns plotables for all visual activities in this visual, not including activites
+        which are not enabled.
+        :return:
+        """
+        visual_activities = [visual_activity.get_plotable() for visual_activity in self.visualactivity_set.filter(enabled=True)]
+
+        return visual_activities
+
+
+
+    def get_swimlanesforvisual_dimensions(self, sequence_number=None, top=None, left=None, width=None, height=None):
+        """
+        Works out dimensions for area containing swimlanes in the visual.
+
+        If sequence_number is specified then get the dimensions just of the area contain the swimlanes up to but
+        not including the specified one.  Also don't include the final swimlane gap so that the dimensions only
+        include the swimlanes themselves.  The caller will need to add a gap if calculating the dimensons for a
+        swimlane which sits underneath those used in the calculation herein.
+
+        Hard coding logic that the Timeline Labels will come above the swimlanes.  This is fine for now but
+        maybe this should be more data driven.
+
+        :param top:
+        :param left:
+        :param width:
+        :param height:
+        :return:
+        """
+        # First get height of timelines as the swimlanes sit below them.
+        height_of_timelines = self.get_timelines_height()
+
+        if sequence_number:
+            swimlanes = self.swimlaneforvisual_set.filter(sequence_number__lt=sequence_number)
+        else:
+            swimlanes = self.swimlaneforvisual_set.all()
+        num_swimlanes = len(swimlanes)
+        total_gap = max(0, num_swimlanes-1) * self.swimlane_gap
+        total_height_of_swimlanes = sum(swimlane.get_height() for swimlane in swimlanes)
+        height_of_swimlane_area = total_height_of_swimlanes + total_gap
+
+        return height_of_timelines, 0, self.width, height_of_swimlane_area
+
+    def get_plotables(self):
+        """
+        Returns all plotable elements for the visual (and by recursion all sub-elements of those elements.
+
+        Specifically, returns:
+        - timelines (which will implicitly return timeline_labels)
+        - swimlanes
+        - visual activities
+
+        :return:
+        """
+        plotables = {
+            "timelines": self.get_timeline_plotables(),
+            "swimlanes": self.get_swimlane_plotables(),
+            "visual_activities": self.get_visual_activity_plotables()
+        }
+        return plotables
+
 
 
 class TimelineForVisual(models.Model):
@@ -418,9 +603,68 @@ class TimelineForVisual(models.Model):
     timeline_name = models.CharField(max_length=50)
     timeline_height = models.FloatField(default=10)
     plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
+    sequence_number = models.IntegerField()
+
+    class Meta:
+        unique_together = [
+            ('plan_visual', 'sequence_number')
+        ]
+        ordering = ['plan_visual', 'sequence_number']
 
     def get_timeline_label_type(self) -> TimelineLabelType:
         return self.TimelineLabelType(self.timeline_type)
+
+    def get_height(self):
+        return self.timeline_height
+
+    def get_plot_parameters(self, json_flag=False):
+        """
+        ToDo: Rethink whether I need get_plot_paramters for Timeline given refactor into Plotables
+        Calculated the overall dimensions of a given Timeline - that is the dimensions of the imaginary
+        rectangle that encloses all the Timeline labels.
+
+        :param json_flag:
+        :return:
+        """
+        plotables = self.get_plotables()
+
+        timeline_enclosing_top = min(plotable.get_top() for plotable in plotables)
+        timeline_enclosing_bottom = max(plotable.get_bottom() for plotable in plotables)
+        timeline_enclosing_left = min(plotable.get_left() for plotable in plotables)
+        timeline_enclosing_right = max(plotable.get_right() for plotable in plotables)
+
+        timeline_enclosing_height = timeline_enclosing_bottom - timeline_enclosing_top
+        timeline_enclosing_width = timeline_enclosing_right - timeline_enclosing_left
+
+        return timeline_enclosing_top, timeline_enclosing_left, timeline_enclosing_width, timeline_enclosing_height
+
+    def get_plotables(self):
+        """
+        Calculates the labels for a given timeline.  This involves:
+        - Getting overall start and end date for the visual based on the activities and all the timelines (as timelines
+          will round down and up to the nearest unit (month, quarter etc) depending upon the configuration of the timeline
+        - Create a list of labels, each of which has a start and end date and a label.
+        :return:
+        """
+
+        earliest_visual_date, latest_visual_date = self.plan_visual.get_visual_earliest_latest_date()
+
+        timeline_settings = {}  # Don't think this is used but need to assign something for now.
+        # ToDo: Go back and delete timeline_settings from Timeline classes as should just use data from model
+
+        timeline = Timeline.from_data_record(
+            earliest_visual_date,
+            latest_visual_date,
+            self,
+        )
+
+        timeline.initialise_collection()
+        top_offset = self.plan_visual.get_timelines_height(sequence_num=self.sequence_number)
+        collection = timeline.create_collection(visual_settings=self.plan_visual, timeline_settings=timeline_settings, top_offset=top_offset, left_offset=0)
+
+        collection_as_plotables = [element.plot_element() for element in collection.collection]
+
+        return collection_as_plotables
 
 
 class SwimlaneForVisual(models.Model):
@@ -430,7 +674,10 @@ class SwimlaneForVisual(models.Model):
     sequence_number = models.IntegerField()
 
     class Meta:
-        unique_together = ('plan_visual', 'swim_lane_name')
+        unique_together = [
+            ('plan_visual', 'swim_lane_name'),
+            ('plan_visual', 'sequence_number')
+        ]
         ordering = ['plan_visual', 'sequence_number']
 
     def __str__(self):
@@ -454,17 +701,113 @@ class SwimlaneForVisual(models.Model):
 
         return activities
 
+    def get_max_track(self, include_disabled=False):
+        """
+        Returns the maximum track number in this swimlane, by taking the max of all the track numbers for all the
+        visual activities in the swimlane.
+
+        Usually we won't include activities which are disabled as they won't show up on the visual but the
+        include disabled flag allows this to be overridden.
+
+        :param include_disabled:
+        :return:
+        """
+
+        if self.get_visual_activities().count() > 0:
+            max_value = self.get_visual_activities(include_disabled=include_disabled).aggregate(Max('vertical_positioning_value'))['vertical_positioning_value__max']
+            return max_value
+        else:
+            return 0
+
     def get_next_unused_track_number(self):
         """
         Returns the next track number to be used for a new activity in the given swimlane.  Don't count disabled
         activities as they are not currently in the visual.
         :return:
         """
-        if self.get_visual_activities().count() > 0:
-            max_track_number = max([activity.vertical_positioning_value for activity in self.get_visual_activities()])
-            return max_track_number + 1
-        else:
-            return 1
+        return self.get_max_track() + 1
+
+    def get_height_of_tracks(self, num_tracks):
+        """
+        Utility function which simply works out the height of an activity which spans multiple tracks, or the height
+        of a number of tracks above the one we are working out the top for.
+        :return:
+        """
+        height_of_tracks = num_tracks * self.plan_visual.track_height + max(0, num_tracks-1) * self.plan_visual.track_gap
+
+        return height_of_tracks
+
+    def get_top_of_track(self, track_number):
+        """
+        The top of a track in a swimlane is defined by:
+        - The top of the swimlane
+        - The height of all the previous tracks
+        - Plus the track gap if this isn't the first track in the swimlane
+
+        :param track_number:
+        :return:
+        """
+
+        top_of_swimlane, _, _, _, _, _ = self.get_plotable().get_dimensions()
+
+        # If this isn't the top track then add a gap after the previous one otherwise don't.
+        additional_gap = 0 if track_number == 1 else self.plan_visual.track_gap
+
+        top_of_track = top_of_swimlane + self.get_height_of_tracks(track_number-1) + additional_gap
+
+        return top_of_track
+
+    def get_height(self):
+        """
+        Calculates the height of this swimlane by working out how many tracks there are on the swimlane and then
+        calculating based on track height and track gap.
+        :return:
+        """
+        track_height = self.plan_visual.track_height
+        track_gap = self.plan_visual.track_gap
+        num_tracks = self.get_max_track()
+
+        # If there are zero or 1 tracks than there are no track gaps.
+        height = (num_tracks * track_height) + max(0, num_tracks - 1) * track_gap
+
+        return height
+
+    def get_plotable(self):
+        dims_of_previous_swimlanes = self.plan_visual.get_swimlanesforvisual_dimensions(self.sequence_number)
+        previous_s_lane_top, previous_s_lane_left, previous_s_lane_width, previous_s_lane_height = dims_of_previous_swimlanes
+
+        # If height of all previous swimlanes is zero then this is the first visible swimlane so don't add a gap.
+        gap = 0 if previous_s_lane_height == 0 else self.plan_visual.swimlane_gap
+
+        # Top of this swimlane is top of previous + height of previous + swimlane gap.
+        this_top = previous_s_lane_top + previous_s_lane_height + gap
+
+        swimlane_plotable = get_plotable(
+            PlotableShape.PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
+            top=this_top,
+            left=0,  # Hard-coding for now as nothing will appear to the left of the swimlane
+            width=self.plan_visual.width,
+            height=self.get_height(),
+            format=self.plotable_style,
+            text_vertical_alignment=VisualActivity.VerticalAlignment.TOP,
+            text_flow=VisualActivity.TextFlow.FLOW_TO_RIGHT,
+            text=self.swim_lane_name,
+            external_text_flag=False  # Only relevant for VisualActivity
+        )
+
+        return swimlane_plotable
+
+    def get_activity_plotables(self):
+        """
+        Returns an Iterable object with a Plotable object for each activity which sits within this swimlane.
+
+        :return:
+        """
+        activity_plotables = []
+        for activity in self.visualactivity_set.all():
+            activity_plotables.append(activity.get_plotable())
+
+        return activity_plotables
 
 
 class VisualActivity(models.Model):
@@ -494,6 +837,7 @@ class VisualActivity(models.Model):
         CENTER = 'CENTER', 'Center',
         RIGHT = 'RIGHT', 'Right'
 
+    # ToDo: VerticalAlignment should sit outside VisualActivity as it applies to any plotable object.
     class VerticalAlignment(models.TextChoices):
         TOP = 'TOP', 'Top',
         MIDDLE = 'MIDDLE', 'Middle',
@@ -520,6 +864,10 @@ class VisualActivity(models.Model):
         return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'
 
     # Several methods to return Enum value for relevant choice selection
+    def get_plan_activity(self):
+        plan_activity = self.visual.plan.planactivity_set.get(unique_sticky_activity_id=self.unique_id_from_plan)
+        return plan_activity
+
     def get_text_flow(self) -> TextFlow:
         return self.TextFlow(self.text_flow)
 
@@ -532,19 +880,59 @@ class VisualActivity(models.Model):
     def get_vertical_alignment(self) -> VerticalAlignment:
         return self.VerticalAlignment(self.text_vertical_alignment)
 
-    def to_json(self, plot_parameters):
-        # Hard code during development
-        plot_parameters = {
-            'min_date': date_from_string('01/01/2023'),
-            'max_date': date_from_string('12/01/2023'),
-            'visual_top': 0,
-            'visual_left': 0,
-            'visual_width': 400,
-            'visual_height': 200,
-            'track_height': 10,
-            'track_gap': 2
-        }
-        # ToDo: Come back and finish activity.to_json()
+    def get_plotable(self):
+        """
+        Works out plot parameters for this visual activity.  Does this by:
+        - If the activity isn't enabled then it doesn't appear on the visual so return None
+        - Get which swimlane the activity is in.
+        - Get which track the activity is in.
+        - Get how many tracks the activity will cover.
+
+        The above allows us to work out where the top of the activity is and its height. Then...
+        - Calculate left and width by calculating based on the details of the activities in the plan and
+          the properties of the visual (width in particular).
+
+        :return:
+        """
+        if self.enabled is not True:
+            return None
+
+        # Get swimlane this activity is in then work out its top.
+        activity_top = self.swimlane.get_top_of_track(self.vertical_positioning_value)
+        activity_height = self.swimlane.get_height_of_tracks(self.height_in_tracks)
+
+        earliest_visual_date, latest_visual_date = self.visual.get_visual_earliest_latest_date()
+
+        date_plotter = DatePlotter(
+            earliest_visual_date,
+            latest_visual_date,
+            0,
+            self.visual.width
+        )
+        plan_activity = self.get_plan_activity()
+
+        if plan_activity.milestone_flag is True:
+            # This is a milestone, so we plot in the middle of the day to the specified width for a milestone.
+            left = date_plotter.midpoint(plan_activity.start_date) - self.visual.milestone_width / 2
+            width = self.visual.milestone_width
+        else:
+            left = date_plotter.left(plan_activity.start_date)
+            width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
+
+        plotable = get_plotable(
+            self.plotable_shape.name,
+            top=activity_top,
+            left=left,
+            width=width,
+            height=activity_height,
+            format=self.plotable_style,
+            text_vertical_alignment=self.get_vertical_alignment(),
+            text_flow=self.get_text_flow(),
+            text=self.get_plan_activity().activity_name,
+            external_text_flag=True if self.get_plan_activity().milestone_flag else False
+        )
+
+        return plotable
 
 
 # Defaults to use when creating a new visual before any formatting or layout has been done.

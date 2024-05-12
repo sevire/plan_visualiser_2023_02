@@ -1,0 +1,231 @@
+body {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+}
+
+#main-header {
+  background-color: rebeccapurple;
+}
+#main-header img {
+  height: 50px;
+}
+
+.panel {
+  margin: 5px;
+}
+
+#top-row-controls > div {
+  height: 100px;
+}
+#top-row-controls #swimlanes {
+  overflow: scroll;
+  background-color: lightpink;
+  flex: 25%;
+}
+#top-row-controls #swimlanes table {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  width: 94%;
+  margin: 0 3%;
+  padding: 3% 0;
+}
+#top-row-controls #swimlanes table thead {
+  background-color: #8fc286;
+}
+#top-row-controls #swimlanes table tbody tr {
+  width: 100%;
+}
+#top-row-controls #swimlanes table tbody tr th {
+  text-align: left;
+}
+#top-row-controls #swimlanes table tbody tr th label {
+  line-height: 10px;
+  display: inline-block;
+  width: 50%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#top-row-controls #swimlanes table tbody td {
+  width: 50%;
+  background-color: #e9ffe5;
+}
+#top-row-controls #auto-layout-buttons {
+  flex: 50%;
+  background-color: darksalmon;
+}
+#top-row-controls #timeline-labels {
+  background-color: palegoldenrod;
+  flex: 25%;
+}
+
+.flex-row {
+  display: flex;
+}
+
+#left-column {
+  flex: 33%;
+}
+#left-column #add-remove-activities {
+  height: 400px;
+  overflow: scroll;
+  background-color: #b3d4fc;
+  margin-bottom: 10px;
+}
+#left-column #layout-activity {
+  overflow: scroll;
+  height: 250px;
+  background-color: #bee7b7;
+}
+#left-column #layout-activity table {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  width: 94%;
+  margin: 0 3%;
+  padding: 3% 0;
+}
+#left-column #layout-activity table thead {
+  background-color: #8fc286;
+}
+#left-column #layout-activity table tbody th {
+  width: 50%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#left-column #layout-activity table tbody td {
+  width: 50%;
+  background-color: #e9ffe5;
+}
+
+#right-column {
+  flex: 67%;
+}
+#right-column p {
+  margin: 0;
+  padding: 0;
+}
+#right-column #visual-header {
+  padding: 10px;
+  height: 50px;
+  background-color: bisque;
+  margin-bottom: 10px;
+}
+#right-column #visual-content {
+  padding: 10px;
+  background-color: #8fc286;
+}
+#right-column #visual-content .canvas-stack {
+  position: relative;
+  width: 100%;
+  height: 500px;
+}
+#right-column #visual-content .canvas-stack canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+#right-column #visual-content #background_layer {
+  z-index: 1;
+}
+#right-column #visual-content #swimlane_layer {
+  z-index: 2;
+}
+#right-column #visual-content #activity_layer {
+  z-index: 3;
+}
+
+ul#plan-activities {
+  display: block;
+  list-style-type: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 0;
+  padding: 5px;
+}
+ul#plan-activities ul {
+  padding-inline-start: 10px;
+}
+ul#plan-activities li {
+  display: block;
+  list-style: none;
+}
+ul#plan-activities li.expandNode:not(.expand) > ul {
+  display: none;
+}
+ul#plan-activities li:not(.expandNode) > div {
+  padding-left: 25px;
+}
+ul#plan-activities li > div {
+  font-family: "Georama", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  font-size: 12px;
+  color: white;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: pink;
+  text-decoration: none;
+  border-radius: 50vh;
+  margin-bottom: 4px;
+  margin-right: 2%;
+  padding-right: 15px;
+  height: 20px;
+  line-height: 20px;
+  border: solid 3px transparent;
+}
+ul#plan-activities li > div.level-1 {
+  background-color: rgb(1, 45, 0);
+}
+ul#plan-activities li > div.level-2 {
+  background-color: rgb(9, 61, 1);
+}
+ul#plan-activities li > div.level-3 {
+  background-color: rgb(10, 77, 0);
+}
+ul#plan-activities li > div.level-4 {
+  background-color: rgb(3, 105, 1);
+}
+ul#plan-activities li > div.level-5 {
+  background-color: rgb(33, 159, 14);
+}
+ul#plan-activities li > div.level-6 {
+  background-color: rgb(66, 189, 47);
+}
+ul#plan-activities li > div.level-7 {
+  background-color: rgb(83, 199, 65);
+}
+ul#plan-activities li > div.level-8 {
+  background-color: rgb(112, 196, 99);
+}
+ul#plan-activities li > div.level-9 {
+  background-color: rgb(139, 231, 125);
+}
+ul#plan-activities li > div.level-10 {
+  background-color: rgb(168, 248, 155);
+}
+ul#plan-activities li > div.in-visual {
+  background-color: rgb(255, 255, 119);
+  color: black;
+}
+ul#plan-activities li > div.current {
+  border: solid 3px rgb(201, 1, 1);
+}
+ul#plan-activities li > div i {
+  margin-left: 8px;
+  margin-right: 5px;
+  color: greenyellow;
+}
+
+/*# sourceMappingURL=layout-visual-3.css.map */

@@ -198,7 +198,8 @@ def setup_common_plan_data(user, file_type, plotable_shapes):
             plan_visual=visual_records[0],
             timeline_type=timeline_record["timeline_type"],
             timeline_name=timeline_record["timeline_name"],
-            plotable_style=plotable_style_records[0]
+            plotable_style=plotable_style_records[0],
+            sequence_number=timeline_record["sequence_number"]
         )
         for timeline_record in timeline_for_visual_data
     ]

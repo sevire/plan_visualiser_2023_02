@@ -23,7 +23,7 @@ def get_current_user(request: HttpRequest, default_if_logged_out: bool=False):
         return request.user
     elif default_if_logged_out:
         user_model = get_user_model()
-        user = user_model.objects.get(username="default_user")
+        user = user_model.objects.get()
         return user
     else:
         return None
