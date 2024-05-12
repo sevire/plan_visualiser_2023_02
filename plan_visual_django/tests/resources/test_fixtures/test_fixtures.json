@@ -1165,7 +1165,7 @@
       "swimlane": 5,
       "plotable_shape": 1,
       "vertical_positioning_type": "TRACK",
-      "vertical_positioning_value": 2,
+      "vertical_positioning_value": 1,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",

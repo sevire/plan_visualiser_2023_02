@@ -29,20 +29,3 @@ class RenderCanvasVisualAPI(APIView):
             renderer = CanvasRenderer()
             rendered_plotables = renderer.render_from_iterable(visual_plotables)
             return JsonResponse(rendered_plotables, safe=False)
-
-
-
-
-
-
-
-            visual_settings = VisualSettings(visual_id)
-            visual_orchestrator = VisualOrchestration(visual, visual_settings)
-            canvas_renderer = CanvasRenderer()
-            canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-            data = {
-                "activity_data": canvas_data,
-                "visual": visual
-            }
-            return_data = json.dumps(canvas_data)
-            return JsonResponse(return_data)

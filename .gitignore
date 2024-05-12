@@ -16,3 +16,8 @@ db.sqlite3-journal
 /data/
 /docker-build-logs/
 /plan_visual_django/tests/resources/input_files/excel_plan_files/~$PV-Test-02.xlsx
+/ui_src/plan_visualiser_api.js
+/ui_src/manage_plan_panel.js
+/ui_src/plot_visual.js
+/ui_src/manage_visual.js
+/ui_src/index.js

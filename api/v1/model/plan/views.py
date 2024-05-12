@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from api.v1.model.plan.serializer import ModelPlanSerialiser, ModelPlanListSerialiser
-from plan_visual_django.models import Plan
+from plan_visual_django.models import Plan, PlanVisual
 
 
 class ModelPlanListAPI(ListAPIView):
@@ -17,8 +17,8 @@ class ModelPlanListAPI(ListAPIView):
 
 
 class ModelPlanAPI(APIView):
-    def get(self, request, plan_id):
-        plan_queryset = Plan.objects.get(pk=plan_id)
+    def get(self, request, id):
+        plan_queryset = Plan.objects.get(pk=id)
         serializer = ModelPlanSerialiser(plan_queryset)
 
         response = serializer.data
