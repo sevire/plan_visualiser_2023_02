@@ -1,6 +1,6 @@
 // Functions which access API to get data with some simple pre-processing where necessary - no business logic!
 
-import axios from "axios";
+import axios, {HttpStatusCode} from "axios";
 
 async function api_get(url_string: string) {
   const base_url = "http://localhost:8002"
@@ -50,6 +50,11 @@ export async function get_visual_activity_data(visual_id: number) {
 
   const url_string = `/api/v1/rendered/canvas/visuals/${visual_id}/`
   const response = await api_get(url_string);
+
+  if (response.status === HttpStatusCode.NoContent) {
+    // No activities in visual so use empty object
+    (window as any).visual_activity_data = {}
+  }
 
   (window as any).visual_activity_data = response.data
 }

@@ -40,21 +40,22 @@ export async function createPlanTree() {
         const inVisual = activityDiv.classList.toggle('in-visual')
         if (inVisual) {
           // Means we have just toggled it to in so need to add it
-          add_to_visual(activity.plan_data.unique_sticky_activity_id)
+          await add_to_visual(activity.plan_data.unique_sticky_activity_id)
           await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+
           plot_visual()
 
           // Now it is in the visual and current activity we should select it for edit.
           select_for_edit(activity.plan_data.unique_sticky_activity_id)
         } else {
           // Means we have just toggled it to not in so need to remove it
-          remove_from_visual(activity.plan_data.unique_sticky_activity_id)
+          await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
           await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+
+          plot_visual()
 
           // As not in visual we can't edit it so need to clear out activity edit panel
           select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
-
-          plot_visual()
         }
       } else {
         // We have just selected an activity which wasn't already selected so need to change this one to the current
@@ -127,15 +128,15 @@ export async function createPlanTree() {
   return topLevelElements[0];
 }
 
-function add_to_visual(activity_id: string) {
-  add_activity_to_visual((window as any).visual_id, activity_id)
+async function add_to_visual(activity_id: string) {
+  await add_activity_to_visual((window as any).visual_id, activity_id)
   console.log("Added activity to visual: " + activity_id);
   const activity = get_activity(activity_id)
   activity.enabled = true;
 }
 
-function remove_from_visual(activity_id: string) {
-  remove_activity_from_visual((window as any).visual_id, activity_id)
+async function remove_from_visual(activity_id: string) {
+  await remove_activity_from_visual((window as any).visual_id, activity_id)
   console.log("Removed activity from visual: " + activity_id);
   const activity = get_activity(activity_id)
   activity.enabled = false;
@@ -165,8 +166,8 @@ function select_for_edit(activity_id:string, clear=false) {
     (window as any).selected_activity_id = undefined;
     edit_activity_elements.forEach(element => {
       const key = element.id
-      if (key === "track") {
-        console.log("Element is track - setting input value to blank")
+      if (key === "vertical_positioning_value") {
+        console.log("Clearing... element is track - setting input value to 0")
         const input_element = element.getElementsByTagName('input')[0]
         input_element.value = "0";
       } else {

@@ -2,6 +2,7 @@ import json
 
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from plan_visual_django.models import PlanVisual, Plan
 from plan_visual_django.services.visual.renderers import CanvasRenderer
@@ -23,7 +24,7 @@ class RenderCanvasVisualAPI(APIView):
         visual = PlanVisual.objects.get(id=visual_id)
 
         if visual.activity_count() == 0:
-            return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             visual_plotables = visual.get_plotables()
             renderer = CanvasRenderer()

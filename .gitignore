@@ -19,3 +19,6 @@ db.sqlite3-journal
 /ui_src/manage_visual.js
 /ui_src/plan_visualiser_api.js
 /ui_src/plot_visual.js
+/ui_src/index.js
+/ui_src/plot_shapes.js
+/ui_src/visual.js

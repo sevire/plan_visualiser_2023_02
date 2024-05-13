@@ -732,15 +732,10 @@ def plot_visual_03(request, visual_id):
 
     visual = PlanVisual.objects.get(id=visual_id)
 
-    if visual.activity_count() == 0:
-        messages.error(request, "No activities selected for visual")
-        return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
-    else:
-        pass
-        context = {
-            'visual': visual,
-        }
-        return render(request, "plan_visual_django/planvisual_detail_03.html", context)
+    context = {
+        'visual': visual,
+    }
+    return render(request, "plan_visual_django/planvisual_detail_03.html", context)
 
 @login_required
 def manage_colors(request):
