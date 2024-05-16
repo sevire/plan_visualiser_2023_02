@@ -515,11 +515,37 @@ class PlanVisual(models.Model):
         timeline_plotables = [timeline.get_plotables() for timeline in timelines]
         return timeline_plotables
 
-    def get_swimlane_plotables(self, sequence_number=None):
+    def get_swimlanes(self, visible_only_flag=True, sequence_number=None):
+        """
+        Finds all the swimlanes attached to this visual which have at least one activity in them.
+
+        :return:
+        """
         if sequence_number:
             swimlanes = self.swimlaneforvisual_set.filter(sequence_number__lt=sequence_number)
         else:
             swimlanes = self.swimlaneforvisual_set.all()
+
+        if visible_only_flag:
+            requested_swimlanes = [swimlane for swimlane in swimlanes if swimlane.get_activity_count() > 0]
+        else:
+            requested_swimlanes = swimlanes
+
+        return requested_swimlanes
+
+    def get_swimlane_plotables(self, sequence_number=None):
+        """
+        Orchestrates the creation of plotable objects for all visible swimlanes.
+
+        NOTE: This is currently situation within the PlanVisual model but the intention is to add a new model
+        which represents the swimlane collection for a visual.  Then we can encapsulate collection level logic there
+        instead of in the more general visual model
+
+        ToDo: Add intermediate model for Visual Swimlane Collection.
+        :param sequence_number:
+        :return:
+        """
+        swimlanes = self.get_swimlanes(visible_only_flag=True, sequence_number=sequence_number)
 
         swimlane_plotables = [swimlane.get_plotable() for swimlane in swimlanes]
         return swimlane_plotables
@@ -534,9 +560,7 @@ class PlanVisual(models.Model):
 
         return visual_activities
 
-
-
-    def get_swimlanesforvisual_dimensions(self, sequence_number=None, top=None, left=None, width=None, height=None):
+    def get_swimlanesforvisual_dimensions(self, sequence_number=None):
         """
         Works out dimensions for area containing swimlanes in the visual.
 
@@ -557,10 +581,7 @@ class PlanVisual(models.Model):
         # First get height of timelines as the swimlanes sit below them.
         height_of_timelines = self.get_timelines_height()
 
-        if sequence_number:
-            swimlanes = self.swimlaneforvisual_set.filter(sequence_number__lt=sequence_number)
-        else:
-            swimlanes = self.swimlaneforvisual_set.all()
+        swimlanes = self.get_swimlanes(sequence_number=sequence_number)
         num_swimlanes = len(swimlanes)
         total_gap = max(0, num_swimlanes-1) * self.swimlane_gap
         total_height_of_swimlanes = sum(swimlane.get_height() for swimlane in swimlanes)
@@ -683,21 +704,21 @@ class SwimlaneForVisual(models.Model):
     def __str__(self):
         return self.swim_lane_name
 
+    def get_activity_count(self, include_disabled=False):
+        queryset = self.visualactivity_set.all()
+        if not include_disabled:
+            queryset = queryset.filter(enabled=True)
+        return queryset.count()
+
     def get_visual_activities(self, include_disabled=False, date_order=False):
         """
         Returns all the visual activities for this swimlane.
         :return:
         """
-        if include_disabled:
-            if date_order:
-                activities = self.visualactivity_set.all()
-            else:
-                activities = self.visualactivity_set.all()
-        else:
-            if date_order:
-                activities = self.visualactivity_set.filter(enabled=True)
-            else:
-                activities = self.visualactivity_set.filter(enabled=True)
+        queryset = self.visualactivity_set.all()
+        if not include_disabled:
+            queryset = queryset.filter(enabled=True)
+        activities = queryset.all()
 
         return activities
 

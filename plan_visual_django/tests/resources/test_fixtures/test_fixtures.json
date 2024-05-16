@@ -1105,6 +1105,16 @@
   },
   {
     "model": "plan_visual_django.swimlaneforvisual",
+    "pk": 6,
+    "fields": {
+      "plan_visual": 4,
+      "swim_lane_name": "Visual 01:01, Swimlane 3 (dummy, no activities)",
+      "plotable_style": 5,
+      "sequence_number": 3
+    }
+  },
+  {
+    "model": "plan_visual_django.swimlaneforvisual",
     "pk": 100,
     "fields": {
       "plan_visual": 1,
