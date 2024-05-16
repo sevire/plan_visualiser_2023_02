@@ -53,9 +53,11 @@ export function plot_visual() {
 }
 
 function clear_canvases(canvas_info: { [key: string]: CanvasRenderingContext2D | null }) {
+  console.log("Clearing canvases...")
   // Clear canvas before plotting
   for (let key in canvas_info) {
     // Get the context for each canvas
+    console.log(`Clearing canvas ${key}`)
     let ctx = canvas_info[key];
 
     // Fill the entire canvas
