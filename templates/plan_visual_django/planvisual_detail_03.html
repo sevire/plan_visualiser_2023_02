@@ -112,18 +112,9 @@
 </div>
 <script src="{% static 'dist/bundle.js' %}"></script>
 <script type="application/javascript">
-
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
-        
-        // Load stylesheet (probably temp while refacoring)
-        let linkElement = document.createElement('link');
-
-        linkElement.rel = 'stylesheet';
-        linkElement.href = '/static/plan_visual_django/css/layout-visual-3.css';
-        
-        // Append the link element to the head of the document
-        document.head.appendChild(linkElement);
+        window.addStylesheetToDOM('/static/plan_visual_django/css/layout-visual-3.css')
         
         // Get data for the visual based upon the id from body element
         window.visual_id = {{ visual.id }}

@@ -227,8 +227,9 @@ ul#plan-activities {
     margin-bottom: 4px;
     margin-right: 2%;
     padding-right: 15px;
-    height: 20px;
-    line-height: 20px;
+    padding-bottom: 10px;
+    height: 30px;
+    line-height: 25px;
     border: solid 3px transparent;
 
     &.level-1 { background-color: $background-color-activity-level-1}
