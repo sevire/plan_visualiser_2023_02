@@ -50,20 +50,17 @@ body {
         background-color: #8fc286;
       }
       tbody {
-        tr {
-          width: 100%;
-          th {
-            text-align: left;
+        th {
+          text-align: left;
 
-            label {
-              line-height: 10px;
-              display: inline-block;
-              width: 50%;
-              text-align: left;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
+          label {
+            line-height: 10px;
+            display: inline-block;
+            width: 50%;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
         td {
@@ -101,27 +98,40 @@ body {
 
   #layout-activity {
     overflow: scroll;
-    height: 250px;
+    height: 270px;
     background-color: #bee7b7;
     table {
       font-size: 13px;
       font-family: Arial, sans-serif;
       width: 94%;
-      margin: 0 3%;
+      margin: 0 0;
       padding: 3% 0;
       thead {
         background-color: #8fc286;
       }
       tbody {
-        th {
+        tr.activity-subheading {
+          th {
+            width: 100%;
+            text-align: center;
+            background-color: #9fdc95;
+          }
+        }
+        tr { /* Add this rule */
+          display: flex;
+        }
+        th, td { /* Add td */
           width: 50%;
+        }
+        th {
           text-align: right;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          div { /* Add this rule */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
         }
         td {
-          width: 50%;
           background-color: #e9ffe5;
         }
       }
