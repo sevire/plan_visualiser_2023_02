@@ -80,14 +80,21 @@
               <th colspan="2">Layout xxx</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><th>Id</th><td class="visual" id="unique_id_from_plan">xxx</td></tr>
+          <tbody class="plan-activities">
+            <tr class="activity-subheading"><th colspan="2">Plan Specific Details</th></tr>
+            <tr><th>Id</th><td class="plan" id="unique_sticky_activity_id">xxx</td></tr>
             <tr><th>Activity Name</th><td class="plan" id="activity_name">xxx</td></tr>
             <tr><th>Milestone?</th><td class="plan" id="milestone_flag">Yes</td></tr>
+            <tr><th>Start Date</th><td class="plan" id="start_date">Yes</td></tr>
+            <tr><th>End Date</th><td class="plan" id="end_date">Yes</td></tr>
+          </tbody>
+          <tbody class="visual-activities">
+            <tr class="activity-subheading"><th colspan="2">Visual Specific Details</th></tr>
             <tr><th>Swimlane?</th><td class="visual" id="swimlane">xxxxxx</td></tr>
-            <tr><th>Track # (make this long to check ellipsis</th><td class="visual" id="vertical_positioning_value"><input type="number" min="1" value="1" step="1"/></td></tr>
+            <tr><th><div>Track # (make this long to check ellipsis</div></th><td class="visual" id="vertical_positioning_value"><input type="number" min="1" value="1" step="1"/></td></tr>
             <tr><th>Height (tracks)</th><td class="visual" id="height_in_tracks"><input type="number" min="1" value="1" step="1"/></td></tr>
-            <tr><th>Shape?</th><td class="visual" id="shape">xxxxxx</td></tr>
+            <tr><th>Shape?</th><td class="visual" id="plotable_shape">xxxxxx</td></tr>
+            <tr><th>Style?</th><td class="visual" id="plotable_style">xxxxxx</td></tr>
           </tbody>
         </table>
       </form>

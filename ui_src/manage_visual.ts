@@ -33,46 +33,7 @@ export async function createPlanTree() {
 
     // Add event listener for clicking
     activityDiv.addEventListener('click', async function() {
-      // If this element isn't already the current one, then make it the current one.
-      // If it is already the current one, then this click will toggle its inclusion in the visual.
-      if (activityDiv.classList.contains('current')) {
-        console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
-        const inVisual = activityDiv.classList.toggle('in-visual')
-        if (inVisual) {
-          // Means we have just toggled it to in so need to add it
-          await add_to_visual(activity.plan_data.unique_sticky_activity_id)
-          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
-
-          plot_visual()
-
-          // Now it is in the visual and current activity we should select it for edit.
-          select_for_edit(activity.plan_data.unique_sticky_activity_id)
-        } else {
-          // Means we have just toggled it to not in so need to remove it
-          await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
-          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
-
-          plot_visual()
-
-          // As not in visual we can't edit it so need to clear out activity edit panel
-          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
-        }
-      } else {
-        // We have just selected an activity which wasn't already selected so need to change this one to the current
-        // element and, if this activity is in the visual, update the activity panel to details for this activity.
-        // If this activity is not in the visual then we need to clear the activity panel
-        const selected = topLevelElements[0].getElementsByClassName('current')
-        if (selected.length > 0) {
-          selected[0].classList.remove('current');
-        }
-        activityDiv.classList.add('current');
-
-        if (activityDiv.classList.contains('in-visual')) {
-          select_for_edit(activity.plan_data.unique_sticky_activity_id)
-        } else {
-          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
-        }
-      }
+      manage_plan_activity_click(activity, activityDiv, topLevelElements)
     })
 
     if (i < (window as any).plan_activity_data.length - 1) {
@@ -143,6 +104,9 @@ async function remove_from_visual(activity_id: string) {
 }
 
 function get_activity(activity_id:string) {
+  // Find activity in stored list of all activities by iterating through and checking each one.
+  // ToDo: Review the logic of getting activity data as may be a more efficient way of doing it
+
   let found_value: any
   (window as any).plan_activity_data.forEach((activity: any) => {
     if (typeof found_value === 'undefined') {
@@ -161,37 +125,52 @@ function select_for_edit(activity_id:string, clear=false) {
 
   // Populate each element with value for this activity
   const edit_activity_elements = document.querySelectorAll('#layout-activity tbody td')
-  // If clear flag is set we just clear all the values.
   if (clear) {
+    // Clear all the visual related values (because this activity is in the plan but not in the visual).
     (window as any).selected_activity_id = undefined;
     edit_activity_elements.forEach(element => {
-      const key = element.id
-      if (key === "vertical_positioning_value") {
-        console.log("Clearing... element is track - setting input value to 0")
-        const input_element = element.getElementsByTagName('input')[0]
-        input_element.value = "0";
-      } else {
-        element.textContent = '';
+      if (element.classList.contains('visual')) {
+        const key = element.id
+        if (key === "vertical_positioning_value") {
+          console.log("Clearing... element is track - setting input value to 0")
+          const input_element = element.getElementsByTagName('input')[0]
+          input_element.value = "0";
+        } else if (key === "height_in_tracks") {
+          console.log("Element is track height - setting input value to 0")
+          const input_element = element.getElementsByTagName('input')[0]
+          input_element.value = "0";
+        } else {
+          element.textContent = '';
+        }
       }
     });
-  } else {
-    (window as any).selected_activity_id = activity_id;
-    const activity = get_activity(activity_id)
-    console.log("Found html element for activity ", activity_id)
+  }
 
-    // Each element in edit_activity_elements will have an id which corresponds to a key in this activity.
-    edit_activity_elements.forEach(element => {
-      const key = element.id;
+  // Set the values to appropriate plan or activity value.  If clear is set then we are only setting the plan values
+  // For visual activity values - the cell needs to be editable.
 
-      // Some fields are part of the plan data, others part of visual data. Indicated by class of visual or plan.  So
-      // work out which and extract field value for this activity accordingly.
-      let source = undefined
-      if (element.classList.contains('visual')) {
-        source = 'visual';
-      } else if (element.classList.contains('plan')) {
-        source = 'plan';
-      }
+  // Modify stored value of currently selected activity to allow processing of further clicks etc.
+  (window as any).selected_activity_id = activity_id;
 
+  // Find entry for the selected activity in the list.
+  const activity = get_activity(activity_id)
+  console.log("Found entry for activity ", activity_id)
+
+  // Each element in edit_activity_elements will have an id which corresponds to a key in this activity.
+  edit_activity_elements.forEach(element => {
+    const key = element.id;
+
+    // Some fields are part of the plan data, others part of visual data. Indicated by class of visual or plan.  So
+    // work out which and extract field value for this activity accordingly.
+    let source = undefined
+    if (element.classList.contains('visual')) {
+      source = 'visual';
+    } else if (element.classList.contains('plan')) {
+      source = 'plan';
+    }
+
+    // Always update plan values, only update visual values if we are not clearing - otherwise we will have cleared them
+    if (source === "plan" || !clear) {
       let activity_field_val = undefined
       if (source === 'visual') {
         activity_field_val = activity.visual_data[key]
@@ -199,18 +178,77 @@ function select_for_edit(activity_id:string, clear=false) {
         activity_field_val = activity.plan_data[key];
       }
       console.log("Edit activity elements - id = " + key + ", value is " + activity_field_val)
-      // If this is track number then set the value of the spinner, otherwise text content.
+
+      // For certain values we need to tweak the logic to populate the value, either because
+      // - The field is an object which needs further decoding to extract value
+      // - The field is editable so we need to update the input html element value, not the td directly.
+
+      // Track number: Set the value of the spinner
       if (key === "vertical_positioning_value") {
-        console.log("Element is track - setting input value to " + activity_field_val)
+        console.log("Element is track # - setting input value to " + activity_field_val)
         const input_element = element.getElementsByTagName('input')[0]
         input_element.value = activity_field_val;
+      } else if (key === "height_in_tracks") {
+        console.log("Element is track height - setting input value to " + activity_field_val)
+        const input_element = element.getElementsByTagName('input')[0]
+        input_element.value = activity_field_val;
+      } else if (key === "plotable_shape") {
+        console.log("Element is plotable_shape - setting input value to " + activity_field_val)
+        element.textContent = activity_field_val.name;
+      } else if (key === "plotable_style") {
+        console.log("Element is plotable_shape - setting input value to " + activity_field_val)
+        element.textContent = activity_field_val.style_name;
       } else if (key === "swimlane") {
         element.textContent = activity_field_val.swim_lane_name
       } else {
         element.textContent = activity_field_val;
       }
-    });
-  }
+    }
+  });
+
   // Need to redraw as different element needs to be marked as selected
   plot_visual()
+}
+
+async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivElement, topLevelElements: any) {
+      // If this element isn't already the current one, then make it the current one.
+      // If it is already the current one, then this click will toggle its inclusion in the visual.
+      if (activityDiv.classList.contains('current')) {
+        console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
+        const inVisual = activityDiv.classList.toggle('in-visual')
+        if (inVisual) {
+          // Means we have just toggled it to in so need to add it
+          await add_to_visual(activity.plan_data.unique_sticky_activity_id)
+          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+
+          plot_visual()
+
+          // Now it is in the visual and current activity we should select it for edit.
+          select_for_edit(activity.plan_data.unique_sticky_activity_id)
+        } else {
+          // Means we have just toggled it to not in so need to remove it
+          await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
+          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+
+          plot_visual()
+
+          // As not in visual we can't edit it so need to clear out the visual elements and update the plan elements
+          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
+        }
+      } else {
+        // We have just selected an activity which wasn't already selected so need to change this one to the current
+        // element and, if this activity is in the visual, update the activity panel to details for this activity.
+        // If this activity is not in the visual then we need to clear the activity panel
+        const selected = topLevelElements[0].getElementsByClassName('current')
+        if (selected.length > 0) {
+          selected[0].classList.remove('current');
+        }
+        activityDiv.classList.add('current');
+
+        if (activityDiv.classList.contains('in-visual')) {
+          select_for_edit(activity.plan_data.unique_sticky_activity_id)
+        } else {
+          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
+        }
+      }
 }

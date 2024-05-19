@@ -32,13 +32,10 @@ body {
 #top-row-controls #swimlanes table thead {
   background-color: #8fc286;
 }
-#top-row-controls #swimlanes table tbody tr {
-  width: 100%;
-}
-#top-row-controls #swimlanes table tbody tr th {
+#top-row-controls #swimlanes table tbody th {
   text-align: left;
 }
-#top-row-controls #swimlanes table tbody tr th label {
+#top-row-controls #swimlanes table tbody th label {
   line-height: 10px;
   display: inline-block;
   width: 50%;
@@ -75,28 +72,39 @@ body {
 }
 #left-column #layout-activity {
   overflow: scroll;
-  height: 250px;
+  height: 270px;
   background-color: #bee7b7;
 }
 #left-column #layout-activity table {
   font-size: 13px;
   font-family: Arial, sans-serif;
   width: 94%;
-  margin: 0 3%;
+  margin: 0 0;
   padding: 3% 0;
 }
 #left-column #layout-activity table thead {
   background-color: #8fc286;
 }
-#left-column #layout-activity table tbody th {
+#left-column #layout-activity table tbody tr.activity-subheading th {
+  width: 100%;
+  text-align: center;
+  background-color: #9fdc95;
+}
+#left-column #layout-activity table tbody tr { /* Add this rule */
+  display: flex;
+}
+#left-column #layout-activity table tbody th, #left-column #layout-activity table tbody td { /* Add td */
   width: 50%;
+}
+#left-column #layout-activity table tbody th {
   text-align: right;
+}
+#left-column #layout-activity table tbody th div { /* Add this rule */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 #left-column #layout-activity table tbody td {
-  width: 50%;
   background-color: #e9ffe5;
 }
 
