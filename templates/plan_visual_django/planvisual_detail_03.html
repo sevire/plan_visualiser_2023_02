@@ -5,60 +5,14 @@
 {% block main_content %}
 
 <div id="top-row-controls" class="flex-row">
-  <div id="swimlane-data" class="panel">
+  <div id="swimlane_data" class="panel">
       <table>
         <thead>
-          <tr><th colspan="2">Swimlanes</th></tr>
+            <tr>
+                <th colspan="2">Swimlanes</th>
+            </tr>
         </thead>
         <tbody>
-          <tr>
-            <th class="swimlane-name"></th>
-            <td><select id="swimlane-style-0">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class="swimlane-name"><label for="swimlane-style">Swimlane name 1</label></th>
-            <td><select id="swimlane-style">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class="swimlane-name"><label for="swimlane-style-1">Swimlane name 2 - this is a longer one</label></th>
-            <td><select id="swimlane-style-1">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class="swimlane-name"><label for="swimlane-style-2">Swimlane name 3</label></th>
-            <td><select id="swimlane-style-2">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class="swimlane-name"><label for="swimlane-style-3">Swimlane name 4</label></th>
-            <td><select id="swimlane-style-3">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class="swimlane-name"><label for="swimlane-style-4">Swimlane name 5</label></th>
-            <td><select id="swimlane-style-4">
-              <option value="green">Green</option>
-              <option value="yellow">Yellow</option>
-              <option value="red">Red</option>
-            </select></td>
-          </tr>
         </tbody>
       </table>
   </div>
@@ -121,6 +75,7 @@
 <script type="application/javascript">
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
+        // ToDo: Replace JS function with use of additional template block for template specific css
         window.addStylesheetToDOM('/static/plan_visual_django/css/layout-visual-3.css')
         
         // Get data for the visual based upon the id from body element
@@ -133,6 +88,13 @@
         await get_visual_activity_data(window.visual_id)
         const plan_tree = await createPlanTree()
         root_element.appendChild(plan_tree)
+        
+        // Update swimlane panel with swimlanes for this visual in sequence order
+        console.log("Updating swimlane panel...")
+        const swimlane_element = document.getElementById("swimlane_data")
+        await window.update_swimlane_data(swimlane_element, window.visual_id)
+        
+        console.log("Plotting visual")
         window.plot_visual()
   })
 

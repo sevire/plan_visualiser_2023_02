@@ -76,3 +76,14 @@ export async function remove_activity_from_visual(visual_id: number, unique_id: 
 
   console.log(`Status from removing activity from visual is ${response.status}`)
 }
+
+export async function get_swimlane_data(visual_id: number) {
+  // Adds specified plan activity to the visual with supplied id.
+
+  const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
+  const response = await api_get(url_string);
+
+  (window as any).swimlane_data = response.data
+
+  console.log(`Status from removing activity from visual is ${response.status}`)
+}
