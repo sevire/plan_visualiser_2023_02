@@ -17,36 +17,31 @@ body {
 #top-row-controls > div {
   height: 100px;
 }
-#top-row-controls #swimlanes {
+#top-row-controls #swimlane_data {
   overflow: scroll;
   background-color: lightpink;
   flex: 25%;
 }
-#top-row-controls #swimlanes table {
+#top-row-controls #swimlane_data table {
   font-size: 13px;
   font-family: Arial, sans-serif;
-  width: 94%;
-  margin: 0 3%;
+  width: 100%;
+  margin: 0 0;
   padding: 3% 0;
 }
-#top-row-controls #swimlanes table thead {
+#top-row-controls #swimlane_data table thead {
   background-color: #8fc286;
 }
-#top-row-controls #swimlanes table tbody th {
-  text-align: left;
-}
-#top-row-controls #swimlanes table tbody th label {
-  line-height: 10px;
-  display: inline-block;
-  width: 50%;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#top-row-controls #swimlanes table tbody td {
+#top-row-controls #swimlane_data table tbody td {
   width: 50%;
   background-color: #e9ffe5;
+}
+#top-row-controls #swimlane_data table tbody td.arrow {
+  text-align: center;
+  width: 20%;
+}
+#top-row-controls #swimlane_data table tbody td.name {
+  width: 80%;
 }
 #top-row-controls #auto-layout-buttons {
   flex: 50%;

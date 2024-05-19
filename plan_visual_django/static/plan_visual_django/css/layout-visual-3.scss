@@ -36,36 +36,30 @@ body {
   &>div {
     height: 100px;
   }
-  #swimlanes {
+  #swimlane_data {
     overflow: scroll;
     background-color: lightpink;
     flex: 25%;
     table {
       font-size: 13px;
       font-family: Arial, sans-serif;
-      width: 94%;
-      margin: 0 3%;
+      width: 100%;
+      margin: 0 0;
       padding: 3% 0;
       thead {
         background-color: #8fc286;
       }
       tbody {
-        th {
-          text-align: left;
-
-          label {
-            line-height: 10px;
-            display: inline-block;
-            width: 50%;
-            text-align: left;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
         td {
           width: 50%;
           background-color: #e9ffe5;
+          &.arrow {
+            text-align: center;
+            width: 20%;
+          }
+          &.name {
+            width: 80%;
+          }
         }
       }
     }

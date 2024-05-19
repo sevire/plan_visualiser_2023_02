@@ -23,3 +23,4 @@ db.sqlite3-journal
 /ui_src/plot_shapes.js
 /ui_src/visual.js
 /ui_src/utilities.js
+/ui_src/manage_swimlanes.js
