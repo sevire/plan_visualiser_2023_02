@@ -29,6 +29,20 @@ async function api_delete(url_string: string) {
   return axios.delete(base_url + url_string);
 }
 
+export async function api_patch(url_string: string, data: object) {
+  const base_url = "http://localhost:8002"
+  const api_data = JSON.stringify(data)
+  axios.defaults.xsrfCookieName = 'csrftoken'
+  axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+
+  const config = {
+    headers: {
+    'Content-Type': 'application/json'
+   }
+  }
+  return axios.patch(base_url + url_string, api_data, config);
+}
+
 export async function get_plan_activity_data(visual_id: number) {
   // Returns array of activities mirroring the order in the plan.
   // Each activity includes fields from the original uploaded plan, and fields relating to the layout of that activity
@@ -86,4 +100,10 @@ export async function get_swimlane_data(visual_id: number) {
   (window as any).swimlane_data = response.data
 
   console.log(`Status from removing activity from visual is ${response.status}`)
+}
+
+export async function update_swimlane_records(visual_id:number, data:object) {
+  const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
+
+  return await api_patch(url_string, data)
 }

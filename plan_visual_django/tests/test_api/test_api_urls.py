@@ -1,6 +1,11 @@
+import json
 import os
+from unittest import skip
+
 from ddt import ddt, data, unpack
 from django.test import TestCase
+
+from plan_visual_django.models import SwimlaneForVisual
 from plan_visual_django.tests.resources.test_configuration import test_fixtures_folder, test_data_base_folder
 from resources.utilities import generate_test_data_field_stream_multiple_inputs
 
@@ -82,10 +87,15 @@ class TestApiUrls(TestCase):
             #
             # # Requests swimlane information from model for this visual - all swimlanes in sequence order.
             ("GET", "/model/visuals/swimlanes/4/", None, 200),
-            # # ModelVisualSwimlaneListAPI
-            #
-            # # Requests swimlane information from model for this visual - specified swimlane by sequence.
+            # ModelVisualSwimlaneListAPI
+
+            # Requests swimlane information from model for this visual.
             ("GET", "/model/visuals/swimlanes/4/1/", None, 200),
+            # ModelVisualSwimlaneAPI
+
+            # Update specific fields for swimlane record in model for this visual.
+            # Updating sequence numbers so need to change two at once otherwise will break unique constraint.
+            ("PATCH", "/model/visuals/swimlanes/4/", [{"id": 4, "sequence_number": 2},{"id": 5, "sequence_number": 1}], 200),
             # ModelVisualSwimlaneAPI
 
             # Visual information from Canvas Rendering
@@ -128,14 +138,17 @@ class TestApiUrls(TestCase):
     ))
     @unpack
     def test_api_urls(self, http_method, input_url, data, field_name, expected_field_value):
+        http_data = json.dumps(data)
         base_url = "/api/v1"
         url = base_url + input_url
         if http_method == "GET":
             response = self.client.get(url)
         elif http_method == "PUT":
-            response = self.client.put(url, data=data)
+            response = self.client.put(url, data=http_data)
         elif http_method == "POST":
-            response = self.client.post(url, data=data)
+            response = self.client.post(url, data=http_data)
+        elif http_method == "PATCH":
+            response = self.client.patch(url, data=http_data, content_type='application/json')
         else:
             self.fail(f"Unexpected HTTP method {http_method}")
 
@@ -143,3 +156,18 @@ class TestApiUrls(TestCase):
             self.assertEqual(response.status_code, expected_field_value)
         else:
             self.fail(f"Unexpected field name {field_name}")
+
+    def test_update_multiple_sequence_numbers(self):
+        data = json.dumps([{"id": 4, "sequence_number": 2}, {"id": 5, "sequence_number": 1}])
+        response = self.client.patch(path="/api/v1/model/visuals/swimlanes/4/", data=data, content_type='application/json')
+
+        # Check that updates have been made successfully
+        self.assertEqual(200, response.status_code)
+
+        # Check that records have been updated
+        swimlane_4 = SwimlaneForVisual.objects.get(id=4)
+        self.assertEqual(2, swimlane_4.sequence_number)
+
+        swimlane_5 = SwimlaneForVisual.objects.get(id=5)
+        self.assertEqual(1, swimlane_5.sequence_number)
+
