@@ -6,6 +6,29 @@ import {
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 
+async function manage_arrow_click(visual_id:number, swimlane_record: any, direction: "up"|"down") {
+  await update_swimlane_order(visual_id, swimlane_record, "up")
+
+  // Update swimlane panel with swimlanes for this visual in sequence order
+  console.log(`Updating swimlane panel (after moving swimlane ${direction}...`)
+  const swimlane_element = document.getElementById("swimlane_data")
+  await update_swimlane_data(swimlane_element!, visual_id)
+
+  await get_visual_activity_data(visual_id)
+  plot_visual()
+}
+
+export async function add_arrow_to_element(element:HTMLElement, direction: "up"|"down", id:string, visual_id:number, swimlane_record:any) {
+  let arrow = document.createElement('i')
+  arrow.classList.add("fa-solid")
+  arrow.classList.add("fa-circle-chevron-"+direction)
+  arrow.id = id
+  arrow.addEventListener('click', async function() {
+    manage_arrow_click(visual_id, swimlane_record, direction)
+  })
+  element.appendChild(arrow)
+}
+
 export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visual_id: number) {
   await get_swimlane_data(visual_id)
 
@@ -16,60 +39,25 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
   tbody!.innerHTML = "";
   (window as any).swimlane_data.forEach((swimlane_record: any) => {
     // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
-          // Create a new row
-      let row = document.createElement('tr');
+    // Create a new row
+    let row = document.createElement('tr');
+    let arrowCell = document.createElement('td');
+    arrowCell.classList.add("arrow")
 
-      let up_arrow = document.createElement('i')
-      up_arrow.classList.add("fa-solid")
-      up_arrow.classList.add("fa-circle-chevron-up")
-      up_arrow.id = swimlane_record.sequence_number
-      up_arrow.addEventListener('click', async function() {
-        // We want to move this swimlane up.  This means swapping with the one above it.
-        await update_swimlane_order(visual_id, swimlane_record, "up")
+    // ToDo: Correct code to add arrows for swimlane so Id not same for both arrows as this is not legal HTML
+    add_arrow_to_element(arrowCell, "up", swimlane_record.sequence_number, visual_id, swimlane_record)
+    add_arrow_to_element(arrowCell, "down", swimlane_record.sequence_number, visual_id, swimlane_record)
 
-        // Update swimlane panel with swimlanes for this visual in sequence order
-        console.log("Updating swimlane panel (after moving swimlane up...")
-        const swimlane_element = document.getElementById("swimlane_data")
-        await update_swimlane_data(swimlane_element!, visual_id)
+    row.appendChild(arrowCell);
 
-        await get_visual_activity_data(visual_id)
-        plot_visual()
-      })
+    // Create a cell for swimlane name
+    let nameCell = document.createElement('td');
+    nameCell.classList.add("name")
+    nameCell.textContent = swimlane_record.swim_lane_name;
+    row.appendChild(nameCell);
 
-      let down_arrow = document.createElement('i')
-      down_arrow.classList.add("fa-solid")
-      down_arrow.classList.add("fa-circle-chevron-down")
-      down_arrow.id = swimlane_record.sequence_number
-      down_arrow.addEventListener('click', async function() {
-        // We want to move this swimlane down.  This means swapping with the one above it.
-        await update_swimlane_order(visual_id, swimlane_record, "down")
-
-        // Update swimlane panel with swimlanes for this visual in sequence order
-        console.log("Updating swimlane panel (after moving swimlane down...")
-        const swimlane_element = document.getElementById("swimlane_data")
-        await update_swimlane_data(swimlane_element!, visual_id)
-
-        await get_visual_activity_data(visual_id)
-        plot_visual()
-      })
-
-      // Create a cell for arrows
-      let arrowCell = document.createElement('td');
-      arrowCell.classList.add("arrow")
-
-      arrowCell.appendChild(up_arrow)
-      arrowCell.appendChild(down_arrow)
-
-      row.appendChild(arrowCell);
-
-      // Create a cell for swimlane name
-      let nameCell = document.createElement('td');
-      nameCell.classList.add("name")
-      nameCell.textContent = swimlane_record.swim_lane_name;
-      row.appendChild(nameCell);
-
-      // Add row to tbody
-      tbody!.appendChild(row);
+    // Add row to tbody
+    tbody!.appendChild(row);
 
   });
 }

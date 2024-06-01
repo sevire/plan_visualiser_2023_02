@@ -45,7 +45,7 @@
           <tbody class="visual-activities">
             <tr class="activity-subheading"><th colspan="2">Visual Specific Details</th></tr>
             <tr><th>Swimlane?</th><td class="visual" id="swimlane">xxxxxx</td></tr>
-            <tr><th><div>Track # (make this long to check ellipsis</div></th><td class="visual" id="vertical_positioning_value"><input type="number" min="1" value="1" step="1"/></td></tr>
+            <tr><th>Track #</th><td class="visual" id="vertical_positioning_value"></td></tr>
             <tr><th>Height (tracks)</th><td class="visual" id="height_in_tracks"><input type="number" min="1" value="1" step="1"/></td></tr>
             <tr><th>Shape?</th><td class="visual" id="plotable_shape">xxxxxx</td></tr>
             <tr><th>Style?</th><td class="visual" id="plotable_style">xxxxxx</td></tr>
@@ -73,6 +73,7 @@
 </div>
 <script src="{% static 'dist/bundle.js' %}"></script>
 <script type="application/javascript">
+
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
         // ToDo: Replace JS function with use of additional template block for template specific css
@@ -85,7 +86,7 @@
         console.log("About to call window.get_plan_activity_data")
             
         await window.get_plan_activity_data(window.visual_id)
-        await get_visual_activity_data(window.visual_id)
+        await window.get_visual_activity_data(window.visual_id)
         const plan_tree = await createPlanTree()
         root_element.appendChild(plan_tree)
         

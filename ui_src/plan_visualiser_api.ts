@@ -61,15 +61,18 @@ export async function get_visual_activity_data(visual_id: number) {
   // Each activity includes fields from the original uploaded plan, and fields relating to the layout of that activity
   // in the visual, but those fields are only populated if the activity has at some point been in the visual.
   // There is an enabled flag which indicates whether the activity is currently in the visual.
+  console.log(`Requesting activity data for visual ${visual_id}`)
 
   const url_string = `/api/v1/rendered/canvas/visuals/${visual_id}/`
   const response = await api_get(url_string);
 
   if (response.status === HttpStatusCode.NoContent) {
     // No activities in visual so use empty object
+    console.log(`No activity data returned for visual ${visual_id}`);
     (window as any).visual_activity_data = {}
   }
 
+  console.log(`Activity data returned for visual ${visual_id}`);
   (window as any).visual_activity_data = response.data
 }
 
@@ -91,6 +94,13 @@ export async function remove_activity_from_visual(visual_id: number, unique_id: 
   console.log(`Status from removing activity from visual is ${response.status}`)
 }
 
+export async function update_activities(visual_id:number, activity_field_updatas:any) {
+  const url_string = `/api/v1/model/visuals/activities/${visual_id}/`;
+  const response = await api_patch(url_string, activity_field_updatas);
+
+  console.log(`Status from updating activity for visual ${visual_id} is ${response.status}`)
+}
+
 export async function get_swimlane_data(visual_id: number) {
   // Adds specified plan activity to the visual with supplied id.
 
@@ -104,6 +114,12 @@ export async function get_swimlane_data(visual_id: number) {
 
 export async function update_swimlane_records(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
+
+  return await api_patch(url_string, data)
+}
+
+export async function update_visual_activities(visual_id:number, data:object) {
+  const url_string = `/api/v1/model/visuals/activities/${visual_id}/`;
 
   return await api_patch(url_string, data)
 }

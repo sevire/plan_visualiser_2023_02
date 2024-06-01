@@ -3,9 +3,15 @@
 // The edit visual page is purely Ajax driven and each element of the page is updated by calling
 // the API to the Django app to get the data required to populate the page.
 
-import {add_activity_to_visual, get_visual_activity_data, remove_activity_from_visual} from "./plan_visualiser_api";
+import {
+  add_activity_to_visual, get_plan_activity_data,
+  get_swimlane_data,
+  get_visual_activity_data,
+  remove_activity_from_visual, update_visual_activities
+} from "./plan_visualiser_api";
 import {toggle_expansion} from "./manage_plan_panel";
 import {plot_visual} from "./plot_visual";
+import {add_arrow_to_element, update_swimlane_data, update_swimlane_order} from "./manage_swimlanes";
 
 export async function createPlanTree() {
   let topLevelElements = [document.createElement('ul')]
@@ -33,7 +39,7 @@ export async function createPlanTree() {
 
     // Add event listener for clicking
     activityDiv.addEventListener('click', async function() {
-      manage_plan_activity_click(activity, activityDiv, topLevelElements)
+      await manage_plan_activity_click(activity, activityDiv, topLevelElements)
     })
 
     if (i < (window as any).plan_activity_data.length - 1) {
@@ -92,19 +98,19 @@ export async function createPlanTree() {
 async function add_to_visual(activity_id: string) {
   await add_activity_to_visual((window as any).visual_id, activity_id)
   console.log("Added activity to visual: " + activity_id);
-  const activity = get_activity(activity_id)
+  const activity = get_plan_activity(activity_id)
   activity.enabled = true;
 }
 
 async function remove_from_visual(activity_id: string) {
   await remove_activity_from_visual((window as any).visual_id, activity_id)
   console.log("Removed activity from visual: " + activity_id);
-  const activity = get_activity(activity_id)
+  const activity = get_plan_activity(activity_id)
   activity.enabled = false;
 }
 
-function get_activity(activity_id:string) {
-  // Find activity in stored list of all activities by iterating through and checking each one.
+function get_plan_activity(activity_id:string) {
+  // Find activity in stored list of all plan activities by iterating through and checking each one.
   // ToDo: Review the logic of getting activity data as may be a more efficient way of doing it
 
   let found_value: any
@@ -131,11 +137,7 @@ function select_for_edit(activity_id:string, clear=false) {
     edit_activity_elements.forEach(element => {
       if (element.classList.contains('visual')) {
         const key = element.id
-        if (key === "vertical_positioning_value") {
-          console.log("Clearing... element is track - setting input value to 0")
-          const input_element = element.getElementsByTagName('input')[0]
-          input_element.value = "0";
-        } else if (key === "height_in_tracks") {
+      if (key === "height_in_tracks") {
           console.log("Element is track height - setting input value to 0")
           const input_element = element.getElementsByTagName('input')[0]
           input_element.value = "0";
@@ -153,7 +155,7 @@ function select_for_edit(activity_id:string, clear=false) {
   (window as any).selected_activity_id = activity_id;
 
   // Find entry for the selected activity in the list.
-  const activity = get_activity(activity_id)
+  const activity = get_plan_activity(activity_id)
   console.log("Found entry for activity ", activity_id)
 
   // Each element in edit_activity_elements will have an id which corresponds to a key in this activity.
@@ -171,7 +173,7 @@ function select_for_edit(activity_id:string, clear=false) {
 
     // Always update plan values, only update visual values if we are not clearing - otherwise we will have cleared them
     if (source === "plan" || !clear) {
-      let activity_field_val = undefined
+      let activity_field_val
       if (source === 'visual') {
         activity_field_val = activity.visual_data[key]
       } else {
@@ -185,9 +187,46 @@ function select_for_edit(activity_id:string, clear=false) {
 
       // Track number: Set the value of the spinner
       if (key === "vertical_positioning_value") {
-        console.log("Element is track # - setting input value to " + activity_field_val)
-        const input_element = element.getElementsByTagName('input')[0]
-        input_element.value = activity_field_val;
+        // Start by clearing the element.
+        element.textContent = '';
+
+        // Add up and down arrows to the td element and add click event handler which updates track value within current swimlane.
+
+        let direction: string
+        for (let i = 0; i < 2; i++) {
+          // Not using variables for up or down as when accessed within the callback closure the current
+          // value is used not the value at the point of creating the event handler.
+          // ToDo: Find best practice way of 'freezing' the value of a variable when creating a closure.
+          if (i === 0) {
+            let arrow = document.createElement('i')
+            arrow.classList.add("fa-solid")
+            arrow.classList.add("fa-circle-chevron-up")
+            arrow.id = `${activity.visual_data.unique_id_from_plan}-[up]`
+            arrow.addEventListener('click', async function () {
+              console.log(`Track number up clicked`)
+              console.log(`Activity is ${activity}`)
+              await update_activity_track(activity.visual_data.unique_id_from_plan, "up")
+              await get_plan_activity_data((window as any).visual_id)
+              await get_visual_activity_data((window as any).visual_id)
+              plot_visual()
+          })
+          element.appendChild(arrow)
+          } else {
+            let arrow = document.createElement('i')
+            arrow.classList.add("fa-solid")
+            arrow.classList.add("fa-circle-chevron-down")
+            arrow.id = `${activity.visual_data.unique_id_from_plan}-[down]`
+            arrow.addEventListener('click', async function () {
+              console.log(`Track number down clicked`)
+              console.log(`Activity is ${activity}`)
+              await update_activity_track(activity.visual_data.unique_id_from_plan, "down")
+              await get_plan_activity_data((window as any).visual_id)
+              await get_visual_activity_data((window as any).visual_id)
+              plot_visual()
+          })
+          element.appendChild(arrow)          }
+
+        }
       } else if (key === "height_in_tracks") {
         console.log("Element is track height - setting input value to " + activity_field_val)
         const input_element = element.getElementsByTagName('input')[0]
@@ -251,4 +290,25 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
           select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
         }
       }
+}
+
+export async function update_activity_track(activity_unique_id: any, direction:string) {
+  // Need to get activity from global data - to ensure we get latest version.
+  const activity = get_plan_activity(activity_unique_id)
+
+  console.log(`update_activity_data: activity=${activity}, direction=${direction}`)
+  console.log(`update_activity_data: activity.visual_data=${activity.visual_data}`)
+  console.log(`update_activity_data: activity.visual_data.id=${activity.visual_data.id}`)
+
+  const delta = direction === "down" ? 1 : (direction === "up" ? -1 : 0);
+  console.log(`delta: ${delta}`)
+  const new_vertical_position = activity.visual_data.vertical_positioning_value + delta
+  console.log(`new vertical value: ${new_vertical_position}`)
+  const data = [
+    {
+      id: activity.visual_data.id,
+      vertical_positioning_value: new_vertical_position
+    }
+  ]
+  await update_visual_activities(activity.visual_data.visual.id, data)
 }
