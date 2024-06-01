@@ -1,5 +1,7 @@
+from django.db import transaction
 from django.db.models import Max
 from django.http import JsonResponse
+from django.views import View
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -8,6 +10,16 @@ from api.v1.model.visual.activity.serializer import ModelVisualActivityListSeria
 from plan_visual_django.models import PlanVisual, VisualActivity, SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, \
     DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
     DEFAULT_TEXT_HORIZONTAL_ALIGNMENT
+
+
+class VisualActivityViewDispatcher(View):
+    def get(self, request, *args, **kwargs):
+        view = ModelVisualActivityListAPI.as_view()
+        return view(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        view = ModelVisualActivityUpdateAPI.as_view()
+        return view(request, *args, **kwargs)
 
 
 class ModelVisualActivityListAPI(ListAPIView):
@@ -21,6 +33,25 @@ class ModelVisualActivityListAPI(ListAPIView):
         response = serializer.data
 
         return JsonResponse(response, safe=False)
+
+
+class ModelVisualActivityUpdateAPI(APIView):
+    def patch(self, request, visual_id=None, **kwargs):
+        visual_activity_data = request.data
+
+        with transaction.atomic():
+            for activity_data in visual_activity_data:
+                try:
+                    instance = VisualActivity.objects.get(id=activity_data['id'])
+                    if instance.visual_id != visual_id:
+                        return Response({"error": f"Supplied activity id {activity_data['id']} does not belong to supplied visual"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    serializer_for_current_record = ModelVisualActivitySerialiser(instance, data=activity_data, partial=True)
+                    if serializer_for_current_record.is_valid(raise_exception=True):
+                        serializer_for_current_record.save()
+                except VisualActivity.DoesNotExist:
+                    return Response({"error": f"Object with id={activity_data['id']} not found"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
 
 
 class ModelVisualActivityAPI(APIView):

@@ -96,7 +96,11 @@ class TestApiUrls(TestCase):
             # Update specific fields for swimlane record in model for this visual.
             # Updating sequence numbers so need to change two at once otherwise will break unique constraint.
             ("PATCH", "/model/visuals/swimlanes/4/", [{"id": 4, "sequence_number": 2},{"id": 5, "sequence_number": 1}], 200),
-            # ModelVisualSwimlaneAPI
+            # XXXXXXXXX
+
+            # Update one or more fields on single visual activity
+            ("PATCH", "/model/visuals/activities/4/", [{"id": 3, "vertical_positioning_value": 9}], 200),
+            # XXXXXXXXX
 
             # Visual information from Canvas Rendering
 

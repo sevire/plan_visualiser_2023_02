@@ -1,5 +1,5 @@
 import {initialise_canvas} from "./drawing";
-import {checkKey, get_activities_from_server} from "./visual";
+import {checkKey} from "./visual";
 import {get_plan_activity_data, get_visual_activity_data} from "./plan_visualiser_api";
 import {createPlanTree} from "./manage_visual";
 import {plot_visual} from "./plot_visual";
