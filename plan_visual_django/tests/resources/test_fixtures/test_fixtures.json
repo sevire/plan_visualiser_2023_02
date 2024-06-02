@@ -1194,7 +1194,7 @@
       "plotable_shape": 1,
       "vertical_positioning_type": "TRACK",
       "vertical_positioning_value": 10,
-      "height_in_tracks": 1,
+      "height_in_tracks": 2,
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",

@@ -137,13 +137,7 @@ function select_for_edit(activity_id:string, clear=false) {
     edit_activity_elements.forEach(element => {
       if (element.classList.contains('visual')) {
         const key = element.id
-      if (key === "height_in_tracks") {
-          console.log("Element is track height - setting input value to 0")
-          const input_element = element.getElementsByTagName('input')[0]
-          input_element.value = "0";
-        } else {
-          element.textContent = '';
-        }
+        element.textContent = '';
       }
     });
   }
@@ -209,7 +203,7 @@ function select_for_edit(activity_id:string, clear=false) {
               await get_plan_activity_data((window as any).visual_id)
               await get_visual_activity_data((window as any).visual_id)
               plot_visual()
-          })
+            })
           element.appendChild(arrow)
           } else {
             let arrow = document.createElement('i')
@@ -223,15 +217,51 @@ function select_for_edit(activity_id:string, clear=false) {
               await get_plan_activity_data((window as any).visual_id)
               await get_visual_activity_data((window as any).visual_id)
               plot_visual()
-          })
-          element.appendChild(arrow)          }
-
+            })
+          element.appendChild(arrow)
+          }
         }
       } else if (key === "height_in_tracks") {
-        console.log("Element is track height - setting input value to " + activity_field_val)
-        const input_element = element.getElementsByTagName('input')[0]
-        input_element.value = activity_field_val;
-      } else if (key === "plotable_shape") {
+        // Start by clearing the element.
+        element.textContent = '';
+
+        // Add up and down arrows to the td element and add click event handler which updates track height within current swimlane.
+
+        let direction: string
+        for (let i = 0; i < 2; i++) {
+          // Not using variables for up or down as when accessed within the callback closure the current
+          // value is used not the value at the point of creating the event handler.
+          // ToDo: Find best practice way of 'freezing' the value of a variable when creating a closure.
+          if (i === 0) {
+            let arrow = document.createElement('i')
+            arrow.classList.add("fa-solid")
+            arrow.classList.add("fa-circle-chevron-up")
+            arrow.id = `${activity.visual_data.unique_id_from_plan}-[up]`
+            arrow.addEventListener('click', async function () {
+              console.log(`Track height increase clicked`)
+              console.log(`Activity is ${activity}`)
+              await update_activity_track_height(activity.visual_data.unique_id_from_plan, "increase")
+              await get_plan_activity_data((window as any).visual_id)
+              await get_visual_activity_data((window as any).visual_id)
+              plot_visual()
+            })
+          element.appendChild(arrow)
+          } else {
+            let arrow = document.createElement('i')
+            arrow.classList.add("fa-solid")
+            arrow.classList.add("fa-circle-chevron-down")
+            arrow.id = `${activity.visual_data.unique_id_from_plan}-[down]`
+            arrow.addEventListener('click', async function () {
+              console.log(`Track height decrease clicked`)
+              console.log(`Activity is ${activity}`)
+              await update_activity_track_height(activity.visual_data.unique_id_from_plan, "decrease")
+              await get_plan_activity_data((window as any).visual_id)
+              await get_visual_activity_data((window as any).visual_id)
+              plot_visual()
+            })
+          element.appendChild(arrow)
+          }
+        }      } else if (key === "plotable_shape") {
         console.log("Element is plotable_shape - setting input value to " + activity_field_val)
         element.textContent = activity_field_val.name;
       } else if (key === "plotable_style") {
@@ -296,18 +326,42 @@ export async function update_activity_track(activity_unique_id: any, direction:s
   // Need to get activity from global data - to ensure we get latest version.
   const activity = get_plan_activity(activity_unique_id)
 
-  console.log(`update_activity_data: activity=${activity}, direction=${direction}`)
-  console.log(`update_activity_data: activity.visual_data=${activity.visual_data}`)
-  console.log(`update_activity_data: activity.visual_data.id=${activity.visual_data.id}`)
+  console.log(`update_activity_track: activity=${activity}, direction=${direction}`)
+  console.log(`update_activity_track: activity.visual_data=${activity.visual_data}`)
+  console.log(`update_activity_track: activity.visual_data.id=${activity.visual_data.id}`)
 
   const delta = direction === "down" ? 1 : (direction === "up" ? -1 : 0);
   console.log(`delta: ${delta}`)
-  const new_vertical_position = activity.visual_data.vertical_positioning_value + delta
+
+  // Calculate new position - but don't allow track number to get below 1
+  const new_vertical_position = Math.max(activity.visual_data.vertical_positioning_value + delta, 1)
   console.log(`new vertical value: ${new_vertical_position}`)
   const data = [
     {
       id: activity.visual_data.id,
       vertical_positioning_value: new_vertical_position
+    }
+  ]
+  await update_visual_activities(activity.visual_data.visual.id, data)
+}
+
+export async function update_activity_track_height(activity_unique_id:string, direction:string) {
+  // Need to get activity from global data - to ensure we get latest version.
+  const activity = get_plan_activity(activity_unique_id)
+
+  console.log(`update_activity_track_height: activity=${activity}, direction=${direction}`)
+  console.log(`update_activity_track_height: activity.visual_data=${activity.visual_data}`)
+  console.log(`update_activity_track_height: activity.visual_data.id=${activity.visual_data.id}`)
+
+  const delta = direction === "increase" ? 1 : (direction === "decrease" ? -1 : 0);
+  console.log(`delta: ${delta}`)
+  // Calculate new height, but can't be less than 1
+  const new_track_height = Math.max(activity.visual_data.height_in_tracks + delta, 1)
+  console.log(`new vertical value: ${new_track_height}`)
+  const data = [
+    {
+      id: activity.visual_data.id,
+      height_in_tracks: new_track_height
     }
   ]
   await update_visual_activities(activity.visual_data.visual.id, data)

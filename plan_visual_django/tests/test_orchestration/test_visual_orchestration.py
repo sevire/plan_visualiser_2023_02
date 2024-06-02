@@ -37,11 +37,11 @@ class TestVisualOrchestration(TestCase):
             (4, "timelines", 23, True, 25, (31+31+30+31+30+31)*1000/275, (31+29+31)*1000/275, 15),  # Jan-Mar (31)
 
             (4, "swimlanes", 1, True, 25+15, 0*1000/275, 1000, 5*20 + 4*4),  # Swimlane 1(id=4), 5 tracks, track height 20, track gap 4
-            (4, "swimlanes", 3, True, 25+15+5+(5*20+4*4), 0*1000/275, 1000, (10*20+9*4)),  # Swimlane 2(id=5), 10 tracks, track height 20, track gap 4, swimlane gap 5
+            (4, "swimlanes", 3, True, 25+15+5+(5*20+4*4), 0*1000/275, 1000, ((9+2)*20+(9+1)*4)),  # Swimlane 2(id=5), 10 tracks (activity in track 10 has height of 2 tracks), track height 20, track gap 4, swimlane gap 5
 
             (4, "visual_activities", 1, True, 25+15+(4*20+4*4), (31+31+0.5)*1000/275-10/2, 10, 20),  # ID-026, S1, 2023-09-01, milestone, 'Project Start',
             (4, "visual_activities", 3, True, 25+15+ 5*20+4*4 + 5, (31+31+30+31+30+31+30+0.5)*1000/275-10/2, 10, 20),  # ID-025, 2024-01-31,S2:2, Milestone 6, milestone
-            (4, "visual_activities", 5, True, 25+15+(5*20+4*4)+5+9*20+9*4, (31+31+30+31+30+31+17)*1000/275, (31-18+1)*1000/275, 20),  # ID-024, S2:10, 2024-01-18:2024-01-31, Activity 24
+            (4, "visual_activities", 5, True, 25+15+(5*20+4*4)+5+9*20+9*4, (31+31+30+31+30+31+17)*1000/275, (31-18+1)*1000/275, 20+4+20),  # ID-024, S2:10, 2024-01-18:2024-01-31, Activity 24
         ],
     ))
     @unpack
@@ -88,7 +88,7 @@ class TestVisualOrchestration(TestCase):
 
             (4, "visual_activities", 2, True, "Project Start", (31+31+.5)*(1000/275)-5-5, 25+15+4*20+4*4+0.5*20, "right", "middle", "rgb(186,186,186)"), # 2023-09-01, milestone, LFLOW
             (4, "visual_activities", 4, True, "Milestone 6", (31+31+30+31+30+31+30+0.5)*1000/275-5-5,  40 + 5*20+4*4 + 5 + 20/2, "right", "middle", "rgb(186,186,186)"),
-            (4, "visual_activities", 6, True, "Activity 24", (31+31+30+31+30+31+31)*1000/275-5, 25+15+5*20+4*4+5+9*20+9*4+20/2, "right", "middle", "rgb(186,186,186)"),
+            (4, "visual_activities", 6, True, "Activity 24", (31+31+30+31+30+31+31)*1000/275-5, 25+15+5*20+4*4+5+9*20+9*4+(20+20+4)/2, "right", "middle", "rgb(186,186,186)"),
         ],
     ))
     @unpack
