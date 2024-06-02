@@ -730,12 +730,14 @@ class SwimlaneForVisual(models.Model):
         Usually we won't include activities which are disabled as they won't show up on the visual but the
         include disabled flag allows this to be overridden.
 
+        Need to allow for the fact that an activity can cover more than one track.
+
         :param include_disabled:
         :return:
         """
 
         if self.get_visual_activities().count() > 0:
-            max_value = self.get_visual_activities(include_disabled=include_disabled).aggregate(Max('vertical_positioning_value'))['vertical_positioning_value__max']
+            max_value = max([activity.get_highest_track_number() for activity in self.get_visual_activities()])
             return max_value
         else:
             return 0
@@ -900,6 +902,14 @@ class VisualActivity(models.Model):
 
     def get_vertical_alignment(self) -> VerticalAlignment:
         return self.VerticalAlignment(self.text_vertical_alignment)
+
+    def get_highest_track_number(self) -> float:
+        """
+        As each activity can cover more than one track, we need to calculate the maximum track covered by each activity
+        so that we can calculate the height of a swimlane correctly.
+        :return:
+        """
+        return self.vertical_positioning_value + self.height_in_tracks - 1
 
     def get_plotable(self):
         """
