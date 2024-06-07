@@ -5,13 +5,13 @@
 
 import {
   add_activity_to_visual, get_plan_activity_data,
-  get_swimlane_data,
   get_visual_activity_data,
   remove_activity_from_visual, update_visual_activities
 } from "./plan_visualiser_api";
 import {toggle_expansion} from "./manage_plan_panel";
 import {plot_visual} from "./plot_visual";
-import {add_arrow_to_element, update_swimlane_data, update_swimlane_order} from "./manage_swimlanes";
+import {Dropdown} from "./widgets";
+import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 
 export async function createPlanTree() {
   let topLevelElements = [document.createElement('ul')]
@@ -109,7 +109,7 @@ async function remove_from_visual(activity_id: string) {
   activity.enabled = false;
 }
 
-function get_plan_activity(activity_id:string) {
+export function get_plan_activity(activity_id:string) {
   // Find activity in stored list of all plan activities by iterating through and checking each one.
   // ToDo: Review the logic of getting activity data as may be a more efficient way of doing it
 
@@ -261,14 +261,19 @@ function select_for_edit(activity_id:string, clear=false) {
             })
           element.appendChild(arrow)
           }
-        }      } else if (key === "plotable_shape") {
+        }
+      } else if (key === "plotable_shape") {
         console.log("Element is plotable_shape - setting input value to " + activity_field_val)
         element.textContent = activity_field_val.name;
       } else if (key === "plotable_style") {
         console.log("Element is plotable_shape - setting input value to " + activity_field_val)
         element.textContent = activity_field_val.style_name;
       } else if (key === "swimlane") {
-        element.textContent = activity_field_val.swim_lane_name
+        // Start by clearing the element before updating it for this activity.
+        element.textContent = '';
+
+        let swimlane_names: [[string, number]] = (window as any).swimlane_data.map((obj:any) => [obj.swim_lane_name, obj.id]);
+        let dropdown = new Dropdown("swimlane", activity.visual_data.unique_id_from_plan, swimlane_names, update_swimlane_for_activity_handler)
       } else {
         element.textContent = activity_field_val;
       }

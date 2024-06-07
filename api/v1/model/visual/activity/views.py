@@ -6,7 +6,8 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser
+from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser, \
+    ModelVisualActivitySerialiserForUpdate
 from plan_visual_django.models import PlanVisual, VisualActivity, SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, \
     DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
     DEFAULT_TEXT_HORIZONTAL_ALIGNMENT
@@ -37,16 +38,31 @@ class ModelVisualActivityListAPI(ListAPIView):
 
 class ModelVisualActivityUpdateAPI(APIView):
     def patch(self, request, visual_id=None, **kwargs):
+        """
+        For patching or updating the activity from the API I am not expecting to update related records so
+        I don't need to set the depth to anything.  Specifically, for the use case where we are just updating the
+        swimlane (a common use case) I only want to update the foreign key.  So I have created a different serializer
+        no depth defined for updating.
+
+        It's possible that I will encounter further use cases where I need to be more sophisticated with
+        what I need to do for foreign key relationships when updating.
+
+        :param request:
+        :param visual_id:
+        :param kwargs:
+        :return:
+        """
         visual_activity_data = request.data
 
         with transaction.atomic():
             for activity_data in visual_activity_data:
                 try:
                     instance = VisualActivity.objects.get(id=activity_data['id'])
+
                     if instance.visual_id != visual_id:
                         return Response({"error": f"Supplied activity id {activity_data['id']} does not belong to supplied visual"},
                                         status=status.HTTP_400_BAD_REQUEST)
-                    serializer_for_current_record = ModelVisualActivitySerialiser(instance, data=activity_data, partial=True)
+                    serializer_for_current_record = ModelVisualActivitySerialiserForUpdate(instance, data=activity_data, partial=True)
                     if serializer_for_current_record.is_valid(raise_exception=True):
                         serializer_for_current_record.save()
                 except VisualActivity.DoesNotExist:
