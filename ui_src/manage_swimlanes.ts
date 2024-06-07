@@ -1,10 +1,10 @@
 import {
   get_swimlane_data,
   get_visual_activity_data,
-  remove_activity_from_visual,
-  update_swimlane_records
+  update_swimlane_records, update_visual_activities
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
+import {get_plan_activity} from "./manage_visual";
 
 async function manage_arrow_click(visual_id:number, swimlane_record: any, direction: "up"|"down") {
   await update_swimlane_order(visual_id, swimlane_record, "up")
@@ -107,4 +107,19 @@ export async function update_swimlane_order(visual_id: number, this_swimlane_obj
     }
   }
   await update_swimlane_records(visual_id, swimlane_update_object)
+  }
+
+  export async function update_swimlane_for_activity_handler(unique_id:string, swimlane_id:number) {
+    // This is a handler function which will be passed to the Dropdown class for the swimlane dropdown in the activity
+    // panel.  It will update the swimlane for the indicated activity to the one with the swimlane name supplied.
+    const activity = get_plan_activity(unique_id)
+    console.log(`Updating swimlane id to ${swimlane_id}`)
+
+    const data = [
+    {
+      id: activity.visual_data.id,
+      swimlane: swimlane_id
+    }
+  ]
+  await update_visual_activities(activity.visual_data.visual.id, data)
   }
