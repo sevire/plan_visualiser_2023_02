@@ -13,6 +13,7 @@ import {plot_visual} from "./plot_visual";
 import {Dropdown} from "./widgets";
 import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
+import {update_shape_for_activity_handler} from "./manage_shapes";
 
 export async function createPlanTree() {
   let topLevelElements = [document.createElement('ul')]
@@ -264,8 +265,11 @@ function select_for_edit(activity_id:string, clear=false) {
           }
         }
       } else if (key === "plotable_shape") {
-        console.log("Element is plotable_shape - setting input value to " + activity_field_val)
-        element.textContent = activity_field_val.name;
+        // Start by clearing the element before updating it for this activity.
+        element.textContent = '';
+
+        let shape_names: [[string, number]] = (window as any).shape_data.map((obj:any) => [obj.name, obj.id]);
+        let dropdown = new Dropdown("plotable_shape", activity.visual_data.unique_id_from_plan, shape_names, update_shape_for_activity_handler)
       } else if (key === "plotable_style") {
         // Start by clearing the element before updating it for this activity.
         element.textContent = '';

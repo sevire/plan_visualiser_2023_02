@@ -122,4 +122,10 @@ export async function get_style_records() {
   const url_string = "/api/v1/model/visuals/styles/";
 
   return await api_get(url_string)
+
+}export async function get_shape_records() {
+  console.log("Getting shape records...")
+  const url_string = "/api/v1/model/visuals/shapes/";
+
+  return await api_get(url_string)
 }
