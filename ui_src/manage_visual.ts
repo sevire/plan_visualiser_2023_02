@@ -12,12 +12,13 @@ import {toggle_expansion} from "./manage_plan_panel";
 import {plot_visual} from "./plot_visual";
 import {Dropdown} from "./widgets";
 import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
+import {update_style_for_activity_handler} from "./manage_styles";
 
 export async function createPlanTree() {
   let topLevelElements = [document.createElement('ul')]
   topLevelElements[0].setAttribute("id", "plan-activities");
 
-  // We want lowest level to be 1 as various things depend on it (including color-coding)
+  // We want the lowest level to be 1 as various things depend on it (including color-coding)
   const level_adjust = 1 - (window as any).plan_activity_data[0].plan_data.level
   let previousLevel = 1;
 
@@ -266,8 +267,11 @@ function select_for_edit(activity_id:string, clear=false) {
         console.log("Element is plotable_shape - setting input value to " + activity_field_val)
         element.textContent = activity_field_val.name;
       } else if (key === "plotable_style") {
-        console.log("Element is plotable_shape - setting input value to " + activity_field_val)
-        element.textContent = activity_field_val.style_name;
+        // Start by clearing the element before updating it for this activity.
+        element.textContent = '';
+
+        let style_names: [[string, number]] = (window as any).style_data.map((obj:any) => [obj.style_name, obj.id]);
+        let dropdown = new Dropdown("plotable_style", activity.visual_data.unique_id_from_plan, style_names, update_style_for_activity_handler)
       } else if (key === "swimlane") {
         // Start by clearing the element before updating it for this activity.
         element.textContent = '';

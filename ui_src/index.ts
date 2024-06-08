@@ -1,6 +1,6 @@
 import {initialise_canvas} from "./drawing";
 import {checkKey} from "./visual";
-import {get_plan_activity_data, get_visual_activity_data} from "./plan_visualiser_api";
+import {get_plan_activity_data, get_style_records, get_visual_activity_data} from "./plan_visualiser_api";
 import {createPlanTree} from "./manage_visual";
 import {plot_visual} from "./plot_visual";
 import {addStylesheetToDOM} from "./utilities";
@@ -18,3 +18,4 @@ console.log("Executing index.ts");
 (window as any).initialise_canvas = initialise_canvas;
 (window as any).plot_visual = plot_visual;
 (window as any).update_swimlane_data = update_swimlane_data;
+(window as any).get_style_records = get_style_records;
