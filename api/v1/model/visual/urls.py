@@ -7,6 +7,7 @@ urlpatterns = [
     path('timelines/', include('api.v1.model.visual.timeline.urls')),
     path('activities/', include('api.v1.model.visual.activity.urls')),
     path('styles/', include('api.v1.model.visual.plotable_style.urls')),
+    path('shapes/', include('api.v1.model.visual.plotable_shape.urls')),
 
 
     path('<int:plan_id>/', ModelVisualListAPI.as_view()),
