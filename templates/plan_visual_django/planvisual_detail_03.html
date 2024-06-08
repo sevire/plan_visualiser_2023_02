@@ -95,6 +95,11 @@
         const swimlane_element = document.getElementById("swimlane_data")
         await window.update_swimlane_data(swimlane_element, window.visual_id)
         
+        console.log("About to retrieve style data")
+        // Get all plotable styles available to this user
+        response = await get_style_records()
+        window.style_data = response.data
+        
         console.log("Plotting visual")
         window.plot_visual()
   })

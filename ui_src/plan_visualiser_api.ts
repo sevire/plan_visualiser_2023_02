@@ -116,3 +116,10 @@ export async function update_visual_activities(visual_id:number, data:object) {
 
   return await api_patch(url_string, data)
 }
+
+export async function get_style_records() {
+  console.log("Getting style records...")
+  const url_string = "/api/v1/model/visuals/styles/";
+
+  return await api_get(url_string)
+}

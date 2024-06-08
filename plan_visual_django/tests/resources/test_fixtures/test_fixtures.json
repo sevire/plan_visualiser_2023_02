@@ -938,6 +938,34 @@
   },
   {
     "model": "plan_visual_django.plotablestyle",
+    "pk": 7,
+    "fields": {
+      "user": 7,
+      "style_name": "app_user_style_01",
+      "fill_color": 1,
+      "line_color": 2,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 8,
+    "fields": {
+      "user": 7,
+      "style_name": "app_user_style_02",
+      "fill_color": 1,
+      "line_color": 2,
+      "font_color": 21,
+      "line_thickness": 3,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
     "pk": 1,
     "fields": {
       "user": 1,
