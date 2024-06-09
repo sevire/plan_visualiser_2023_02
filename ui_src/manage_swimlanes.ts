@@ -7,7 +7,7 @@ import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
 
 async function manage_arrow_click(visual_id:number, swimlane_record: any, direction: "up"|"down") {
-  await update_swimlane_order(visual_id, swimlane_record, "up")
+  await update_swimlane_order(visual_id, swimlane_record, direction)
 
   // Update swimlane panel with swimlanes for this visual in sequence order
   console.log(`Updating swimlane panel (after moving swimlane ${direction}...`)

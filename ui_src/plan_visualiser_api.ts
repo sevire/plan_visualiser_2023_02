@@ -95,18 +95,27 @@ export async function remove_activity_from_visual(visual_id: number, unique_id: 
 }
 
 export async function get_swimlane_data(visual_id: number) {
-  // Adds specified plan activity to the visual with supplied id.
-
   const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
   const response = await api_get(url_string);
 
   (window as any).swimlane_data = response.data
+}
 
-  console.log(`Status from removing activity from visual is ${response.status}`)
+export async function get_timeline_data(visual_id: number) {
+  const url_string = `/api/v1/model/visuals/timelines/${visual_id}/`;
+  const response = await api_get(url_string);
+
+  (window as any).timeline_data = response.data
 }
 
 export async function update_swimlane_records(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
+
+  return await api_patch(url_string, data)
+}
+
+export async function update_timeline_records(visual_id:number, data:object) {
+  const url_string = `/api/v1/model/visuals/timelines/${visual_id}/`;
 
   return await api_patch(url_string, data)
 }
