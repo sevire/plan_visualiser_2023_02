@@ -47,7 +47,7 @@ body {
   flex: 50%;
   background-color: darksalmon;
 }
-#top-row-controls #timeline-labels {
+#top-row-controls #timeline_data {
   background-color: palegoldenrod;
   flex: 25%;
 }

@@ -5,7 +5,7 @@ from unittest import skip
 from ddt import ddt, data, unpack
 from django.test import TestCase
 
-from plan_visual_django.models import SwimlaneForVisual
+from plan_visual_django.models import SwimlaneForVisual, TimelineForVisual
 from plan_visual_django.tests.resources.test_configuration import test_fixtures_folder, test_data_base_folder
 from resources.utilities import generate_test_data_field_stream_multiple_inputs
 
@@ -161,7 +161,7 @@ class TestApiUrls(TestCase):
         else:
             self.fail(f"Unexpected field name {field_name}")
 
-    def test_update_multiple_sequence_numbers(self):
+    def test_update_multiple_sequence_swimlane_numbers(self):
         data = json.dumps([{"id": 4, "sequence_number": 2}, {"id": 5, "sequence_number": 1}])
         response = self.client.patch(path="/api/v1/model/visuals/swimlanes/4/", data=data, content_type='application/json')
 
@@ -174,4 +174,18 @@ class TestApiUrls(TestCase):
 
         swimlane_5 = SwimlaneForVisual.objects.get(id=5)
         self.assertEqual(1, swimlane_5.sequence_number)
+
+    def test_update_multiple_timeline_sequence_numbers(self):
+        data = json.dumps([{"id": 4, "sequence_number": 2}, {"id": 5, "sequence_number": 1}])
+        response = self.client.patch(path="/api/v1/model/visuals/timelines/4/", data=data, content_type='application/json')
+
+        # Check that updates have been made successfully
+        self.assertEqual(200, response.status_code)
+
+        # Check that records have been updated
+        timeline_4 = TimelineForVisual.objects.get(id=4)
+        self.assertEqual(2, timeline_4.sequence_number)
+
+        timeline_5 = TimelineForVisual.objects.get(id=5)
+        self.assertEqual(1, timeline_5.sequence_number)
 

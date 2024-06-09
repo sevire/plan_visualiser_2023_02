@@ -19,7 +19,17 @@
 
   <div id="auto-layout-buttons" class="panel"></div>
 
-  <div id="timeline-labels" class="panel">
+  <div id="timeline_data" class="panel">
+      <table>
+        <thead>
+            <tr>
+                <th colspan="2">Timelines</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+
   </div>
 </div>
 <div class="flex-row">
@@ -94,6 +104,11 @@
         console.log("Updating swimlane panel...")
         const swimlane_element = document.getElementById("swimlane_data")
         await window.update_swimlane_data(swimlane_element, window.visual_id)
+        
+        // Update timeline panel with timelines for this visual in sequence order
+        console.log("Updating timeline panel...")
+        const timeline_element = document.getElementById("timeline_data")
+        await window.update_timeline_data(timeline_element, window.visual_id)
         
         console.log("About to retrieve style data")
         // Get all plotable styles available to this user

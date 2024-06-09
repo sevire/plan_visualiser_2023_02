@@ -427,6 +427,7 @@ def manage_timelines_for_visual(request, visual_id):
             "timeline_name",
             "timeline_height",
             "plotable_style",
+            "sequence_number",
         ),
         extra=1,
         can_delete=True,

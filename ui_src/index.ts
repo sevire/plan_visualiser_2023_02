@@ -10,6 +10,7 @@ import {createPlanTree} from "./manage_visual";
 import {plot_visual} from "./plot_visual";
 import {addStylesheetToDOM} from "./utilities";
 import {update_swimlane_data} from "./manage_swimlanes";
+import {update_timeline_data} from "./manage_timelines";
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Loaded zzzz....")
@@ -23,5 +24,6 @@ console.log("Executing index.ts");
 (window as any).initialise_canvas = initialise_canvas;
 (window as any).plot_visual = plot_visual;
 (window as any).update_swimlane_data = update_swimlane_data;
+(window as any).update_timeline_data = update_timeline_data;
 (window as any).get_style_records = get_style_records;
 (window as any).get_shape_records = get_shape_records;
