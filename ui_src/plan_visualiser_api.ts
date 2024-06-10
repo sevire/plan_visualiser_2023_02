@@ -21,7 +21,7 @@ async function api_put(url_string: string, data: undefined | object) {
 }
 
 async function api_delete(url_string: string) {
-  const base_url = "http://localhost:8002"
+  const base_url = ""
   axios.defaults.xsrfCookieName = 'csrftoken'
   axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
@@ -30,7 +30,7 @@ async function api_delete(url_string: string) {
 }
 
 export async function api_patch(url_string: string, data: object) {
-  const base_url = "http://localhost:8002"
+  const base_url = ""
   const api_data = JSON.stringify(data)
   axios.defaults.xsrfCookieName = 'csrftoken'
   axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
