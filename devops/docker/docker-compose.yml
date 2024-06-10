@@ -2,10 +2,12 @@ version: '3.8'
 
 services:
   django_gunicorn:
-    build: gunicorn
+    build:
+      context: ../../
+      dockerfile: devops/docker/gunicorn/Dockerfile
     volumes:
     - static:/static
-    - .:/app
+    - ../..:/app
 
     ports:
     - "8000:8000"
@@ -22,7 +24,9 @@ services:
     - DEBUG=False
     - DJANGO_ENVIRONMENT=production
   nginx:
-    build: nginx
+    build:
+      context: ../../
+      dockerfile: devops/docker/nginx/Dockerfile
     volumes:
     - static:/static
     ports:

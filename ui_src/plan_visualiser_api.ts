@@ -3,7 +3,7 @@
 import axios, {HttpStatusCode} from "axios";
 
 async function api_get(url_string: string) {
-  const base_url = "http://localhost:8002"
+  const base_url = ""
   axios.defaults.xsrfCookieName = 'csrftoken'
   axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
