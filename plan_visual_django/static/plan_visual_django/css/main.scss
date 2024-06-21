@@ -1,26 +1,9 @@
-@import '../bootstrap/bootstrap-5.0.2/scss/_functions.scss';
-@import '../bootstrap/bootstrap-5.0.2/scss/_variables.scss';
+@import "../bootstrap/scss/functions";
 
-// Theme colours
-$colour-01: #ffb8cb;
-$colour-02: #ac69e3;
-
-// Theme element colours
-$main-navbar-background-color: $colour-01;
-$main-page-heading-color: $colour-02;
-
-// Top of Screen (from pv_base)
-div#top-of-screen {
-  position: sticky;
-  top: 0;
-  z-index: 1
+// Ensure that the content of the page sits underneath the fixed header
+#header-clearance {
+  padding-top:120px;
 }
-
-// Header level styling
-li.user-action button.btn, li.user-action a.btn {
-  margin-right: 10px;
-}
-
 
 // Plan activity level colouring
 $activity-level-01: #fa7799;
@@ -62,39 +45,4 @@ table.activity-table {
     tr.level-09 {
         background-color: $activity-level-09;
     }
-}
-
-// Site header
-header.main-header {
-  background-color: $main-navbar-background-color;
-
-  img.logo {
-    height: 70px;
-  }
-}
-
-div.page-heading {
-  background-color: $main-page-heading-color;
-  margin-bottom: 20px;
-
-  h1 {
-    color: white;
-  }
-}
-
-// Select child element which has a class the same as the id of the parent
-div#settings a.settings,
-div#layout a.layout,
-div#configure a.configure,
-div#swimlanes a.swimlanes,
-div#timelines a.timelines,
-div#milestones a.milestones,
-div#view a.view {
-  pointer-events: none;
-  background-color: tint-color($primary, 50%);
-  color: $primary;
-}
-
-table#activities_table tr.selected {
-  background-color: #ffd3d8;
 }

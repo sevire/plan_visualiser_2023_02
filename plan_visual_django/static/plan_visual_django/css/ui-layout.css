@@ -1,0 +1,39 @@
+body {
+  min-width: 1000px;
+}
+
+table.table-fixed {
+  table-layout: fixed;
+}
+
+div.text-truncate {
+  margin: 0;
+  padding: 0;
+}
+
+#activity_data td.undefined {
+  font-style: italic;
+  color: #b9bbbe;
+}
+
+div.up-down-control i {
+  color: white;
+}
+
+div#top-row-controls table td button {
+  color: white;
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
+div.top-row-control > div {
+  max-height: 200px;
+  overflow-y: auto;
+  display: block;
+}
+
+.top-row-control table td {
+  text-align: left;
+}
+
+/*# sourceMappingURL=ui-layout.css.map */
