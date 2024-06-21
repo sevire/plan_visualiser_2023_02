@@ -277,6 +277,8 @@ def manage_plans(request):
 
     plan_files = Plan.objects.filter(user=user)
     context = {
+        'primary_heading': "Manage Plans",
+        'secondary_heading': "",
         'user': user,
         'plan_files': plan_files
     }
@@ -354,6 +356,8 @@ def manage_visuals(request, plan_id):
         plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
 
         context = {
+            'primary_heading': "Manage Visuals",
+            'secondary_heading': "",
             'plan': plan_record,
             'visuals': visuals,
             'plan_summary_data_display': plan_summary_data_display

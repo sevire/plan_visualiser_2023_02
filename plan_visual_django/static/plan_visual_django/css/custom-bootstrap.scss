@@ -1,0 +1,8 @@
+// Default Bootstrap variable overrides
+$primary: rgb(96, 42, 234);
+$secondary: rgb(210, 64, 232);
+$info: #1db2ce;
+
+// Import the rest of Bootstrap
+@import "../../../../node_modules/bootstrap/scss/bootstrap";
+

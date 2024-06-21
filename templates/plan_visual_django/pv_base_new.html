@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Different versions of favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
+      
+    <!-- fonts (for plan tree for example) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Georama:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <!-- Customised Bootstrap and app styling -->
+    <link href="{% static 'plan_visual_django/css/custom-bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/bootstrap-icons/font/bootstrap-icons.css'%}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/css/main.css' %}" rel="stylesheet">
+
+    <!-------------------------------------->
+    <!-- SCRIPTS                          -->
+    <!-------------------------------------->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{% static 'plan_visual_django/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+    <title>{{ "title" }}</title>
+
+</head>
+<body>
+<div class="fixed-top">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Navbar for visual layout">
+        <div class="container-sm">
+            <a class="navbar-brand" href="#">Plan On One Page</a>
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse" id="navbarsExample03" style="">
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">My Plans</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">My Visuals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">About</a>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" class="btn btn-secondary">Login</button>
+        </div>
+    </nav>
+    <header class="bg-primary-subtle py-2 mb-4 border-bottom">
+        <div class="container-sm text-left">
+            <div class="row">
+                <div class="col">
+                    <h1 class="fs-6">{{ primary_heading }}</h1>
+                </div>
+                <div class="col">
+                    <h2 class="fs-6">{{ secondary_heading }}</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+<div id="header-clearance"></div>
+
+
+
+{% if messages %}
+    <div class="container-fluid p-0">
+        {% for message in messages %}
+            <div class="alert fade show {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="container">
+    {% block main_content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>
