@@ -40,23 +40,33 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="navbar-collapse collapse" id="navbarsExample03" style="">
+            <div class="navbar-collapse collapse" id="main_navbar" style="">
                 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">My Plans</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">My Visuals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link">About</a>
+                        <a class="nav-link active" aria-current="page" href="/pv/manage-plans">My Plans</a>
                     </li>
                 </ul>
             </div>
-            <button type="button" class="btn btn-secondary">Login</button>
+            <ul class="nav">
+                {%  if request.user.is_authenticated %}
+                    <li style="line-height: 40px;" class="nav-item text-light align-middle me-3">
+                        {{ request.user.username }}
+                    </li>
+{#                    <li class="nav-item">{{ request.user.username }}</li>#}
+                    <li>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-secondary" type="submit">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li id=login-button" class="user-action"><a href="{% url 'login' %}" class="btn btn-secondary">Login</a></li>
+                {% endif %}
+            </ul>
+{#            <button type="button" class="btn btn-secondary">Login</button>#}
         </div>
     </nav>
     <header class="bg-primary-subtle py-2 mb-4 border-bottom">

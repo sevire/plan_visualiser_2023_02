@@ -1,4 +1,4 @@
-{% extends "plan_visual_django/pv_base.html" %}
+{% extends "plan_visual_django/pv_base_new.html" %}
 
 {% block main_content %}
 
@@ -17,7 +17,7 @@
 
   <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-    <table>
+    <table class="table">
       <tr>
         <td>{{ form.username.label_tag }}</td>
         <td>{{ form.username }}</td>
@@ -27,7 +27,7 @@
         <td>{{ form.password }}</td>
       </tr>
     </table>
-    <input type="submit" value="login">
+    <input type="submit" class="btn btn-primary mb-3" value="login">
     <input type="hidden" name="next" value="{{ next }}">
   </form>
 
