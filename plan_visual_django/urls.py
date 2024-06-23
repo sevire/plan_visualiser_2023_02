@@ -22,6 +22,7 @@ urlpatterns = [
     path("visual/<int:visual_id>/", views.plot_visual_03, name='plot-visual'),
     path("visual-02/<int:visual_id>/", views.plot_visual_02, name='plot-visual'),
     path("visual-03/<int:visual_id>/", views.plot_visual_03, name='plot-visual'),
+    path("visual-04/<int:visual_id>/", views.plot_visual_04, name='plot-visual'),
     path("manage-colors/", views.manage_colors, name='manage-colors'),
     path("manage-plotable-styles/", views.manage_plotable_styles, name='manage-styles'),
 ]
