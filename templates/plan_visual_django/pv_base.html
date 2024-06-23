@@ -10,79 +10,81 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
       
-    <!-- Using Font Awesome for icons such as + and - for expanding/collapsing plan tree -->
-    <script src="https://kit.fontawesome.com/8c8fe6f5ad.js" crossorigin="anonymous"></script>
-
-    <!-- Modernizer helps to standardise look and feel across different browser versions -->
-    <script src="{% static 'plan_visual_django/js/vendor/modernizr-3.11.2.min.js' %}"></script>
-    
-    <!-- Plugins manages situation where a browser doesn't have a console (for logging) -->
-    <script src="{% static 'plan_visual_django/js/plugins.js' %}"></script>
-
     <!-- fonts (for plan tree for example) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Georama:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
-    <!-- Web Manifest - I think this was auto-generated, probably need to review it -->
-    <!-- ToDo: Review web manifest and change if required -->
-    <link rel="manifest" href="/static/images/site.webmanifest">
+    <!-- Customised Bootstrap and app styling -->
+    <link href="{% static 'plan_visual_django/css/custom-bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/bootstrap-icons/font/bootstrap-icons.css'%}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/css/main.css' %}" rel="stylesheet">
 
     <!-------------------------------------->
     <!-- SCRIPTS                          -->
     <!-------------------------------------->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
-            crossorigin="anonymous"></script>
+    <script src="{% static 'plan_visual_django/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 
     <title>{{ "title" }}</title>
-    <link rel="stylesheet" href="{% static 'plan_visual_django/css/normalize.css' %}">
-    <!-- JavaScript Bundle with Popper -->
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 
-    <!-- App Styling -->
-    <link href="{% static 'plan_visual_django/css/main.css' %}" rel="stylesheet">
 </head>
 <body>
-<div id="top-of-screen">
-    <header class="main-header p-3">
-        <div class="container-fluid">
-            <div class="fs-3 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <img class="logo" alt="Plan on a page logo" src="{% static 'plan_visual_django/images/site_images/POAP-Logo.png' %}">
-                </a>
-    
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/pv/manage-plans" class="nav-link px-2 text-white">Home</a></li>
-                    <li><a href="/pv/manage-plans" class="nav-link px-2 text-white">Manage Plans</a></li>
-                    <li><a href="/pv/manage-colors" class="nav-link px-2 text-white">Manage Colours</a></li>
-                    <li><a href="/pv/manage-plotable-styles" class="nav-link px-2 text-white">Manage Styles</a></li>
+<div class="fixed-top">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Navbar for visual layout">
+        <div class="container-sm">
+            <a class="navbar-brand" href="#">Plan On One Page</a>
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse" id="main_navbar" style="">
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/pv/manage-plans">My Plans</a>
+                    </li>
                 </ul>
-    
-                <div class="text-end">
-                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                        {%  if request.user.is_authenticated %}
-                            <li class="user-action">
-                                <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button class="btn btn-primary" type="submit">logout</button>
-                                </form></li>
-                            <li>{{ request.user.username }}</li>
-                        {% else %}
-                            <li class="user-action"><a href="{% url 'login' %}" class="btn btn-primary">Login</a></li>
-                            <li>(not logged in)</li>
-                        {% endif %}
-                    </ul>
+            </div>
+            <ul class="nav">
+                {%  if request.user.is_authenticated %}
+                    <li style="line-height: 40px;" class="nav-item text-light align-middle me-3">
+                        {{ request.user.username }}
+                    </li>
+{#                    <li class="nav-item">{{ request.user.username }}</li>#}
+                    <li>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-secondary" type="submit">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li id=login-button" class="user-action"><a href="{% url 'login' %}" class="btn btn-secondary">Login</a></li>
+                {% endif %}
+            </ul>
+{#            <button type="button" class="btn btn-secondary">Login</button>#}
+        </div>
+    </nav>
+    <header class="bg-primary-subtle py-2 mb-4 border-bottom">
+        <div class="container-sm text-left">
+            <div class="row">
+                <div class="col">
+                    <h1 class="fs-6">{{ primary_heading }}</h1>
+                </div>
+                <div class="col">
+                    <h2 class="fs-6">{{ secondary_heading }}</h2>
                 </div>
             </div>
         </div>
     </header>
-    <div class="container-fluid">
-        <div class="page-heading row"><h1>{% block page_heading %} {% endblock %}</h1></div>
-    </div>
 </div>
+<div id="header-clearance"></div>
+
+
 
 {% if messages %}
     <div class="container-fluid p-0">

@@ -24,5 +24,3 @@ db.sqlite3-journal
 /ui_src/visual.js
 /ui_src/utilities.js
 /ui_src/manage_swimlanes.js
-/plan_visual_django/static/plan_visual_django/bootstrap/
-/plan_visual_django/static/plan_visual_django/bootstrap-icons/icons/
