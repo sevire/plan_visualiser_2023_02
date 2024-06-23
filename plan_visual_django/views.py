@@ -722,6 +722,7 @@ def plot_visual_02(request, visual_id):
             # 'swimlane_dropdown_form': swimlane_form
         }
         return render(request, "plan_visual_django/planvisual_detail_02.html", context)
+
 @login_required
 def plot_visual_03(request, visual_id):
     """
@@ -738,9 +739,36 @@ def plot_visual_03(request, visual_id):
     visual = PlanVisual.objects.get(id=visual_id)
 
     context = {
+
         'visual': visual,
     }
     return render(request, "plan_visual_django/planvisual_detail_03.html", context)
+
+@login_required
+def plot_visual_04(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    plan_name = visual.plan.plan_name
+    visual_name = visual.name
+
+    context = {
+        'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
+        'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
+        'visual': visual,
+    }
+    return render(request, "plan_visual_django/planvisual_detail_04.html", context)
+
 
 @login_required
 def manage_colors(request):
