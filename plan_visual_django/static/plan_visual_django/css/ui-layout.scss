@@ -38,4 +38,34 @@ div.top-row-control > div {
   text-align: left;
 }
 
+#visual-content {
+
+  .canvas-stack {
+    //background-color: #e70723;  // Shouldn't able to see this as canvas should define colour
+    position: relative;
+  }
+
+  .canvas-stack canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  #canvas-background {
+    z-index: 1;
+  }
+
+  #canvas-swimlanes {
+    z-index: 2;
+  }
+
+  #canvas-timelines {
+    z-index: 3;
+  }
+
+  #canvas-activities {
+    z-index: 4;
+  }
+}
+
 

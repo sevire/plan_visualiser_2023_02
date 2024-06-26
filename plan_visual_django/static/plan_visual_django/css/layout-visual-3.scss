@@ -153,16 +153,12 @@ body {
     .canvas-stack {
       //background-color: #e70723;  // Shouldn't able to see this as canvas should define colour
       position: relative;
-      width: 100%;
-      height: 500px;
     }
 
     .canvas-stack canvas {
       position: absolute;
       left: 0;
       top: 0;
-      width: 100%;
-      height: 100%;
     }
 
     #background_layer {

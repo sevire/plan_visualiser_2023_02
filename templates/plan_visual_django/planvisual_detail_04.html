@@ -1,4 +1,3 @@
-
     {% extends "plan_visual_django/pv_base.html" %}
     {% load static %}
     
@@ -13,32 +12,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="label"><div class="text-truncate">Swimlane 1 - long to test truncation</div></td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                                    <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove blank lines"><i class="bi bi-arrows-collapse"></i></button>
-                                    <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Auto layout"><i class="bi bi-aspect-ratio"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="label"><div class="text-truncate">Swimlane 2</div></td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                                    <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove blank lines"><i class="bi bi-arrows-collapse"></i></button>
-                                    <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Auto layout"><i class="bi bi-aspect-ratio"></i></button>
-                                </div>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -176,5 +149,62 @@
                 </table>
             </div>
         </div>
-    </div>       
+    </div> 
+    <div id="activity_controls" class="row">
+        <div  id="visual-content" class="col bg-primary-subtle m-2">
+            <div class="canvas-stack">
+                <canvas id="canvas-background" width="800px" height="600px"></canvas>
+                <canvas id="canvas-swimlanes" width="800px" height="600px"></canvas>
+                <canvas id="canvas-timelines" width="800px" height="600px"></canvas>
+                <canvas id="canvas-activities" width="800px" height="600px"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'dist/bundle.js' %}"></script>
+    <script type="application/javascript">
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("DOM Loaded...")
+        // ToDo: Replace JS function with use of additional template block for template specific css
+        window.addStylesheetToDOM('/static/plan_visual_django/css/ui-layout.css')
+        
+        // Get data for the visual based upon the id from body element
+        window.visual_id = {{ visual.id }}
+        
+        
+    
+        const root_element = document.getElementById("add-remove-activities")
+        console.log("About to call window.get_plan_activity_data")
+            
+        await window.get_plan_activity_data(window.visual_id)
+        await window.get_visual_activity_data(window.visual_id)
+        const plan_tree = await createPlanTree()
+        {#root_element.appendChild(plan_tree)#}
+        
+        // Update swimlane panel with swimlanes for this visual in sequence order
+        console.log("Updating swimlane panel...")
+        const swimlane_element = document.getElementById("swimlane_data")
+        await window.update_swimlane_data(swimlane_element, window.visual_id)
+        
+        // Update timeline panel with timelines for this visual in sequence order
+        console.log("Updating timeline panel...")
+        const timeline_element = document.getElementById("timeline_data")
+        await window.update_timeline_data(timeline_element, window.visual_id)
+        
+        console.log("About to retrieve style data")
+        // Get all plotable styles available to this user
+        response = await get_style_records()
+        window.style_data = response.data
+        
+        console.log("About to retrieve shape data")
+        // Get all plotable styles available to this user
+        response = await get_shape_records()
+        window.shape_data = response.data
+        
+        console.log("Plotting visual")
+        window.plot_visual()
+  })
+
+</script>
     {% endblock %}

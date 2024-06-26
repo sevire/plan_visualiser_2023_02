@@ -36,4 +36,25 @@ div.top-row-control > div {
   text-align: left;
 }
 
+#visual-content .canvas-stack {
+  position: relative;
+}
+#visual-content .canvas-stack canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+#visual-content #canvas-background {
+  z-index: 1;
+}
+#visual-content #canvas-swimlanes {
+  z-index: 2;
+}
+#visual-content #canvas-timelines {
+  z-index: 3;
+}
+#visual-content #canvas-activities {
+  z-index: 4;
+}
+
 /*# sourceMappingURL=ui-layout.css.map */
