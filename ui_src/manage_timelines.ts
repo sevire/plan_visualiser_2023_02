@@ -5,6 +5,12 @@ import {
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
+import {
+  add_arrow_button_to_element,
+  add_tooltip,
+  create_button_with_icon,
+  update_swimlane_order
+} from "./manage_swimlanes";
 
 async function manage_arrow_click(visual_id:number, timeline_record: any, direction: "up"|"down") {
   await update_timeline_order(visual_id, timeline_record, direction)
@@ -41,23 +47,31 @@ export async function update_timeline_data(timeline_html_panel:HTMLElement, visu
     // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
     // Create a new row
     let row = document.createElement('tr');
-    let arrowCell = document.createElement('td');
-    arrowCell.classList.add("arrow")
+    tbody!.appendChild(row)
 
-    // ToDo: Correct code to add arrows for swimlane so Id not same for both arrows as this is not legal HTML
-    add_arrow_to_element(arrowCell, "up", timeline_record.sequence_number, visual_id, timeline_record)
-    add_arrow_to_element(arrowCell, "down", timeline_record.sequence_number, visual_id, timeline_record)
+    // Add td and div with swimlane name to row.  We need the dive for the text-truncate to work.
+    let timelineNameTD = document.createElement('td');
+    timelineNameTD.classList.add("label")
+    row.appendChild(timelineNameTD);
 
-    row.appendChild(arrowCell);
+    let timelineNameDiv = document.createElement("div")
+    timelineNameDiv.classList.add("text-truncate")
+    timelineNameDiv.textContent = timeline_record.timeline_name
+    timelineNameTD.appendChild(timelineNameDiv)
 
-    // Create a cell for swimlane name
-    let nameCell = document.createElement('td');
-    nameCell.classList.add("name")
-    nameCell.textContent = timeline_record.timeline_name;
-    row.appendChild(nameCell);
+    // Add td, button group and two buttons for the up and down arrow
+    const controlTD = document.createElement("td")
+    controlTD.classList.add("text-end")
+    row.appendChild(controlTD)
 
-    // Add row to tbody
-    tbody!.appendChild(row);
+    const buttonGroup1 = document.createElement("div")
+    buttonGroup1.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1")
+    buttonGroup1.setAttribute('role', 'group')
+    buttonGroup1.setAttribute('aria-label', 'Basic Example')
+    controlTD.appendChild(buttonGroup1)
+
+    add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_data)
+    add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_data)
 
   });
 }

@@ -6,27 +6,63 @@ import {
 import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
 
-async function manage_arrow_click(visual_id:number, swimlane_record: any, direction: "up"|"down") {
-  await update_swimlane_order(visual_id, swimlane_record, direction)
+async function manage_arrow_click(
+  panel_element: HTMLElement,
+  visual_id:number,
+  data_record: any,
+  direction: "up"|"down",
+  update_order_func: ((arg0: number, arg1: any, arg2: string) => any) | undefined,
+  update_panel_func: ((arg0: HTMLElement, arg1: number) => any) | undefined
+) {
+  await update_order_func!(visual_id, data_record, direction)
 
   // Update swimlane panel with swimlanes for this visual in sequence order
-  console.log(`Updating swimlane panel (after moving swimlane ${direction}...`)
-  const swimlane_element = document.getElementById("swimlane_data")
-  await update_swimlane_data(swimlane_element!, visual_id)
+  console.log(`Updating panel (after moving item ${direction}...`)
+  await update_panel_func!(panel_element!, visual_id)
 
   await get_visual_activity_data(visual_id)
   plot_visual()
 }
 
-export async function add_arrow_to_element(element:HTMLElement, direction: "up"|"down", id:string, visual_id:number, swimlane_record:any) {
+export function create_button_with_icon(icon_name:string) {
+  const button = document.createElement("button")
+  button.classList.add("btn", "btn-primary")
+
   let arrow = document.createElement('i')
-  arrow.classList.add("fa-solid")
-  arrow.classList.add("fa-circle-chevron-"+direction)
-  arrow.id = id
+  arrow.classList.add("bi", icon_name)
+  button.appendChild(arrow)
+
+  return button
+}
+
+export async function add_arrow_button_to_element(
+  panel_element:HTMLElement,
+  arrow_element:HTMLElement,
+  direction: "up"|"down",
+  id:string,
+  visual_id:number,
+  data_record:any,
+  update_order_func: ((arg0: number, arg1: any, arg2: string) => any) | undefined,
+  update_panel_func: ((arg0: HTMLElement, arg1: number) => any) | undefined
+){
+  // Add button and appropriate arrow icon to supplied element.
+  let button = document.createElement("button")
+  button.classList.add("btn", "btn-secondary")
+  arrow_element.appendChild(button)
+
+  let arrow = document.createElement('i')
+  arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
+  arrow.id = id + "-" + direction  // Need to ensure the id is unique so add direction to swimlane_id
   arrow.addEventListener('click', async function() {
-    manage_arrow_click(visual_id, swimlane_record, direction)
+    manage_arrow_click(panel_element, visual_id, data_record, direction, update_order_func, update_panel_func)
   })
-  element.appendChild(arrow)
+  button.appendChild(arrow)
+}
+
+export async function add_tooltip(element:HTMLElement, tooltip_text:string) {
+  element.setAttribute("data-bs-toggle", "tooltip")
+  element.setAttribute("data-bs-placement", "top")
+  element.setAttribute("title", tooltip_text)
 }
 
 export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visual_id: number) {
@@ -41,24 +77,46 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
     // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
     // Create a new row
     let row = document.createElement('tr');
-    let arrowCell = document.createElement('td');
-    arrowCell.classList.add("arrow")
+    tbody!.appendChild(row)
 
-    // ToDo: Correct code to add arrows for swimlane so Id not same for both arrows as this is not legal HTML
-    add_arrow_to_element(arrowCell, "up", swimlane_record.sequence_number, visual_id, swimlane_record)
-    add_arrow_to_element(arrowCell, "down", swimlane_record.sequence_number, visual_id, swimlane_record)
+    // Add td and div with swimlane name to row.  We need the dive for the text-truncate to work.
+    let swimlaneNameTD = document.createElement('td');
+    swimlaneNameTD.classList.add("label")
+    row.appendChild(swimlaneNameTD);
 
-    row.appendChild(arrowCell);
+    let swimlaneNameDiv = document.createElement("div")
+    swimlaneNameDiv.classList.add("text-truncate")
+    swimlaneNameDiv.textContent = swimlane_record.swim_lane_name
+    swimlaneNameTD.appendChild(swimlaneNameDiv)
 
-    // Create a cell for swimlane name
-    let nameCell = document.createElement('td');
-    nameCell.classList.add("name")
-    nameCell.textContent = swimlane_record.swim_lane_name;
-    row.appendChild(nameCell);
+    // Add td, button group and two buttons for the up and down arrow
+    const controlTD = document.createElement("td")
+    controlTD.classList.add("text-end")
+    row.appendChild(controlTD)
 
-    // Add row to tbody
-    tbody!.appendChild(row);
+    const buttonGroup1 = document.createElement("div")
+    buttonGroup1.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1")
+    buttonGroup1.setAttribute('role', 'group')
+    buttonGroup1.setAttribute('aria-label', 'Basic Example')
+    controlTD.appendChild(buttonGroup1)
 
+    add_arrow_button_to_element(swimlane_html_panel, buttonGroup1, "up", swimlane_record.sequence_number, visual_id, swimlane_record, update_swimlane_order, update_swimlane_data)
+    add_arrow_button_to_element(swimlane_html_panel, buttonGroup1, "down", swimlane_record.sequence_number, visual_id, swimlane_record, update_swimlane_order, update_swimlane_data)
+
+    const buttonGroup2 = document.createElement("div")
+    buttonGroup2.setAttribute('role', 'group')
+    buttonGroup2.setAttribute('aria-label', 'Basic Example')
+    buttonGroup2.classList.add("btn-group", "btn-group-sm")
+
+    controlTD.appendChild(buttonGroup2)
+    const compressButton = create_button_with_icon("bi-arrows-collapse")
+    add_tooltip(compressButton, "Compress - remove blank lines")
+
+    const autoButton = create_button_with_icon("bi-aspect-ratio")
+    add_tooltip(autoButton, "Auto - Auto layout")
+
+    buttonGroup2.appendChild(compressButton)
+    buttonGroup2.appendChild(autoButton)
   });
 }
 

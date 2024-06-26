@@ -2,11 +2,12 @@
 export function plot_visual() {
   console.log("Plotting activity shapes...")
   const canvas_info: { [key: string]: CanvasRenderingContext2D | null } = {
-    background: (document.getElementById("background")! as HTMLCanvasElement).getContext("2d"),
-    swimlanes: (document.getElementById("swimlanes")! as HTMLCanvasElement).getContext("2d"),
-    timelines: (document.getElementById("timelines")! as HTMLCanvasElement).getContext("2d"),
-    visual_activities: (document.getElementById("activities")! as HTMLCanvasElement).getContext("2d"),
+    background: (document.getElementById("canvas-background")! as HTMLCanvasElement).getContext("2d"),
+    swimlanes: (document.getElementById("canvas-swimlanes")! as HTMLCanvasElement).getContext("2d"),
+    timelines: (document.getElementById("canvas-timelines")! as HTMLCanvasElement).getContext("2d"),
+    visual_activities: (document.getElementById("canvas-activities")! as HTMLCanvasElement).getContext("2d"),
   }
+  initialise_canvases(canvas_info)
   clear_canvases(canvas_info);
 
   // There will be a list of plotable objects for different canvases so need to iterate through canvases
@@ -62,6 +63,30 @@ function clear_canvases(canvas_info: { [key: string]: CanvasRenderingContext2D |
 
     // Fill the entire canvas
     ctx!.clearRect(0, 0, ctx!.canvas.width, ctx!.canvas.height);
+  }
+}
+
+export function initialise_canvases(canvas_info:{[key: string]: CanvasRenderingContext2D | null}) {
+  for (let canvas_id in canvas_info) {
+    const canvas_details = canvas_info[canvas_id]
+    const canvas = canvas_details!.canvas;
+    // Get the canvas element
+
+    // Manage canvas element to maintain aspect ratio
+    let aspectRatio = 16 / 9; // Example ratio, change this to your desired ratio
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetWidth / aspectRatio;
+
+    // Set to the size of device window
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerWidth / aspectRatio + 'px';
+
+    // Increase actual size of canvas for retina display
+    let dpi = window.devicePixelRatio;
+    let style_height = +getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);
+    let style_width = +getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);
+    canvas.height = style_height * dpi;
+    canvas.width = style_width * dpi;
   }
 }
 
