@@ -6,12 +6,12 @@ export function toggle_expansion(node:HTMLLIElement) {
   if (expanded) {
     // Current icon will be a minus, replace with a plus.
     const oldIcon = node.querySelector('div>i')
-    oldIcon?.setAttribute('class', 'fa-solid fa-circle-plus')
+    oldIcon?.setAttribute('class', 'bi bi-plus-circle-fill')
     // oldIcon.textContent = "+"; // Temp
   } else {
     // Current icon will be a minus, replace with a plus.
     const oldIcon = node.querySelector('div>i')
-    oldIcon?.setAttribute('class', 'fa-solid fa-circle-minus')
+    oldIcon?.setAttribute('class', 'bi bi-dash-circle-fill')
     // oldIcon.textContent = "-"; // Temp
   }
   // Now toggle the class

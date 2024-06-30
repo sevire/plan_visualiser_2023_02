@@ -39,16 +39,16 @@ div.top-row-control > div {
 }
 
 #visual-content {
-
-  .canvas-stack {
-    //background-color: #e70723;  // Shouldn't able to see this as canvas should define colour
-    position: relative;
-  }
-
-  .canvas-stack canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
+  .canvas-wrapper {
+    margin: 5px;
+    .canvas-layer {
+      width: 100%;
+      canvas {
+        width: 100%;
+        height: auto;
+        position: absolute;
+      }
+    }
   }
 
   #canvas-background {
@@ -65,6 +65,106 @@ div.top-row-control > div {
 
   #canvas-activities {
     z-index: 4;
+  }
+}
+
+  #add-remove-activities {
+    height: 400px;
+    overflow: scroll;
+    margin-bottom: 10px // To override margin collapsing
+  }
+
+ul#plan-activities {
+  // Remove default ul styles
+  display: block;
+  list-style-type: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 0;
+
+  ul {
+    padding-inline-start: 10px;
+  }
+
+  // add needed styles for ul
+  padding: 5px;
+
+  li {
+    display: block;
+    list-style: none;
+  }
+
+  li.expandNode:not(.expand) > ul {
+    display: none;
+  }
+
+  li:not(.expandNode) > div {
+    padding-left: 25px;
+  }
+
+  li > div {
+    font-family: "Georama", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+    font-size: 12px;
+    color: white;
+
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    background-color: pink;
+    text-decoration: none;
+    border-radius: 50vh;
+    margin-bottom: 4px;
+    margin-right: 2%;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    height: 30px;
+    line-height: 25px;
+    border: solid 3px transparent;
+
+    // Colours for plan activities
+    $background-color-activity-level-1: rgb(1, 45, 0);
+    $background-color-activity-level-2: rgb(9, 61, 1);
+    $background-color-activity-level-3: rgb(10, 77, 0);
+    $background-color-activity-level-4: rgb(3, 105, 1);
+    $background-color-activity-level-5: rgb(33, 159, 14);
+    $background-color-activity-level-6: rgb(66, 189, 47);
+    $background-color-activity-level-7: rgb(83, 199, 65);
+    $background-color-activity-level-8: rgb(112, 196, 99);
+    $background-color-activity-level-9: rgb(139, 231, 125);
+    $background-color-activity-level-10: rgb(168, 248, 155);
+
+    $background-color-activity-selected: rgb(255, 255, 119);
+    $border-color-activity-current: rgb(201, 1, 1);
+
+    &.level-1 { background-color: $background-color-activity-level-1}
+    &.level-2 { background-color: $background-color-activity-level-2}
+    &.level-3 { background-color: $background-color-activity-level-3}
+    &.level-4 { background-color: $background-color-activity-level-4}
+    &.level-5 { background-color: $background-color-activity-level-5}
+    &.level-6 { background-color: $background-color-activity-level-6}
+    &.level-7 { background-color: $background-color-activity-level-7}
+    &.level-8 { background-color: $background-color-activity-level-8}
+    &.level-9 { background-color: $background-color-activity-level-9}
+    &.level-10 { background-color: $background-color-activity-level-10}
+
+    &.in-visual {background-color: $background-color-activity-selected; color: black;}
+    &.current {border: solid 3px $border-color-activity-current}
+
+    i {
+      margin-left: 8px;
+      margin-right: 5px;
+      color: greenyellow;
+    }
   }
 }
 
