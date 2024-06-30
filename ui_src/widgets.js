@@ -31,7 +31,7 @@ export class Dropdown {
                 optElement.id = option_id.toString();
                 select.add(optElement);
             });
-            select.addEventListener('change', (event) => __awaiter(this, void 0, void 0, function* () {
+            select.addEventListener('click', (event) => __awaiter(this, void 0, void 0, function* () {
                 const targetSelectedElement = event.target;
                 const targetOptionElement = targetSelectedElement.options[targetSelectedElement.selectedIndex];
                 const swimlane_id = parseInt(targetOptionElement.id);

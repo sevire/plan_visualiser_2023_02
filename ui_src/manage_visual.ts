@@ -11,12 +11,18 @@ import {
 import {toggle_expansion} from "./manage_plan_panel";
 import {plot_visual} from "./plot_visual";
 import {Dropdown} from "./widgets";
-import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
+import {
+  add_arrow_button_to_element,
+  update_swimlane_for_activity_handler,
+  update_swimlane_order
+} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
 
 export async function createPlanTree() {
-  let topLevelElements = [document.createElement('ul')]
+  let topLevelUL = document.createElement('ul');
+  topLevelUL.classList.add("bg-primary-subtle")
+  let topLevelElements = [topLevelUL]
   topLevelElements[0].setAttribute("id", "plan-activities");
 
   // We want the lowest level to be 1 as various things depend on it (including color-coding)
@@ -50,7 +56,7 @@ export async function createPlanTree() {
         const expandIcon = document.createElement('i');
         li.setAttribute('class', 'expandNode');
 
-        expandIcon.setAttribute('class', 'fa-solid fa-circle-plus');
+        expandIcon.setAttribute('class', 'bi bi-plus-circle-fill');
         // expandIcon.textContent = "+";  // Temp for when can't access CDN for icons.
 
         console.log("Adding event listener on icon" + expandIcon);
@@ -126,17 +132,35 @@ export function get_plan_activity(activity_id:string) {
   return found_value
 }
 
+async function add_move_track_event_handler(direction: string, activity: any) {
+  console.log(`Track number up clicked`)
+  console.log(`Activity is ${activity}`)
+  await update_activity_track(activity.visual_data.unique_id_from_plan, direction)
+  await get_plan_activity_data((window as any).visual_id)
+  await get_visual_activity_data((window as any).visual_id)
+  plot_visual()
+}
+
+async function add_modify_track_height_event_handler(direction: string, activity: any) {
+  console.log(`Track height ${direction} clicked`)
+  console.log(`Activity is ${activity}`)
+  await update_activity_track_height(activity.visual_data.unique_id_from_plan, direction)
+  await get_plan_activity_data((window as any).visual_id)
+  await get_visual_activity_data((window as any).visual_id)
+  plot_visual()
+}
+
 function select_for_edit(activity_id:string, clear=false) {
   // Populates activity edit panel with values for supplied activity
 
   console.log("Selected activity for edit: " + activity_id);
 
   // Populate each element with value for this activity
-  const edit_activity_elements = document.querySelectorAll('#layout-activity tbody td')
+  const edit_activity_td_elements = document.querySelectorAll('#layout-activity tbody td')
   if (clear) {
     // Clear all the visual related values (because this activity is in the plan but not in the visual).
     (window as any).selected_activity_id = undefined;
-    edit_activity_elements.forEach(element => {
+    edit_activity_td_elements.forEach(element => {
       if (element.classList.contains('visual')) {
         const key = element.id
         element.textContent = '';
@@ -155,15 +179,16 @@ function select_for_edit(activity_id:string, clear=false) {
   console.log("Found entry for activity ", activity_id)
 
   // Each element in edit_activity_elements will have an id which corresponds to a key in this activity.
-  edit_activity_elements.forEach(element => {
-    const key = element.id;
+  edit_activity_td_elements.forEach(td_element => {
+    console.log(`Updating fields ${edit_activity_td_elements}`)
+    const key = td_element.id;
 
     // Some fields are part of the plan data, others part of visual data. Indicated by class of visual or plan.  So
     // work out which and extract field value for this activity accordingly.
     let source = undefined
-    if (element.classList.contains('visual')) {
+    if (td_element.classList.contains('visual')) {
       source = 'visual';
-    } else if (element.classList.contains('plan')) {
+    } else if (td_element.classList.contains('plan')) {
       source = 'plan';
     }
 
@@ -184,106 +209,216 @@ function select_for_edit(activity_id:string, clear=false) {
       // Track number: Set the value of the spinner
       if (key === "vertical_positioning_value") {
         // Start by clearing the element.
-        element.textContent = '';
+        td_element.textContent = '';
 
-        // Add up and down arrows to the td element and add click event handler which updates track value within current swimlane.
+        // Add up and down arrows to the td element and add click event handler which updates activity vertical position.
+        const buttonGroup = document.createElement("div");
+        buttonGroup.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1");
+        buttonGroup.setAttribute('role', 'group');
+        buttonGroup.setAttribute('aria-label', 'Activity Vertical Position Control');
+        td_element.appendChild(buttonGroup)
 
         let direction: string
         for (let i = 0; i < 2; i++) {
-          // Not using variables for up or down as when accessed within the callback closure the current
-          // value is used not the value at the point of creating the event handler.
-          // ToDo: Find best practice way of 'freezing' the value of a variable when creating a closure.
-          if (i === 0) {
-            let arrow = document.createElement('i')
-            arrow.classList.add("fa-solid")
-            arrow.classList.add("fa-circle-chevron-up")
-            arrow.id = `${activity.visual_data.unique_id_from_plan}-[up]`
-            arrow.addEventListener('click', async function () {
-              console.log(`Track number up clicked`)
-              console.log(`Activity is ${activity}`)
-              await update_activity_track(activity.visual_data.unique_id_from_plan, "up")
-              await get_plan_activity_data((window as any).visual_id)
-              await get_visual_activity_data((window as any).visual_id)
-              plot_visual()
-            })
-          element.appendChild(arrow)
+          if (i == 0) {
+            direction = "up"
           } else {
-            let arrow = document.createElement('i')
-            arrow.classList.add("fa-solid")
-            arrow.classList.add("fa-circle-chevron-down")
-            arrow.id = `${activity.visual_data.unique_id_from_plan}-[down]`
-            arrow.addEventListener('click', async function () {
-              console.log(`Track number down clicked`)
-              console.log(`Activity is ${activity}`)
-              await update_activity_track(activity.visual_data.unique_id_from_plan, "down")
-              await get_plan_activity_data((window as any).visual_id)
-              await get_visual_activity_data((window as any).visual_id)
-              plot_visual()
-            })
-          element.appendChild(arrow)
+            direction = "down"
           }
+          // Add button and appropriate arrow icon to supplied element.
+          let button = document.createElement("button")
+          button.classList.add("btn", "btn-secondary")
+          buttonGroup.appendChild(button)
+
+          let arrow = document.createElement('i')
+          arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
+          arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
+          if (direction == "up") {
+            arrow.addEventListener('click', async function() {
+              add_move_track_event_handler("up", activity)
+            })
+          } else {
+            arrow.addEventListener('click', async function() {
+              add_move_track_event_handler("down", activity)
+            })
+          }
+          button.appendChild(arrow)
         }
       } else if (key === "height_in_tracks") {
         // Start by clearing the element.
-        element.textContent = '';
+        td_element.textContent = '';
 
-        // Add up and down arrows to the td element and add click event handler which updates track height within current swimlane.
+        // Add up and down arrows to the td element and add click event handler which modifies height of activity.
+        const buttonGroup = document.createElement("div");
+        buttonGroup.classList.add("btn-group", "btn-group-sm", "height-control", "me-1");
+        buttonGroup.setAttribute('role', 'group');
+        buttonGroup.setAttribute('aria-label', 'Activity Height Control');
+        td_element.appendChild(buttonGroup)
 
-        let direction: string
+        let direction: string;
         for (let i = 0; i < 2; i++) {
-          // Not using variables for up or down as when accessed within the callback closure the current
-          // value is used not the value at the point of creating the event handler.
-          // ToDo: Find best practice way of 'freezing' the value of a variable when creating a closure.
-          if (i === 0) {
-            let arrow = document.createElement('i')
-            arrow.classList.add("fa-solid")
-            arrow.classList.add("fa-circle-chevron-up")
-            arrow.id = `${activity.visual_data.unique_id_from_plan}-[up]`
-            arrow.addEventListener('click', async function () {
-              console.log(`Track height increase clicked`)
-              console.log(`Activity is ${activity}`)
-              await update_activity_track_height(activity.visual_data.unique_id_from_plan, "increase")
-              await get_plan_activity_data((window as any).visual_id)
-              await get_visual_activity_data((window as any).visual_id)
-              plot_visual()
-            })
-          element.appendChild(arrow)
+          if (i == 0) {
+            direction = "up"
           } else {
-            let arrow = document.createElement('i')
-            arrow.classList.add("fa-solid")
-            arrow.classList.add("fa-circle-chevron-down")
-            arrow.id = `${activity.visual_data.unique_id_from_plan}-[down]`
-            arrow.addEventListener('click', async function () {
-              console.log(`Track height decrease clicked`)
-              console.log(`Activity is ${activity}`)
-              await update_activity_track_height(activity.visual_data.unique_id_from_plan, "decrease")
-              await get_plan_activity_data((window as any).visual_id)
-              await get_visual_activity_data((window as any).visual_id)
-              plot_visual()
-            })
-          element.appendChild(arrow)
+            direction = "down"
           }
+          // Add button and appropriate arrow icon to supplied element.
+          let button = document.createElement("button")
+          button.classList.add("btn", "btn-secondary")
+          buttonGroup.appendChild(button)
+
+          let arrow = document.createElement('i')
+          arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
+          arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
+          if (direction == "up") {
+            arrow.addEventListener('click', async function () {
+              add_modify_track_height_event_handler("increase", activity)
+            })
+          } else {
+            arrow.addEventListener('click', async function () {
+              add_modify_track_height_event_handler("decrease", activity)
+            })
+          }
+          button.appendChild(arrow)
         }
       } else if (key === "plotable_shape") {
         // Start by clearing the element before updating it for this activity.
-        element.textContent = '';
+        td_element.textContent = '';
 
         let shape_names: [[string, number]] = (window as any).shape_data.map((obj:any) => [obj.name, obj.id]);
-        let dropdown = new Dropdown("plotable_shape", activity.visual_data.unique_id_from_plan, shape_names, update_shape_for_activity_handler)
+        // Add div for Bootstrap Dropdown
+        const dropdownDiv = document.createElement("div")
+        dropdownDiv.classList.add("dropdown")
+        td_element.appendChild(dropdownDiv)
+
+        // Add button to Dropdown
+        const dropdownButton = document.createElement("button")
+        dropdownButton.setAttribute("type", "button")
+        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
+        dropdownButton.setAttribute("aria-expanded", "false")
+        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
+        dropdownButton.textContent = "Change Shape"
+        dropdownDiv.appendChild(dropdownButton)
+
+        // Add dropdown menu to Dropdown
+        const dropdownMenu = document.createElement("ul")
+        dropdownMenu.classList.add("dropdown-menu")
+        dropdownDiv.appendChild(dropdownMenu)
+
+        // Add dropdown entry for each swimlane associated with this visual
+        shape_names.forEach((shape_name: [string, number]) => {
+          const shapeEntry = document.createElement('li');
+          shapeEntry.classList.add("dropdown-item")
+          shapeEntry.setAttribute("href", "#")
+          shapeEntry.setAttribute("id", String(shape_name[1]))
+          shapeEntry.textContent = shape_name[0];
+
+          shapeEntry.addEventListener('click', async function (event) {
+            console.log(`New shape selected for element, ${event.target}`)
+            const targetSelectedElement = event.target as HTMLLIElement;
+            const shape_id = parseInt(targetSelectedElement.id);
+            console.log(`Shape selected: text:${targetSelectedElement.textContent}, id:${shape_id}`);
+
+            await update_shape_for_activity_handler(activity_id, shape_id);
+            await get_visual_activity_data((window as any).visual_id)
+            plot_visual()
+          })
+          dropdownMenu.appendChild(shapeEntry);
+        });
       } else if (key === "plotable_style") {
         // Start by clearing the element before updating it for this activity.
-        element.textContent = '';
+        td_element.textContent = '';
 
         let style_names: [[string, number]] = (window as any).style_data.map((obj:any) => [obj.style_name, obj.id]);
-        let dropdown = new Dropdown("plotable_style", activity.visual_data.unique_id_from_plan, style_names, update_style_for_activity_handler)
+
+        // Add div for Bootstrap Dropdown
+        const dropdownDiv = document.createElement("div")
+        dropdownDiv.classList.add("dropdown")
+        td_element.appendChild(dropdownDiv)
+
+        // Add button to Dropdown
+        const dropdownButton = document.createElement("button")
+        dropdownButton.setAttribute("type", "button")
+        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
+        dropdownButton.setAttribute("aria-expanded", "false")
+        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
+        dropdownButton.textContent = "Change Style"
+        dropdownDiv.appendChild(dropdownButton)
+
+        // Add dropdown menu to Dropdown
+        const dropdownMenu = document.createElement("ul")
+        dropdownMenu.classList.add("dropdown-menu")
+        dropdownDiv.appendChild(dropdownMenu)
+
+        // Add dropdown entry for each swimlane associated with this visual
+        console.log(`Adding style names in change style dropdown ${style_names}`)
+        style_names.forEach((style_name: [string, number]) => {
+          console.log(`Adding dropdown item for ${style_name}`)
+
+          const styleEntry = document.createElement('li');
+          styleEntry.classList.add("dropdown-item")
+          styleEntry.setAttribute("href", "#")
+          styleEntry.setAttribute("id", String(style_name[1]))
+          styleEntry.textContent = style_name[0];
+
+          styleEntry.addEventListener('click', async function (event) {
+            console.log(`New style selected for element, ${event.target}`)
+            const targetSelectedElement = event.target as HTMLLIElement;
+            const style_id = parseInt(targetSelectedElement.id);
+            console.log(`Shape selected: text:${targetSelectedElement.textContent}, id:${style_id}`);
+
+            await update_style_for_activity_handler(activity_id, style_id);
+            await get_visual_activity_data((window as any).visual_id)
+            plot_visual()
+          })
+          dropdownMenu.appendChild(styleEntry);
+        });
       } else if (key === "swimlane") {
         // Start by clearing the element before updating it for this activity.
-        element.textContent = '';
+        td_element.textContent = "";
 
         let swimlane_names: [[string, number]] = (window as any).swimlane_data.map((obj:any) => [obj.swim_lane_name, obj.id]);
-        let dropdown = new Dropdown("swimlane", activity.visual_data.unique_id_from_plan, swimlane_names, update_swimlane_for_activity_handler)
+        // Add div for Bootstrap Dropdown
+        const dropdownDiv = document.createElement("div")
+        dropdownDiv.classList.add("dropdown")
+        td_element.appendChild(dropdownDiv)
+
+        // Add button to Dropdown
+        const dropdownButton = document.createElement("button")
+        dropdownButton.setAttribute("type", "button")
+        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
+        dropdownButton.setAttribute("aria-expanded", "false")
+        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
+        dropdownButton.textContent = "Change Swimlane"
+        dropdownDiv.appendChild(dropdownButton)
+
+        // Add dropdown menu to Dropdown
+        const dropdownMenu = document.createElement("ul")
+        dropdownMenu.classList.add("dropdown-menu")
+        dropdownDiv.appendChild(dropdownMenu)
+
+        // Add dropdown entry for each swimlane associated with this visual
+        swimlane_names.forEach((swimlane_name: [string, number]) => {
+          const swimlaneEntry = document.createElement('li');
+          swimlaneEntry.classList.add("dropdown-item")
+          swimlaneEntry.setAttribute("href", "#")
+          swimlaneEntry.setAttribute("id", String(swimlane_name[1]))
+          swimlaneEntry.textContent = swimlane_name[0];
+
+          swimlaneEntry.addEventListener('click', async function (event) {
+            console.log(`New swimlane selected for element, ${event.target}`)
+            const targetSelectedElement = event.target as HTMLLIElement;
+            const swimlane_id = parseInt(targetSelectedElement.id);
+            console.log(`Swimlane selected: text:${targetSelectedElement.textContent}, id:${swimlane_id}`);
+
+            await update_swimlane_for_activity_handler(activity_id, swimlane_id);
+            await get_visual_activity_data((window as any).visual_id)
+            plot_visual()
+          })
+          dropdownMenu.appendChild(swimlaneEntry);
+        });
       } else {
-        element.textContent = activity_field_val;
+        td_element.textContent = activity_field_val;
       }
     }
   });

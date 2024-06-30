@@ -36,13 +36,16 @@ div.top-row-control > div {
   text-align: left;
 }
 
-#visual-content .canvas-stack {
-  position: relative;
+#visual-content .canvas-wrapper {
+  margin: 5px;
 }
-#visual-content .canvas-stack canvas {
+#visual-content .canvas-wrapper .canvas-layer {
+  width: 100%;
+}
+#visual-content .canvas-wrapper .canvas-layer canvas {
+  width: 100%;
+  height: auto;
   position: absolute;
-  left: 0;
-  top: 0;
 }
 #visual-content #canvas-background {
   z-index: 1;
@@ -55,6 +58,102 @@ div.top-row-control > div {
 }
 #visual-content #canvas-activities {
   z-index: 4;
+}
+
+#add-remove-activities {
+  height: 400px;
+  overflow: scroll;
+  margin-bottom: 10px;
+}
+
+ul#plan-activities {
+  display: block;
+  list-style-type: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 0;
+  padding: 5px;
+}
+ul#plan-activities ul {
+  padding-inline-start: 10px;
+}
+ul#plan-activities li {
+  display: block;
+  list-style: none;
+}
+ul#plan-activities li.expandNode:not(.expand) > ul {
+  display: none;
+}
+ul#plan-activities li:not(.expandNode) > div {
+  padding-left: 25px;
+}
+ul#plan-activities li > div {
+  font-family: "Georama", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  font-size: 12px;
+  color: white;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: pink;
+  text-decoration: none;
+  border-radius: 50vh;
+  margin-bottom: 4px;
+  margin-right: 2%;
+  padding-right: 15px;
+  padding-bottom: 10px;
+  height: 30px;
+  line-height: 25px;
+  border: solid 3px transparent;
+}
+ul#plan-activities li > div.level-1 {
+  background-color: rgb(1, 45, 0);
+}
+ul#plan-activities li > div.level-2 {
+  background-color: rgb(9, 61, 1);
+}
+ul#plan-activities li > div.level-3 {
+  background-color: rgb(10, 77, 0);
+}
+ul#plan-activities li > div.level-4 {
+  background-color: rgb(3, 105, 1);
+}
+ul#plan-activities li > div.level-5 {
+  background-color: rgb(33, 159, 14);
+}
+ul#plan-activities li > div.level-6 {
+  background-color: rgb(66, 189, 47);
+}
+ul#plan-activities li > div.level-7 {
+  background-color: rgb(83, 199, 65);
+}
+ul#plan-activities li > div.level-8 {
+  background-color: rgb(112, 196, 99);
+}
+ul#plan-activities li > div.level-9 {
+  background-color: rgb(139, 231, 125);
+}
+ul#plan-activities li > div.level-10 {
+  background-color: rgb(168, 248, 155);
+}
+ul#plan-activities li > div.in-visual {
+  background-color: rgb(255, 255, 119);
+  color: black;
+}
+ul#plan-activities li > div.current {
+  border: solid 3px rgb(201, 1, 1);
+}
+ul#plan-activities li > div i {
+  margin-left: 8px;
+  margin-right: 5px;
+  color: greenyellow;
 }
 
 /*# sourceMappingURL=ui-layout.css.map */

@@ -39,7 +39,7 @@ export class Dropdown {
             select.add(optElement);
         })
 
-        select.addEventListener('change', async (event) => {
+        select.addEventListener('click', async (event) => {
             const targetSelectedElement = event.target as HTMLSelectElement;
             const targetOptionElement: HTMLOptionElement = targetSelectedElement.options[targetSelectedElement.selectedIndex];
             const swimlane_id = parseInt(targetOptionElement.id);
