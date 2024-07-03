@@ -132,9 +132,16 @@ export async function get_style_records() {
 
   return await api_get(url_string)
 
-}export async function get_shape_records() {
+}
+export async function get_shape_records() {
   console.log("Getting shape records...")
   const url_string = "/api/v1/model/visuals/shapes/";
+
+  return await api_get(url_string)
+}
+export async function get_visual_settings() {
+  console.log("Getting visual settings...")
+  const url_string = `/api/v1/model/visuals/${(window as any).visual_id}/`;
 
   return await api_get(url_string)
 }

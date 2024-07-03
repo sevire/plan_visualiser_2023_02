@@ -10,6 +10,6 @@ urlpatterns = [
     path('shapes/', include('api.v1.model.visual.plotable_shape.urls')),
 
 
-    path('<int:plan_id>/', ModelVisualListAPI.as_view()),
-    path('<int:plan_id>/<int:visual_id>/', ModelVisualAPI.as_view()),
+    path('by-plan/<int:plan_id>/', ModelVisualListAPI.as_view()),
+    path('<int:visual_id>/', ModelVisualAPI.as_view()),
 ]

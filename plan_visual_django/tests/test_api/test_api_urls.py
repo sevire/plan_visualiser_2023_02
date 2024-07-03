@@ -54,10 +54,10 @@ class TestApiUrls(TestCase):
             # # Visual data from model
             #
             # # Data related to the visual (not graphical elements, just base data)
-            ("GET", "/model/visuals/2/", None, 200),  # Get information on all visuals
+            ("GET", "/model/visuals/by-plan/2/", None, 200),  # Get information on all visuals
             # # ModelVisualListAPI
             #
-            ("GET", "/model/visuals/2/4/", None, 200),  # Get information about visual with pk=4
+            ("GET", "/model/visuals/4/", None, 200),  # Get information about visual with pk=4
             # # ModelVisualAPI
             #
             # # All visual activities from model assigned to this given visual, including those added and then disabled.

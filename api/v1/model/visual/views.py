@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from api.v1.model.visual.serializer import ModelVisualListSerialiser
 from api.v1.rendered.canvas.visual.settings.serializer import ModelVisualSerialiser
-from plan_visual_django.models import Plan
+from plan_visual_django.models import Plan, PlanVisual
 
 
 class ModelVisualListAPI(ListAPIView):
@@ -17,9 +17,8 @@ class ModelVisualListAPI(ListAPIView):
 
 
 class ModelVisualAPI(APIView):
-    def get(self, request, plan_id, visual_id):
-        # ToDo: Not sure if this is right - I don't really need plan_id as visual_id is a PK
-        visual_queryset = Plan.objects.get(id=plan_id).planvisual_set.get(pk=visual_id)
+    def get(self, request, visual_id):
+        visual_queryset = PlanVisual.objects.get(id=visual_id)
         serializer = ModelVisualSerialiser(instance=visual_queryset)
 
         response = serializer.data

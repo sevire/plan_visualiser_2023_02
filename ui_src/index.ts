@@ -4,7 +4,7 @@ import {
   get_plan_activity_data,
   get_shape_records,
   get_style_records,
-  get_visual_activity_data
+  get_visual_activity_data, get_visual_settings
 } from "./plan_visualiser_api";
 import {createPlanTree} from "./manage_visual";
 import {plot_visual} from "./plot_visual";
@@ -27,3 +27,4 @@ console.log("Executing index.ts");
 (window as any).update_timeline_data = update_timeline_data;
 (window as any).get_style_records = get_style_records;
 (window as any).get_shape_records = get_shape_records;
+(window as any).get_visual_settings = get_visual_settings;
