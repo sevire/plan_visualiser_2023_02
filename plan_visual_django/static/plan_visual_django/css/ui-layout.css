@@ -36,10 +36,15 @@ div.top-row-control > div {
   text-align: left;
 }
 
+#visual-content {
+  position: relative;
+}
 #visual-content .canvas-wrapper {
-  margin: 5px;
+  position: relative;
+  width: 100%;
 }
 #visual-content .canvas-wrapper .canvas-layer {
+  position: relative;
   width: 100%;
 }
 #visual-content .canvas-wrapper .canvas-layer canvas {

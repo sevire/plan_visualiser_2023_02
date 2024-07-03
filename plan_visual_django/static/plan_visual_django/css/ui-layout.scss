@@ -39,9 +39,12 @@ div.top-row-control > div {
 }
 
 #visual-content {
+  position: relative;
   .canvas-wrapper {
-    margin: 5px;
+    position: relative;
+    width: 100%;
     .canvas-layer {
+      position: relative;
       width: 100%;
       canvas {
         width: 100%;

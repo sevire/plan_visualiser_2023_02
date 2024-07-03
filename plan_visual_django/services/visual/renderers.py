@@ -163,6 +163,7 @@ class CanvasRenderer(VisualRenderer):
         client for plotting on an HTML canvas, all context will be lost, we are just plotting shapes on the screen.
         So any logic around positioning of objects (e.g. text layout) needs to be here.
 
+        :param scale_factor:
         :param item:
         :return:
         """
@@ -180,7 +181,7 @@ class CanvasRenderer(VisualRenderer):
                         'top': item.top,
                         'left': item.left,
                         'width': item.width,
-                        'height': item.height
+                        'height': item.height,
                     },
                     'fill_color': item.format.fill_color.to_dict(),
                     'stroke_color': item.format.line_color.to_dict(),
@@ -197,7 +198,7 @@ class CanvasRenderer(VisualRenderer):
                         'text_baseline': text_baseline
                     },
                     'fill_color': item.format.font_color.to_dict(),
-                    'font': item.format.font_color.to_dict()
+                    'font_size': round(item.format.font_size)
                 }
             ]
             return canvas_rendered_objects
