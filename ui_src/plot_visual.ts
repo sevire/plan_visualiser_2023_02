@@ -34,13 +34,13 @@ export function plot_visual() {
 
         // top left edge
         context!.lineTo(
-          (object_to_render.shape_plot_dims.left - object_to_render.shape_plot_dims.width) * scale_factor / 2,
-          (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height) * scale_factor / 2
+          (object_to_render.shape_plot_dims.left - object_to_render.shape_plot_dims.width / 2) * scale_factor,
+          (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height / 2) * scale_factor
         );
 
         // bottom left edge
         context!.lineTo(
-          object_to_render.shape_plot_dims.left,
+          object_to_render.shape_plot_dims.left * scale_factor,
           (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height) * scale_factor
         );
 
