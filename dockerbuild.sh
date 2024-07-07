@@ -4,8 +4,6 @@
 # believe that triggers a change to the containers so they wouldn't restart just by docker compose up, but at least
 # Gunicorn needs to be restarted after code change to ensure that any caches are destroyed so changes are seen.
 
-pwd
-
 # First check whether we need to override WIP test.
 if [ "$1" != "--no-wip" ]
 then
@@ -17,6 +15,18 @@ then
       exit 0
   fi
 fi
+
+echo "Running tests..."
+python manage.py test
+EXIT_CODE=$?
+
+# Check the exit code and abort if tests fail
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Tests failed. Aborting."
+  exit $EXIT_CODE
+fi
+
+echo "Tests passed successfully."
 
 echo "Re-building Docker images..."
 test -e .env && source .env || echo "$0: warn: no '.env' file in $(pwd): default values will be used"

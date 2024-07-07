@@ -7,7 +7,7 @@ from django.test import TestCase
 
 from plan_visual_django.models import SwimlaneForVisual, TimelineForVisual
 from plan_visual_django.tests.resources.test_configuration import test_fixtures_folder, test_data_base_folder
-from resources.utilities import generate_test_data_field_stream_multiple_inputs
+from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs
 
 """
 Simply tests that all URLs are working.  Doesn't check content, just that the api is processed.

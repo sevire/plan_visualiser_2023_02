@@ -1,9 +1,9 @@
 from coverage.annotate import os
 from django.test import TestCase
 from ddt import ddt, data, unpack
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
-from resources.utilities import generate_test_data_field_stream_multiple_inputs
-from resources.utilities import extract_object_from_list_by_field
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs
+from plan_visual_django.tests.resources.utilities import extract_object_from_list_by_field
 
 
 @ddt

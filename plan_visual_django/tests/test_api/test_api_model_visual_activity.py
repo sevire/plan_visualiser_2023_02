@@ -3,7 +3,7 @@ import os
 from ddt import ddt, data, unpack
 from django.test import TestCase
 from plan_visual_django.tests.resources.test_configuration import test_fixtures_folder, test_data_base_folder
-from resources.utilities import generate_test_data_field_stream_multiple_inputs
+from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs
 
 
 @ddt

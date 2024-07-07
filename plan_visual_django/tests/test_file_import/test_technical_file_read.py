@@ -14,7 +14,7 @@ from django.core.files import File
 from django.test import TestCase
 from plan_visual_django.models import Plan, FileType
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from resources.utilities import date_from_string
+from plan_visual_django.tests.resources.utilities import date_from_string
 from plan_visual_django.tests.resources.test_configuration import \
     (test_data_base_folder, test_fixtures_folder, excel_input_files_folder)
 
