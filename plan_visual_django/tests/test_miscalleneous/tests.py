@@ -6,7 +6,7 @@ from django.test import TestCase
 from plan_visual_django.models import PlanFieldMappingType, Plan, FileType
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 # from plan_visual_django.tests.resources.data_setup.common_data_setup import setup_common_reference_data
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestReadExcelFile(TestCase):

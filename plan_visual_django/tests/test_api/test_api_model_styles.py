@@ -4,9 +4,7 @@ Test related to management of styles for plotable objects.
 import os
 from django.contrib.auth.models import User
 from django.test import TestCase
-from rest_framework import response
-
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestApiPlotableStyles(TestCase):

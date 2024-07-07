@@ -4,7 +4,7 @@ from django.test import TestCase
 from api.v1.model.visual.activity.serializer import ModelVisualActivitySerialiser, \
     ModelVisualActivitySerialiserForUpdate
 from plan_visual_django.models import VisualActivity
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestSerializers(TestCase):

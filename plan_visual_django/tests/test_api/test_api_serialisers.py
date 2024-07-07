@@ -4,8 +4,8 @@ import os
 
 from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser
 from plan_visual_django.models import PlanVisual
-from resources.test_configuration import test_data_base_folder, test_fixtures_folder
-from resources.utilities import generate_test_data_field_stream_multiple_inputs
+from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs
 
 
 @ddt
