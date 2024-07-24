@@ -95,7 +95,7 @@ export function initialise_canvases(canvas_info:{[key: string]: CanvasRenderingC
 
     // Set to the size of device window
     canvas.style.width = canvas.width + 'px';
-    canvas.style.height = canvas.height / aspectRatio + 'px';
+    canvas.style.height = canvas.height + 'px';
 
     // Increase actual size of canvas for retina display
     let dpi = window.devicePixelRatio;
