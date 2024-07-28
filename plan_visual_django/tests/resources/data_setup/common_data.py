@@ -37,7 +37,8 @@ timeline_for_visual_data = [
         "plan_visual": None,  # To be filled in before creating test object.
         "timeline_type": TimelineForVisual.TimelineLabelType.MONTHS,
         "timeline_name": "Test: Months",
-        "plotable_style": None  # To be filled in during objecct creation
+        "plotable_style": None,  # To be filled in during object creation
+        "sequence_number": 1
     },
     # {
     #     "plan_visual": None,  # To be filled in before creating test object.

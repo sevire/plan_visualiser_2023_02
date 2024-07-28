@@ -19,8 +19,10 @@ urlpatterns = [
     path("layout-visual/<int:visual_id>/", views.layout_visual, name='layout-visual'),
     path("create-milestone-swimlane/<int:visual_id>/", views.create_milestone_swimlane, name='create-milestone-swimlane'),
     path("swimlane_action/<int:visual_id>/", views.swimlane_actions, name='auto-add/del-levels'),
-    path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
+    path("visual/<int:visual_id>/", views.plot_visual_03, name='plot-visual'),
     path("visual-02/<int:visual_id>/", views.plot_visual_02, name='plot-visual'),
+    path("visual-03/<int:visual_id>/", views.plot_visual_03, name='plot-visual'),
+    path("visual-04/<int:visual_id>/", views.plot_visual_04, name='plot-visual'),
     path("manage-colors/", views.manage_colors, name='manage-colors'),
     path("manage-plotable-styles/", views.manage_plotable_styles, name='manage-styles'),
 ]

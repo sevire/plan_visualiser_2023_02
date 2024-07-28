@@ -21,10 +21,10 @@
       <excludeFolder url="file://$MODULE_DIR$/plan_visual_django/static/plan_visual_django/bootstrap" />
       <excludeFolder url="file://$MODULE_DIR$/logs" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/docker-build-logs" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="axios" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
@@ -33,5 +33,8 @@
         <option value="$MODULE_DIR$/templates" />
       </list>
     </option>
+  </component>
+  <component name="TestRunnerService">
+    <option name="PROJECT_TEST_RUNNER" value="py.test" />
   </component>
 </module>

@@ -16,6 +16,18 @@ then
   fi
 fi
 
+echo "Running tests..."
+python manage.py test
+EXIT_CODE=$?
+
+# Check the exit code and abort if tests fail
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Tests failed. Aborting."
+  exit $EXIT_CODE
+fi
+
+echo "Tests passed successfully."
+
 echo "Re-building Docker images..."
 test -e .env && source .env || echo "$0: warn: no '.env' file in $(pwd): default values will be used"
 
@@ -30,7 +42,7 @@ exec 2>&1
 #docker compose down
 
 echo "Docker compose beginning..."
-docker compose up -d --detach --build
+docker compose -f devops/docker/docker-compose.yml up --detach --build
 
 echo "Docker compose complete, pruning beginning..."
 docker system prune -f

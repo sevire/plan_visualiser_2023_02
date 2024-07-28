@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {plot_visual} from "./plot_shapes";
 import {initialise_canvas} from "./drawing";
+import {plot_visual} from "./plot_visual";
 
 var return_data: any
 
@@ -253,7 +253,7 @@ export function get_rendered_visual(visual_id:number): any {
       const visual_activities = visual['shapes']
       console.log("visual_activities: " + visual_activities)
       let context = initialise_canvas(visual_settings);
-      plot_visual(context, visual_activities, visual_settings);
+      plot_visual();
     })
     .catch(error => {
         console.log("Error...")

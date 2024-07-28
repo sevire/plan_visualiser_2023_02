@@ -1,6 +1,6 @@
 {% extends "plan_visual_django/pv_base.html" %}
 
-{% block page_heading %}Configure Activities For Visual{% endblock %}
+{% block page_heading %}Select Activities For Visual: {{ visual.name }}, File: {{ visual.plan.file_name }}{% endblock %}
 {% block main_content %}
     <div id="configure">
         {% include 'plan_visual_django/_visual_buttons.html' %}

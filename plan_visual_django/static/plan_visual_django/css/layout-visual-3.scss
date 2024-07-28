@@ -1,0 +1,255 @@
+// Colours for plan activities
+$background-color-activity-level-1: rgb(1, 45, 0);
+$background-color-activity-level-2: rgb(9, 61, 1);
+$background-color-activity-level-3: rgb(10, 77, 0);
+$background-color-activity-level-4: rgb(3, 105, 1);
+$background-color-activity-level-5: rgb(33, 159, 14);
+$background-color-activity-level-6: rgb(66, 189, 47);
+$background-color-activity-level-7: rgb(83, 199, 65);
+$background-color-activity-level-8: rgb(112, 196, 99);
+$background-color-activity-level-9: rgb(139, 231, 125);
+$background-color-activity-level-10: rgb(168, 248, 155);
+
+$background-color-activity-selected: rgb(255, 255, 119);
+$border-color-activity-current: rgb(201, 1, 1);
+
+// Colours for activity edit pane
+
+
+body {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+}
+// Header formatting
+#main-header {
+  background-color: rebeccapurple;
+  img {
+    height: 50px;
+  }
+}
+
+.panel {
+  margin: 5px;
+}
+
+#top-row-controls {
+  &>div {
+    height: 100px;
+  }
+  #swimlane_data {
+    overflow: scroll;
+    background-color: lightpink;
+    flex: 25%;
+    table {
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      width: 100%;
+      margin: 0 0;
+      padding: 3% 0;
+      thead {
+        background-color: #8fc286;
+      }
+      tbody {
+        td {
+          width: 50%;
+          background-color: #e9ffe5;
+          &.arrow {
+            text-align: center;
+            width: 20%;
+          }
+          &.name {
+            width: 80%;
+          }
+        }
+      }
+    }
+
+  };
+  #auto-layout-buttons {
+    flex: 50%;
+    background-color: darksalmon;
+  }
+  #timeline_data {
+    background-color: palegoldenrod;
+    flex:25%;
+  }
+}
+
+// General layout and styling
+.flex-row {
+  display: flex;
+}
+
+#left-column {
+  flex: 33%;
+
+  #add-remove-activities {
+    height: 400px;
+    overflow: scroll;
+    background-color: #b3d4fc;
+    margin-bottom: 10px // To override margin collapsing
+  }
+
+  #layout-activity {
+    overflow: scroll;
+    height: 270px;
+    background-color: #bee7b7;
+    table {
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      width: 94%;
+      margin: 0 0;
+      padding: 3% 0;
+      thead {
+        background-color: #8fc286;
+      }
+      tbody {
+        tr.activity-subheading {
+          th {
+            width: 100%;
+            text-align: center;
+            background-color: #9fdc95;
+          }
+        }
+        tr { /* Add this rule */
+          display: flex;
+        }
+        th, td { /* Add td */
+          width: 50%;
+        }
+        th {
+          text-align: right;
+          div { /* Add this rule */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+        td {
+          background-color: #e9ffe5;
+        }
+      }
+    }
+  }
+}
+
+#right-column {
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  flex: 67%;
+  #visual-header {
+    padding: 10px;
+    height: 50px;
+    background-color: bisque;
+    margin-bottom: 10px // To override margin collapsing
+  }
+  #visual-content {
+    padding: 10px;
+    background-color: #8fc286;
+
+    .canvas-stack {
+      //background-color: #e70723;  // Shouldn't able to see this as canvas should define colour
+      position: relative;
+    }
+
+    .canvas-stack canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    #background_layer {
+      z-index: 1;
+    }
+
+    #swimlane_layer {
+      z-index: 2;
+    }
+
+    #activity_layer {
+      z-index: 3;
+    }
+  }
+}
+
+ul#plan-activities {
+  // Remove default ul styles
+  display: block;
+  list-style-type: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 0;
+
+  ul {
+    padding-inline-start: 10px;
+  }
+
+  // add needed styles for ul
+  padding: 5px;
+
+  li {
+    display: block;
+    list-style: none;
+  }
+
+  li.expandNode:not(.expand) > ul {
+    display: none;
+  }
+
+  li:not(.expandNode) > div {
+    padding-left: 25px;
+  }
+
+  li > div {
+    font-family: "Georama", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+    font-size: 12px;
+    color: white;
+
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    background-color: pink;
+    text-decoration: none;
+    border-radius: 50vh;
+    margin-bottom: 4px;
+    margin-right: 2%;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    height: 30px;
+    line-height: 25px;
+    border: solid 3px transparent;
+
+    &.level-1 { background-color: $background-color-activity-level-1}
+    &.level-2 { background-color: $background-color-activity-level-2}
+    &.level-3 { background-color: $background-color-activity-level-3}
+    &.level-4 { background-color: $background-color-activity-level-4}
+    &.level-5 { background-color: $background-color-activity-level-5}
+    &.level-6 { background-color: $background-color-activity-level-6}
+    &.level-7 { background-color: $background-color-activity-level-7}
+    &.level-8 { background-color: $background-color-activity-level-8}
+    &.level-9 { background-color: $background-color-activity-level-9}
+    &.level-10 { background-color: $background-color-activity-level-10}
+
+    &.in-visual {background-color: $background-color-activity-selected; color: black;}
+    &.current {border: solid 3px $border-color-activity-current}
+
+    i {
+      margin-left: 8px;
+      margin-right: 5px;
+      color: greenyellow;
+    }
+  }
+}

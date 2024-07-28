@@ -1,19 +1,30 @@
 import {initialise_canvas} from "./drawing";
-import {plot_visual} from "./plot_shapes";
-import {get_activity_data, checkKey, get_activities_from_server, selectRowByIndex} from "./visual";
+import {checkKey} from "./visual";
+import {
+  get_plan_activity_data,
+  get_shape_records,
+  get_style_records,
+  get_visual_activity_data, get_visual_settings
+} from "./plan_visualiser_api";
+import {createPlanTree} from "./manage_visual";
+import {plot_visual} from "./plot_visual";
+import {addStylesheetToDOM} from "./utilities";
+import {update_swimlane_data} from "./manage_swimlanes";
+import {update_timeline_data} from "./manage_timelines";
 
 window.addEventListener('DOMContentLoaded', () => {
-  // const visual = get_activity_data()
-  // const visual_settings = visual['settings']
-  // const visual_activities = visual['shapes']
-  // let context = initialise_canvas(visual_settings);
-
-  // ToDo: Shouldn't automatically plot visual as may not be on the visual page
-  // plot_visual(context, visual_activities, visual_settings);
+  console.log("DOM Loaded zzzz....")
 });
-(window as any).get_activities_from_server = get_activities_from_server;
+console.log("Executing index.ts");
+(window as any).get_plan_activity_data = get_plan_activity_data;
+(window as any).get_visual_activity_data = get_visual_activity_data;
+(window as any).createPlanTree = createPlanTree;
+(window as any).addStylesheetToDOM = addStylesheetToDOM;
 (window as any).checkKey = checkKey;
-(window as any).get_activity_data = get_activity_data;
 (window as any).initialise_canvas = initialise_canvas;
 (window as any).plot_visual = plot_visual;
-
+(window as any).update_swimlane_data = update_swimlane_data;
+(window as any).update_timeline_data = update_timeline_data;
+(window as any).get_style_records = get_style_records;
+(window as any).get_shape_records = get_shape_records;
+(window as any).get_visual_settings = get_visual_settings;

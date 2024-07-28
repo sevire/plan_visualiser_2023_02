@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import Iterable, Dict, List
+
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.plotables import RectangleBasedPlotable, Plotable
 from plan_visual_django.services.visual.visual import PlotableCollection
@@ -30,6 +32,7 @@ class VisualRenderer(ABC):
                 self.plot_collection(item)
             else:
                 raise Exception(f"Unexpected type {type(item)} when plotting visual")
+
 
     @abstractmethod
     def plot_plotable(self, item: Plotable):
@@ -122,30 +125,85 @@ class CanvasRenderer(VisualRenderer):
         super().plot_visual(visual_collection)
         return self.browser_data
 
-    def plot_plotable(self, item: RectangleBasedPlotable):
+    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: [Dict]):
+        if isinstance(plotable_iterable, Plotable):
+            rendered_objects.extend(self.plot_plotable(plotable_iterable))
+        elif isinstance(plotable_iterable, Iterable):
+            for next_plotable_iterable in plotable_iterable:
+                self._render_iterable(next_plotable_iterable, rendered_objects)
+        else:
+            raise TypeError(f"Unsupported type when rendering to Canvas {type(plotable_iterable)}")
+
+    def render_from_iterable(self, visual_plotables):
+        """
+        Replacement for original plot_visual to remove need for the Collection class.
+
+        Input will be a dictionary of iterables, where each dict entry will be used to create the canvas objects for
+        one canvas, and each canvas will be given a z-value to represent which layer it sits in the final rendered
+        visual.  Canvases will be positioned back to front, with the first canvas being at the back.
+
+        Output will be an object which can easily be rendered to JSON within the API.  All structure of the visual will
+        be lost apart from which canvas an object appears in.
+
+        :return:
+        """
+        canvas_objects = {}
+
+        for canvas in visual_plotables:
+            canvas_objects[canvas] = []
+            plotable_iterable = visual_plotables[canvas]
+            self._render_iterable(plotable_iterable, canvas_objects[canvas])
+
+        return canvas_objects
+
+    def plot_plotable(self, item: Plotable):
         # ToDo: Replace rectangle with more generic plotable and associated processing.
         """
-        Return structure with information required for browser to plot the shape.
+        Return structure with information required for browser to plot the shape.  Note when we send this to the
+        client for plotting on an HTML canvas, all context will be lost, we are just plotting shapes on the screen.
+        So any logic around positioning of objects (e.g. text layout) needs to be here.
 
+        :param scale_factor:
         :param item:
         :return:
         """
+        if isinstance(item, RectangleBasedPlotable):
+            # Note a Plotable can be rendered as more than one canvas object; e.g. one for shape, one for text.
 
-        activity_record = {
-            'shape_details': {
-                'shape_name': item.shape,
-                'shape_plot_dims': {
-                    'top': item.top,
-                    'left': item.left,
-                    'width': item.width,
-                    'height': item.height
+            text_x, text_align = item.get_text_x()
+            text_y, text_baseline = item.get_text_y()
+
+            canvas_rendered_objects = [
+                {
+                    'shape_type': 'rectangle',
+                    'shape_name': item.shape,
+                    'shape_plot_dims': {
+                        'top': item.top,
+                        'left': item.left,
+                        'width': item.width,
+                        'height': item.height,
+                    },
+                    'fill_color': item.format.fill_color.to_dict(),
+                    'stroke_color': item.format.line_color.to_dict(),
+                    'stoke_line_width': item.format.line_thickness,
                 },
-                'text': item.text,
-                'shape_format': self.format_to_dict(item.format, item.text_vertical_alignment, item.text_flow, item.external_text_flag)
-            }
-        }
-
-        self.browser_data['shapes'].append(activity_record)
+                {
+                    'shape_type': 'text',
+                    'text': item.text,
+                    'shape_name': None,  # If we are plotting text there is no shape name.
+                    'shape_plot_dims': {
+                        'x': text_x,
+                        'y': text_y,
+                        'text_align': text_align,
+                        'text_baseline': text_baseline
+                    },
+                    'fill_color': item.format.font_color.to_dict(),
+                    'font_size': round(item.format.font_size)
+                }
+            ]
+            return canvas_rendered_objects
+        else:
+            raise ValueError(f"item of type which can't be rendered {item}:{item.__class__.__name__}")
 
     def plot_collection(self, collection: VisualElementCollection):
         super().plot_collection(collection)

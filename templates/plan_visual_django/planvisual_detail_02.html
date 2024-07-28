@@ -1,7 +1,7 @@
 {% extends "plan_visual_django/pv_base.html" %}
 {% load static %}
 
-{% block page_heading %}Visual {{ planvisual.name }}{% endblock %}
+{% block page_heading %}Layout Visual: {{ visual.name }}, File: {{ visual.plan.file_name }}{% endblock %}
 {% block main_content %}
     {% include 'plan_visual_django/_visual_buttons.html' %}
     {% include 'plan_visual_django/_visual_auto_buttons.html' %}
@@ -42,7 +42,7 @@
         body_element.setAttribute("id", {{ visual.id }});
         document.onkeydown = window.checkKey;
         window.addEventListener('load', function() {
-            console.log("window loaded");
+            console.log("window loaded QQQ");
             window.get_activities_from_server({{ visual.id }});
             }
         );

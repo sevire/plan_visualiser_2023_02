@@ -26,7 +26,7 @@ from plan_visual_django.services.general.user_services import get_current_user, 
 from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.renderers import CanvasRenderer
-from plan_visual_django.services.visual.visual_settings import VisualSettings, SwimlaneSettings
+from plan_visual_django.services.visual.visual_settings import VisualSettings
 from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 import logging
 
@@ -277,6 +277,8 @@ def manage_plans(request):
 
     plan_files = Plan.objects.filter(user=user)
     context = {
+        'primary_heading': "Manage Plans",
+        'secondary_heading': "",
         'user': user,
         'plan_files': plan_files
     }
@@ -354,6 +356,8 @@ def manage_visuals(request, plan_id):
         plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
 
         context = {
+            'primary_heading': "Manage Visuals",
+            'secondary_heading': "",
             'plan': plan_record,
             'visuals': visuals,
             'plan_summary_data_display': plan_summary_data_display
@@ -427,6 +431,7 @@ def manage_timelines_for_visual(request, visual_id):
             "timeline_name",
             "timeline_height",
             "plotable_style",
+            "sequence_number",
         ),
         extra=1,
         can_delete=True,
@@ -462,7 +467,7 @@ def manage_plotable_styles(request):
     """
     user = get_current_user(request)
     shared_data_user_name = settings.SHARED_DATA_USER_NAME
-    shared_data_user = User.objects.get(username=shared_data_user_name)
+    shared_data_user = User.objects.get()
     PlotableStyleFormset = inlineformset_factory(
         User,
         PlotableStyle,
@@ -575,7 +580,7 @@ def select_visual_activities(request, visual_id):
         # If the record does exist then check the enabled flag as may have been added and then disabled.
         try:
             # Get record for this activity within the visual, if it exists.  There will be one or no records.
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity.unique_sticky_activity_id)
+            visual_activity = visual.visualactivity_set.get()
         except VisualActivity.DoesNotExist:
             # No record so activity not currently in visual
             enabled = False
@@ -706,17 +711,64 @@ def plot_visual_02(request, visual_id):
         messages.error(request, "No activities selected for visual")
         return HttpResponseRedirect(f'/pv/configure-visual-activities/{visual_id}')
     else:
-        visual_settings = VisualSettings(visual_id)
-        visual_orchestrator = VisualOrchestration(visual, visual_settings)
-        canvas_renderer = CanvasRenderer()
-        canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
-        swimlane_form = SwimlaneDropdownForm(instance=visual)
+        # visual_settings = VisualSettings(visual_id)
+        # visual_orchestrator = VisualOrchestration(visual, visual_settings)
+        # canvas_renderer = CanvasRenderer()
+        # canvas_data = canvas_renderer.plot_visual(visual_orchestrator.visual_collection)
+        # swimlane_form = SwimlaneDropdownForm(instance=visual)
         context = {
-            'activity_data': canvas_data,
+            # 'activity_data': canvas_data,
             'visual': visual,
-            'swimlane_dropdown_form': swimlane_form
+            # 'swimlane_dropdown_form': swimlane_form
         }
         return render(request, "plan_visual_django/planvisual_detail_02.html", context)
+
+@login_required
+def plot_visual_03(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    context = {
+
+        'visual': visual,
+    }
+    return render(request, "plan_visual_django/planvisual_detail_03.html", context)
+
+@login_required
+def plot_visual_04(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    if not can_access_visual(request.user, visual_id):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    plan_name = visual.plan.plan_name
+    visual_name = visual.name
+
+    context = {
+        'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
+        'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
+        'visual': visual,
+    }
+    return render(request, "plan_visual_django/planvisual_detail_04.html", context)
+
 
 @login_required
 def manage_colors(request):

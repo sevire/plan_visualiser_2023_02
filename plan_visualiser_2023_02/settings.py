@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
-import os
+import logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,32 +25,36 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # If it is equal to 'production', then we are in production mode.
 # Otherwise, we are in development mode.
 DJANGO_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Read other env variables here (so they are all in one place)
-# ToDo: Gather together all environment variable reads in settings.py
-LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
-LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'DEBUG').upper()  # Handler/File
-LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
-LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
 
 if DJANGO_ENVIRONMENT == 'production':
-    print('Using production environment')
-    # SECURITY WARNING: keep the secret key used in production secret!
+    logging.info('Using production environment')
     SECRET_KEY = os.getenv('SECRET_KEY')
-
-    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = False
+
+    # Set logging levels from env variable if present but use defaults based on production if not.
+    LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
+    LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'INFO').upper()  # Handler/File
+    LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
+    LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 else:
     print('Using development environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
-
-    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
+
+    # Set logging levels from env variable if present but use defaults based on development if not.
+    LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
+    LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'DEBUG').upper()  # Handler/File
+    LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
+    LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://138.68.160.214']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 
 # Application definition
 
@@ -61,11 +65,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'corsheaders',
     'rest_framework',
     'plan_visual_django.apps.PlanVisualDjangoConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -93,7 +99,7 @@ LOGGING = {
         "file": {
             "level": LOGGING_LEVEL_H_FILE,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/debug.log",
+            "filename": os.path.join(BASE_DIR, "logs/debug.log"),
             "maxBytes": 1024*1024*5, # 5 MB
             "backupCount": 5,
             "formatter": "verbose"
@@ -117,6 +123,7 @@ LOGGING = {
     },
 }
 
+CORS_ORIGIN_ALLOW_ALL = True  # ToDo: Set CORS correctly for live - this is for testing against separate UI app
 ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 
 TEMPLATES = [
@@ -142,7 +149,7 @@ WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 if DJANGO_ENVIRONMENT == 'production':
-    # print("Using PostgreSQL database in production")
+    print("Using PostgreSQL database in staging/production")
     # Use the PostgreSQL database in production
     DATABASES = {
         'default': {
@@ -155,7 +162,7 @@ if DJANGO_ENVIRONMENT == 'production':
         }
     }
 else:
-    # print("Using SQLite database in development")
+    print("Using SQLite database in development")
     # Use the SQLite database in development
     DATABASES = {
         "default": {
@@ -216,8 +223,6 @@ LOGIN_REDIRECT_URL = '/'
 # Email settings, mostly to support resetting of passwords for users
 EMAIL_HOST = ""
 EMAIL_PORT = 465
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = "(secret)"
 EMAIL_USE_SSL = True
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

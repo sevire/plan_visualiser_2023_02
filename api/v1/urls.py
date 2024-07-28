@@ -1,5 +1,6 @@
 from django.urls import path, include
 
 urlpatterns = [
-    path('visual_activities/', include('api.v1.visual_activity.urls')),
+    path('model/', include('api.v1.model.urls')),
+    path('rendered/', include('api.v1.rendered.urls')),
 ]

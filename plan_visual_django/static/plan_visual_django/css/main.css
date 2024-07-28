@@ -1,5 +1,5 @@
-li.user-action button.btn, li.user-action a.btn {
-  margin-right: 10px;
+#header-clearance {
+  padding-top: 120px;
 }
 
 table.activity-table tr.level-01 {
@@ -28,37 +28,6 @@ table.activity-table tr.level-08 {
 }
 table.activity-table tr.level-09 {
   background-color: #fee4eb;
-}
-
-header.main-header {
-  background-color: #ffb8cb;
-}
-header.main-header img.logo {
-  height: 70px;
-}
-
-div.page-heading {
-  background-color: #c06810;
-  margin-bottom: 20px;
-}
-div.page-heading h1 {
-  color: white;
-}
-
-div#settings a.settings,
-div#layout a.layout,
-div#configure a.configure,
-div#swimlanes a.swimlanes,
-div#timelines a.timelines,
-div#milestones a.milestones,
-div#view a.view {
-  pointer-events: none;
-  background-color: #86b7fe;
-  color: #0d6efd;
-}
-
-table#activities_table tr.selected {
-  background-color: #ffd3d8;
 }
 
 /*# sourceMappingURL=main.css.map */

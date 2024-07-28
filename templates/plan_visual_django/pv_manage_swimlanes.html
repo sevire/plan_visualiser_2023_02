@@ -1,6 +1,6 @@
 {% extends "plan_visual_django/pv_base.html" %}
 
-{% block page_heading %}Manage Swimlanes for Plan:Visual - {{ plan.plan_name }}:{{ visual.name }}{% endblock %}
+{% block page_heading %}Manage Swimlanes For Visual: {{ visual.name }}, File: {{ visual.plan.file_name }}{% endblock %}
 
 {% block main_content %}
     <div id="swimlanes">
@@ -45,4 +45,5 @@
                 <input type="submit" name="Submit">
             </form>
         </div>
+    </div>
 {% endblock %}
