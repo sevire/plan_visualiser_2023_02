@@ -40,6 +40,22 @@ if DJANGO_ENVIRONMENT == 'production':
     LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'INFO').upper()  # Handler/File
     LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
     LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
+
+    ALLOWED_HOSTS = ['planononepage.com']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
+elif DJANGO_ENVIRONMENT == 'staging':
+    logging.info('Using staging environment')
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    DEBUG = False
+
+    # Set logging levels from env variable if present but use defaults based on production if not.
+    LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
+    LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'INFO').upper()  # Handler/File
+    LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
+    LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
+
+    ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 else:
     print('Using development environment')
     # SECURITY WARNING: keep the secret key used in production secret!
@@ -52,9 +68,8 @@ else:
     LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
     LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
 
-ALLOWED_HOSTS = ['*']
-
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
+    ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 
 # Application definition
 

@@ -5,7 +5,7 @@ version: '3.8'
 # ============================================================================
 services:
   django_gunicorn:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
+    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME_ARG}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     - /docker_app_root/plan_visualiser_2023_02:/app
@@ -18,14 +18,13 @@ services:
         condition: service_healthy
 
     environment:
-    - POSTGRES_DB=postgres
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - SECRET_KEY='c*48+8)np*$4ohvxr38x=)(w4vw3!shqm*+m+%v$uzn!q@wk%+'
-    - DEBUG=False
-    - DJANGO_ENVIRONMENT=production
+      - "POSTGRES_DB=${POSTGRES_DB_NAME_ARG}"
+      - "POSTGRES_USER=${POSTGRES_USER_ARG}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD_ARG}"
+      - "SECRET_KEY=${DJANGO_SECRET_KEY_ARG}"
+      - "DJANGO_ENVIRONMENT_TYPE=${DJANGO_ENVIRONMENT_TYPE_ARG}"
   nginx:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
+    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME_ARG}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     ports:
@@ -35,9 +34,9 @@ services:
   db:
     image: postgres
     environment:
-    - POSTGRES_DB=postgres
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
+      - "POSTGRES_DB=${POSTGRES_DB_NAME_ARG}"
+      - "POSTGRES_USER=${POSTGRES_USER_ARG}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD_ARG}"
     volumes:
     - data:/var/lib/postgresql/data
     healthcheck:
