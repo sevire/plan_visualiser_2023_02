@@ -32,8 +32,8 @@ jobs:
         DOMAIN: planononepage.com
         USERNAME: yourusername  # Replace with your actual username
       run: |
-        chmod +x devops/setup_droplet.sh
-        ssh -o StrictHostKeyChecking=no ${{ secrets.DO_REMOTE_USER }}@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' < devops/setup_droplet.sh
+        chmod +x devops/live_server_setup.sh
+        ssh -o StrictHostKeyChecking=no ${{ secrets.DO_REMOTE_USER }}@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' < devops/live_server_setup.sh
   test:
     runs-on: ubuntu-latest
     services:
