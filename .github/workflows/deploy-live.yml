@@ -12,17 +12,20 @@ on:
         required: true
 
 jobs:
-  setup:
+  setup_new_server:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.DO_LIVE_DROPLET_SSH_KEY }}
+    - name: install ssh keys
+      run: >
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        
+        echo "${{ secrets.DO_LIVE_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
+        
+        ssh-keyscan -H ${{ secrets.DO_LIVE_STAGING_HOST_IP }} > ~/.ssh/known_hosts
 
     - name: Run setup script on remote server
       env:
