@@ -19,7 +19,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: install ssh keys
+    - name: Install ssh keys
       run: >
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.DO_LIVE_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
@@ -28,12 +28,13 @@ jobs:
     - name: Run setup script on remote server
       env:
         DOMAIN: planononepage.com
-        USERNAME: yourusername  # Replace with your actual username
+        USERNAME: root  # Replace with your actual username
       run: |
         chmod +x devops/live_server_setup.sh
         ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' < devops/live_server_setup.sh
   test:
     runs-on: ubuntu-latest
+    needs: setup_new_server
     services:
       postgres:
         image: postgres:latest
@@ -74,6 +75,7 @@ jobs:
 
   build_and_push:
     runs-on: ubuntu-latest
+    needs: setup_new_server
     strategy:
       max-parallel: 4
       matrix:
