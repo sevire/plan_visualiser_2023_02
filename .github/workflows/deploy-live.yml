@@ -20,15 +20,16 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install ssh keys
-      run: >
+      run: |
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.DO_LIVE_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_LIVE_HOST_IP }} > ~/.ssh/known_hosts
 
     - name: Run setup script on remote server
       env:
-        DOMAIN: planononepage.com
-        USERNAME: root  # Replace with your actual username
+        DOMAIN_NAME: planononepage.com
+        EMAIL: planononepage@genonline.co.uk
+        DNS_UPDATE_API: ${{ secrets.DNS_UPDATE_API }}
       run: |
         chmod +x devops/live_server_setup.sh
         ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' < devops/live_server_setup.sh
