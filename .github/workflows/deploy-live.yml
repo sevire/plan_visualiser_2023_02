@@ -31,9 +31,11 @@ jobs:
         DOMAIN_NAME: planononepage.com
         EMAIL: planononepage@genonline.co.uk
         DNS_UPDATE_API: ${{ secrets.DNS_UPDATE_API }}
+
       run: |
         chmod +x devops/live_server_setup.sh
-        ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' < devops/live_server_setup.sh
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} "devops/live_server_setup.sh"
+
   test:
     runs-on: ubuntu-latest
     needs: setup_new_server
