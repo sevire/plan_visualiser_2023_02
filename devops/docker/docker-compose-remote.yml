@@ -18,6 +18,7 @@ services:
         condition: service_healthy
 
     environment:
+      - "DO_DOCKER_REGISTRY_NAME=${DO_DOCKER_REGISTRY_NAME_ARG}"
       - "POSTGRES_DB=${POSTGRES_DB_NAME_ARG}"
       - "POSTGRES_USER=${POSTGRES_USER_ARG}"
       - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD_ARG}"
