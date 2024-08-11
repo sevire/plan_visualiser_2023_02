@@ -109,11 +109,9 @@ jobs:
       with:
         token: ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }}
     - name: install ssh keys
-      run: >
+      run: |
         install -m 600 -D /dev/null ~/.ssh/id_rsa
-        
         echo "${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
-        
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
     - name: connect and pull
       run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && sh deploy_on_remote.sh $(echo $GITHUB_SHA | head -c7)"
