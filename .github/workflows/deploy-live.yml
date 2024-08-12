@@ -110,7 +110,7 @@ jobs:
       - name: Build Docker image for Nginx
         run: |
           docker build \
-            --file ./devops/docker/nginx/Dockerfile \
+            --file ./devops/docker/nginx/DockerfileLive \
             --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7) \
             .
 
@@ -120,7 +120,7 @@ jobs:
             --build-arg POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }} \
             --build-arg POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
             --build-arg POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-            --build-arg DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} \
+            --build-arg DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" \
             --build-arg DJANGO_ENVIRONMENT_TYPE=${{ secrets.DJANGO_ENVIRONMENT }} \
             --file ./devops/docker/gunicorn/Dockerfile \
             --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7) \
