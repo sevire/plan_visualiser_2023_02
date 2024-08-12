@@ -24,7 +24,7 @@ jobs:
         set -x
         echo ~
         install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.DO_LIVE_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.DO_LIVE_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_LIVE_HOST_IP }} > ~/.ssh/known_hosts
         ls -l ~/.ssh
