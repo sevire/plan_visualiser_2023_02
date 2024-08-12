@@ -15,7 +15,7 @@
 #
 # Version: 1.0
 
-set -e
+#set -e
 
 # =======================================================================================
 # 1. Check environment variables and set from parameters if necessary.
