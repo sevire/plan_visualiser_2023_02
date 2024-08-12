@@ -117,11 +117,12 @@ jobs:
       - name: Build Docker image for Gunicorn
         run: |
           docker build \
-            --build-arg POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }} \
-            --build-arg POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-            --build-arg POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-            --build-arg DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" \
-            --build-arg DJANGO_ENVIRONMENT_TYPE=${{ secrets.DJANGO_ENVIRONMENT }} \
+# ToDo: Revisit whether secret key etc needed to be passed to Docker image build for Gunicorn.
+#            --build-arg POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }} \
+#            --build-arg POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+#            --build-arg POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+#            --build-arg DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" \
+#            --build-arg DJANGO_ENVIRONMENT_TYPE=${{ secrets.DJANGO_ENVIRONMENT }} \
             --file ./devops/docker/gunicorn/Dockerfile \
             --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7) \
             .
@@ -156,7 +157,7 @@ jobs:
           export POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }} && \
           export POSTGRES_USER=${{ secrets.POSTGRES_USER }} && \
           export POSTGRES_PASSWORD=${{ secrets.POSTGRES_DB_PASSWORD }} && \
-          export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} && \
+          export DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" && \
           export DJANGO_ENVIRONMENT=${{ secrets.DJANGO_ENVIRONMENT }} && \
           export DO_DOCKER_REGISTRY_NAME=${{ secrets.DO_DOCKER_REGISTRY_NAME }} && \
           sh deploy_on_remote.sh $(echo $GITHUB_SHA | head -c7)"
