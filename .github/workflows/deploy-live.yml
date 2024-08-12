@@ -28,7 +28,7 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_LIVE_HOST_IP }} > ~/.ssh/known_hosts
         ls -l ~/.ssh
-        cat ~./ssh/id_rsa
+        cat ~/.ssh/id_rsa
         cat ~/.ssh/known_hosts
 
     - name: Run setup script on remote server
