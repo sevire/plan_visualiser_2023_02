@@ -25,7 +25,6 @@ jobs:
         echo ~
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.DO_LIVE_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_LIVE_HOST_IP }} > ~/.ssh/known_hosts
         ls -l ~/.ssh
         cat ~/.ssh/id_rsa
@@ -38,6 +37,7 @@ jobs:
         DNS_UPDATE_API: ${{ secrets.DNS_UPDATE_API }}
 
       run: |
+        ls -l
         chmod +x devops/live_server_setup.sh
         ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} "devops/live_server_setup.sh"
 
