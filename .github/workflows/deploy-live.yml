@@ -148,13 +148,13 @@ jobs:
       - name: Connect and pull Docker images on droplet
         run: |
           ssh root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && \
-          export POSTGRES_DB_NAME=${{ secrets.POSTGRES_DB_NAME }} && \
-          export POSTGRES_USER=${{ secrets.POSTGRES_USER }} && \
-          export POSTGRES_PASSWORD=${{ secrets.POSTGRES_DB_PASSWORD }} && \
+          export POSTGRES_DB_NAME="${{ secrets.POSTGRES_DB_NAME }}" && \
+          export POSTGRES_USER="${{ secrets.POSTGRES_USER }}" && \
+          export POSTGRES_PASSWORD="${{ secrets.POSTGRES_DB_PASSWORD }}" && \
           export DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" && \
-          export DJANGO_ENVIRONMENT=${{ secrets.DJANGO_ENVIRONMENT }} && \
-          export DO_DOCKER_REGISTRY_NAME=${{ secrets.DO_DOCKER_REGISTRY_NAME }} && \
-          sh deploy_on_remote.sh $(echo $GITHUB_SHA | head -c7)"
+          export DJANGO_ENVIRONMENT="${{ secrets.DJANGO_ENVIRONMENT }}" && \
+          export DO_DOCKER_REGISTRY_NAME="${{ secrets.DO_DOCKER_REGISTRY_NAME }}" && \
+          sh deploy_on_remote.sh $(echo $GITHUB_SHA | head -c7)
 
       - name: Clean up SSH keys
         run: rm -rf ~/.ssh
