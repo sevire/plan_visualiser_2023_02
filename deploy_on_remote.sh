@@ -24,7 +24,7 @@ echo "using DJANGO_ENVIRONMENT_TYPE_ARG: ${DJANGO_ENVIRONMENT_TYPE_ARG:-<not set
 
 
 cd /var/www/app_root/app || exit
-git pull
+git pull https://github.com/sevire/plan_visualiser_2023_02.git master
 
 # Login to registry
 doctl registry login
