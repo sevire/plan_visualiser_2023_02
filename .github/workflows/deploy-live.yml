@@ -151,12 +151,12 @@ jobs:
       - name: Connect and pull Docker images on droplet
         run: |
           chmod +x ./deploy_on_remote.sh
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' -- {{ secrets.POSTGRES_DB_NAME }} \
-          {{ secrets.POSTGRES_USER }} \
-          "{{ secrets.POSTGRES_PASSWORD }}" \
-          "{{ secrets.DJANGO_SECRET_KEY }}" \
-          "{{ secrets.DJANGO_ENVIRONMENT }}" \
-          "{{ secrets.DO_DOCKER_REGISTRY_NAME }}" \
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} \
+          ${{ secrets.POSTGRES_USER }} \
+          "${{ secrets.POSTGRES_PASSWORD }}" \
+          "${{ secrets.DJANGO_SECRET_KEY }}" \
+          "${{ secrets.DJANGO_ENVIRONMENT }}" \
+          "${{ secrets.DO_DOCKER_REGISTRY_NAME }}" \
           < ./deploy_on_remote.sh
       - name: Clean up SSH keys
         run: rm -rf ~/.ssh
