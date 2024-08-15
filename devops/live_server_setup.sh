@@ -67,6 +67,10 @@ sudo apt install python3-pip
 echo "installing certbot-dns-digitalocean"
 sudo pip install certbot-dns-digitalocean
 
+echo "installing doctl"
+snap install doctl
+
+
 # =======================================================================================
 # 5. Create folders for the app and initialise git repo.
 # =======================================================================================
