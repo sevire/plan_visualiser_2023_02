@@ -151,8 +151,8 @@ jobs:
       - name: Connect and pull Docker images on droplet
         run: |
           chmod +x ./deploy_on_remote.sh
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} \
-          ${{ secrets.POSTGRES_USER }} \
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_DROPLET_LIVE_HOST_IP }} 'bash -s' -- "${{ secrets.POSTGRES_DB_NAME }}" \
+          "${{ secrets.POSTGRES_USER }}" \
           "${{ secrets.POSTGRES_PASSWORD }}" \
           "${{ secrets.DJANGO_SECRET_KEY }}" \
           "${{ secrets.DJANGO_ENVIRONMENT }}" \
