@@ -22,7 +22,7 @@ echo "using DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-<not set>}"
 echo "using DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG:-<not set>}"
 echo "using DJANGO_ENVIRONMENT_TYPE: ${DJANGO_ENVIRONMENT_TYPE:-<not set>}"
 echo "using DO_DOCKER_REGISTRY_NAME: ${DO_DOCKER_REGISTRY_NAME:-<not set>}"
-edho "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:-<not set>}"
+echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:-<not set>}"
 
 
 cd /var/www/app_root/app || exit
