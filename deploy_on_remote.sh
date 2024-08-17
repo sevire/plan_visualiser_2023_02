@@ -5,6 +5,7 @@
 # =======================================================================================
 
 # Assigning the value from the environment variable or using the parameter passed
+echo "Setting env variables from parameters..."
 export POSTGRES_DB_NAME=${POSTGRES_DB_NAME_ARG:-$1}
 export POSTGRES_USER=${POSTGRES_USER_ARG:-$2}
 export POSTGRES_PASSWORD=${POSTGRES_PASSWORD_ARG:-$3}
