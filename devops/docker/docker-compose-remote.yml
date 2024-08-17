@@ -5,7 +5,7 @@ version: '3.8'
 # ============================================================================
 services:
   django_gunicorn:
-    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME_ARG}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG_ARG}
+    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     - /docker_app_root/plan_visualiser_2023_02:/app
@@ -26,7 +26,7 @@ services:
       - DJANGO_ENVIRONMENT_TYPE="${DJANGO_ENVIRONMENT_TYPE}"
       - DO_DOCKER_REGISTRY_NAME="${DO_DOCKER_REGISTRY_NAME}"
   nginx:
-    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME_ARG}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG_ARG}
+    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
     volumes:
     - static:/static
     ports:
