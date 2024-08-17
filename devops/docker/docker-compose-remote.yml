@@ -40,7 +40,7 @@ services:
       - "POSTGRES_USER=${POSTGRES_USER}"
       - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
     volumes:
-    - data:/var/lib/postgresql/data
+    - /var/www/app_root/postgres:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB_NAME} -U $${POSTGRES_USER}" ]
       interval: 10s
