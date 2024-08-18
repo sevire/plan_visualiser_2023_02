@@ -42,7 +42,7 @@ exec 2>&1
 #docker compose down
 
 echo "Docker compose beginning..."
-docker compose -f devops/docker/docker-compose.yml up --detach --build
+docker compose -f devops/docker/docker-compose-local.yml up --detach --build
 
 echo "Docker compose complete, pruning beginning..."
 docker system prune -f
