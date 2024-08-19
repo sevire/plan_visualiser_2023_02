@@ -7,8 +7,9 @@ services:
   django_gunicorn:
     image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
-    - static:/static
-    - /docker_app_root/plan_visualiser_2023_02:/app
+      - /var/www/app_root/ssl:/etc/nginx/ssl
+      - /var/www/app_root/app/plan_visualiser_2023_02:/app
+      - static:/static
 
     ports:
     - "8000:8000"
