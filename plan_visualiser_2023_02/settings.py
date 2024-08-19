@@ -30,6 +30,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Read other env variables here (so they are all in one place)
 
+logging.info(f"DJANGO_ENVIRONMENT = {DJANGO_ENVIRONMENT}")
 if DJANGO_ENVIRONMENT == 'production':
     logging.info('Using production environment')
     SECRET_KEY = os.getenv('SECRET_KEY')
