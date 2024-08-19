@@ -30,9 +30,10 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Read other env variables here (so they are all in one place)
 
+print(f"DJANGO_ENVIRONMENT = {DJANGO_ENVIRONMENT}")
 logging.info(f"DJANGO_ENVIRONMENT = {DJANGO_ENVIRONMENT}")
 if DJANGO_ENVIRONMENT == 'production':
-    logging.info('Using production environment')
+    logging.info('Using PRODUCTION environment')
     SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = False
 
@@ -45,7 +46,7 @@ if DJANGO_ENVIRONMENT == 'production':
     ALLOWED_HOSTS = ['planononepage.com']
     CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 elif DJANGO_ENVIRONMENT == 'staging':
-    logging.info('Using staging environment')
+    logging.info('Using STAGING environment')
     SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = False
 
@@ -58,7 +59,7 @@ elif DJANGO_ENVIRONMENT == 'staging':
     ALLOWED_HOSTS = ['*']
     CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 else:
-    print('Using development environment')
+    print('Using DEVELOPMENT environment')
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = "django-insecure-@!(&2yeohsybrswkzk#75vmj&w5c1l@!xftsbkvuzc+x4z$0yi"
     DEBUG = True
