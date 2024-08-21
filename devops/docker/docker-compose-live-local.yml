@@ -26,7 +26,7 @@ services:
   nginx:
     build:
       context: ../../
-      dockerfile: devops/docker/nginx/Dockerfile
+      dockerfile: devops/docker/nginx/DockerfileLive
     volumes:
     - static:/static
     ports:
