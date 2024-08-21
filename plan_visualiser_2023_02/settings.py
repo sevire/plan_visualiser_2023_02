@@ -43,7 +43,7 @@ if DJANGO_ENVIRONMENT == 'production':
     LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
     LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 
-    ALLOWED_HOSTS = ['planononepage.com']
+    ALLOWED_HOSTS = ['planononepage.com', '206.189.127.49']
     CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 elif DJANGO_ENVIRONMENT == 'staging':
     logging.info('Using STAGING environment')
