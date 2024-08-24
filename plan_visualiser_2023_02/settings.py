@@ -44,7 +44,7 @@ if DJANGO_ENVIRONMENT == 'production':
     LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 
     ALLOWED_HOSTS = ['planononepage.com', '206.189.127.49']
-    CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214', 'planononepage.com', 'www.planononepage.com']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214', 'https://planononepage.com', 'https://www.planononepage.com']
 elif DJANGO_ENVIRONMENT == 'staging':
     logging.info('Using STAGING environment')
     SECRET_KEY = os.getenv('SECRET_KEY')
