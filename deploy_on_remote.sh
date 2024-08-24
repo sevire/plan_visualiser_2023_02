@@ -16,14 +16,14 @@ export DO_DOCKER_REGISTRY_NAME=${DO_DOCKER_REGISTRY_NAME_ARG:-$7}
 export DO_DOCKER_REGISTRY_API_TOKEN=${DO_DOCKER_REGISTRY_API_TOKEN_ARG:-$8}
 
 # Print out the values of the variables to help with debugging
-echo "using POSTGRES_DB_NAME: ${POSTGRES_DB_NAME:-<not set>}"
-echo "using POSTGRES_USER: ${POSTGRES_USER:-<not set>}"
-echo "using POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-<not set>}"
-echo "using DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-<not set>}"
-echo "using DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG:-<not set>}"
-echo "using DJANGO_ENVIRONMENT: ${DJANGO_ENVIRONMENT:-<not set>}"
-echo "using DO_DOCKER_REGISTRY_NAME: ${DO_DOCKER_REGISTRY_NAME:-<not set>}"
-echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:-<not set>}"
+echo "using POSTGRES_DB_NAME: ${POSTGRES_DB_NAME:0:4:-<not set>}"
+echo "using POSTGRES_USER: ${POSTGRES_USER:0:4:-<not set>}"
+echo "using POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:0:4:-<not set>}"
+echo "using DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:0:4:-<not set>}"
+echo "using DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG:0:4:-<not set>}"
+echo "using DJANGO_ENVIRONMENT: ${DJANGO_ENVIRONMENT:0:4:-<not set>}"
+echo "using DO_DOCKER_REGISTRY_NAME: ${DO_DOCKER_REGISTRY_NAME:0:4:-<not set>}"
+echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:0:4:-<not set>}"
 
 
 cd /var/www/app_root/app || exit
