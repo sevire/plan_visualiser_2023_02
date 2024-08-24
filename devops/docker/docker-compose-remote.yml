@@ -5,7 +5,7 @@ version: '3.8'
 # ============================================================================
 services:
   django_gunicorn:
-    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
+    image: ${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
       - /var/www/app_root/app:/app
       - static:/static
@@ -24,7 +24,7 @@ services:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_ENVIRONMENT=${DJANGO_ENVIRONMENT}
   nginx:
-    image: registry.digitalocean.com/${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
+    image: ${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
     volumes:
       - /var/www/app_root/ssl:/etc/nginx/ssl
       - static:/static
