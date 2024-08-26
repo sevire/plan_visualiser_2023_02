@@ -140,11 +140,6 @@ jobs:
       - name: Checkout master branch
         uses: actions/checkout@v3
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }}
-
       - name: Install SSH keys
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
@@ -153,7 +148,8 @@ jobs:
 
       - name: Connect and pull Docker images on droplet
         run: |
-          chmod +x ./deploy_on_remote.sh
+          chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
           ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_LIVE_HOST_IP }}" 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) production ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
+
       - name: Clean up SSH keys
         run: rm -rf ~/.ssh
