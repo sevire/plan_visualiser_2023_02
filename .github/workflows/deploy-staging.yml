@@ -103,9 +103,6 @@ jobs:
         }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head
         -c7)
 
-    - name: Push Postgres image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/postgres:$(echo $GITHUB_SHA | head -c7)
-
   deploy_code_and_pull_docker:
     runs-on: ubuntu-latest
     needs: build_and_push
