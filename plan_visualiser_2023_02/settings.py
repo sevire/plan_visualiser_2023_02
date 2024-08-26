@@ -226,6 +226,10 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 if DJANGO_ENVIRONMENT == 'production':
     STATIC_ROOT = "/static/"
+    MEDIA_ROOT = "/media/"
+elif DJANGO_ENVIRONMENT == 'staging':
+    STATIC_ROOT = "/static/"
+    MEDIA_ROOT = "/media/"
 else:
     STATICFILES_DIRS = [BASE_DIR / "static"]
 
