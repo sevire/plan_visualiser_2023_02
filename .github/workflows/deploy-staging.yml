@@ -114,10 +114,12 @@ jobs:
     - name: install ssh keys
       run: |
         install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.DO_STAGING_DROPLET_SSH_KEY }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
     - name: connect and pull
-      run: ssh root@${{ secrets.DO_DROPLET_STAGING_HOST_IP }} "cd /docker_app_root/plan_visualiser_2023_02 && sh deploy_on_remote.sh $(echo $GITHUB_SHA | head -c7)"
+      run: |
+        chmod +x ./deploy_on_remote.sh
+        ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) production ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
 
     - name: clean up after ssh session.
       run: rm -rf ~/.ssh
