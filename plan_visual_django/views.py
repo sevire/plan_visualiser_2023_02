@@ -356,8 +356,8 @@ def manage_visuals(request, plan_id):
         plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
 
         context = {
-            'primary_heading': "Manage Visuals",
-            'secondary_heading': "",
+            'primary_heading': f"Manage Visuals For Plan: { plan_record.plan_name }",
+            'secondary_heading': f"File: { plan_record.file_name }",
             'plan': plan_record,
             'visuals': visuals,
             'plan_summary_data_display': plan_summary_data_display
@@ -632,7 +632,12 @@ def manage_colors(request):
         formset = ColorFormset(
             initial=initial
         )
-        return render(request, 'plan_visual_django/manage_colors.html', context={"formset": formset})
+        context = {
+            'primary_heading': "Manage Colours",
+            'secondary_heading': "",
+            'formset': formset
+        }
+        return render(request, 'plan_visual_django/manage_colors.html', context=context)
 
 
 def swimlane_actions(request, visual_id):
