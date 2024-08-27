@@ -467,7 +467,7 @@ def manage_plotable_styles(request):
     """
     user = get_current_user(request)
     shared_data_user_name = settings.SHARED_DATA_USER_NAME
-    shared_data_user = User.objects.get()
+    shared_data_user = User.objects.get(username=shared_data_user_name)
     PlotableStyleFormset = inlineformset_factory(
         User,
         PlotableStyle,
@@ -476,10 +476,12 @@ def manage_plotable_styles(request):
         can_delete=True,
         form=PlotableStyleForm
     )
-    form_kwargs = {'users': [request.user, shared_data_user]}
+    form_kwargs = {'users': [user, shared_data_user]}
     if request.method == 'GET':
         formset = PlotableStyleFormset(instance=user,  form_kwargs=form_kwargs)
         context = {
+            'primary_heading': "Manage Styles",
+            'secondary_heading': "",
             'formset': formset
         }
         return render(request, "plan_visual_django/pv_manage_plotable_styles.html", context)
