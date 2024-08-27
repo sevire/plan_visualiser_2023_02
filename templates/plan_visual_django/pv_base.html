@@ -48,6 +48,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/pv/manage-plans">My Plans</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'manage-colors' %}">My Colours</a>
+                    </li>
                 </ul>
             </div>
             <ul class="nav">
@@ -55,7 +58,6 @@
                     <li style="line-height: 40px;" class="nav-item text-light align-middle me-3">
                         {{ request.user.username }}
                     </li>
-{#                    <li class="nav-item">{{ request.user.username }}</li>#}
                     <li>
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
@@ -66,7 +68,6 @@
                     <li id=login-button" class="user-action"><a href="{% url 'login' %}" class="btn btn-secondary">Login</a></li>
                 {% endif %}
             </ul>
-{#            <button type="button" class="btn btn-secondary">Login</button>#}
         </div>
     </nav>
     <header class="bg-primary-subtle py-2 mb-4 border-bottom">
