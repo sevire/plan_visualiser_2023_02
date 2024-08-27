@@ -134,16 +134,14 @@ class PlotableStyleForm(ModelForm):
         fields = "__all__"
 
     def __init__(self, *args, users:[User], **kwargs):
-        """
-        users will either be None, or empty or contain one or more Users whose colours should be included in the
-        colour dropdown.  This is to allow standard colors to be included for any user by adding a common user
-        where the standard colours are mapped to.
-
-        :param args:
-        :param user:
-        :param kwargs:
-        """
         super().__init__(*args, **kwargs)
+
+        # Adding 'form-select' class to the widgets
+        for field_name in self.fields:
+            field = self.fields.get(field_name)
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-select'})
+
         if users is not None and len(users) > 0:
             queryset = Color.objects.filter(user__in=users)
             self.fields['fill_color'].queryset = queryset

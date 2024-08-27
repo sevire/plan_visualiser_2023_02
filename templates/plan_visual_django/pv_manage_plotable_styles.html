@@ -1,7 +1,5 @@
 {% extends 'plan_visual_django/pv_base.html' %}
 
-{% block page_heading %}Manage Plotable Styles{% endblock %}
-
 {% block main_content %}
 
     <div class="row">
@@ -11,7 +9,7 @@
                 {{ formset.non_form_errors.as_ul }}
                 {{ formset.management_form }}
 
-                <table id="formset" class="form">
+                <table id="formset" class="form table table-sm w-auto">
                     {% for form in formset.forms %}
                         {% if forloop.first %}
                             <thead>
@@ -38,7 +36,7 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <input type="submit" name="Submit">
+                <input type="submit" name="Submit" class="btn btn-primary">
             </form>
         </div>
 
