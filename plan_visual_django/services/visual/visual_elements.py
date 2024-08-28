@@ -613,13 +613,6 @@ class SwimlaneCollection(VisualElementCollection):
                     # We need to go through the activities for a swimlane sequentially because there will be layout options
                     # Where the vertical position of the current activity is directly related to that of the previous one.
                     from plan_visual_django.models import VisualActivity
-                    v_positioning_type: VisualActivity.VerticalPositioningType = activity['vertical_positioning_type']
-                    if v_positioning_type == VisualActivity.VerticalPositioningType.TRACK_NUMBER:
-                        track_number_start = activity['vertical_positioning_value']
-                        num_tracks = activity['height_in_tracks']
-                        track_number_end = track_number_start + num_tracks - 1
-                    else:
-                        raise ValueError(f"Positioning type {v_positioning_type} not yet implemented")
                     max_track_for_swimlane = max(max_track_for_swimlane, track_number_end)
 
                     # ToDo: Remove this hack for the track gap and make the code work properly!

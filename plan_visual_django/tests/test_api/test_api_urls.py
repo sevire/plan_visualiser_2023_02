@@ -1,10 +1,7 @@
 import json
 import os
-from unittest import skip
-
 from ddt import ddt, data, unpack
 from django.test import TestCase
-
 from plan_visual_django.models import SwimlaneForVisual, TimelineForVisual
 from plan_visual_django.tests.resources.test_configuration import test_fixtures_folder, test_data_base_folder
 from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs

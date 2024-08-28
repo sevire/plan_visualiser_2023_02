@@ -19,7 +19,7 @@ class ModelVisualActivitySerialiser(ModelSerializer):
 class ModelVisualActivitySerialiserForUpdate(ModelVisualActivitySerialiser):
     """
     Not 100% sure whether this is right or good practice.  When updating the activity I don't want the depth=2
-    because I am not trying to update the value of any related records through this API call.  I will simplay
+    because I am not trying to update the value of any related records through this API call.  I will simply
     update the foreign key reference (e.g. the change the swimlane).
 
     So this is a copy of the ModelVisualActivitySerialiser simply with depth = 1

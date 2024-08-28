@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser, \
     ModelVisualActivitySerialiserForUpdate
-from plan_visual_django.models import PlanVisual, VisualActivity, SwimlaneForVisual, DEFAULT_SWIMLANE_NAME, \
-    DEFAULT_VERTICAL_POSITIONING_TYPE, DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
-    DEFAULT_TEXT_HORIZONTAL_ALIGNMENT
+from plan_visual_django.models import (PlanVisual, VisualActivity, SwimlaneForVisual, DEFAULT_SWIMLANE_NAME,
+                                       DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
+    DEFAULT_TEXT_HORIZONTAL_ALIGNMENT)
 
 
 class VisualActivityViewDispatcher(View):
@@ -141,7 +141,6 @@ class ModelVisualActivityAPI(APIView):
             new_visual_activity = VisualActivity(
                 visual=visual,
                 unique_id_from_plan=unique_id,
-                vertical_positioning_type=DEFAULT_VERTICAL_POSITIONING_TYPE,
                 vertical_positioning_value=initial_swimlane.get_next_unused_track_number(),
                 height_in_tracks=DEFAULT_HEIGHT_IN_TRACKS,
                 text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
