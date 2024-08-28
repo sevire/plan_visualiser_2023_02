@@ -83,7 +83,7 @@ class VisualActivityFormForEdit(ModelForm):
 
         # Set the order of fields in the form with activity first
 
-    field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_type", "vertical_positioning_value"]
+    field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_value"]
 
 
     class Meta:
