@@ -23,6 +23,38 @@ class VisualSettings:
         self.default_milestone_plotable_style = self.visual.default_milestone_plotable_style
         self.default_swimlane_plotable_style = self.visual.default_swimlane_plotable_style
 
+    @staticmethod
+    def calculate_defaults_for_visual(plan):
+        """
+        Encapsulates calculation of default values for a new visual.  May want to make this
+        more sophisticated (e.g. allow default values to be stored in the database) but for
+        now just have default values defined in a single place in the code.
+
+        :param plan:
+        :return:
+        """
+
+        from plan_visual_django.models import PlotableShape
+        from plan_visual_django.models import PlotableStyle
+
+        num_visuals_for_plan = plan.planvisual_set.count()
+
+        return {
+            "name": f"{plan.plan_name}-Visual-{num_visuals_for_plan+1:02d}",
+            "width": 1200,
+            "max_height": 800,
+            "include_title": False,
+            "default_activity_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.RECTANGLE),
+            "default_milestone_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.DIAMOND),
+            "track_height": 20,
+            "track_gap": 4,
+            "milestone_width": 10,
+            "swimlane_gap": 5,
+            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="[03]Activity Default 1"),
+            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="[01]Milestone Default 1"),
+            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="[05]Swimlane-odd Default 1"),
+        }
+
 class VisualSettingsCanvas(VisualSettings):
     """
     Sub class of VisualSettings which generates a set of settings for the visual which are specific to
@@ -34,3 +66,6 @@ class VisualSettingsCanvas(VisualSettings):
         :param visual_id:
         """
         super().__init__(visual_id)
+
+
+
