@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, CharField, Form, IntegerField
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
     PlotableStyle, Color
+from plan_visual_django.services.visual.visual_settings import VisualSettings
 
 
 class PlanForm(ModelForm):
@@ -25,7 +26,6 @@ class VisualFormForAdd(ModelForm):
             "width",
             "max_height",
             "include_title",
-            "max_height",
             "default_activity_shape",
             "default_milestone_shape",
             "track_height",
@@ -37,6 +37,20 @@ class VisualFormForAdd(ModelForm):
             "default_swimlane_plotable_style",
         )
 
+    def __init__(self, *args, **kwargs):
+        plan = kwargs.pop("plan", None)
+
+        if plan is not None: # None means we have been called from POST processing so data already populated
+            super(VisualFormForAdd, self).__init__(*args, **kwargs)
+
+            field_defaults = VisualSettings.calculate_defaults_for_visual(plan)
+
+            for field_name, field_default in field_defaults.items():
+                self.fields[field_name].initial = field_default
+        else:
+            super(VisualFormForAdd, self).__init__(*args, **kwargs)
+
+
 
 class VisualFormForEdit(ModelForm):
     class Meta:
@@ -46,7 +60,6 @@ class VisualFormForEdit(ModelForm):
             "width",
             "max_height",
             "include_title",
-            "max_height",
             "default_activity_shape",
             "default_milestone_shape",
             "track_height",
@@ -83,7 +96,7 @@ class VisualActivityFormForEdit(ModelForm):
 
         # Set the order of fields in the form with activity first
 
-    field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_type", "vertical_positioning_value"]
+    field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_value"]
 
 
     class Meta:

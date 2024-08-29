@@ -389,8 +389,6 @@ class PlanVisual(models.Model):
         activity_record['swimlane'] = visual_activity.swimlane.swim_lane_name
         activity_record['plotable_shape'] = visual_activity.plotable_shape.name
 
-        activity_record['vertical_positioning_type'] = visual_activity.get_vertical_positioning_type()
-        activity_record['vertical_positioning_value'] = visual_activity.vertical_positioning_value
         activity_record['height_in_tracks'] = visual_activity.height_in_tracks
         activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
         activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
@@ -850,11 +848,6 @@ class VisualActivity(models.Model):
         FLOW_CLIPPED = "CLIPPED", 'Align centre, clipped to shape'
         FLOW_CENTRE = "CENTRE", 'Align centre'
 
-    class VerticalPositioningType(models.TextChoices):
-        TRACK_NUMBER = "TRACK", 'Specify track #'
-        RELATIVE_TRACK = "REL_TRACK", 'Specify relative to last positioned activity'
-        AUTO = "AUTO", 'Automatic positioning'
-
     class HorizontalAlignment(models.TextChoices):
         LEFT = 'LEFT', 'Left',
         CENTER = 'CENTER', 'Center',
@@ -871,7 +864,6 @@ class VisualActivity(models.Model):
     enabled = models.BooleanField()
     swimlane = models.ForeignKey(SwimlaneForVisual, on_delete=models.CASCADE)
     plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    vertical_positioning_type = models.CharField(max_length=20, choices=VerticalPositioningType.choices)
     vertical_positioning_value = models.FloatField()
     height_in_tracks = models.FloatField(default=1)
     text_horizontal_alignment = models.CharField(max_length=20, choices=HorizontalAlignment.choices)
@@ -893,9 +885,6 @@ class VisualActivity(models.Model):
 
     def get_text_flow(self) -> TextFlow:
         return self.TextFlow(self.text_flow)
-
-    def get_vertical_positioning_type(self) -> VerticalPositioningType:
-        return self.VerticalPositioningType(self.vertical_positioning_type)
 
     def get_horizontal_alignment(self) -> HorizontalAlignment:
         return self.HorizontalAlignment(self.text_horizontal_alignment)
@@ -968,7 +957,6 @@ class VisualActivity(models.Model):
 
 # Defaults to use when creating a new visual before any formatting or layout has been done.
 DEFAULT_SWIMLANE_NAME = "(default)"
-DEFAULT_VERTICAL_POSITIONING_TYPE = VisualActivity.VerticalPositioningType.TRACK_NUMBER
 DEFAULT_VERTICAL_POSITIONING_VALUE = 1
 DEFAULT_HEIGHT_IN_TRACKS = 1
 DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT
