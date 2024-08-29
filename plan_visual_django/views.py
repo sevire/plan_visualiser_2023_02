@@ -230,7 +230,9 @@ def add_visual(request, plan_id):
             messages.error(request, "Plan does not exist or you do not have access")
             return HttpResponseRedirect(reverse('manage-plans'))
         else:
-            form = VisualFormForAdd()
+            plan = Plan.objects.get(id=plan_id)
+
+            form = VisualFormForAdd(plan=plan)
             context = {
                 'add_or_edit': 'Add',
                 'form': form
