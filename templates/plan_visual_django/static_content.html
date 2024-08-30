@@ -1,0 +1,8 @@
+{% extends "plan_visual_django/pv_base.html" %}
+{% load markdownify %}
+
+{% block main_content %}
+    
+    {{ markdown_text|safe }}
+
+{% endblock %}

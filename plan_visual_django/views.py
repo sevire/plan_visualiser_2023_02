@@ -1,6 +1,8 @@
 import json
 import os
 from typing import List, Dict, Any
+
+import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,13 +12,15 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.generic import DetailView
+
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
     AddPlanError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color
+    PlotableStyle, TimelineForVisual, Color, StaticContent
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.general.string_utilities import indent
@@ -310,7 +314,7 @@ def delete_plan(request, pk):
         else:
             messages.success(request, f"Record deleted for {plan_record.file_name}")
 
-        return HttpResponseRedirect(reverse('manage_plans'))
+        return HttpResponseRedirect(reverse('manage-plans'))
 
 
 @login_required
@@ -693,3 +697,14 @@ def swimlane_actions(request, visual_id):
             auto_layout_manager.compress_swimlane(swimlane)
 
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
+
+
+class StaticPageView(DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['primary_heading'] = self.object.title
+        context['markdown_text'] = markdown.markdown(self.object.content, extensions=['nl2br'])
+        return context
+
+    model = StaticContent
+    template_name = "plan_visual_django/static_content.html"

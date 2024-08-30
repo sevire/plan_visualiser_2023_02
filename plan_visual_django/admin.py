@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
     PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
     PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType, PlanActivity, \
-    TimelineForVisual
+    TimelineForVisual, StaticContent
 
 
 @admin.register(FileType)
@@ -99,4 +99,10 @@ class PlanActivityAdmin(admin.ModelAdmin):
 @admin.register(TimelineForVisual)
 class TimelineForVisualAdmin(admin.ModelAdmin):
     list_filter = ('plan_visual',)
+
+
+@admin.register(StaticContent)
+class StaticContentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'content')  # columns to display on admin page
+    search_fields = ['title', 'content']
 
