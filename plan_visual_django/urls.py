@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from plan_visual_django import views
+from plan_visual_django.views import StaticPageView
 
 urlpatterns = [
     path("", RedirectView.as_view(url='manage-plans', permanent=False), name='index'),
@@ -20,4 +21,5 @@ urlpatterns = [
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
     path("manage-colors/", views.manage_colors, name='manage-colors'),
     path("manage-plotable-styles/", views.manage_plotable_styles, name='manage-styles'),
+    path("textpages/<int:pk>", StaticPageView.as_view(), name='static-pages'),
 ]

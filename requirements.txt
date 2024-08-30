@@ -34,6 +34,7 @@ sqlparse==0.4.4
 tomli==2.0.1
 typing_extensions==4.11.0
 urllib3==1.26.15
+django-markdownify
 
 # Note psycopg2 needed by Gunicorn container but not included by pip freeze.
 psycopg2-binary>=2.8,<3
