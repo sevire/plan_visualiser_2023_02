@@ -363,7 +363,11 @@ class ExcelXLSFileReader(PlanFileReader):
         :param workbook_object:
         :return:
         """
-        if len(sheet_list) == 1:
+        if self.sheet_name is not None and self.sheet_name != "":
+            sheet_name = self.sheet_name
+            logger.debug(f"Sheet name set outside this method, using that value, sheet name = {sheet_name}")
+            return sheet_name
+        elif len(sheet_list) == 1:
             sheet_name = sheet_list[0]
             logger.debug(f"Only one sheet in the plan, using that, sheet name = {sheet_name}")
             return sheet_name
@@ -376,8 +380,9 @@ class ExcelXLSFileReader(PlanFileReader):
             logger.debug(f"MS Project, choosing sheet name = {sheet_name}")
             return sheet_name
         else:
-            logger.error(f"Unable to determine which sheet plan is in, aborting")
-            raise ExcelPlanSheetNotFound(f"Unable to determine which sheet plan is in")
+            message = f"Unable to determine which sheet plan is in within file {file_name}, aborting"
+            logger.error(message)
+            raise ExcelPlanSheetNotFound(message)
 
     def read(self, plan: Plan) -> (List[Dict], List):
         """
