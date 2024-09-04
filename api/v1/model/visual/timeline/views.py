@@ -9,11 +9,13 @@ from api.v1.model.visual.timeline.serializer import ModelVisualTimelineListSeria
 from plan_visual_django.models import PlanVisual, TimelineForVisual
 
 class TimelineListViewDispatcher(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         view = ModelVisualTimelineListAPI.as_view()
         return view(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
+    @staticmethod
+    def patch(request, *args, **kwargs):
         view = ModelVisualTimelineUpdateAPI.as_view()
         return view(request, *args, **kwargs)
 
@@ -30,7 +32,8 @@ class ModelVisualTimelineListAPI(ListAPIView):
 
 
 class ModelVisualTimelineAPI(APIView):
-    def get(self, request, visual_id, timeline_seq_num):
+    @staticmethod
+    def get(request, visual_id, timeline_seq_num):
         visual_timeline_queryset = PlanVisual.objects.get(id=visual_id).timelineforvisual_set.get(sequence_number=timeline_seq_num)
         serializer = ModelVisualTimelineSerialiser(instance=visual_timeline_queryset)
 
@@ -45,7 +48,8 @@ class ModelVisualTimelineUpdateAPI(APIView):
     While the id (Primary Key) of each timeline will be provided, this endpoint will validate that each id sits within
     the supplied visual.
     """
-    def patch(self, request, visual_id=None, **kwargs):
+    @staticmethod
+    def patch(request, visual_id=None, **kwargs):
         """
         Applies updates to several timeline records.  Only supplied fields will be updated for each record.
 

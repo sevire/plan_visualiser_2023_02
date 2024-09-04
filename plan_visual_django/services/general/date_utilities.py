@@ -2,13 +2,7 @@ from datetime import datetime, date, timedelta
 import os
 from calendar import monthrange
 from enum import Enum
-
 from dateutil.relativedelta import relativedelta
-
-
-def date_from_string(date_string):
-    date = datetime.strptime(date_string, '%d:%m:%Y').date()
-    return date
 
 
 def days_between_dates(start_date: date, end_date: date):

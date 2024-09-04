@@ -32,7 +32,8 @@ class RenderedCanvasVisualSwimlaneAPI(APIView):
     """
     This API is used to generate data to render all the timelines for the given visual on html canvas.
     """
-    def get(self, request, visual_id, sequence_num, **kwargs):
+    @staticmethod
+    def get(request, visual_id, sequence_num, **kwargs):
         """
         This method returns a JSON object containing all plotables for the specified visual.
         :param request:

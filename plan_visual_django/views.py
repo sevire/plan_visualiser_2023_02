@@ -1,6 +1,8 @@
 import json
 import os
 from typing import List, Dict, Any
+
+import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,24 +12,22 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.generic import DetailView
+
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
     AddPlanError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color
+    PlotableStyle, TimelineForVisual, Color, StaticContent
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.general.string_utilities import indent
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
-from plan_visual_django.services.plan_file_utilities.plan_updater import update_plan_data
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
-from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings
-from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,14 +35,22 @@ logger = logging.getLogger(__name__)
 @login_required
 @transaction.atomic
 def add_plan(request):
-    logger.debug("Adding plan...")
+    """
+    Uploads an impoarts a new plan file and adds it and all the activities to the database.
+
+    :param request:
+    :return:
+    """
     if request.method == "POST":
+        logger.debug(f"Uploading new plan...")
+
         plan_form = PlanForm(data=request.POST, files=request.FILES)
         if plan_form.is_valid():
-            current_user = get_current_user(request, default_if_logged_out=True)
-
             # Save fields from form but don't commit so can modify other fields before committing.
             plan = plan_form.save(commit=False)
+
+            current_user = get_current_user(request, default_if_logged_out=True)
+            logger.debug(f"Uploading new plan for user {current_user.username}, plan is {plan.plan_name}")
 
             # Check that user hasn't already added a file with this name. Count should be zero
             count = Plan.objects.filter(user=current_user, file_name=plan.file.name).count()
@@ -55,13 +63,13 @@ def add_plan(request):
 
                 # Now can save the record
                 plan.save()
-                logger.info(f"Plan added for user {current_user}, name = {plan.file.name}")
+                logger.info(f"Plan record added for user {current_user}, name = {plan.file.name}")
+                logger.info(f"About to parse new plan for user {current_user}, name = {plan.file.name}")
 
                 # Have saved the record, now parse the plan and store activities.
                 # Only store fields which are part of the plan for the given file type.
 
                 mapping_type = plan.file_type.plan_field_mapping_type
-                plan_file = plan.file.path
                 file_reader = ExcelXLSFileReader()
 
                 # Attempt to read and parse the plan, if an error occurs log it to messages and then abort transaction
@@ -69,7 +77,7 @@ def add_plan(request):
                 try:
                     read_and_parse_plan(plan, mapping_type, file_reader)
                 except PlanParseError as e:
-                    messages.error(request, f"Plan parse error parsing {plan_file}, {e}")
+                    messages.error(request, f"Plan parse error parsing {plan.file.path}, {e}")
                     transaction.set_rollback(True)
                 except ExcelPlanSheetNotFound as e:
                     messages.error(request, f"{e}")
@@ -104,73 +112,47 @@ def re_upload_plan(request, pk):
     :param request:
     :return:
     """
+    # plan_record needed either as instance to be updated (POST) or instance to populate form from (GET)
     plan_record = Plan.objects.get(id=pk)
+
     if request.method == "POST":
-        plan_form = ReUploadPlanForm(data=request.POST, files=request.FILES, instance=plan_record)
+        logger.debug(f"Re-uploading plan id for user {request.user.username}, plan id is {pk}")
+
+        # Upload the plan in an empty form (not pre-populated) to avoid displaying generated unique filename
+        # then apply new file to existing plan record.
+        plan_form = ReUploadPlanForm(data=request.POST, files=request.FILES)
         if plan_form.is_valid():
+            # Note we aren't going to use this form to update the record.  We just needed the new version
+            # of the file.  We will use this to modify the existing plan record.
+            # Not sure if this is best practice but should work!
+
+            plan_record.file = plan_form.cleaned_data['file']
+            plan_record.file_name = plan_form.cleaned_data['file'].name
+            plan_record.save()
+
             current_user = get_current_user(request, default_if_logged_out=True)
-            # The user may have uploaded a file with a different name from the original file, which is fine, as long
-            # as the file is for the same plan.
-
-            # Save fields from form but don't commit so can modify other fields before committing.
-            plan = plan_form.save(commit=False)
-
-            # Uploaded file will be given a unique name - so need to store the name of the file the user chose, which
-            # may be different from the name when the file was last uploaded for this plan.
-            plan.file_name = plan.file.name
-
-            # Add user to record (currently hard-coded)
-            # ToDo: Replace hard-coded user with actual user.
-            plan.user = current_user
-
-            # Now can save the record
-            plan.save()
+            logger.debug(f"File uploaded for user {current_user.username}, plan {plan_record.plan_name}")
+            logger.debug(f"Re-importing plan for user {current_user.username}, plan is {plan_record.plan_name}")
 
             # Have saved the record, now parse the plan and store activities.
             # Only store fields which are part of the plan for the given file type.
 
-            mapping_type = plan.file_type.plan_field_mapping_type
-
+            mapping_type = plan_record.file_type.plan_field_mapping_type
             file_reader = ExcelXLSFileReader()
-            raw_data, headers = file_reader.read(plan)
-            parsed_data = file_reader.parse(raw_data, headers, plan_field_mapping=mapping_type)
-            new_activities, updated_activities, deleted_sticky_ids = update_plan_data(parsed_data, plan)
-            for activity in new_activities:
-                record = PlanActivity(
-                    plan=plan,
-                    unique_sticky_activity_id=activity['unique_sticky_activity_id'],
-                    activity_name=activity['activity_name'],
-                    duration=activity['duration'],
-                    start_date=activity['start_date'],
-                    end_date=activity['end_date'],
-                    level=activity['level'] if 'level' in activity else 1,
-                )
-                record.save()
-            for activity in updated_activities:
-                record = PlanActivity.objects.get(plan=plan, unique_sticky_activity_id=activity['unique_sticky_activity_id'])
-                record.activity_name = activity['activity_name']
-                record.duration = activity['duration']
-                record.start_date = activity['start_date']
-                record.end_date = activity['end_date']
-                record.level = activity['level'] if 'level' in activity else 1
-                record.save()
-            for deleted_sticky_id in deleted_sticky_ids:
-                # Need to remove from the plan and from any visuals
 
-                # Remove from plan
-                record = PlanActivity.objects.get(plan=plan, unique_sticky_activity_id=deleted_sticky_id)
-                record.delete()
+            try:
+                read_and_parse_plan(plan_record, mapping_type, file_reader, update_flag=True)
+            except PlanParseError as e:
+                messages.error(request, f"Plan parse error parsing {plan_record.file.path}, {e}")
+                transaction.set_rollback(True)
+            except ExcelPlanSheetNotFound as e:
+                messages.error(request, f"{e}")
+                transaction.set_rollback(True)
+            else:
+                messages.success(request, "Updated plan saved successfully")
 
-                # Remove from visuals
-                visuals = PlanVisual.objects.filter(plan=plan)
-                for visual in visuals:
-                    visual_activities = VisualActivity.objects.filter(visual=visual, unique_id_from_plan=deleted_sticky_id)
-                    for visual_activity in visual_activities:
-                        visual_activity.delete()
-
-            messages.success(request, "New version of plan saved successfully")
         else:
-            messages.error(request, "New version of plan upload failed validation")
+            messages.error(request, "Re-uploaded version of plan upload failed validation")
 
         return HttpResponseRedirect(reverse('manage-plans'))
     elif request.method == "GET":
@@ -178,7 +160,8 @@ def re_upload_plan(request, pk):
             messages.error(request, "Plan does not exist or you do not have access")
             return HttpResponseRedirect(reverse('manage-plans'))
         else:
-            form = ReUploadPlanForm(instance=plan_record)
+            # Populate form with current plan details
+            form = ReUploadPlanForm()
             return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
@@ -310,7 +293,7 @@ def delete_plan(request, pk):
         else:
             messages.success(request, f"Record deleted for {plan_record.file_name}")
 
-        return HttpResponseRedirect(reverse('manage_plans'))
+        return HttpResponseRedirect(reverse('manage-plans'))
 
 
 @login_required
@@ -693,3 +676,14 @@ def swimlane_actions(request, visual_id):
             auto_layout_manager.compress_swimlane(swimlane)
 
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
+
+
+class StaticPageView(DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['primary_heading'] = self.object.title
+        context['markdown_text'] = markdown.markdown(self.object.content, extensions=['nl2br'])
+        return context
+
+    model = StaticContent
+    template_name = "plan_visual_django/static_content.html"

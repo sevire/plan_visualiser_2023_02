@@ -955,6 +955,11 @@ class VisualActivity(models.Model):
         return plotable
 
 
+class StaticContent(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+
+
 # Defaults to use when creating a new visual before any formatting or layout has been done.
 DEFAULT_SWIMLANE_NAME = "(default)"
 DEFAULT_VERTICAL_POSITIONING_VALUE = 1

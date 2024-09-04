@@ -21,22 +21,6 @@ logger = logging.getLogger(__name__)
 # Define conversion functions for each input/output type which needs to be supported
 
 
-def regex_extract(input_string: str, regex_string: str, type: type):
-    matches = re.match(regex_string, input_string)
-    if len(matches.groups()) > 0:
-        parsed_string = matches.group(1)
-    else:
-        raise ValueError(f"Invalid string {input_string}")
-    if type == str:
-        return parsed_string
-    elif type == int:
-        return int(parsed_string)
-    elif type == float:
-        return float(parsed_string)
-    else:
-        raise ValueError(f"Unsupported conversion type for regex {input_string}")
-
-
 def convert_pass_through(x):
     return x
 
@@ -60,6 +44,7 @@ def convert_str_or_int_to_str(string_or_int) -> str:
         return string_or_int
     else:
         raise ValueError(f"String or int expected, but got {type(string_or_int)} for {string_or_int}")
+
 
 def convert_str_yes_no_to_bool(string_yes_no) -> bool:
     """
@@ -363,7 +348,11 @@ class ExcelXLSFileReader(PlanFileReader):
         :param workbook_object:
         :return:
         """
-        if len(sheet_list) == 1:
+        if self.sheet_name is not None and self.sheet_name != "":
+            sheet_name = self.sheet_name
+            logger.debug(f"Sheet name set outside this method, using that value, sheet name = {sheet_name}")
+            return sheet_name
+        elif len(sheet_list) == 1:
             sheet_name = sheet_list[0]
             logger.debug(f"Only one sheet in the plan, using that, sheet name = {sheet_name}")
             return sheet_name
@@ -376,8 +365,9 @@ class ExcelXLSFileReader(PlanFileReader):
             logger.debug(f"MS Project, choosing sheet name = {sheet_name}")
             return sheet_name
         else:
-            logger.error(f"Unable to determine which sheet plan is in, aborting")
-            raise ExcelPlanSheetNotFound(f"Unable to determine which sheet plan is in")
+            message = f"Unable to determine which sheet plan is in within file {file_name}, aborting"
+            logger.error(message)
+            raise ExcelPlanSheetNotFound(message)
 
     def read(self, plan: Plan) -> (List[Dict], List):
         """

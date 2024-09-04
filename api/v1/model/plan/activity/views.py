@@ -47,7 +47,8 @@ class ModelPlanActivityByVisualListAPI(ListAPIView):
 
 
 class ModelPlanActivityAPI(APIView):
-    def get(self, request, plan_id, unique_id):
+    @staticmethod
+    def get(request, plan_id, unique_id):
         # ToDo: Is it right to go Plan --> Plan.activity_set or just do in one get
         plan = Plan.objects.get(id=plan_id)
         plan_activity_queryset = plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
