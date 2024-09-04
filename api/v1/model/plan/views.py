@@ -17,7 +17,8 @@ class ModelPlanListAPI(ListAPIView):
 
 
 class ModelPlanAPI(APIView):
-    def get(self, request, id):
+    @staticmethod
+    def get(request, id):
         plan_queryset = Plan.objects.get(pk=id)
         serializer = ModelPlanSerialiser(plan_queryset)
 

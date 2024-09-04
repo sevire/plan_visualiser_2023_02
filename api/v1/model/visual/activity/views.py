@@ -14,11 +14,13 @@ from plan_visual_django.models import (PlanVisual, VisualActivity, SwimlaneForVi
 
 
 class VisualActivityViewDispatcher(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         view = ModelVisualActivityListAPI.as_view()
         return view(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
+    @staticmethod
+    def patch(request, *args, **kwargs):
         view = ModelVisualActivityUpdateAPI.as_view()
         return view(request, *args, **kwargs)
 
@@ -37,7 +39,8 @@ class ModelVisualActivityListAPI(ListAPIView):
 
 
 class ModelVisualActivityUpdateAPI(APIView):
-    def patch(self, request, visual_id=None, **kwargs):
+    @staticmethod
+    def patch(request, visual_id=None, **kwargs):
         """
         For patching or updating the activity from the API I am not expecting to update related records so
         I don't need to set the depth to anything.  Specifically, for the use case where we are just updating the
@@ -71,7 +74,8 @@ class ModelVisualActivityUpdateAPI(APIView):
 
 
 class ModelVisualActivityAPI(APIView):
-    def get(self, request, visual_id, unique_id):
+    @staticmethod
+    def get(request, visual_id, unique_id):
         visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=unique_id)
         serializer = ModelVisualActivitySerialiser(instance=visual_activity_queryset)
 
@@ -79,7 +83,8 @@ class ModelVisualActivityAPI(APIView):
 
         return JsonResponse(response, safe=False)
 
-    def put(self, request, visual_id, unique_id):
+    @staticmethod
+    def put(request, visual_id, unique_id):
         """
         I don't know whether this is the right way to do this!
 
@@ -159,7 +164,8 @@ class ModelVisualActivityAPI(APIView):
             visual_activity.save()
             return Response(status=status.HTTP_201_CREATED)
 
-    def delete(self, request, visual_id, unique_id):
+    @staticmethod
+    def delete(request, visual_id, unique_id):
         try:
             visual = PlanVisual.objects.get(id=visual_id)
         except PlanVisual.DoesNotExist as e:

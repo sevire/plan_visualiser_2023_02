@@ -81,10 +81,7 @@ class VisualActivityFormForEdit(ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        new_fields = {}
-
-        new_fields['unique_id_from_plan'] = CharField(max_length=50)
-        new_fields['activity'] = CharField(max_length=200)
+        new_fields = {'unique_id_from_plan': CharField(max_length=50), 'activity': CharField(max_length=200)}
 
         new_fields.update(self.fields)
         self.fields = new_fields

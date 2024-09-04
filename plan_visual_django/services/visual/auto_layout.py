@@ -171,7 +171,8 @@ class VisualAutoLayoutManager:
                 plotable_style=self.visual_settings.default_activity_plotable_style,
             )
 
-    def sort_swimlane(self, swimlane):
+    @staticmethod
+    def sort_swimlane(swimlane):
         """
         Sort all the activities within a swimlane by start date and place each activity on a different track
         :param swimlane:
@@ -189,7 +190,8 @@ class VisualAutoLayoutManager:
             visual_activity.save()
             track_number += 1
 
-    def compress_swimlane(self, swimlane):
+    @staticmethod
+    def compress_swimlane(swimlane):
         """
         Compresses a swimlane by removing any blank tracks between activities.
         :param swimlane:

@@ -15,7 +15,8 @@ class RenderedCanvasVisualettingsAPI(APIView):
     E.g the width of the canvas to plot the visual on.
 
     """
-    def get(self, request, visual_id):
+    @staticmethod
+    def get(request, visual_id):
         """
         returns settings as JSON.
 
