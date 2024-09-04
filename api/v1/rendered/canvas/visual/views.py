@@ -1,20 +1,17 @@
-import json
-
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from plan_visual_django.models import PlanVisual, Plan
 from plan_visual_django.services.visual.renderers import CanvasRenderer
-from plan_visual_django.services.visual.visual_settings import VisualSettings
-from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 
 
 class RenderCanvasVisualAPI(APIView):
     """
     This API is used to render the visual for display in the browser.
     """
-    def get(self, request, visual_id):
+    @staticmethod
+    def get(request, visual_id):
         """
         This method returns a JSON object containing all plotables for the specified visual.
         :param request:

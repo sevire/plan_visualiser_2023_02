@@ -23,14 +23,11 @@ from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity,
     PlotableStyle, TimelineForVisual, Color, StaticContent
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.general.string_utilities import indent
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
 from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
-from plan_visual_django.services.visual.renderers import CanvasRenderer
 from plan_visual_django.services.visual.visual_settings import VisualSettings
-from plan_visual_django.services.visual_orchestration.visual_orchestration import VisualOrchestration
 import logging
 
 logger = logging.getLogger(__name__)

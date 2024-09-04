@@ -17,7 +17,8 @@ class ModelVisualListAPI(ListAPIView):
 
 
 class ModelVisualAPI(APIView):
-    def get(self, request, visual_id):
+    @staticmethod
+    def get(request, visual_id):
         visual_queryset = PlanVisual.objects.get(id=visual_id)
         serializer = ModelVisualSerialiser(instance=visual_queryset)
 

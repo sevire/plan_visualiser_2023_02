@@ -134,8 +134,8 @@ def analyse_plan_changes(new_parsed_activity_data, plan):
     new_activities = [activity for activity in new_parsed_activity_data if activity['unique_sticky_activity_id'] not in current_plan_sticky_ids]
     updated_activities = [activity for activity in new_parsed_activity_data if activity['unique_sticky_activity_id'] in current_plan_sticky_ids]
     deleted_activity_sticky_ids = [sticky_id for sticky_id in current_plan_sticky_ids if sticky_id not in new_plan_sticky_ids]
-
     return new_activities, updated_activities, deleted_activity_sticky_ids
+
 
 def extract_summary_plan_info(plan) -> dict:
     """

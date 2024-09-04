@@ -10,11 +10,13 @@ from api.v1.model.visual.swimlane.serializer import ModelVisualSwimlaneListSeria
 from plan_visual_django.models import PlanVisual, SwimlaneForVisual
 
 class SwimlaneListViewDispatcher(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         view = ModelVisualSwimlaneListAPI.as_view()
         return view(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
+    @staticmethod
+    def patch(request, *args, **kwargs):
         view = ModelVisualSwimlaneUpdateAPI.as_view()
         return view(request, *args, **kwargs)
 
@@ -30,7 +32,8 @@ class ModelVisualSwimlaneListAPI(ListAPIView):
 
 
 class ModelVisualSwimlaneAPI(APIView):
-    def get(self, request, visual_id, swimlane_seq_num, **kwargs):
+    @staticmethod
+    def get(request, visual_id, swimlane_seq_num, **kwargs):
         visual_swimlane_queryset = PlanVisual.objects.get(id=visual_id).swimlaneforvisual_set.get(sequence_number=swimlane_seq_num)
         serializer = ModelVisualSwimlaneListSerialiser(instance=visual_swimlane_queryset)
 
@@ -46,7 +49,8 @@ class ModelVisualSwimlaneUpdateAPI(APIView):
     While the id (Primary Key) of each swimlane will be provided, this endpoint will validate that each id sits within
     the supplied visual.
     """
-    def patch(self, request, visual_id=None, **kwargs):
+    @staticmethod
+    def patch(request, visual_id=None, **kwargs):
         """
         Applies updates to several swimlane records.  Only supplied fields will be updated for each record.
 
