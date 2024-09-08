@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
@@ -6,6 +8,8 @@ from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.plotables import get_plotable
 from plan_visual_django.services.visual.visual_elements import Timeline
+
+logging.getLogger()
 
 
 class PlanField(models.Model):
@@ -115,7 +119,6 @@ class PlanMappedField(models.Model):
         return self.PlanFieldType(self.input_field_type)
 
     def __str__(self):
-
         return f'{self.plan_field_mapping_type}:{self.mapped_field} -> {self.input_field_name}:{self.input_field_type}'
 
 
@@ -132,8 +135,9 @@ class FileType(models.Model):
 
     The File Type describes the technical format within which the plan data is expected to be provided for a given plan.
     """
+    file_type_title = models.CharField(max_length=50)  # Of form this_is_a_title - used in plan reading logic
     file_type_name = models.CharField(max_length=50)
-    file_type_description = models.CharField(max_length=100)
+    file_type_description = models.TextField(max_length=1000)
     plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
 
     def __str__(self):
