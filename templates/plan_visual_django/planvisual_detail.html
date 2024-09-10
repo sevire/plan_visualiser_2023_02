@@ -179,7 +179,11 @@
             
         await window.get_plan_activity_data(window.visual_id)
         await window.get_visual_activity_data(window.visual_id)
-        const plan_tree = await createPlanTree()
+        const plan_tree_data = await createPlanTree()
+        
+        plan_tree = plan_tree_data[0]
+        initial_selected_activity_div = plan_tree_data[1]
+        
         root_element.appendChild(plan_tree)
         
         // Update swimlane panel with swimlanes for this visual in sequence order
@@ -206,11 +210,15 @@
         response = await get_visual_settings()
         window.visual_settings = response.data
         
-        
-        
         console.log("Plotting visual")
         window.plot_visual()
-  })
+        
+        // Now simulate clicking on first plan activity to initialise plan and activity panels
+        if (initial_selected_activity_div) {
+          console.log(`Clicking on first activity so is selected ${initial_selected_activity_div}`)
+          initial_selected_activity_div.click();
+        }
+    })
 
 </script>
     {% endblock %}
