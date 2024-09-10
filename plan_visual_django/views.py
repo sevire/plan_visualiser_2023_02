@@ -162,7 +162,12 @@ def re_upload_plan(request, pk):
         else:
             # Populate form with current plan details
             form = ReUploadPlanForm()
-            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
+            context = {
+                'form': form,
+                'primary_heading': 'Re-upload File For Existing Plan',
+                'secondary_heading': plan_record.file_name
+            }
+            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
