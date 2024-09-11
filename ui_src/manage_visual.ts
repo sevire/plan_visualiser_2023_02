@@ -479,6 +479,7 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
       // Means we have just toggled it to in so need to add it
       await add_to_visual(activity.plan_data.unique_sticky_activity_id)
       await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+      await get_plan_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 
       plot_visual()
 
