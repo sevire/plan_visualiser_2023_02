@@ -12,7 +12,7 @@ from django.forms import inlineformset_factory, modelformset_factory, formset_fa
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
     AddPlanError
@@ -20,7 +20,7 @@ from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEd
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
 from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color, StaticContent
+    PlotableStyle, TimelineForVisual, Color, StaticContent, FileType, PlanMappedField
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
@@ -162,7 +162,12 @@ def re_upload_plan(request, pk):
         else:
             # Populate form with current plan details
             form = ReUploadPlanForm()
-            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
+            context = {
+                'form': form,
+                'primary_heading': 'Re-upload File For Existing Plan',
+                'secondary_heading': plan_record.file_name
+            }
+            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
@@ -678,12 +683,27 @@ def swimlane_actions(request, visual_id):
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
 
 
+class FileTypeListView(ListView):
+    template_name = "plan_visual_django/pv_list_file_types.html"
+    model = FileType
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['primary_heading'] = "Support File Types and Field Mappings"
+
+        mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
+        context['ordered_mapped_fields'] = mapped_fields_for_file_types
+
+        return context
+
+
 class StaticPageView(DetailView):
+    model = StaticContent
+    template_name = "plan_visual_django/static_content.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['primary_heading'] = self.object.title
         context['markdown_text'] = markdown.markdown(self.object.content, extensions=['nl2br'])
         return context
 
-    model = StaticContent
-    template_name = "plan_visual_django/static_content.html"

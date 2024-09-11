@@ -9,7 +9,10 @@ from plan_visual_django.models import Plan, Color, Font, PlotableStyle, Plotable
 
 @admin.register(FileType)
 class FileTypeAdmin(admin.ModelAdmin):
-    list_display = ["file_type_name", "file_type_description"]
+    list_display = ["file_type_name", "plan_field_mapping_type_name", "file_type_description"]
+
+    def plan_field_mapping_type_name(self, obj):
+        return obj.plan_field_mapping_type.name
 
 
 @admin.register(PlanField)

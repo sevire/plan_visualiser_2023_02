@@ -202,10 +202,10 @@ class PlanParser():
 
         :param plan_data:
         """
-        self.column_mapping = plan_field_mapping
+        self.plan_field_mapping = plan_field_mapping
 
         # Check whether the mapping has been defined for all compulsory fields, no point continuing otherwise.
-        if not self.column_mapping.is_complete():
+        if not self.plan_field_mapping.is_complete():
             raise PlanMappingIncompleteError(f"Mapping {plan_field_mapping} is incomplete")
 
     def parse(self, data: List[Dict], headings: List) -> List[Dict]:
@@ -231,7 +231,7 @@ class PlanParser():
             # can't process the file.
             for plan_field in supplied_fields:
                 # Check whether this field is included in the mapping, and ignore field if not.
-                mapped_field_column = self.column_mapping.planmappedfield_set.get(
+                mapped_field_column = self.plan_field_mapping.planmappedfield_set.get(
                     mapped_field__field_name = plan_field.field_name)
                 if mapped_field_column.input_field_name not in headings:
                     parsed_data_record[plan_field.field_name] = "(n/a)"
@@ -260,13 +260,18 @@ class PlanParser():
         :param headings:
         :return:
         """
-        supplied_fields = [field.mapped_field for field in self.column_mapping.planmappedfield_set.all() if
+        all_mapped_fields = self.plan_field_mapping.planmappedfield_set.all()
+        supplied_fields = [field for field in all_mapped_fields if
                            field.input_field_name in headings]
-        compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
-        missing_compulsory_fields = [field for field in compulsory_plan_fields if field not in supplied_fields]
-        if len(missing_compulsory_fields) > 0:
-            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_fields}")
-        return supplied_fields
+        compulsory_mapped_fields = [field for field in all_mapped_fields if field.mapped_field.required_flag is True]
+        # compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
+        missing_compulsory_mapped_fields = [field for field in compulsory_mapped_fields if field not in supplied_fields]
+        if len(missing_compulsory_mapped_fields) > 0:
+            logger.error(f"Missing compulsory fields...")
+            for missing_field in missing_compulsory_mapped_fields:
+                logger.error(f"Field {missing_field.mapped_field.field_name} <-- {missing_field.input_field_name}")
+            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_mapped_fields}")
+        return [field.mapped_field for field in supplied_fields]
 
 
 class PlanFileReader(ABC):

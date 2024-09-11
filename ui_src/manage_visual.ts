@@ -4,41 +4,54 @@
 // the API to the Django app to get the data required to populate the page.
 
 import {
-  add_activity_to_visual, get_plan_activity_data,
+  add_activity_to_visual,
+  get_plan_activity_data,
   get_visual_activity_data,
-  remove_activity_from_visual, update_visual_activities
+  remove_activity_from_visual,
+  update_visual_activities
 } from "./plan_visualiser_api";
 import {toggle_expansion} from "./manage_plan_panel";
 import {plot_visual} from "./plot_visual";
-import {Dropdown} from "./widgets";
-import {
-  add_arrow_button_to_element,
-  update_swimlane_for_activity_handler,
-  update_swimlane_order
-} from "./manage_swimlanes";
+import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
 
 export async function createPlanTree() {
+  // We are going to create a tree of elements to represent the hierarchical plan structure.  We will iterate through
+  // all the plan activities in the order they appear in the plan and use the level to work out where each activity
+  // sits compared to the previous (child, sibling, sibling of parent etc.)
   let topLevelUL = document.createElement('ul');
   topLevelUL.classList.add("bg-primary-subtle")
   let topLevelElements = [topLevelUL]
   topLevelElements[0].setAttribute("id", "plan-activities");
 
-  // We want the lowest level to be 1 as various things depend on it (including color-coding)
+  // Level sequence may vary depending upon how the plan has been structured and which app the plan was created in.
+  // But we want the lowest level to be 1 as various things depend on it (including color-coding).
+  // So adjust level for each activity as we go to ensure that the lowest level to be 1.
+  // We assume that the level for the first activity will be the lowest in the plan.
   const level_adjust = 1 - (window as any).plan_activity_data[0].plan_data.level
   let previousLevel = 1;
 
+  // We are going to store the element we use to represent the first activity in the plan as we are going to return it
+  // so it can be used as the current selected element once the page has been built.
+  let initial_selected_activity_div: HTMLDivElement | any
+
+  // Note using for rather than forEach as need to do business logic depending upon where we are
+  // in the sequence.  May be a better way of doing this!
   for (let i = 0; i < (window as any).plan_activity_data.length; i++) {
+
+    // Get activity for this index
     const activity = (window as any).plan_activity_data[i];
     const level = activity.plan_data.level + level_adjust
+
     console.log("(New) Processing activity: " + activity.plan_data.activity_name + ", level: " + level)
-    const activity_text = activity.plan_data.activity_name + ", Level " + level
+    const activity_text = activity.plan_data.activity_name
     const level_class = "level-" + level
     const li = document.createElement('li');
 
     // Put activity text into a div under the li to help style independently of ul/li structure.
     const activityDiv = document.createElement("div")
+    console.log(activityDiv)
     activityDiv.setAttribute('class', level_class)
     activityDiv.id = activity.plan_data.unique_sticky_activity_id
     if (activity.visual_data && activity.visual_data.enabled) {
@@ -97,10 +110,18 @@ export async function createPlanTree() {
 
     previousLevel = level;
     console.log("topLevelElements", topLevelElements)
+
+    // If this is the first activity in the plan then save the div as we need to return it
+    // so that we can simulate a click after the pages has been built to pre-select the first
+    // activity in the plan within the plan activity panel.
+    if (i == 0) {
+      console.log(`Saving first activity div so can click later ${activityDiv}`)
+      initial_selected_activity_div = activityDiv
+    }
   }
 
   console.log("topLevelElements before return", topLevelElements)
-  return topLevelElements[0];
+  return [topLevelElements[0], initial_selected_activity_div];
 }
 
 async function add_to_visual(activity_id: string) {
@@ -150,56 +171,77 @@ async function add_modify_track_height_event_handler(direction: string, activity
   plot_visual()
 }
 
+// Below are functions need for dispatch table to set values for each field in the activity data panel
+function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
+  // Set to tick for true and cross for false.
+  TdRef.textContent = '';
+  const iElement = document.createElement('i');
+  if (value) {
+    iElement.className = 'bi bi-check';
+  } else {
+    iElement.className = 'bi bi-x';
+  }
+  TdRef.appendChild(iElement);
+}
+
+// Dispatch table used to set values of different types for each activity field
+// NOTE: This is work in progress
+const NonEditableDispatchTable: Record<string, Function> = {
+  'milestone_flag': set_boolean_value
+};
+
 function select_for_edit(activity_id:string, clear=false) {
   // Populates activity edit panel with values for supplied activity
+  // The table where the fields for the activity are stored has a row for each value and a th and td for the name of the
+  // field and value respectively.  The TD element has an id equal to the text name which matches the name of the field
+  // in the structure where the data is stored.
+  // Also the top part of the table is for plan data (non-editable) and the lower part of the table is for visual data
+  // which is editable.  So the two region as stored under separate tbody elements and treated slightly differently.
 
   console.log("Selected activity for edit: " + activity_id);
 
   // Populate each element with value for this activity
-  const edit_activity_td_elements = document.querySelectorAll('#layout-activity tbody td')
+  const edit_plan_activity_td_elements = document.querySelectorAll('#layout-activity tbody#plan-activity-properties td')
+  const edit_visual_activity_td_elements = document.querySelectorAll('#layout-activity tbody#visual-activity-properties td')
+
+  // If clear is set then this usually means the user has selected an activity which is not currently in the visual so
+  // the visual portion of the activity data panel needs to be cleared.
   if (clear) {
     // Clear all the visual related values (because this activity is in the plan but not in the visual).
     (window as any).selected_activity_id = undefined;
-    edit_activity_td_elements.forEach(element => {
-      if (element.classList.contains('visual')) {
-        const key = element.id
-        element.textContent = '';
-      }
+    edit_visual_activity_td_elements.forEach(element => {
+      const key = element.id
+      element.textContent = '';
     });
   }
-
-  // Set the values to appropriate plan or activity value.  If clear is set then we are only setting the plan values
-  // For visual activity values - the cell needs to be editable.
 
   // Modify stored value of currently selected activity to allow processing of further clicks etc.
   (window as any).selected_activity_id = activity_id;
 
   // Find entry for the selected activity in the list.
-  const activity = get_plan_activity(activity_id)
-  console.log("Found entry for activity ", activity_id)
+  const activity = get_plan_activity(activity_id);
+  console.log("Found entry for activity ", activity_id);
 
-  // Each element in edit_activity_elements will have an id which corresponds to a key in this activity.
-  edit_activity_td_elements.forEach(td_element => {
-    console.log(`Updating fields ${edit_activity_td_elements}`)
+  edit_plan_activity_td_elements.forEach(td_element => {
     const key = td_element.id;
-
-    // Some fields are part of the plan data, others part of visual data. Indicated by class of visual or plan.  So
-    // work out which and extract field value for this activity accordingly.
-    let source = undefined
-    if (td_element.classList.contains('visual')) {
-      source = 'visual';
-    } else if (td_element.classList.contains('plan')) {
-      source = 'plan';
+    if (key in NonEditableDispatchTable) {
+      NonEditableDispatchTable[key](td_element, activity.plan_data[key])
+    } else {
+      td_element.textContent = activity.plan_data[key];
     }
+  });
 
-    // Always update plan values, only update visual values if we are not clearing - otherwise we will have cleared them
-    if (source === "plan" || !clear) {
-      let activity_field_val
-      if (source === 'visual') {
-        activity_field_val = activity.visual_data[key]
-      } else {
-        activity_field_val = activity.plan_data[key];
+  if (clear) {
+    console.log("Clear is set - don't update visual fields (as this activity not in visual)")
+  } else {
+    edit_visual_activity_td_elements.forEach(td_element => {
+      try {
+      } catch (error) {
+        console.log("Caught an error when trying to log td_element.id:", error);
       }
+
+      const key = td_element.id;
+      let activity_field_val = activity.visual_data[key];
       console.log("Edit activity elements - id = " + key + ", value is " + activity_field_val)
 
       // For certain values we need to tweak the logic to populate the value, either because
@@ -234,12 +276,12 @@ function select_for_edit(activity_id:string, clear=false) {
           arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
           arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
           if (direction == "up") {
-            arrow.addEventListener('click', async function() {
-              add_move_track_event_handler("up", activity)
+            arrow.addEventListener('click', async function () {
+              await add_move_track_event_handler("up", activity)
             })
           } else {
-            arrow.addEventListener('click', async function() {
-              add_move_track_event_handler("down", activity)
+            arrow.addEventListener('click', async function () {
+              await add_move_track_event_handler("down", activity)
             })
           }
           button.appendChild(arrow)
@@ -272,11 +314,11 @@ function select_for_edit(activity_id:string, clear=false) {
           arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
           if (direction == "up") {
             arrow.addEventListener('click', async function () {
-              add_modify_track_height_event_handler("increase", activity)
+              await add_modify_track_height_event_handler("increase", activity)
             })
           } else {
             arrow.addEventListener('click', async function () {
-              add_modify_track_height_event_handler("decrease", activity)
+              await add_modify_track_height_event_handler("decrease", activity)
             })
           }
           button.appendChild(arrow)
@@ -285,7 +327,7 @@ function select_for_edit(activity_id:string, clear=false) {
         // Start by clearing the element before updating it for this activity.
         td_element.textContent = '';
 
-        let shape_names: [[string, number]] = (window as any).shape_data.map((obj:any) => [obj.name, obj.id]);
+        let shape_names: [[string, number]] = (window as any).shape_data.map((obj: any) => [obj.name, obj.id]);
         // Add div for Bootstrap Dropdown
         const dropdownDiv = document.createElement("div")
         dropdownDiv.classList.add("dropdown")
@@ -329,7 +371,7 @@ function select_for_edit(activity_id:string, clear=false) {
         // Start by clearing the element before updating it for this activity.
         td_element.textContent = '';
 
-        let style_names: [[string, number]] = (window as any).style_data.map((obj:any) => [obj.style_name, obj.id]);
+        let style_names: [[string, number]] = (window as any).style_data.map((obj: any) => [obj.style_name, obj.id]);
 
         // Add div for Bootstrap Dropdown
         const dropdownDiv = document.createElement("div")
@@ -377,7 +419,7 @@ function select_for_edit(activity_id:string, clear=false) {
         // Start by clearing the element before updating it for this activity.
         td_element.textContent = "";
 
-        let swimlane_names: [[string, number]] = (window as any).swimlane_data.map((obj:any) => [obj.swim_lane_name, obj.id]);
+        let swimlane_names: [[string, number]] = (window as any).swimlane_data.map((obj: any) => [obj.swim_lane_name, obj.id]);
         // Add div for Bootstrap Dropdown
         const dropdownDiv = document.createElement("div")
         dropdownDiv.classList.add("dropdown")
@@ -420,54 +462,55 @@ function select_for_edit(activity_id:string, clear=false) {
       } else {
         td_element.textContent = activity_field_val;
       }
-    }
-  });
+    });
+  }
 
   // Need to redraw as different element needs to be marked as selected
   plot_visual()
 }
 
 async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivElement, topLevelElements: any) {
-      // If this element isn't already the current one, then make it the current one.
-      // If it is already the current one, then this click will toggle its inclusion in the visual.
-      if (activityDiv.classList.contains('current')) {
-        console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
-        const inVisual = activityDiv.classList.toggle('in-visual')
-        if (inVisual) {
-          // Means we have just toggled it to in so need to add it
-          await add_to_visual(activity.plan_data.unique_sticky_activity_id)
-          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+  // If this element isn't already the current one, then make it the current one.
+  // If it is already the current one, then this click will toggle its inclusion in the visual.
+  if (activityDiv.classList.contains('current')) {
+    console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
+    const inVisual = activityDiv.classList.toggle('in-visual')
+    if (inVisual) {
+      // Means we have just toggled it to in so need to add it
+      await add_to_visual(activity.plan_data.unique_sticky_activity_id)
+      await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+      await get_plan_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 
-          plot_visual()
+      plot_visual()
 
-          // Now it is in the visual and current activity we should select it for edit.
-          select_for_edit(activity.plan_data.unique_sticky_activity_id)
-        } else {
-          // Means we have just toggled it to not in so need to remove it
-          await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
-          await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+      // Now it is in the visual and current activity we should select it for edit.
+      select_for_edit(activity.plan_data.unique_sticky_activity_id)
+    } else {
+      // Means we have just toggled it to not in so need to remove it
+      await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
+      await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 
-          plot_visual()
+      plot_visual()
 
-          // As not in visual we can't edit it so need to clear out the visual elements and update the plan elements
-          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
-        }
-      } else {
-        // We have just selected an activity which wasn't already selected so need to change this one to the current
-        // element and, if this activity is in the visual, update the activity panel to details for this activity.
-        // If this activity is not in the visual then we need to clear the activity panel
-        const selected = topLevelElements[0].getElementsByClassName('current')
-        if (selected.length > 0) {
-          selected[0].classList.remove('current');
-        }
-        activityDiv.classList.add('current');
+      // As not in visual we can't edit it so need to clear out the visual elements and update the plan elements
+      select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
+    }
+  } else {
+    // We have just selected an activity which wasn't already selected so need to change this one to the current
+    // element and, if this activity is in the visual, update the activity panel to details for this activity.
+    // If this activity is not in the visual then we need to clear the activity panel
+    const selected = topLevelElements[0].getElementsByClassName('current')
+    if (selected.length > 0) {
+      selected[0].classList.remove('current');
+    }
+    activityDiv.classList.add('current');
 
-        if (activityDiv.classList.contains('in-visual')) {
-          select_for_edit(activity.plan_data.unique_sticky_activity_id)
-        } else {
-          select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
-        }
-      }
+    if (activityDiv.classList.contains('in-visual')) {
+      select_for_edit(activity.plan_data.unique_sticky_activity_id)
+    } else {
+      select_for_edit(activity.plan_data.unique_sticky_activity_id, true)
+    }
+  }
 }
 
 export async function update_activity_track(activity_unique_id: any, direction:string) {
