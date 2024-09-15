@@ -27,6 +27,7 @@ class VisualElement:
         the actual values for those attributes and if there aren't any non-standard ones then the base version of
         plot_element will work, otherwise it will need to be sub-classed.
         """
+        self.plotable_id = "(undefined)"
         self.shape = None
         self.top = None
         self.left = None
@@ -40,6 +41,7 @@ class VisualElement:
 
     def plot_element(self):
         plotable:Plotable = get_plotable(
+            plotable_id=self.plotable_id,
             shape_name=self.shape,
             top=self.top,
             left=self.left,
@@ -264,6 +266,7 @@ class MonthTimeline(Timeline):
             element = VisualElement()
 
             from plan_visual_django.models import PlotableShape
+            element.plotable_id = f"timeline-{self.timeline_record.id}-{period_num+1:03}"
             element.shape=PlotableShape.PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset

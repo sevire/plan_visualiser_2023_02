@@ -610,7 +610,6 @@ class PlanVisual(models.Model):
         return plotables
 
 
-
 class TimelineForVisual(models.Model):
     class TimelineLabelType(models.TextChoices):
         MONTHS = "MONTHS", 'One label for each month'
@@ -808,6 +807,7 @@ class SwimlaneForVisual(models.Model):
         this_top = previous_s_lane_top + previous_s_lane_height + gap
 
         swimlane_plotable = get_plotable(
+            f"swimlane-{self.id}",
             PlotableShape.PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
             top=this_top,
             left=0,  # Hard-coding for now as nothing will appear to the left of the swimlane
@@ -944,6 +944,7 @@ class VisualActivity(models.Model):
             width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
 
         plotable = get_plotable(
+            "activity-"+self.unique_id_from_plan,
             self.plotable_shape.name,
             top=activity_top,
             left=left,

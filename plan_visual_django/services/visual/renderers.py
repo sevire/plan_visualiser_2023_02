@@ -173,6 +173,7 @@ class CanvasRenderer(VisualRenderer):
 
             canvas_rendered_objects = [
                 {
+                    "plotable_id": item.plotable_id,
                     'shape_type': 'rectangle',
                     'shape_name': item.shape,
                     'shape_plot_dims': {
@@ -186,6 +187,7 @@ class CanvasRenderer(VisualRenderer):
                     'stoke_line_width': item.format.line_thickness,
                 },
                 {
+                    "plotable_id": f"{item.plotable_id}-text",
                     'shape_type': 'text',
                     'text': item.text,
                     'shape_name': None,  # If we are plotting text there is no shape name.
