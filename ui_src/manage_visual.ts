@@ -11,7 +11,7 @@ import {
   update_visual_activities
 } from "./plan_visualiser_api";
 import {toggle_expansion} from "./manage_plan_panel";
-import {plot_visual} from "./plot_visual";
+import {highlight_activity, plot_visual} from "./plot_visual";
 import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
@@ -154,7 +154,7 @@ export function get_plan_activity(activity_id:string) {
 }
 
 async function add_move_track_event_handler(direction: string, activity: any) {
-  console.log(`Track number up clicked`)
+  console.log(`Track number ${direction} clicked`)
   console.log(`Activity is ${activity}`)
   await update_activity_track(activity.visual_data.unique_id_from_plan, direction)
   await get_plan_activity_data((window as any).visual_id)
@@ -165,13 +165,24 @@ async function add_move_track_event_handler(direction: string, activity: any) {
 async function add_modify_track_height_event_handler(direction: string, activity: any) {
   console.log(`Track height ${direction} clicked`)
   console.log(`Activity is ${activity}`)
-  await update_activity_track_height(activity.visual_data.unique_id_from_plan, direction)
+  let api_direction: string
+  if (direction == "up") {
+    api_direction = "increase"
+  } else if (direction == "down") {
+    api_direction = "decrease"
+  } else {
+    throw new Error(`Invalid value for direction = ${direction}`)
+  }
+
+  await update_activity_track_height(activity.visual_data.unique_id_from_plan, api_direction)
   await get_plan_activity_data((window as any).visual_id)
   await get_visual_activity_data((window as any).visual_id)
   plot_visual()
 }
 
+// ====================================================================================================
 // Below are functions need for dispatch table to set values for each field in the activity data panel
+// ====================================================================================================
 function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
   // Set to tick for true and cross for false.
   TdRef.textContent = '';
@@ -190,13 +201,57 @@ const NonEditableDispatchTable: Record<string, Function> = {
   'milestone_flag': set_boolean_value
 };
 
+function add_button_group(td_element: Element, aria_label: string) {
+  // Add up and down arrows to the td element and add click event handler which updates activity vertical position.
+  const buttonGroup = document.createElement("div");
+  buttonGroup.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1");
+  buttonGroup.setAttribute('role', 'group');
+  buttonGroup.setAttribute('aria-label', aria_label);
+  td_element.appendChild(buttonGroup)
+  return buttonGroup;
+}
+
+function add_two_arrow_buttons(buttonGroup: HTMLDivElement, activity: any, labels:string[], event_handler: (direction:string, activity:any) => void) {
+  let direction: string
+  for (let i = 0; i < 2; i++) {
+    if (i == 0) {
+      direction = labels[0]
+    } else {
+      direction = labels[1]
+    }
+    // Add button and appropriate arrow icon to supplied element.
+    let button = document.createElement("button")
+    button.classList.add("btn", "btn-secondary")
+    buttonGroup.appendChild(button)
+
+    let arrow = document.createElement('i')
+    arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
+    arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
+    arrow.addEventListener('click', async function () {
+      event_handler(labels[i], activity)
+    })
+    button.appendChild(arrow)
+  }
+}
+
+function set_up_down_button(td_element: Element, activity:any, aria_label: string, labels: string[], event_handler: (direction: string, activity: any) => void) {
+  // Start by clearing the element.
+  td_element.textContent = '';
+  
+  const buttonGroup = add_button_group(td_element, aria_label);
+  add_two_arrow_buttons(buttonGroup, activity, labels, event_handler);
+}
+
 function select_for_edit(activity_id:string, clear=false) {
   // Populates activity edit panel with values for supplied activity
   // The table where the fields for the activity are stored has a row for each value and a th and td for the name of the
   // field and value respectively.  The TD element has an id equal to the text name which matches the name of the field
   // in the structure where the data is stored.
+  //
   // Also the top part of the table is for plan data (non-editable) and the lower part of the table is for visual data
   // which is editable.  So the two region as stored under separate tbody elements and treated slightly differently.
+  //
+  // Also highlights selected element on the visual
 
   console.log("Selected activity for edit: " + activity_id);
 
@@ -222,6 +277,7 @@ function select_for_edit(activity_id:string, clear=false) {
   const activity = get_plan_activity(activity_id);
   console.log("Found entry for activity ", activity_id);
 
+  // Populate each of the plan related fields (always do this)
   edit_plan_activity_td_elements.forEach(td_element => {
     const key = td_element.id;
     if (key in NonEditableDispatchTable) {
@@ -234,12 +290,8 @@ function select_for_edit(activity_id:string, clear=false) {
   if (clear) {
     console.log("Clear is set - don't update visual fields (as this activity not in visual)")
   } else {
+    // No populate each of the visual related fields (only if activity is in the visual)
     edit_visual_activity_td_elements.forEach(td_element => {
-      try {
-      } catch (error) {
-        console.log("Caught an error when trying to log td_element.id:", error);
-      }
-
       const key = td_element.id;
       let activity_field_val = activity.visual_data[key];
       console.log("Edit activity elements - id = " + key + ", value is " + activity_field_val)
@@ -248,81 +300,14 @@ function select_for_edit(activity_id:string, clear=false) {
       // - The field is an object which needs further decoding to extract value
       // - The field is editable so we need to update the input html element value, not the td directly.
 
+      // For fields in the dispatch table call dispatch function which will populate the field.
+      // Otherwise old if then else logic applies below.
+
       // Track number: Set the value of the spinner
       if (key === "vertical_positioning_value") {
-        // Start by clearing the element.
-        td_element.textContent = '';
-
-        // Add up and down arrows to the td element and add click event handler which updates activity vertical position.
-        const buttonGroup = document.createElement("div");
-        buttonGroup.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1");
-        buttonGroup.setAttribute('role', 'group');
-        buttonGroup.setAttribute('aria-label', 'Activity Vertical Position Control');
-        td_element.appendChild(buttonGroup)
-
-        let direction: string
-        for (let i = 0; i < 2; i++) {
-          if (i == 0) {
-            direction = "up"
-          } else {
-            direction = "down"
-          }
-          // Add button and appropriate arrow icon to supplied element.
-          let button = document.createElement("button")
-          button.classList.add("btn", "btn-secondary")
-          buttonGroup.appendChild(button)
-
-          let arrow = document.createElement('i')
-          arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
-          arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
-          if (direction == "up") {
-            arrow.addEventListener('click', async function () {
-              await add_move_track_event_handler("up", activity)
-            })
-          } else {
-            arrow.addEventListener('click', async function () {
-              await add_move_track_event_handler("down", activity)
-            })
-          }
-          button.appendChild(arrow)
-        }
+        set_up_down_button(td_element, activity, 'Activity Vertical Position Control',["up", "down"], add_move_track_event_handler);
       } else if (key === "height_in_tracks") {
-        // Start by clearing the element.
-        td_element.textContent = '';
-
-        // Add up and down arrows to the td element and add click event handler which modifies height of activity.
-        const buttonGroup = document.createElement("div");
-        buttonGroup.classList.add("btn-group", "btn-group-sm", "height-control", "me-1");
-        buttonGroup.setAttribute('role', 'group');
-        buttonGroup.setAttribute('aria-label', 'Activity Height Control');
-        td_element.appendChild(buttonGroup)
-
-        let direction: string;
-        for (let i = 0; i < 2; i++) {
-          if (i == 0) {
-            direction = "up"
-          } else {
-            direction = "down"
-          }
-          // Add button and appropriate arrow icon to supplied element.
-          let button = document.createElement("button")
-          button.classList.add("btn", "btn-secondary")
-          buttonGroup.appendChild(button)
-
-          let arrow = document.createElement('i')
-          arrow.classList.add("bi", "bi-caret-" + direction + "-fill")
-          arrow.id = `${activity.visual_data.unique_id_from_plan}-[${direction}]`
-          if (direction == "up") {
-            arrow.addEventListener('click', async function () {
-              await add_modify_track_height_event_handler("increase", activity)
-            })
-          } else {
-            arrow.addEventListener('click', async function () {
-              await add_modify_track_height_event_handler("decrease", activity)
-            })
-          }
-          button.appendChild(arrow)
-        }
+        set_up_down_button(td_element, activity, 'Activity Height Control', ["up", "down"], add_modify_track_height_event_handler)
       } else if (key === "plotable_shape") {
         // Start by clearing the element before updating it for this activity.
         td_element.textContent = '';
@@ -392,7 +377,7 @@ function select_for_edit(activity_id:string, clear=false) {
         dropdownMenu.classList.add("dropdown-menu")
         dropdownDiv.appendChild(dropdownMenu)
 
-        // Add dropdown entry for each swimlane associated with this visual
+        // Add dropdown entry for each plotable_style
         console.log(`Adding style names in change style dropdown ${style_names}`)
         style_names.forEach((style_name: [string, number]) => {
           console.log(`Adding dropdown item for ${style_name}`)
@@ -464,9 +449,7 @@ function select_for_edit(activity_id:string, clear=false) {
       }
     });
   }
-
-  // Need to redraw as different element needs to be marked as selected
-  plot_visual()
+  highlight_activity(activity_id)
 }
 
 async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivElement, topLevelElements: any) {
