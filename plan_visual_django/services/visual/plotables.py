@@ -240,6 +240,7 @@ def get_plotable(plotable_id, shape_name, **kwargs):
     plotable_factory_dispatch_table = {
         PlotableShape.PlotableShapeName.RECTANGLE: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
+        PlotableShape.PlotableShapeName.BULLET: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.DIAMOND: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
     }
