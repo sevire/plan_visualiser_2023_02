@@ -65,27 +65,56 @@ function plot_diamond(context: CanvasRenderingContext2D | null, object_to_render
     context!.fill();
   }
 }
+
 function plot_bullet(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
   context!.beginPath();
 
-  // Draw left semi-circle
-  context!.arc(
-    (object_to_render.shape_plot_dims.left + object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    Math.PI * 0.5, Math.PI * 1.5
-  );
+  let cornerRadius = (object_to_render.shape_plot_dims.height / 2) * scale_factor;
+  context!.beginPath();
 
-  // Draw right semi-circle
-  context!.arc(
-    (object_to_render.shape_plot_dims.left + object_to_render.shape_plot_dims.width - object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.height / 2) * scale_factor,
-    Math.PI * 1.5, Math.PI * 0.5
+  const left = object_to_render.shape_plot_dims.left * scale_factor
+  const top = object_to_render.shape_plot_dims.top * scale_factor
+  const width = object_to_render.shape_plot_dims.width * scale_factor
+  const height = object_to_render.shape_plot_dims.height * scale_factor
+
+  context!.roundRect(
+    left,
+    top,
+    width,
+    height,
+    cornerRadius
   )
 
   context!.closePath();
 
+  if (highlight_flag) {
+    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.stroke()
+  } else {
+    context!.fillStyle = object_to_render.fill_color
+    context!.fill();
+  }
+}
+
+function plot_rounded_rectangle(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
+  let cornerRadius = ((object_to_render.shape_plot_dims.height / 2) * 0.6) * scale_factor;
+  context!.beginPath();
+
+  const left = object_to_render.shape_plot_dims.left * scale_factor
+  const top = object_to_render.shape_plot_dims.top * scale_factor
+  const width = object_to_render.shape_plot_dims.width * scale_factor
+  const height = object_to_render.shape_plot_dims.height * scale_factor
+
+  context!.roundRect(
+    left,
+    top,
+    width,
+    height,
+    cornerRadius
+  )
+
+  context!.closePath();
 
   if (highlight_flag) {
     context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
@@ -115,6 +144,8 @@ function plot_shape(object_to_render: any, context: CanvasRenderingContext2D | n
     plot_rectangle(context, object_to_render, scale_factor, highlight_flag);
   } else if (object_to_render.shape_type === 'rectangle' && object_to_render.shape_name === 'DIAMOND') {
     plot_diamond(context, object_to_render, scale_factor, highlight_flag);
+  } else if (object_to_render.shape_type === 'rectangle' && object_to_render.shape_name === 'ROUNDED_RECTANGLE') {
+    plot_rounded_rectangle(context, object_to_render, scale_factor, highlight_flag);
   } else if (object_to_render.shape_type === 'rectangle' && object_to_render.shape_name === 'BULLET') {
     plot_bullet(context, object_to_render, scale_factor, highlight_flag);
   } else if (object_to_render.shape_type === 'text') {
