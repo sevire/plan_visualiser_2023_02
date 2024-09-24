@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import format_html
 
 from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
     PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
@@ -40,8 +41,15 @@ class PlanAdmin(admin.ModelAdmin):
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
-    list_display = ["user", "name", "red", "green", "blue", "alpha"]
+    list_display = ["user", "name", "red", "green", "blue", "alpha", "show_color"]
     list_filter = ['user']
+
+    def show_color(self, obj):
+        return format_html(
+            '<div style="width: 36px; height: 18px; background-color: rgb({}, {}, {});"></div>',
+            obj.red, obj.green, obj.blue)
+
+    show_color.short_description = 'Color Preview'
 
 
 @admin.register(Font)
