@@ -126,6 +126,33 @@ function plot_rounded_rectangle(context: CanvasRenderingContext2D | null, object
   }
 }
 
+function plot_isosceles_triangle(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
+  const left: number = object_to_render.shape_plot_dims.left * scale_factor
+  const top: number = object_to_render.shape_plot_dims.top * scale_factor
+  const width: number = object_to_render.shape_plot_dims.width * scale_factor
+  const height: number = object_to_render.shape_plot_dims.height * scale_factor
+
+  context!.beginPath();
+
+  // Define a start point
+  context!.moveTo(left + width / 2, top);
+
+  // Define points
+  context!.lineTo(left + width,top + height);
+  context!.lineTo(left,top + height);
+
+  context!.closePath();
+
+  if (highlight_flag) {
+    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.stroke()
+  } else {
+    context!.fillStyle = object_to_render.fill_color
+    context!.fill();
+  }
+}
+
 function plot_text(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
   // Note for text we are ignoring highlight flag as it doesn't mean anything for text so just plot text anyway.
   context!.textAlign = object_to_render.shape_plot_dims.text_align
@@ -148,6 +175,8 @@ function plot_shape(object_to_render: any, context: CanvasRenderingContext2D | n
     plot_rounded_rectangle(context, object_to_render, scale_factor, highlight_flag);
   } else if (object_to_render.shape_type === 'rectangle' && object_to_render.shape_name === 'BULLET') {
     plot_bullet(context, object_to_render, scale_factor, highlight_flag);
+  } else if (object_to_render.shape_type === 'rectangle' && object_to_render.shape_name === 'ISOSCELES') {
+    plot_isosceles_triangle(context, object_to_render, scale_factor, highlight_flag);
   } else if (object_to_render.shape_type === 'text') {
     plot_text(context, object_to_render, scale_factor, highlight_flag);
   }
