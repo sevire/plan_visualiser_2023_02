@@ -315,6 +315,7 @@ class PlotableShape(models.Model):
     class PlotableShapeName(models.TextChoices):
         RECTANGLE = "RECTANGLE", "Rectangle"
         ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rounded Rectangle"
+        BULLET = "BULLET", "Bullet"
         DIAMOND = "DIAMOND", "Diamond"
         ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
 
