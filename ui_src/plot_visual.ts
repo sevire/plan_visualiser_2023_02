@@ -26,28 +26,30 @@ function plot_rectangle(context: CanvasRenderingContext2D | null, object_to_rend
 }
 
 function plot_diamond(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
+  const half_width = object_to_render.shape_plot_dims.width / 2;
+  const half_height = object_to_render.shape_plot_dims.height / 2;
   context!.beginPath();
   context!.moveTo(
-    object_to_render.shape_plot_dims.left * scale_factor,
+    (object_to_render.shape_plot_dims.left  + half_width) * scale_factor,
     object_to_render.shape_plot_dims.top * scale_factor
   );
 
   // top left edge
   context!.lineTo(
-    (object_to_render.shape_plot_dims.left - object_to_render.shape_plot_dims.width / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height / 2) * scale_factor
+    (object_to_render.shape_plot_dims.left) * scale_factor,
+    (object_to_render.shape_plot_dims.top + half_height) * scale_factor
   );
 
   // bottom left edge
   context!.lineTo(
-    object_to_render.shape_plot_dims.left * scale_factor,
+    (object_to_render.shape_plot_dims.left + half_width) * scale_factor,
     (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height) * scale_factor
   );
 
   // bottom right edge
   context!.lineTo(
-    (object_to_render.shape_plot_dims.left + object_to_render.shape_plot_dims.width / 2) * scale_factor,
-    (object_to_render.shape_plot_dims.top + object_to_render.shape_plot_dims.height / 2) * scale_factor
+    (object_to_render.shape_plot_dims.left + object_to_render.shape_plot_dims.width) * scale_factor,
+    (object_to_render.shape_plot_dims.top + half_height) * scale_factor
   );
 
   // closing the path automatically creates
