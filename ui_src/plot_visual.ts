@@ -155,6 +155,8 @@ function plot_isosceles_triangle(context: CanvasRenderingContext2D | null, objec
 
 function plot_text(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
   // Note for text we are ignoring highlight flag as it doesn't mean anything for text so just plot text anyway.
+  console.log(`About to plot text for ${object_to_render.text}, textAlign is ${object_to_render.shape_plot_dims.text_align}`)
+  console.log(`About to plot text for ${object_to_render.text}, x is ${object_to_render.shape_plot_dims.x}`)
   context!.textAlign = object_to_render.shape_plot_dims.text_align
   context!.textBaseline = object_to_render.shape_plot_dims.text_baseline
   context!.fillStyle = object_to_render.fill_color
@@ -246,10 +248,15 @@ export function plot_visual() {
     rendered_objects.forEach((object_to_render: any) => {
       plot_shape(object_to_render, context, (window as any).scale_factor);
       // If this is the current selected element then highlight it
-      console.log(`Checking whether this element is selected activity: plotable_id is ${object_to_render.plotable_id}`)
-      if (canvas == "visual_activities" && object_to_render.plotable_id == (window as any).selected_activity_id) {
-        console.log(`Highlighting activity ${object_to_render.plotable_id}`)
-        plot_shape(object_to_render, (window as any).canvas_info.highlight, (window as any).scale_factor, true)
+      if (canvas == "visual_activities") {
+        // Plotable ids have canvas pre-pended for uniqueness so need to strip it off before checking whethe this
+        // is the selected id.
+        const activity_id_from_plotable_id = object_to_render.plotable_id.substring(9)
+        console.log(`Checking whether this element is selected activity: plotable_id is ${activity_id_from_plotable_id}`)
+        if (activity_id_from_plotable_id == (window as any).selected_activity_id) {
+          console.log(`Highlighting activity ${object_to_render.plotable_id}`)
+          plot_shape(object_to_render, (window as any).canvas_info.highlight, (window as any).scale_factor, true)
+        }
       }
     });
   }

@@ -163,11 +163,7 @@ class RectangleBasedPlotable(Plotable):
             else:
                 raise ValueError(f"Unrecognised text flow value for external text: {self.text_flow}")
         else:
-            if (
-                self.text_flow == VisualActivity.TextFlow.FLOW_TO_RIGHT or
-                self.text_flow == VisualActivity.TextFlow.FLOW_CENTRE or
-                self.text_flow == VisualActivity.TextFlow.FLOW_CLIPPED
-            ):
+            if self.text_flow == VisualActivity.TextFlow.FLOW_TO_RIGHT:
                 # Need to begin the plot outside the right edge of the shape
                 text_x = self.left + self.outside_text_margin
                 text_align = "left"
