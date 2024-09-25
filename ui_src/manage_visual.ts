@@ -180,6 +180,16 @@ async function add_modify_track_height_event_handler(direction: string, activity
   plot_visual()
 }
 
+async function add_modify_text_flow_event_handler(flow_direction: string, activity: any) {
+  console.log(`Text flow handler ${flow_direction} clicked`)
+  console.log(`Activity is ${activity}`)
+
+  await update_activity_text_flow(activity.visual_data.unique_id_from_plan, flow_direction)
+  await get_plan_activity_data((window as any).visual_id)
+  await get_visual_activity_data((window as any).visual_id)
+  plot_visual()
+}
+
 // ====================================================================================================
 // Below are functions need for dispatch table to set values for each field in the activity data panel
 // ====================================================================================================
@@ -233,6 +243,46 @@ function add_two_arrow_buttons(buttonGroup: HTMLDivElement, activity: any, label
     button.appendChild(arrow)
   }
 }
+function add_three_buttons(buttonGroup: HTMLDivElement, activity: any, event_handler: (direction:string, activity:any) => void) {
+  // ToDo: Refactor two arrow and three arrow button groups to be single method
+  // This is to support text flow functionality so need specific icons for that - not arrows
+  const labels: [string, string][] = [
+    ["RFLOW", "arrow-bar-right"],
+    ["CENTRE", "arrows"],
+    ["LFLOW", "arrow-bar-left"]  // These values correspond to value in database so can't change.
+  ]
+
+  for (let i = 0; i < 3; i++) {
+    const [flow_direction, icon_name] = labels[i]
+    console.log(`Adding button for flow control ${flow_direction}, icon ${icon_name}`)
+
+    // Add button and appropriate arrow icon to supplied element.
+    let button = document.createElement("button")
+    button.classList.add("btn", "btn-secondary")
+    if (activity.visual_data.text_flow == flow_direction) {
+      button.classList.add("active")
+    }
+    buttonGroup.appendChild(button)
+
+    let icon = document.createElement('i')
+    icon.classList.add("bi", "bi-"+icon_name)
+    icon.id = `${activity.visual_data.unique_id_from_plan}-[${flow_direction}]`
+    icon.addEventListener('click', async function (e) {
+      let btns = buttonGroup.querySelectorAll('.btn');
+      btns.forEach((b) => {
+        b.classList.remove('active')
+      });
+
+      // Add 'active' class to the clicked button
+      const target_element: HTMLElement = e.target as HTMLElement
+      const parent_target_element: HTMLElement = target_element.parentElement as HTMLButtonElement
+      console.log(`Updating active button for text flow for ${parent_target_element}`)
+      parent_target_element.classList.add('active');
+      event_handler(flow_direction, activity)
+    })
+    button.appendChild(icon)
+  }
+}
 
 function set_up_down_button(td_element: Element, activity:any, aria_label: string, labels: string[], event_handler: (direction: string, activity: any) => void) {
   // Start by clearing the element.
@@ -240,6 +290,15 @@ function set_up_down_button(td_element: Element, activity:any, aria_label: strin
   
   const buttonGroup = add_button_group(td_element, aria_label);
   add_two_arrow_buttons(buttonGroup, activity, labels, event_handler);
+}
+
+function add_text_flow_buttons(td_element: Element, activity: any, aria_label: string) {
+  // Start by clearing the element.
+  td_element.textContent = '';
+
+  const buttonGroup = add_button_group(td_element, aria_label);
+  add_three_buttons(buttonGroup, activity, add_modify_text_flow_event_handler)
+
 }
 
 function select_for_edit(activity_id:string, clear=false) {
@@ -308,6 +367,8 @@ function select_for_edit(activity_id:string, clear=false) {
         set_up_down_button(td_element, activity, 'Activity Vertical Position Control',["up", "down"], add_move_track_event_handler);
       } else if (key === "height_in_tracks") {
         set_up_down_button(td_element, activity, 'Activity Height Control', ["up", "down"], add_modify_track_height_event_handler)
+      } else if (key === "text_flow") {
+        add_text_flow_buttons(td_element, activity, 'Text Flow Control')
       } else if (key === "plotable_shape") {
         // Start by clearing the element before updating it for this activity.
         td_element.textContent = '';
@@ -536,6 +597,23 @@ export async function update_activity_track_height(activity_unique_id:string, di
     {
       id: activity.visual_data.id,
       height_in_tracks: new_track_height
+    }
+  ]
+  await update_visual_activities(activity.visual_data.visual.id, data)
+}
+
+export async function update_activity_text_flow(activity_unique_id:string, flow_direction:string) {
+  // Need to get activity from global data - to ensure we get latest version.
+  const activity = get_plan_activity(activity_unique_id)
+
+  console.log(`update_activity_text_flow: activity=${activity}, direction=${flow_direction}`)
+  console.log(`update_activity_text_flow: activity.visual_data=${activity.visual_data}`)
+  console.log(`update_activity_text_flow: activity.visual_data.id=${activity.visual_data.id}`)
+
+  const data = [
+    {
+      id: activity.visual_data.id,
+      text_flow: flow_direction
     }
   ]
   await update_visual_activities(activity.visual_data.visual.id, data)
