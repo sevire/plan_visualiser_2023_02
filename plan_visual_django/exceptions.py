@@ -20,5 +20,10 @@ class SuppliedPlanIncompleteError(Exception):
 class ExcelPlanSheetNotFound(Exception):
     pass
 
+
 class AddPlanError(Exception):
+    pass
+
+
+class MissingPlotableIdError(Exception):
     pass

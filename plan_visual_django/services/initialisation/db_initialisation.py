@@ -95,7 +95,7 @@ initial_data_driver = [
 
 initial_users = [
     {
-        'username': "shared_data_user",
+        'username': settings.SHARED_DATA_USER,
         'email': 'shared_data_user@genonline.co.uk',
         'superuser_flag': False,
         'id': 1,  # Id needs to be fixed only for shared_data_user as used as foreign key in some shared data items.
@@ -243,7 +243,7 @@ def create_initial_users(delete=False):
 
         # Check whether this user exists
         try:
-            user = User.objects.get()
+            user = User.objects.get(username=user_data["username"])
         except User.DoesNotExist:
             if delete:
                 # Nothing to do delete and that's fine.

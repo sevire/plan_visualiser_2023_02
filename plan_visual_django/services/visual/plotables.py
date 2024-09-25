@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from plan_visual_django.exceptions import MissingPlotableIdError
+
 
 class Plotable(ABC):
     """
@@ -8,16 +10,19 @@ class Plotable(ABC):
     sub-classing in order to carry out or support the actual drawing of the object.
     """
 
-    def __init__(self, shape, ):
+    def __init__(self, plotable_id: str, shape):
         """
-        All objects will need at least a shape.
+        All objects will need at least an id and a shape.
 
+        :param plotable_id:
         :param shape:
         """
+        self.plotable_id: str = plotable_id
         self.shape = shape
 
     def __str__(self):
         return f"t:{self.get_top()},l:{self.get_left()},w:{self.get_width()},h:{self.get_height()}"
+
 
     @abstractmethod
     def render(self, renderer):
@@ -88,6 +93,7 @@ class RectangleBasedPlotable(Plotable):
 
     def __init__(
             self,
+            plotable_id,
             shape,
             top: float,
             left: float,
@@ -99,7 +105,7 @@ class RectangleBasedPlotable(Plotable):
             text: str,
             external_text_flag: bool
     ):
-        super().__init__(shape)
+        super().__init__(plotable_id, shape)
 
         self.text_vertical_alignment = text_vertical_alignment
         self.top = top
@@ -222,7 +228,7 @@ class RectangleBasedPlotable(Plotable):
         pass
 
 
-def get_plotable(shape_name, **kwargs):
+def get_plotable(plotable_id, shape_name, **kwargs):
     """
     Decides which subclass of plotable is required based on which shape is to be plotted.
 
@@ -234,8 +240,9 @@ def get_plotable(shape_name, **kwargs):
     plotable_factory_dispatch_table = {
         PlotableShape.PlotableShapeName.RECTANGLE: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
+        PlotableShape.PlotableShapeName.BULLET: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.DIAMOND: RectangleBasedPlotable,
         PlotableShape.PlotableShapeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
     }
     class_to_use = plotable_factory_dispatch_table[shape_name]
-    return class_to_use(shape_name, **kwargs)
+    return class_to_use(plotable_id, shape_name, **kwargs)

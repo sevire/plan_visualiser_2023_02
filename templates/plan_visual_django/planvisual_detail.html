@@ -159,6 +159,7 @@
                 <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
                 <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
                 <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
+                <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
             </div>
         </div>
     </div>
@@ -210,6 +211,11 @@
         response = await get_visual_settings()
         window.visual_settings = response.data
         
+        console.log("Initialising Canvases")
+        let [scale_factor, canvas_info] = window.initialise_canvases()
+        window.scale_factor = scale_factor;
+        window.canvas_info = canvas_info
+        
         console.log("Plotting visual")
         window.plot_visual()
         
@@ -217,6 +223,7 @@
         if (initial_selected_activity_div) {
           console.log(`Clicking on first activity so is selected ${initial_selected_activity_div}`)
           initial_selected_activity_div.click();
+          window.selected_activity_id = initial_selected_activity_div.id
         }
     })
 

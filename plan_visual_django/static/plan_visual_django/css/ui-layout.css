@@ -64,6 +64,9 @@ div.top-row-control > div {
 #visual-content #canvas-activities {
   z-index: 4;
 }
+#visual-content #canvas-highlight {
+  z-index: 5;
+}
 
 #add-remove-activities {
   height: 400px;
