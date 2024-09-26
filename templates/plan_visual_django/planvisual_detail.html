@@ -2,7 +2,7 @@
     {% load static %}
     
     {% block main_content %}
-     <div id="top-row-controls" class="row mb-3">
+    <div id="top-row-controls" class="row mb-3">
         <div id="swimlane_data" class="col-4 top-row-control">
             <div class="container p-0">
                 <table class="table table-sm table-fixed table-secondary">
@@ -155,22 +155,21 @@
             </div>
         </div>
     </div> 
-    <div id="activity_controls" class="row">
-        <div id="add-remove-activities" class="col-4 panel"></div>
-        
-        <div  id="visual-content" class="canvas-stack col-8">
-            <div class="canvas-wrapper bg-primary-subtle">
-                <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
+    <script src="{% static 'dist/bundle.js' %}"></script>
+        <div id="activity_controls" class="row">
+            <div id="add-remove-activities" class="col-4 panel"></div>
+            <div  id="visual-content" class="canvas-stack col-8">
+                {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
+                <div class="canvas-wrapper bg-primary-subtle">
+                    <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
+                    <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
+                    <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
+                    <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
+                    <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <script src="{% static 'dist/bundle.js' %}"></script>
-    <script type="application/javascript">
+        <script type="application/javascript">
 
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
@@ -191,6 +190,9 @@
         initial_selected_activity_div = plan_tree_data[1]
         
         root_element.appendChild(plan_tree)
+        
+        // Add event to download image button to capture and download image
+        await window.add_download_image_event_listener()
         
         // Update swimlane panel with swimlanes for this visual in sequence order
         console.log("Updating swimlane panel...")
