@@ -1,3 +1,4 @@
+@import "./custom-bootstrap";
 
 body {
   min-width: 1000px;
@@ -139,18 +140,18 @@ ul#plan-activities {
     border: solid 3px transparent;
 
     // Colours for plan activities
-    $background-color-activity-level-1: rgb(1, 45, 0);
-    $background-color-activity-level-2: rgb(9, 61, 1);
-    $background-color-activity-level-3: rgb(10, 77, 0);
-    $background-color-activity-level-4: rgb(3, 105, 1);
-    $background-color-activity-level-5: rgb(33, 159, 14);
-    $background-color-activity-level-6: rgb(66, 189, 47);
-    $background-color-activity-level-7: rgb(83, 199, 65);
-    $background-color-activity-level-8: rgb(112, 196, 99);
-    $background-color-activity-level-9: rgb(139, 231, 125);
-    $background-color-activity-level-10: rgb(168, 248, 155);
+    $background-color-activity-level-1: $primary;
+    $background-color-activity-level-2: lighten($background-color-activity-level-1, 10%);
+    $background-color-activity-level-3: lighten($background-color-activity-level-1, 20%);
+    $background-color-activity-level-4: lighten($background-color-activity-level-1, 30%);
+    $background-color-activity-level-5: lighten($background-color-activity-level-1, 40%);
+    $background-color-activity-level-6: lighten($background-color-activity-level-1, 50%);
+    $background-color-activity-level-7: lighten($background-color-activity-level-1, 50%);
+    $background-color-activity-level-8: lighten($background-color-activity-level-1, 50%);
+    $background-color-activity-level-9: lighten($background-color-activity-level-1, 50%);
+    $background-color-activity-level-10: lighten($background-color-activity-level-1, 50%);
 
-    $background-color-activity-selected: rgb(255, 255, 119);
+    $background-color-activity-selected: lighten($secondary, 20%);
     $border-color-activity-current: rgb(201, 1, 1);
 
     &.level-1 { background-color: $background-color-activity-level-1}
@@ -170,7 +171,7 @@ ul#plan-activities {
     i {
       margin-left: 8px;
       margin-right: 5px;
-      color: greenyellow;
+      color: $secondary;
     }
   }
 }
