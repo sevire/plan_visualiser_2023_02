@@ -615,6 +615,8 @@ class TimelineForVisual(models.Model):
     class TimelineLabelType(models.TextChoices):
         MONTHS = "MONTHS", 'One label for each month'
         QUARTERS = "QUARTERS", 'One label for each sequence of three months, variable start'
+        HALF_YEAR = "HALF_YEAR", 'One label for each sequence of six months, start on Jan or Jul'
+        YEAR = "YEAR", 'One label for each year covered by the plan, start at Jan'
 
     class TimelineLabelBandingType(models.TextChoices):
         NO_BANDING = "NO_BANDING", 'All labels the same style'
@@ -636,30 +638,6 @@ class TimelineForVisual(models.Model):
 
     def get_timeline_label_type(self) -> TimelineLabelType:
         return self.TimelineLabelType(self.timeline_type)
-
-    def get_height(self):
-        return self.timeline_height
-
-    def get_plot_parameters(self, json_flag=False):
-        """
-        ToDo: Rethink whether I need get_plot_paramters for Timeline given refactor into Plotables
-        Calculated the overall dimensions of a given Timeline - that is the dimensions of the imaginary
-        rectangle that encloses all the Timeline labels.
-
-        :param json_flag:
-        :return:
-        """
-        plotables = self.get_plotables()
-
-        timeline_enclosing_top = min(plotable.get_top() for plotable in plotables)
-        timeline_enclosing_bottom = max(plotable.get_bottom() for plotable in plotables)
-        timeline_enclosing_left = min(plotable.get_left() for plotable in plotables)
-        timeline_enclosing_right = max(plotable.get_right() for plotable in plotables)
-
-        timeline_enclosing_height = timeline_enclosing_bottom - timeline_enclosing_top
-        timeline_enclosing_width = timeline_enclosing_right - timeline_enclosing_left
-
-        return timeline_enclosing_top, timeline_enclosing_left, timeline_enclosing_width, timeline_enclosing_height
 
     def get_plotables(self):
         """
