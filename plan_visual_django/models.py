@@ -615,6 +615,7 @@ class TimelineForVisual(models.Model):
     class TimelineLabelType(models.TextChoices):
         MONTHS = "MONTHS", 'One label for each month'
         QUARTERS = "QUARTERS", 'One label for each sequence of three months, variable start'
+        HALF_YEAR = "HALF_YEAR", 'One label for each sequence of six months, start on Jan or Jul'
 
     class TimelineLabelBandingType(models.TextChoices):
         NO_BANDING = "NO_BANDING", 'All labels the same style'
