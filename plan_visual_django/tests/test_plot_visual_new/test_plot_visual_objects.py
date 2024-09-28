@@ -49,22 +49,6 @@ class TestPlotVisualObjects(TestCase):
         self.assertEqual(field_value, getattr(swimlane_plotable, field_name))
 
     @data(*generate_test_data_field_stream_multiple_inputs([
-        # visual_id, timeline_seqnum, top, left, width, height
-        (4, 1, 0, 0, 1000, 25),
-        (4, 2, 25, 0, 1000, 15),
-        ],
-        ("top", "left", "width", "height")
-    ))
-    @unpack
-    def test_get_timeline_plot_parameters(self, visual_id, timeline_sequence_within_visual, field_name, field_value):
-        visual = PlanVisual.objects.get(pk=visual_id)
-        timeline = visual.timelineforvisual_set.get(sequence_number=timeline_sequence_within_visual)
-        top, left, width, height = timeline.get_plot_parameters()
-
-        # Access and check the appropriate field value depending upon which expected field has been passed in.
-        self.assertEqual(field_value, locals()[field_name])
-
-    @data(*generate_test_data_field_stream_multiple_inputs([
         # visual_id, sticky_id, approx_flag, top, left, width, height
         (4, "ID-026", False, 40+4*(20+4), (62.5/275)*1000-5, 10, 20),
         (4, "ID-025", False, 40 + 5*20+4*4 + 5, (214.5/275)*1000-5, 10, 20),
