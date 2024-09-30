@@ -32,7 +32,6 @@ class PlanField(models.Model):
         END = "end_date", True, 'End date of activity'
         LEVEL = "level", True, 'The level in the hierarchy of the an activity'
 
-
         """
         Controls creation of a PlanFieldName object so that it stores the 
         """
