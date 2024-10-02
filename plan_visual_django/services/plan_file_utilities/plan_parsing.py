@@ -1,4 +1,7 @@
 import logging
+
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum, PlanFieldNameEnum
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,11 +36,10 @@ def update_plan_activity(plan, activity, action):
             for visual_activity in visual_activities:
                 visual_activity.delete()
     else:
-        from plan_visual_django.models import PlanField
-        if PlanField.PlanFieldName.MILESTONE_FLAG in activity:
-            milestone_flag = activity[PlanField.PlanFieldName.MILESTONE_FLAG]
+        if PlanFieldNameEnum.MILESTONE_FLAG.value in activity:
+            milestone_flag = activity[PlanFieldNameEnum.MILESTONE_FLAG.name]
         else:
-            if activity[PlanField.PlanFieldName.DURATION] == 0:
+            if activity[PlanFieldNameEnum.DURATION.value] == 0:
                 milestone_flag = True
             else:
                 milestone_flag = False

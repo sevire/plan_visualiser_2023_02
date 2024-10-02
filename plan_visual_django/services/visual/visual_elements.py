@@ -481,7 +481,7 @@ class QuarterTimeline(Timeline):
             period_end_date = last_day_of_month(month_increment(period_start_date, 3-1))
 
             # ToDo: Implement settings to specify format of month text
-            text = f'{period_start_date.strftime("%b-%y")} - {period_end_date.strftime("%b-%y")})'
+            text = f'{period_start_date.strftime("%b-%y")} - {period_end_date.strftime("%b-%y")}'
 
             left = date_plotter.left(period_start_date)
             width = date_plotter.width(period_start_date, period_end_date)

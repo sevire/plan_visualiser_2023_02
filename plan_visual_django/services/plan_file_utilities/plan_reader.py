@@ -6,12 +6,16 @@ import re
 from abc import ABC, abstractmethod
 from datetime import datetime, date
 from pathlib import Path
-from typing import List, Dict, Callable, Any
-from plan_visual_django.exceptions import SuppliedPlanIncompleteError, PlanMappingIncompleteError, \
+from typing import List, Dict
+from plan_visual_django.exceptions import (
+    SuppliedPlanIncompleteError,
+    PlanMappingIncompleteError,
     ExcelPlanSheetNotFound
-from plan_visual_django.models import PlanField, PlanFieldMappingType, PlanMappedField, FileType, Plan
+)
+from plan_visual_django.models import PlanFieldMappingType, FileType, Plan
 import openpyxl as openpyxl
 import logging
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum
 
 logger = logging.getLogger(__name__)
 
@@ -232,9 +236,9 @@ class PlanParser():
             for plan_field in supplied_fields:
                 # Check whether this field is included in the mapping, and ignore field if not.
                 mapped_field_column = self.plan_field_mapping.planmappedfield_set.get(
-                    mapped_field__field_name = plan_field.field_name)
+                    mapped_field = plan_field.name)
                 if mapped_field_column.input_field_name not in headings:
-                    parsed_data_record[plan_field.field_name] = "(n/a)"
+                    parsed_data_record[plan_field.value.field_name] = "(n/a)"
                 else:
                     # If we've had an error on this record then we will ignore remaining fields and not include the record
                     # in the plan.
@@ -242,12 +246,12 @@ class PlanParser():
                         # Should get exactly one match unless the field is optional and not included in the mapping
                         mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
                         try:
-                            field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.field_type, mapped_field_column_raw_value)
+                            field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.value.field_type.value, mapped_field_column_raw_value)
                         except (ValueError, TypeError) as e:
                             print(f"Error parsing record {plan_record}, ignoring record)")
                             ignore_record = True
                         else:
-                            parsed_data_record[plan_field.field_name] = field_parsed_value
+                            parsed_data_record[plan_field.value.field_name.value] = field_parsed_value
             if not ignore_record:
                 parsed_data.append(parsed_data_record)
 
@@ -263,15 +267,14 @@ class PlanParser():
         all_mapped_fields = self.plan_field_mapping.planmappedfield_set.all()
         supplied_fields = [field for field in all_mapped_fields if
                            field.input_field_name in headings]
-        compulsory_mapped_fields = [field for field in all_mapped_fields if field.mapped_field.required_flag is True]
-        # compulsory_plan_fields = PlanField.objects.filter(required_flag=True)
+        compulsory_mapped_fields = [field for field in all_mapped_fields if PlanFieldEnum[field.mapped_field].value.required_flag is True]
         missing_compulsory_mapped_fields = [field for field in compulsory_mapped_fields if field not in supplied_fields]
         if len(missing_compulsory_mapped_fields) > 0:
             logger.error(f"Missing compulsory fields...")
             for missing_field in missing_compulsory_mapped_fields:
                 logger.error(f"Field {missing_field.mapped_field.field_name} <-- {missing_field.input_field_name}")
             raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_mapped_fields}")
-        return [field.mapped_field for field in supplied_fields]
+        return [PlanFieldEnum[field.mapped_field] for field in supplied_fields]
 
 
 class PlanFileReader(ABC):

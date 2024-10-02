@@ -5,69 +5,12 @@ from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.services.general.date_utilities import DatePlotter
+from plan_visual_django.services.plan_file_utilities.plan_field import RefactoredPlanField, PlanFieldEnum
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.plotables import get_plotable
 from plan_visual_django.services.visual.visual_elements import Timeline
 
 logging.getLogger()
-
-
-class PlanField(models.Model):
-    """
-    Includes an entry for each field which is required (or optional) for each activity within the plan.
-
-    The field names defined here need map directly on to the variable names for each field used within the app, so
-    these need to be maintained to be consistent with the code.
-
-    To do this I've restricted the choices for the field, but allowed other attributes to be entered.
-    """
-
-    # Classes to support Enums which drive Choices in the model and can be used in code. Neat!
-    class PlanFieldName(models.TextChoices):
-        STICKY_UID = "unique_sticky_activity_id", True, 'Unique id for activity'
-        NAME = "activity_name", True, 'Name of activity'
-        DURATION = "duration", False, 'Work effort for activity (not stored, used to work out whether this is a milestone)'
-        MILESTONE_FLAG = "milestone_flag", True, 'Is this activity a milestone'
-        START = "start_date", True, 'Start date of activity'
-        END = "end_date", True, 'End date of activity'
-        LEVEL = "level", True, 'The level in the hierarchy of the an activity'
-
-        """
-        Controls creation of a PlanFieldName object so that it stores the 
-        """
-        def __new__(cls, value, is_stored):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.is_stored = is_stored
-            return obj
-
-    class StoredPlanFieldType(models.TextChoices):
-        INTEGER = "INT", "Integer"
-        STRING = "STR", "String"
-        DATE = "DATE", "Date (without time)"
-        BOOL = "BOOL", "Boolean"
-
-    field_name = models.CharField(max_length=50, choices=PlanFieldName.choices, help_text="field name used in common datastructure for plan")
-    field_type = models.CharField(max_length=20, choices=StoredPlanFieldType.choices)
-    field_description = models.TextField(max_length=1000)
-    required_flag = models.BooleanField(default=True)
-    sort_index = models.IntegerField()
-
-    class Meta:
-        ordering = ('sort_index', )
-
-    def get_plan_field_name(self):
-        return self.PlanFieldName(self.field_name)
-
-    def get_stored_plan_field_type(self):
-        return self.StoredPlanFieldType(self.field_type)
-    def __str__(self):
-        return f'{self.field_name}:{self.field_type}'
-
-    @staticmethod
-    def plan_headings(include_not_stored=False):
-        headings = [field.field_name for field in PlanField.objects.all() if field.get_plan_field_name().is_stored is True]
-        return headings
 
 
 class PlanFieldMappingType(models.Model):
@@ -84,16 +27,19 @@ class PlanFieldMappingType(models.Model):
 
     def is_complete(self):
         """
-        Checks whether all the compulsoary fields have a mapping.
+        Checks whether all the compulsory fields have a mapping.
+
+        Looks at a given mapping and checks that it includes all compulsory fields.  Works by getting a list of all the
+        fields in the mapping and checks that the number of compulsory fields is the same as the number of Plan Fields
+        which are compulsory.
+
+        ToDo: Come back an re-visit this as not sure we need this.
         :return:
         """
-        mapped_compulsory_fields = self.planmappedfield_set.filter(mapped_field__required_flag=True)
-        expected_compulsory_fields = PlanField.objects.filter(required_flag=True)
+        mapped_compulsory_fields = [field for field in self.planmappedfield_set.all() if PlanFieldEnum[field.mapped_field].value.required_flag is True]
+        mapped_count = len(mapped_compulsory_fields)
 
-        mapped_count = mapped_compulsory_fields.count()
-        expected_count = expected_compulsory_fields.count()
-
-        return mapped_count == expected_count
+        return mapped_count == len(PlanFieldEnum.required_fields())
 
 
 class PlanMappedField(models.Model):
@@ -110,12 +56,21 @@ class PlanMappedField(models.Model):
         DATE = "DATE", "Date (without time)"
 
     plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
-    mapped_field = models.ForeignKey(PlanField, on_delete=models.CASCADE)
+    mapped_field = models.CharField(max_length=50, choices=RefactoredPlanField.as_choices())
     input_field_name = models.CharField(max_length=50)
     input_field_type = models.CharField(max_length=20, choices=PlanFieldType.choices)
 
     def get_plan_field_type(self):
         return self.PlanFieldType(self.input_field_type)
+
+    def get_mapped_field_object(self):
+        """
+        The database holds the string id of the Plan Field enum but we often need to access the enum itself, for example
+        from a django template, so this method allows direct access without having to do the look up directly.
+
+        :return:
+        """
+        return PlanFieldEnum.get_by_field_name(self.mapped_field)
 
     def __str__(self):
         return f'{self.plan_field_mapping_type}:{self.mapped_field} -> {self.input_field_name}:{self.input_field_type}'

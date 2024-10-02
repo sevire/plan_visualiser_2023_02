@@ -12,7 +12,7 @@
                     <table class="table">
                         {%  for field_mapping in mapping_for_file_type %}
                             <tr>
-                                <th class="text-end">{{ field_mapping.mapped_field.field_name }}</th>
+                                <th class="text-end">{{ field_mapping.get_mapped_field_object.name }}</th>
                                 <td>{{ field_mapping.input_field_name }}</td>
                             </tr>
                         {% endfor %}
