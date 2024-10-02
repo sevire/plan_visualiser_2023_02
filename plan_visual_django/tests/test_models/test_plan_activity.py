@@ -3,10 +3,10 @@ Tests the ability to parse raw data from an Excel import and convert it to a set
 """
 import os
 from unittest import skip
-
 from ddt import ddt, data, unpack
 from django.test import TestCase
-from plan_visual_django.models import PlanFieldMappingType, PlanMappedField, PlanField
+from plan_visual_django.models import PlanFieldMappingType, PlanMappedField
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum
 from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
 # Data for different field mapping schemas to test completeness validation
@@ -126,7 +126,6 @@ plan_mapped_field_data_cases = [
 class TestPlanActivity(TestCase):
     fixtures = [
         os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_field_mapping_types.json'),
-        os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_fields.json')
     ]
 
     @data(*plan_mapped_field_data_cases)
@@ -155,7 +154,7 @@ class TestPlanActivity(TestCase):
         for mapped_field_name, input_field_name, input_field_type in mapped_field_data:
             PlanMappedField.objects.create(
                 plan_field_mapping_type=plan_field_mapping_type_01,
-                mapped_field=PlanField.objects.get(field_name=mapped_field_name),
+                mapped_field=PlanFieldEnum.get_by_field_name(mapped_field_name),
                 input_field_name=input_field_name,
                 input_field_type=PlanMappedField.PlanFieldType[input_field_type]
             )

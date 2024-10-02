@@ -19,10 +19,11 @@ from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseE
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
-from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
+from plan_visual_django.models import Plan, PlanVisual, PlanActivity, SwimlaneForVisual, VisualActivity, \
     PlotableStyle, TimelineForVisual, Color, StaticContent, FileType, PlanMappedField
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
@@ -691,7 +692,22 @@ class FileTypeListView(ListView):
         context = super().get_context_data(**kwargs)
         context['primary_heading'] = "Support File Types and Field Mappings"
 
-        mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
+        mapped_fields_for_file_types = []
+        for file_type in context['object_list']:
+            mapping_type_fields = []
+            for field in list(PlanFieldEnum):
+                try:
+                    mapping_type_fields.append(PlanMappedField.objects.get(plan_field_mapping_type=file_type.plan_field_mapping_type, mapped_field=field.name))
+                except PlanMappedField.DoesNotExist as e:
+                    # Not all plan fields will be part of a mapping as sometimes a field is derived from another one
+                    # E.g. sometimes milestone_flag is derived from Duration but isn't an input field.
+                    # So not an error!
+                    pass
+            mapped_fields_for_file_types.append((file_type, mapping_type_fields))
+
+
+
+        # mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
         context['ordered_mapped_fields'] = mapped_fields_for_file_types
 
         return context

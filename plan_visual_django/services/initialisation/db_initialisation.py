@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils.crypto import get_random_string
-from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, PlanField, \
+from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, \
     PlotableShapeType, PlotableShape, FileType, Font
 import logging
 
@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 root = settings.BASE_DIR
 json_dir = 'plan_visual_django/fixtures'
-plan_fields = 'plan_fields.json'
 file_types = 'file_type.json'
 mapped_fields = 'mapped_fields.json'
 field_mapping_types = 'mapping_types.json'
@@ -26,11 +25,6 @@ shapes = 'shapes.json'
 # Note - in the following data structures, order matters as records that are referenced as foreign keys must be added
 #        before the record which references them.
 initial_data_driver = [
-    {
-        "dumpdata_filename": 'plan_fields.json',
-        "model": PlanField,
-        "field_name_for_messages": "field_name"
-    },
     {
         "dumpdata_filename": 'mapping_types.json',
         "model": PlanFieldMappingType,

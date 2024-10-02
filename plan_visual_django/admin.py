@@ -2,10 +2,25 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 
-from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
-    PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
-    PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType, PlanActivity, \
-    TimelineForVisual, StaticContent
+from plan_visual_django.models import (
+    Plan,
+    Color,
+    Font,
+    PlotableStyle,
+    PlotableShapeType,
+    PlotableShape,
+    FileType,
+    PlotableShapeAttributesRectangle,
+    PlotableShapeAttributesDiamond,
+    PlanVisual,
+    SwimlaneForVisual,
+    VisualActivity,
+    PlanMappedField,
+    PlanFieldMappingType,
+    PlanActivity,
+    TimelineForVisual,
+    StaticContent
+)
 
 
 @admin.register(FileType)
@@ -14,12 +29,6 @@ class FileTypeAdmin(admin.ModelAdmin):
 
     def plan_field_mapping_type_name(self, obj):
         return obj.plan_field_mapping_type.name
-
-
-@admin.register(PlanField)
-class PlanFieldAdmin(admin.ModelAdmin):
-    list_display = ["field_name", "field_type", "required_flag", "sort_index"]
-    ordering = ["sort_index"]
 
 
 @admin.register(PlanMappedField)
