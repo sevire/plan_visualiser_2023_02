@@ -9,43 +9,20 @@ from plan_visual_django.models import (
     PlotableStyle,
     PlotableShapeType,
     PlotableShape,
-    FileType,
     PlotableShapeAttributesRectangle,
     PlotableShapeAttributesDiamond,
     PlanVisual,
     SwimlaneForVisual,
     VisualActivity,
-    PlanMappedField,
-    PlanFieldMappingType,
     PlanActivity,
     TimelineForVisual,
     StaticContent
 )
 
 
-@admin.register(FileType)
-class FileTypeAdmin(admin.ModelAdmin):
-    list_display = ["file_type_name", "plan_field_mapping_type_name", "file_type_description"]
-
-    def plan_field_mapping_type_name(self, obj):
-        return obj.plan_field_mapping_type.name
-
-
-@admin.register(PlanMappedField)
-class PlanMappedFieldAdmin(admin.ModelAdmin):
-    list_display = ["plan_field_mapping_type", "mapped_field", "input_field_name", "input_field_type"]
-    ordering = ['plan_field_mapping_type', 'mapped_field']
-    list_filter = ('plan_field_mapping_type', )
-
-
-@admin.register(PlanFieldMappingType)
-class PlanFieldMappingTypeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'description']
-
-
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ["user", "plan_name", "file_name", "file_type"]
+    list_display = ["user", "plan_name", "file_name", "file_type_name"]
 
 
 @admin.register(Color)

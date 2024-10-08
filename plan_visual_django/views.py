@@ -15,15 +15,15 @@ from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
-    AddPlanError
+    AddPlanError, SuppliedPlanIncompleteError
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
     ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
 from plan_visual_django.models import Plan, PlanVisual, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color, StaticContent, FileType, PlanMappedField
+    PlotableStyle, TimelineForVisual, Color, StaticContent
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum, FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 @transaction.atomic
 def add_plan(request):
     """
-    Uploads an impoarts a new plan file and adds it and all the activities to the database.
+    Uploads an imports a new plan file and adds it and all the activities to the database.
 
     :param request:
     :return:
@@ -70,17 +70,20 @@ def add_plan(request):
                 # Have saved the record, now parse the plan and store activities.
                 # Only store fields which are part of the plan for the given file type.
 
-                mapping_type = plan.file_type.plan_field_mapping_type
+                file_type, plan_field_mapping = FileTypes.get_file_type_by_name(plan.file_type_name)
                 file_reader = ExcelXLSFileReader()
 
                 # Attempt to read and parse the plan, if an error occurs log it to messages and then abort transaction
                 # to ensure there is no plan record saved without correct activities.
                 try:
-                    read_and_parse_plan(plan, mapping_type, file_reader)
+                    read_and_parse_plan(plan, plan_field_mapping, file_reader)
                 except PlanParseError as e:
                     messages.error(request, f"Plan parse error parsing {plan.file.path}, {e}")
                     transaction.set_rollback(True)
                 except ExcelPlanSheetNotFound as e:
+                    messages.error(request, f"{e}")
+                    transaction.set_rollback(True)
+                except SuppliedPlanIncompleteError as e:
                     messages.error(request, f"{e}")
                     transaction.set_rollback(True)
                 else:
@@ -138,11 +141,11 @@ def re_upload_plan(request, pk):
             # Have saved the record, now parse the plan and store activities.
             # Only store fields which are part of the plan for the given file type.
 
-            mapping_type = plan_record.file_type.plan_field_mapping_type
+            file_type, plan_mapped_fields = FileTypes.get_file_type_by_name(plan_record.file_type_name)
             file_reader = ExcelXLSFileReader()
 
             try:
-                read_and_parse_plan(plan_record, mapping_type, file_reader, update_flag=True)
+                read_and_parse_plan(plan_record, plan_mapped_fields, file_reader, update_flag=True)
             except PlanParseError as e:
                 messages.error(request, f"Plan parse error parsing {plan_record.file.path}, {e}")
                 transaction.set_rollback(True)
@@ -685,27 +688,28 @@ def swimlane_actions(request, visual_id):
 
 
 class FileTypeListView(ListView):
+    """
+    Note have refactored this from when FileType was a DB model but now it is hard-coded.  Have just refactored the code
+    to work without actually accessing a model.  Still works well but in an ideal world would have replaced
+    with a more appropriate class based view.
+
+    ToDo: Re-visit refactor of FileTypeListView and assess whether there is a better non-model base class to use
+    """
     template_name = "plan_visual_django/pv_list_file_types.html"
-    model = FileType
+
+    def get_queryset(self):
+        return FileTypes.file_type_data.items()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['primary_heading'] = "Support File Types and Field Mappings"
 
         mapped_fields_for_file_types = []
-        for file_type in context['object_list']:
-            mapping_type_fields = []
-            for field in list(PlanFieldEnum):
-                try:
-                    mapping_type_fields.append(PlanMappedField.objects.get(plan_field_mapping_type=file_type.plan_field_mapping_type, mapped_field=field.name))
-                except PlanMappedField.DoesNotExist as e:
-                    # Not all plan fields will be part of a mapping as sometimes a field is derived from another one
-                    # E.g. sometimes milestone_flag is derived from Duration but isn't an input field.
-                    # So not an error!
-                    pass
+        for file_type, fields in context['object_list']:
+            # Prepare a list of tuples: (field_name, field) for every field in fields dictionary.
+            mapping_type_fields = [(field_name, field) for field_name, field in fields.items()]
+
             mapped_fields_for_file_types.append((file_type, mapping_type_fields))
-
-
 
         # mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
         context['ordered_mapped_fields'] = mapped_fields_for_file_types

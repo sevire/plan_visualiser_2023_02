@@ -9,7 +9,7 @@ from plan_visual_django.services.visual.visual_settings import VisualSettings
 class PlanForm(ModelForm):
     class Meta:
         model = Plan
-        fields = ("plan_name", "file", "file_type")
+        fields = ("plan_name", "file", "file_type_name")
 
 
 class ReUploadPlanForm(ModelForm):
