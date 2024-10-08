@@ -8,12 +8,12 @@
                 <div class="card h-100">
                     <div class="card-body bg-secondary-subtle">
                     <h5 class="card-title">{{ filetype_object.file_type_name}}</h5>
-                    <p style="height: 100px; overflow-y: auto;" class="card-text mb-auto">{{ filetype_object.file_type_description }}</p>
+                    <p style="height: 100px; overflow-y: auto;" class="card-text mb-auto">{{ filetype_object.description }}</p>
                     <table class="table">
                         {%  for field_mapping in mapping_for_file_type %}
                             <tr>
-                                <th class="text-end">{{ field_mapping.get_mapped_field_object.name }}</th>
-                                <td>{{ field_mapping.input_field_name }}</td>
+                                <th class="text-end">{{ field_mapping.0.name }}</th>
+                                <td>{{ field_mapping.1.input_field_name }}</td>
                             </tr>
                         {% endfor %}
                     </table>

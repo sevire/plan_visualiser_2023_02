@@ -9,13 +9,13 @@ from pathlib import Path
 from typing import List, Dict
 from plan_visual_django.exceptions import (
     SuppliedPlanIncompleteError,
-    PlanMappingIncompleteError,
     ExcelPlanSheetNotFound
 )
-from plan_visual_django.models import PlanFieldMappingType, FileType, Plan
+from plan_visual_django.models import Plan
 import openpyxl as openpyxl
 import logging
-from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum, FileType, \
+    PlanInputFieldSpecification, PlanInputField, PlanFieldInputSourceEnum
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +139,11 @@ def convert_float_string(float_val) -> str:
 def convert_float_int(float_val) -> int:
     return int(float_val)
 
+
+def convert_float_str(float_val) -> str:
+    return str(float_val)
+
+
     # Drives conversion of input types/encoding to appropriate output types.  Utility to allow input fields to be encoded
     # in different ways (e.g. dates can be encoded in a string in many ways)
 convert_dispatch_table = {
@@ -170,6 +175,7 @@ convert_dispatch_table = {
     },
     'FLOAT': {
         'INT': convert_float_int,
+        'STR': convert_float_str,
     },
     'DATE': {
         'DATE': convert_pass_through,
@@ -199,7 +205,7 @@ class PlanParser():
     type and value for each field required in order to manage the plan.
     """
 
-    def __init__(self, plan_field_mapping: PlanFieldMappingType):
+    def __init__(self, plan_field_mapping: dict[PlanFieldEnum, PlanInputFieldSpecification]):
         """
         plan_data will be a List of Dictionaries, with one dictionary entry for each colum in the plan file which has
         been read.
@@ -207,10 +213,6 @@ class PlanParser():
         :param plan_data:
         """
         self.plan_field_mapping = plan_field_mapping
-
-        # Check whether the mapping has been defined for all compulsory fields, no point continuing otherwise.
-        if not self.plan_field_mapping.is_complete():
-            raise PlanMappingIncompleteError(f"Mapping {plan_field_mapping} is incomplete")
 
     def parse(self, data: List[Dict], headings: List) -> List[Dict]:
         """
@@ -221,7 +223,8 @@ class PlanParser():
         :param headings:
         :return:
         """
-        supplied_fields = self.validate_input_fields(headings)
+        # Get actual mapping of input fields to the target plan fields from input file
+        supplied_field_mapping: List[(PlanFieldEnum, PlanInputFieldSpecification)] = self.validate_input_fields(headings)
 
         parsed_data = []
 
@@ -229,24 +232,25 @@ class PlanParser():
             parsed_data_record = {}
             ignore_record = False
 
-            # Depending upon the mapping type, we will be expecting to see a particular set of fields for each record.
-            # So we iterate through the expected fields and look for a field in the input record with the associated
-            # input field name.  If we don't find it, but that field is compulsory, then we will flag an error as we
-            # can't process the file.
-            for plan_field in supplied_fields:
+            # We now have a definitive set of input fields mapped to the plan fields we need to store for the plan.
+            # Even so, we implement a touch of belt and braces here, checking that each field is in the received fields
+            # before processing them.
+            # ToDo: Re-visit whether need to check input field is in headings as we have already confirmed this by now.
+
+            plan_field: PlanFieldEnum
+            input_field: PlanInputFieldSpecification
+            for plan_field, input_field in supplied_field_mapping:
                 # Check whether this field is included in the mapping, and ignore field if not.
-                mapped_field_column = self.plan_field_mapping.planmappedfield_set.get(
-                    mapped_field = plan_field.name)
-                if mapped_field_column.input_field_name not in headings:
+                if input_field.input_field_name not in headings:
                     parsed_data_record[plan_field.value.field_name] = "(n/a)"
                 else:
                     # If we've had an error on this record then we will ignore remaining fields and not include the record
                     # in the plan.
                     if not ignore_record:
                         # Should get exactly one match unless the field is optional and not included in the mapping
-                        mapped_field_column_raw_value = plan_record[mapped_field_column.input_field_name]
+                        mapped_field_column_raw_value = plan_record[input_field.input_field_name].get_input_data(input_field.input_field_source)
                         try:
-                            field_parsed_value = convert_dispatch(mapped_field_column.input_field_type, plan_field.value.field_type.value, mapped_field_column_raw_value)
+                            field_parsed_value = convert_dispatch(input_field.input_field_type.code, plan_field.value.field_type.value, mapped_field_column_raw_value)
                         except (ValueError, TypeError) as e:
                             print(f"Error parsing record {plan_record}, ignoring record)")
                             ignore_record = True
@@ -264,17 +268,23 @@ class PlanParser():
         :param headings:
         :return:
         """
-        all_mapped_fields = self.plan_field_mapping.planmappedfield_set.all()
-        supplied_fields = [field for field in all_mapped_fields if
-                           field.input_field_name in headings]
-        compulsory_mapped_fields = [field for field in all_mapped_fields if PlanFieldEnum[field.mapped_field].value.required_flag is True]
+        supplied_fields = [plan_field for plan_field, input_field in self.plan_field_mapping.items() if
+                           input_field.input_field_name in headings]
+        compulsory_mapped_fields = [plan_field for plan_field, input_field in self.plan_field_mapping.items() if plan_field.value.required_flag is True]
         missing_compulsory_mapped_fields = [field for field in compulsory_mapped_fields if field not in supplied_fields]
         if len(missing_compulsory_mapped_fields) > 0:
             logger.error(f"Missing compulsory fields...")
+            user_error_message = ""
+            prefix = ""
             for missing_field in missing_compulsory_mapped_fields:
-                logger.error(f"Field {missing_field.mapped_field.field_name} <-- {missing_field.input_field_name}")
-            raise SuppliedPlanIncompleteError(f"Missing compulsory fields {missing_compulsory_mapped_fields}")
-        return [PlanFieldEnum[field.mapped_field] for field in supplied_fields]
+                left_arrow = '\u2190'
+                missing_field_log_message = f"{missing_field.value.field_name.value} {left_arrow} {self.plan_field_mapping[missing_field].input_field_name}"
+                logger.error(missing_field_log_message)
+                user_error_message += prefix + missing_field_log_message
+                prefix = ", "
+            user_error_message = "Some expected fields not present in file: " + user_error_message
+            raise SuppliedPlanIncompleteError(user_error_message)
+        return [(plan_field, self.plan_field_mapping[plan_field]) for plan_field in supplied_fields]
 
 
 class PlanFileReader(ABC):
@@ -338,7 +348,7 @@ class ExcelXLSFileReader(PlanFileReader):
         super().__init__()
         self.sheet_name = sheet_name
 
-    def get_sheet_name(self, sheet_list: [str], file_name: str, file_type: FileType):
+    def get_sheet_name(self, sheet_list: [str], file_name: str, file_type_name: str):
         """
         Uses some fuzzy(ish) logic to work out the sheet name to use for the plan data.
 
@@ -350,7 +360,7 @@ class ExcelXLSFileReader(PlanFileReader):
           - A sheet with the name "Task_Data" (this is default for MS Project)
         - If none matches, then abort with fatal error (don't just try to read a random sheet!)
 
-        :param file_type: File type of the file, which provides hints as to which sheet the plan data is in.
+        :param file_type_name: File type of the file, which provides hints as to which sheet the plan data is in.
         :param file_name:
         :param sheet_list:
         :param workbook_object:
@@ -364,11 +374,11 @@ class ExcelXLSFileReader(PlanFileReader):
             sheet_name = sheet_list[0]
             logger.debug(f"Only one sheet in the plan, using that, sheet name = {sheet_name}")
             return sheet_name
-        elif file_type.file_type_name == "Excel (modern) Smartsheet Export" and file_name in sheet_list:
+        elif file_type_name == "excel-02-smartsheet-export-01" and file_name in sheet_list:
             sheet_name = file_name
             logger.debug(f"Smartsheet, choosing sheet name = file name, sheet name = {sheet_name}")
             return sheet_name
-        elif file_type.file_type_name == "Excel (modern) MSP Export" and "Task_Data" in sheet_list:
+        elif file_type_name == "excel-01-msp-export-default-01" and "Task_Data" in sheet_list:
             sheet_name = "Task_Data"
             logger.debug(f"MS Project, choosing sheet name = {sheet_name}")
             return sheet_name
@@ -379,9 +389,10 @@ class ExcelXLSFileReader(PlanFileReader):
 
     def read(self, plan: Plan) -> (List[Dict], List):
         """
-        For now the only logic here is to hard code the sheet name that the plan is located within.  This is only
-        temporary and this will have to be replaced by file type specific data fields within the database.
+        Reads Excel file to extract data for activities in the plan.
 
+        Key features:
+        - Each row represents one activity.
         :return:
         """
         skip_rows = 0
@@ -389,7 +400,7 @@ class ExcelXLSFileReader(PlanFileReader):
         wb_obj = openpyxl.load_workbook(plan.file.file, data_only=True)
         name = Path(plan.file_name).stem
 
-        sheet_name = self.get_sheet_name(wb_obj.sheetnames, name, plan.file_type)
+        sheet_name = self.get_sheet_name(wb_obj.sheetnames, name, plan.file_type_name)
         sheet = wb_obj[sheet_name]
         start_row = 1 + skip_rows
 
@@ -417,8 +428,16 @@ class ExcelXLSFileReader(PlanFileReader):
         maybe_row = {}
         row_confirmed = False
         for col, heading in enumerate(headings):
-            cell_value = sheet.cell(table_row_num + skiprows + 1, col + 1).value
-            maybe_row[heading] = cell_value
+            cell = sheet.cell(table_row_num + skiprows + 1, col + 1)
+
+            # Now capture both value and indent level as either could be needed in parsing.
+            cell_value = cell.value
+            cell_indent = cell.alignment.indent
+
+            maybe_row[heading] = PlanInputField(
+                value=cell_value,
+                indent=cell_indent
+            )
             if cell_value is not None:
                 row_confirmed = True
         if row_confirmed:

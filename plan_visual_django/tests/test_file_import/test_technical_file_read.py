@@ -12,7 +12,8 @@ from unittest import mock
 from ddt import ddt, data, unpack
 from django.core.files import File
 from django.test import TestCase
-from plan_visual_django.models import Plan, FileType
+from plan_visual_django.models import Plan
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldInputSourceEnum
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.resources.utilities import date_from_string
 from plan_visual_django.tests.resources.test_configuration import \
@@ -21,36 +22,6 @@ from plan_visual_django.tests.resources.test_configuration import \
 # Define input file parameters and expected results separately as we may want the same data in various different input
 # file variants (e.g. sheet name different), but the expected results will be the same - we don't want to have to copy
 # the expected results for each variant.
-
-# Named sheet, incorrect sheet name given, should fail
-file_data_01 =  {  # Note that the data required here will vary for different file types (e.g. sheet name)
-    'file_name': 'PV-Test-01.xlsx',
-    'sheet_name': 'Sheet1',
-    'plan_field_mapping_type': "Excel (SmartSheetDefault)"
-}
-
-# No sheet name, but only one sheet in file - should be fine.
-file_data_02 =  {  # Note that the data required here will vary for different file types (e.g. sheet name)
-    'file_name': 'PV-Test-02.xlsx',
-    'sheet_name': None,
-}
-
-# Correct sheet name given, should be fine
-file_data_03 =  {  # Note that the data required here will vary for different file types (e.g. sheet name)
-    'file_name': 'PV-Test-01.xlsx',
-    'sheet_name': 'PV-Test-01',
-}
-
-# If more than one sheet but not named, then should take first one
-file_data_04 =  {  # Note that the data required here will vary for different file types (e.g. sheet name)
-    'file_name': 'PV-Test-01.xlsx',
-    'sheet_name': 'PV-Test-01',
-}
-
-file_data_05 = {
-    'file_name': 'SCM_plan_v3_21_July.xlsx',
-    'sheet_name': 'Task_Data'
-}
 
 expected_result_file_01 = {
     'file_data': {
@@ -69,29 +40,29 @@ expected_result_activity_01 = {
     'activity_data': [
         {
             'activity_sequence_number': 1,  # Note this isn't the 'sticky' id, that won't always be here
-            'Unique Sticky ID': "ID-0007",
+            'Row ID': "ID-0007",
             'Level #': 0.0,
-            'Name': 'Project Start',
-            'Start': date_from_string('2023-01-01', datetime_flag=True),
-            'Finish': date_from_string('2023-01-01', datetime_flag=True),
+            'Task': 'Project Start',
+            'Start Date': date_from_string('2023-01-01', datetime_flag=True),
+            'End Date': date_from_string('2023-01-01', datetime_flag=True),
             'Duration': "0",
         },
         {
             'activity_sequence_number': 4,  # Note this isn't the 'sticky' id, that won't always be here
-            'Unique Sticky ID': "ID-0005",
+            'Row ID': "ID-0005",
             'Level #': 2.0,
-            'Name': 'Activity 5',
-            'Start': date_from_string('2023-01-02', datetime_flag=True),
-            'Finish': date_from_string('2023-01-13', datetime_flag=True),
+            'Task': 'Activity 5',
+            'Start Date': date_from_string('2023-01-02', datetime_flag=True),
+            'End Date': date_from_string('2023-01-13', datetime_flag=True),
             'Duration': "10d",
         },
         {
             'activity_sequence_number': 7,  # Note this isn't the 'sticky' id, that won't always be here
-            'Unique Sticky ID': "ID-0004",
+            'Row ID': "ID-0004",
             'Level #': 0.0,
-            'Name': 'Activity 4',
-            'Start': date_from_string('2023-01-30', datetime_flag=True),
-            'Finish': date_from_string('2023-02-10', datetime_flag=True),
+            'Task': 'Activity 4',
+            'Start Date': date_from_string('2023-01-30', datetime_flag=True),
+            'End Date': date_from_string('2023-02-10', datetime_flag=True),
             'Duration': "10d",
         }
     ]
@@ -105,7 +76,7 @@ file_format_test_cases = [
                 'file_data': {  # Note that the data required here will vary for different file types (e.g. sheet name)
                     'file_name': 'PV-Test-02.xlsx',
                     'sheet_name': None,
-                    'file_type': "Excel (modern) Smartsheet Export"
+                    'file_type': "excel-02-smartsheet-export-01"
                 },
                 'expected_result_file': expected_result_file_02,
                 'expected_result_activity': expected_result_activity_01  # As we expect an error reading the file, there will be no activities
@@ -114,7 +85,7 @@ file_format_test_cases = [
                 'file_data': {  # Note that the data required here will vary for different file types (e.g. sheet name)
                     'file_name': 'PV-Test-01.xlsx',
                     'sheet_name': 'PV-Test-01',
-                    'file_type': "Excel (modern) Smartsheet Export"
+                    'file_type': "excel-02-smartsheet-export-01"
                 },
                 'expected_result_file': expected_result_file_02,
                 'expected_result_activity': expected_result_activity_01
@@ -200,7 +171,7 @@ class TestTechnicalFileFormat(TestCase):
         file_error_expected = False
 
         # Create mapping type object which will be used to work out which sheet we will find the plan data in.
-        file_type = FileType(file_type_name=file_data['file_type'])
+        file_type_name = file_data['file_type']
 
         # Read the file - slightly different logic for each reader.
         file_path = os.path.join(excel_input_files_folder, file_data['file_name'])
@@ -208,7 +179,7 @@ class TestTechnicalFileFormat(TestCase):
         if file_reader == ExcelXLSFileReader:
             # We need to create a Plan object to pass to the File Reader object.
             plan_object = mock.Mock(spec=Plan)
-            plan_object.file_type = file_type
+            plan_object.file_type_name = file_type_name
             plan_object.file = file
             plan_object.file_name = file_data['file_name']
             file_reader_object = ExcelXLSFileReader()
@@ -236,7 +207,9 @@ class TestTechnicalFileFormat(TestCase):
 
             elif test_type == "activity_level":
                 record = input_data_from_file[sequence_number-1]
-                value = record[expected_result_name]
+
+                # Note only checking value here - not indent level
+                value = record[expected_result_name].get_input_data(PlanFieldInputSourceEnum.VALUE)
                 self.assertEqual(value, expected_result_value ,f"Test type {test_type}, expected result name {expected_result_name}")
 
 

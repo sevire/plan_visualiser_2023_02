@@ -1,8 +1,10 @@
 import django.test
 from ddt import ddt, data, unpack
-from plan_visual_django.models import PlanMappedField
-from plan_visual_django.services.plan_file_utilities.plan_field import RefactoredPlanField, PlanFieldEnum, \
-    StoredPlanFieldTypeEnum
+from plan_visual_django.services.plan_file_utilities.plan_field import (
+    PlanFieldEnum,
+    StoredPlanFieldTypeEnum,
+    PlanInputFieldTypeEnum
+)
 from plan_visual_django.services.plan_file_utilities.plan_reader import convert_dispatch
 from plan_visual_django.tests.resources.utilities import date_from_string
 
@@ -44,27 +46,27 @@ plan_field_mappings = {
     'SmartSheetExcelExport(Default)': {
         PlanFieldEnum.STICKY_UID: {
             "input_field_name": "Unique Sticky ID",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING_OR_INT
+            "input_field_type": PlanInputFieldTypeEnum.STRING_OR_INT.code
         },
         PlanFieldEnum.DURATION: {
             "input_field_name": "Duration",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING_nnd
+            "input_field_type": PlanInputFieldTypeEnum.STRING_nnd.code
         },
         PlanFieldEnum.NAME: {
             "input_field_name": "Task Name",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING
+            "input_field_type": PlanInputFieldTypeEnum.STRING.code
         },
         PlanFieldEnum.START: {
             "input_field_name": "Start",
-            "input_field_type": PlanMappedField.PlanFieldType.DATE
+            "input_field_type": PlanInputFieldTypeEnum.DATE.code
         },
         PlanFieldEnum.END: {
             "input_field_name": "End",
-            "input_field_type": PlanMappedField.PlanFieldType.DATE
+            "input_field_type": PlanInputFieldTypeEnum.DATE.code
         },
         PlanFieldEnum.LEVEL: {
             "input_field_name": "Duration",
-            "input_field_type": PlanMappedField.PlanFieldType.INTEGER
+            "input_field_type": PlanInputFieldTypeEnum.INTEGER.code
         }
     }
 }

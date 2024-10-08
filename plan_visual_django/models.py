@@ -5,97 +5,13 @@ from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.services.general.date_utilities import DatePlotter
-from plan_visual_django.services.plan_file_utilities.plan_field import RefactoredPlanField, PlanFieldEnum
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanField, PlanFieldEnum, \
+    FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.plotables import get_plotable
 from plan_visual_django.services.visual.visual_elements import Timeline
 
 logging.getLogger()
-
-
-class PlanFieldMappingType(models.Model):
-    """
-    Schema which defines how input fields from a plan are mapped to stored fields for that plan.
-    In practice there will be a PlanMappedField record for every input field which references
-    the appropriate mapping type as a foreign key.
-    """
-    name = models.CharField(max_length=50)
-    description = models.TextField(max_length=1000)
-
-    def __str__(self):
-        return self.name
-
-    def is_complete(self):
-        """
-        Checks whether all the compulsory fields have a mapping.
-
-        Looks at a given mapping and checks that it includes all compulsory fields.  Works by getting a list of all the
-        fields in the mapping and checks that the number of compulsory fields is the same as the number of Plan Fields
-        which are compulsory.
-
-        ToDo: Come back an re-visit this as not sure we need this.
-        :return:
-        """
-        mapped_compulsory_fields = [field for field in self.planmappedfield_set.all() if PlanFieldEnum[field.mapped_field].value.required_flag is True]
-        mapped_count = len(mapped_compulsory_fields)
-
-        return mapped_count == len(PlanFieldEnum.required_fields())
-
-
-class PlanMappedField(models.Model):
-    class PlanFieldType(models.TextChoices):
-        INTEGER = "INT", "Integer"
-        FLOAT = "FLOAT", "Decimal Number"
-        STRING = "STR", "String"
-        STRING_OR_INT = "STR_OR_INT", "String or integer"
-        STRING_nnd = "STR_nnd", "String of form nnd where nn is an integer value"
-        STRING_nn_Days = "STR_duration_msp", "String representing duration from MSP project in Excel"
-        STRING_DATE_DMY_01 = "STR_DATE_DMY_01", "String of form dd MMM YYYY"
-        STRING_DATE_DMY_02 = "STR_DATE_DMY_02", "String of form dd MMMMM YYYY HH:MM"
-        STRING_MILESTONE_YES_NO = "STR_MSTONE_YES_NO", "Milestone flag as string, Yes or No"
-        DATE = "DATE", "Date (without time)"
-
-    plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
-    mapped_field = models.CharField(max_length=50, choices=RefactoredPlanField.as_choices())
-    input_field_name = models.CharField(max_length=50)
-    input_field_type = models.CharField(max_length=20, choices=PlanFieldType.choices)
-
-    def get_plan_field_type(self):
-        return self.PlanFieldType(self.input_field_type)
-
-    def get_mapped_field_object(self):
-        """
-        The database holds the string id of the Plan Field enum but we often need to access the enum itself, for example
-        from a django template, so this method allows direct access without having to do the look up directly.
-
-        :return:
-        """
-        return PlanFieldEnum.get_by_field_name(self.mapped_field)
-
-    def __str__(self):
-        return f'{self.plan_field_mapping_type}:{self.mapped_field} -> {self.input_field_name}:{self.input_field_type}'
-
-
-class FileType(models.Model):
-    """
-    Each plan is assigned a given file type, which encapsulates two properties of the plan, which are:
-    - What is the technical format that the plan is provided in, which is needed in order to dispatch the file
-      to the right logic to read it correctly.
-    - What is the mapping schema for the plan, which maps input fields to the fields needed in the app which
-      define the plan.
-
-    NOTE: At the time of writing we only support Excel input files so we only need to store the mapping type
-          for now.
-
-    The File Type describes the technical format within which the plan data is expected to be provided for a given plan.
-    """
-    file_type_title = models.CharField(max_length=50)  # Of form this_is_a_title - used in plan reading logic
-    file_type_name = models.CharField(max_length=50)
-    file_type_description = models.TextField(max_length=1000)
-    plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.file_type_name
 
 
 class Plan(models.Model):
@@ -105,14 +21,14 @@ class Plan(models.Model):
     plan_name = models.CharField(max_length=100)  # Name for this plan - independent of file name.
     file_name = models.CharField(max_length=100)  # Name of file uploaded (may be stored with different name to make unique)
     file = models.FileField(upload_to="plan_files", null=True)  # Includes a File object pointing to the actual file to be parsed
-    file_type = models.ForeignKey(FileType, on_delete=models.CASCADE)
+    file_type_name = models.CharField(max_length=50, choices=FileType.as_choices())
 
     class Meta:
         constraints: list[UniqueConstraint] = \
             [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.plan_name}({self.file_name}:{self.file_type})'
+        return f'{self.plan_name}({self.file_name}:{self.file_type_name})'
 
     def get_plan_summary_data(self):
         """
@@ -137,6 +53,7 @@ class PlanActivity(models.Model):
 
     class Meta:
         verbose_name_plural = " Plan activities"
+        unique_together = (('plan', 'unique_sticky_activity_id'),)
 
     def __str__(self):
         return f'{self.activity_name:.20}'
