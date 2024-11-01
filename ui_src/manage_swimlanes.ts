@@ -1,10 +1,12 @@
 import {
   get_swimlane_data,
   get_visual_activity_data,
-  update_swimlane_records, update_visual_activities
+  update_swimlane_records,
+  update_visual_activities
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
+import {add_tooltip, create_button_with_icon} from "./widgets";
 
 async function manage_arrow_click(
   panel_element: HTMLElement,
@@ -22,17 +24,6 @@ async function manage_arrow_click(
 
   await get_visual_activity_data(visual_id)
   plot_visual()
-}
-
-export function create_button_with_icon(icon_name:string) {
-  const button = document.createElement("button")
-  button.classList.add("btn", "btn-primary")
-
-  let arrow = document.createElement('i')
-  arrow.classList.add("bi", icon_name)
-  button.appendChild(arrow)
-
-  return button
 }
 
 export async function add_arrow_button_to_element(
@@ -57,12 +48,6 @@ export async function add_arrow_button_to_element(
     manage_arrow_click(panel_element, visual_id, data_record, direction, update_order_func, update_panel_func)
   })
   button.appendChild(arrow)
-}
-
-export async function add_tooltip(element:HTMLElement, tooltip_text:string) {
-  element.setAttribute("data-bs-toggle", "tooltip")
-  element.setAttribute("data-bs-placement", "top")
-  element.setAttribute("title", tooltip_text)
 }
 
 export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visual_id: number) {

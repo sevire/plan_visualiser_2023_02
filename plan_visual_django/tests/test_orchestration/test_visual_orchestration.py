@@ -1,8 +1,8 @@
 import os
 from ddt import ddt, data, unpack
 from django.test import TestCase
-from plan_visual_django.models import TimelineForVisual, PlanVisual
-from plan_visual_django.services.visual.renderers import CanvasRenderer
+from plan_visual_django.models import PlanVisual
+from plan_visual_django.services.visual.rendering.renderers import CanvasRenderer
 from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs
 

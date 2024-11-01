@@ -1,6 +1,5 @@
-from django.urls import path, include
-from api.v1.model.visual.timeline.views import ModelVisualTimelineListAPI, ModelVisualTimelineAPI, \
-    TimelineListViewDispatcher
+from django.urls import path
+from api.v1.model.visual.timeline.views import ModelVisualTimelineAPI, TimelineListViewDispatcher
 
 urlpatterns = [
     path('<int:visual_id>/', TimelineListViewDispatcher.as_view()),

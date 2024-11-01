@@ -11895,7 +11895,7 @@ textarea.form-control-lg {
   }
 }
 body {
-  min-width: 1000px;
+  min-width: 1200px;
 }
 
 table.table-fixed {
@@ -11922,12 +11922,11 @@ div#top-row-controls table td button {
   font-size: 12px;
 }
 
-div.top-row-control > div {
+.top-row-control > div {
   max-height: 200px;
   overflow-y: auto;
   display: block;
 }
-
 .top-row-control table td {
   text-align: left;
 }

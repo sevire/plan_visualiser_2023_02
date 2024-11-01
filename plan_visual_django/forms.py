@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, CharField, Form, IntegerField
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
     PlotableStyle, Color
-from plan_visual_django.services.visual.visual_settings import VisualSettings
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 
 
 class PlanForm(ModelForm):
@@ -35,6 +35,8 @@ class VisualFormForAdd(ModelForm):
             "default_activity_plotable_style",
             "default_milestone_plotable_style",
             "default_swimlane_plotable_style",
+            "default_timeline_plotable_style_odd",
+            "default_timeline_plotable_style_even"
         )
 
     def __init__(self, *args, **kwargs):
@@ -63,12 +65,15 @@ class VisualFormForEdit(ModelForm):
             "default_activity_shape",
             "default_milestone_shape",
             "track_height",
+            "default_timeline_height",
             "track_gap",
             "milestone_width",
             "swimlane_gap",
             "default_activity_plotable_style",
             "default_milestone_plotable_style",
             "default_swimlane_plotable_style",
+            "default_timeline_plotable_style_odd",
+            "default_timeline_plotable_style_even"
         )
 
 

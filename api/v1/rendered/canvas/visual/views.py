@@ -2,8 +2,8 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from plan_visual_django.models import PlanVisual, Plan
-from plan_visual_django.services.visual.renderers import CanvasRenderer
+from plan_visual_django.models import PlanVisual
+from plan_visual_django.services.visual.rendering.renderers import CanvasRenderer
 
 
 class RenderCanvasVisualAPI(APIView):

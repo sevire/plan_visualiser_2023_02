@@ -1,7 +1,7 @@
 @import "./custom-bootstrap";
 
 body {
-  min-width: 1000px;
+  min-width: 1200px;
 }
 // Global styles applicable anywhere
 table.table-fixed {
@@ -29,14 +29,16 @@ div#top-row-controls table td button {
   font-size: 12px;
 }
 
-div.top-row-control > div {
-  max-height: 200px;
-  overflow-y:auto;
-  display:block;
-}
+.top-row-control {
+  & > div {
+    max-height: 200px;
+    overflow-y:auto;
+    display:block;
+  }
 
-.top-row-control table td {
-  text-align: left;
+  table td {
+    text-align: left;
+  }
 }
 
 #visual-content {
@@ -175,5 +177,3 @@ ul#plan-activities {
     }
   }
 }
-
-

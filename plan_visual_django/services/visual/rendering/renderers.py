@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Dict
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
-from plan_visual_django.services.visual.plotables import RectangleBasedPlotable, Plotable
-from plan_visual_django.services.visual.visual_elements import VisualElementCollection, VisualElement
+from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
+from plan_visual_django.services.visual.rendering.visual_elements import VisualElementCollection, VisualElement
 
 
 class VisualRenderer(ABC):

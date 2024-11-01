@@ -5,11 +5,10 @@ from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.services.general.date_utilities import DatePlotter
-from plan_visual_django.services.plan_file_utilities.plan_field import PlanField, PlanFieldEnum, \
-    FileType
+from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
-from plan_visual_django.services.visual.plotables import get_plotable
-from plan_visual_django.services.visual.visual_elements import Timeline
+from plan_visual_django.services.visual.rendering.plotables import get_plotable
+from plan_visual_django.services.visual.model.timelines import Timeline
 
 logging.getLogger()
 
@@ -125,7 +124,7 @@ class PlotableStyle(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.style_name}, fill:{self.fill_color.name}, line:{self.line_color.name}'
+        return f'{self.style_name}'
 
     def to_dict(self):
         """
@@ -230,6 +229,9 @@ class PlanVisual(models.Model):
     default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")
     default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
     default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
+    default_timeline_height = models.FloatField(default=20)
+    default_timeline_plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_odd")
+    default_timeline_plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_even", null=True)
 
     class Meta:
         unique_together = ["plan", "name"]
@@ -269,7 +271,7 @@ class PlanVisual(models.Model):
         activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
         activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
         activity_record['text_flow'] = visual_activity.get_text_flow()
-        activity_record['plotable_style'] = visual_activity.plotable_style.to_dict()
+        activity_record['plotable_style'] = visual_activity.plotable_style_odd.to_dict()
 
         # Now add the plan activity record data for this activity
         activity_record['activity_name'] = plan_activity.activity_name
@@ -332,7 +334,7 @@ class PlanVisual(models.Model):
         earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
         latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
 
-        timeline_records = self.timelineforvisual_set.all()
+        timeline_records = self.timelineforvisual_set.filter(enabled=True)
 
         # Create dictionary of timeline objects based on timeline data from database
         self.timeline_objects = {timeline.timeline_name: Timeline.from_data_record(earliest_start_date, latest_end_date, timeline) for timeline in timeline_records}
@@ -362,9 +364,9 @@ class PlanVisual(models.Model):
         :return:
         """
         if sequence_num is None:
-            timelines = self.timelineforvisual_set.all()
+            timelines = self.timelineforvisual_set.filter(enabled=True)
         else:
-            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num)
+            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num, enabled=True)
         timeline_height = timelines.aggregate(total_sum=Sum('timeline_height'))['total_sum'] or 0
 
         return timeline_height
@@ -384,7 +386,7 @@ class PlanVisual(models.Model):
         if sequence_number:
             timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_number)
         else:
-            timelines = self.timelineforvisual_set.all()
+            timelines = self.timelineforvisual_set.filter(enabled=True)
 
         timeline_plotables = [timeline.get_plotables() for timeline in timelines]
         return timeline_plotables
@@ -498,8 +500,10 @@ class TimelineForVisual(models.Model):
     timeline_type = models.CharField(max_length=20, choices=TimelineLabelType.choices)
     timeline_name = models.CharField(max_length=50)
     timeline_height = models.FloatField(default=10)
-    plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
+    plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="plotable_style_odd")
+    plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="plotable_style_even", null=True, blank=True)
     sequence_number = models.IntegerField()
+    enabled = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [
@@ -537,6 +541,43 @@ class TimelineForVisual(models.Model):
         collection_as_plotables = [element.plot_element() for element in collection.collection]
 
         return collection_as_plotables
+
+    @classmethod
+    def create_default_timeline(cls, visual: PlanVisual, timeline_type: TimelineLabelType, enabled=False):
+        """
+        Create a timeline record of given type with default settings.
+        :param timeline_type:
+        :param visual:
+        :return:
+        """
+        highest_sequence_number = TimelineForVisual.objects.filter(plan_visual=visual).aggregate(Max('sequence_number'))['sequence_number__max']
+        if highest_sequence_number is None:
+            highest_sequence_number = 0
+        cls.objects.create(
+            plan_visual=visual,
+            timeline_type=timeline_type.name,
+            timeline_height=visual.default_timeline_height,
+            timeline_name=timeline_type.value,
+            plotable_style_odd=visual.default_timeline_plotable_style_odd,
+            plotable_style_even=visual.default_timeline_plotable_style_even,
+            sequence_number=highest_sequence_number + 1,
+            enabled=enabled
+        )
+
+    @classmethod
+    def create_all_default_timelines(cls, visual: PlanVisual):
+        """
+        Creates an instance of each timeline type with default settings, in a default sequence.
+
+        :return:
+        """
+        for timeline in TimelineForVisual.TimelineLabelType:
+
+            if timeline == "MONTHS":
+                enabled = True
+            else:
+                enabled = False
+            cls.create_default_timeline(visual=visual, timeline_type=TimelineForVisual.TimelineLabelType[timeline], enabled=enabled)
 
 
 class SwimlaneForVisual(models.Model):
