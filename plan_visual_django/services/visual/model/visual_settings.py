@@ -22,6 +22,13 @@ class VisualSettings:
         self.default_activity_plotable_style = self.visual.default_activity_plotable_style
         self.default_milestone_plotable_style = self.visual.default_milestone_plotable_style
         self.default_swimlane_plotable_style = self.visual.default_swimlane_plotable_style
+        self.default_timeline_plotable_style_odd = self.visual.default_timeline_plotable_style_odd
+
+        if self.visual.default_timeline_plotable_style_even is not None:
+            self.default_timeline_plotable_style_even = self.visual.default_timeline_plotable_style_even
+        else:
+            self.default_timeline_plotable_style_even = self.visual.default_timeline_plotable_style_odd
+
 
     @staticmethod
     def calculate_defaults_for_visual(plan):
@@ -50,10 +57,13 @@ class VisualSettings:
             "track_gap": 4,
             "milestone_width": 10,
             "swimlane_gap": 5,
-            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="[03]Activity Default 1"),
-            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="[01]Milestone Default 1"),
-            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="[05]Swimlane-odd Default 1"),
+            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-001-activities-01"),
+            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-004-milestones-01"),
+            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-006-swimlanes-01"),
+            "default_timeline_plotable_style_odd": PlotableStyle.objects.get(style_name="app-theme-01-008-timelines-01"),
+            "default_timeline_plotable_style_even": PlotableStyle.objects.get(style_name="app-theme-01-009-timelines-02")
         }
+
 
 class VisualSettingsCanvas(VisualSettings):
     """

@@ -10,14 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { get_timeline_data, get_visual_activity_data, update_timeline_records, update_visual_activities } from "./plan_visualiser_api";
 import { plot_visual } from "./plot_visual";
 import { get_plan_activity } from "./manage_visual";
-import { add_arrow_button_to_element } from "./manage_swimlanes";
+import { add_arrow_button_to_element, } from "./manage_swimlanes";
+import { create_button_with_icon, createDropdown, populateDropdown } from "./widgets";
+import { update_style_for_timeline_handler } from "./manage_styles";
 function manage_arrow_click(visual_id, timeline_record, direction) {
     return __awaiter(this, void 0, void 0, function* () {
         yield update_timeline_order(visual_id, timeline_record, direction);
         // Update swimlane panel with swimlanes for this visual in sequence order
-        console.log(`Updating swimlane panel (after moving swimlane ${direction}...`);
+        console.log(`Updating timeline panel (after moving timeline ${direction}...`);
         const timeline_element = document.getElementById("timeline_data");
-        yield update_timeline_data(timeline_element, visual_id);
+        yield update_timeline_panel(timeline_element, visual_id);
         yield get_visual_activity_data(visual_id);
         plot_visual();
     });
@@ -36,37 +38,80 @@ export function add_arrow_to_element(element, direction, id, visual_id, timeline
         element.appendChild(arrow);
     });
 }
-export function update_timeline_data(timeline_html_panel, visual_id) {
+function createAndPopulateDropdown(dropdownParent, styleName, styleData, visualId, timelineRecordId, isOdd) {
+    let dropDownButton = createDropdown(dropdownParent, styleName);
+    populateDropdown(dropDownButton, styleData.map(obj => [obj.style_name, obj.id]), (style_id) => __awaiter(this, void 0, void 0, function* () {
+        yield update_style_for_timeline_handler(visualId, timelineRecordId, style_id, isOdd);
+        yield get_visual_activity_data(window.visual_id);
+        plot_visual();
+    }));
+    return dropDownButton;
+}
+export function update_timeline_panel(timeline_html_panel, visual_id) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("Adding timelines to timeline panel...");
         yield get_timeline_data(visual_id);
-        // Find the tbody element within the swimlane table, then add a row for each swimlane.
+        // Find the tbody element within the swimlane table, then add a row for each timeline.
         const tbody = timeline_html_panel.querySelector("table tbody");
         // Clear tbody for case where we are updating panel rather than loading page
         tbody.innerHTML = "";
         window.timeline_data.forEach((timeline_record) => {
-            // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
-            // Create a new row
+            console.log(`Adding timeline row to timeline panel for ${timeline_record.timeline_name}`);
             let row = document.createElement('tr');
             tbody.appendChild(row);
-            // Add td and div with swimlane name to row.  We need the dive for the text-truncate to work.
             let timelineNameTD = document.createElement('td');
-            timelineNameTD.classList.add("label");
+            timelineNameTD.style.width = "20%";
             row.appendChild(timelineNameTD);
             let timelineNameDiv = document.createElement("div");
             timelineNameDiv.classList.add("text-truncate");
             timelineNameDiv.textContent = timeline_record.timeline_name;
             timelineNameTD.appendChild(timelineNameDiv);
-            // Add td, button group and two buttons for the up and down arrow
+            const styleDropdownTD = document.createElement("td");
+            styleDropdownTD.style.width = "40%";
+            styleDropdownTD.classList.add("text-end");
+            row.appendChild(styleDropdownTD);
+            // Add two dropdowns, for odd and even styling for timeline labels
+            // Usage
+            let timelineStyleOddButton = createAndPopulateDropdown(styleDropdownTD, timeline_record.plotable_style_odd.style_name, window.style_data, visual_id, timeline_record.id, true);
+            let timelineStyleEvenButton = createAndPopulateDropdown(styleDropdownTD, timeline_record.plotable_style_even.style_name, window.style_data, visual_id, timeline_record.id, false);
+            // Add td, toggle button, button group and two buttons for the up and down arrow
             const controlTD = document.createElement("td");
-            controlTD.classList.add("text-end");
+            controlTD.style.width = "40%";
             row.appendChild(controlTD);
             const buttonGroup1 = document.createElement("div");
             buttonGroup1.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1");
             buttonGroup1.setAttribute('role', 'group');
             buttonGroup1.setAttribute('aria-label', 'Basic Example');
             controlTD.appendChild(buttonGroup1);
-            add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_data);
-            add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_data);
+            add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
+            add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
+            const buttonGroup2 = document.createElement("div");
+            buttonGroup2.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1");
+            buttonGroup2.setAttribute('role', 'group');
+            buttonGroup2.setAttribute('aria-label', 'Basic Example');
+            controlTD.appendChild(buttonGroup1);
+            let timelineToggleButton;
+            if (timeline_record.enabled) {
+                timelineToggleButton = create_button_with_icon("bi-check2");
+                timelineToggleButton.classList.add("active");
+            }
+            else {
+                timelineToggleButton = create_button_with_icon("bi-x-lg");
+            }
+            timelineToggleButton.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+                const data = [
+                    {
+                        id: timeline_record.id,
+                        enabled: !timeline_record.enabled
+                    }
+                ];
+                yield update_timeline_records(visual_id, data);
+                yield update_timeline_panel(timeline_html_panel, visual_id);
+                yield get_visual_activity_data(visual_id);
+                plot_visual();
+            }));
+            buttonGroup2.appendChild(timelineToggleButton);
+            controlTD.appendChild(buttonGroup2);
         });
     });
 }

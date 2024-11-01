@@ -1,6 +1,5 @@
-import json
 import os
-from typing import List, Dict, Any
+from typing import Any
 
 import markdown
 from django.conf import settings
@@ -8,27 +7,25 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import ProtectedError
-from django.forms import inlineformset_factory, modelformset_factory, formset_factory
+from django.forms import inlineformset_factory, formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
-    AddPlanError, SuppliedPlanIncompleteError
-from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
+    SuppliedPlanIncompleteError
+from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm
-from plan_visual_django.models import Plan, PlanVisual, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color, StaticContent
+from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, StaticContent
 from django.contrib import messages
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum, FileTypes
+from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
-from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
-from plan_visual_django.services.visual.visual_settings import VisualSettings
+from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -192,29 +189,33 @@ def add_visual(request, plan_id):
                 return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
 
             # Save fields from form but don't commit so can modify other fields before comitting.
-            visual_record = visual_form.save(commit=False)
+            with transaction.atomic():
+                # We need to successfully create the visual, timeline and swimlane records
+                visual_record = visual_form.save(commit=False)
 
-            # Add plan to record
-            plan = Plan.objects.get(id=plan_id)
-            visual_record.plan = plan
+                # Add plan to record
+                plan = Plan.objects.get(id=plan_id)
+                visual_record.plan = plan
 
-            # Now can save and commit the record
-            visual_record.save()
-            messages.success(request, "New visual for plan saved successfully")
+                # Now can save and commit the record
+                visual_record.save()
 
-            # Now create default versions of objects which are required as part of any visual activity
-            # This logic assumes that there will be certain default records in the database such as Color
-            # and PlotableFormat records.
+                # Now create default versions of objects which are required as part of any visual activity
+                # This logic assumes that there will be certain default records in the database such as Color
+                # and PlotableFormat records.
 
-            style_for_swimlane = visual_record.default_swimlane_plotable_style
+                style_for_swimlane = visual_record.default_swimlane_plotable_style
 
-            # First create default swimlane
-            default_swimlane = SwimlaneForVisual.objects.create(
-                plan_visual=visual_record,
-                swim_lane_name="(default)",
-                plotable_style=style_for_swimlane,
-                sequence_number=1,
-            )
+                # First create default swimlane
+                default_swimlane = SwimlaneForVisual.objects.create(
+                    plan_visual=visual_record,
+                    swim_lane_name="(default)",
+                    plotable_style=style_for_swimlane,
+                    sequence_number=1,
+                )
+
+                TimelineForVisual.create_all_default_timelines(visual_record)
+                messages.success(request, "New visual for plan saved successfully")
 
         return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
     elif request.method == "GET":
@@ -424,7 +425,8 @@ def manage_timelines_for_visual(request, visual_id):
             "timeline_type",
             "timeline_name",
             "timeline_height",
-            "plotable_style",
+            "plotable_style_odd",
+            "plotable_style_even",
             "sequence_number",
         ),
         extra=1,

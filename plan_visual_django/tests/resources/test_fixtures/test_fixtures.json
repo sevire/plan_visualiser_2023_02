@@ -831,7 +831,8 @@
       "default_activity_shape": 1,
       "default_activity_plotable_style": 3,
       "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5
+      "default_swimlane_plotable_style": 5,
+      "default_timeline_plotable_style_odd": 6
     }
   },
   {
@@ -851,7 +852,8 @@
       "default_activity_shape": 1,
       "default_activity_plotable_style": 3,
       "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5
+      "default_swimlane_plotable_style": 5,
+      "default_timeline_plotable_style_odd": 6
     }
   },
   {
@@ -902,7 +904,7 @@
       "timeline_type":"MONTHS",
       "timeline_name": "Timeline 1",
       "timeline_height": 25,
-      "plotable_style": 5,
+      "plotable_style_odd": 5,
       "sequence_number": 1
     }
   },
@@ -914,7 +916,7 @@
       "timeline_type":"QUARTERS",
       "timeline_name": "Timeline 2",
       "timeline_height": 15,
-      "plotable_style": 5,
+      "plotable_style_odd": 5,
       "sequence_number": 2
     }
   },

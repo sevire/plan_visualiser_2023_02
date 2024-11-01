@@ -125,31 +125,14 @@
         </div>
         <div id="timeline_data" class="col-4 top-row-control">
             <div class="container p-0">
-                <table class="table table-sm table-fixed table-secondary">
+                <table class="table table-sm table-fixed w-auto table-secondary">
                     <thead class="table-primary">
                         <tr>
-                            <th colspan="2">Timelines</th>
+                            <th colspan="3">Timelines</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="label"><div class="text-truncate">Timeline 1 - long to test truncation</div></td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="label"><div class="text-truncate">Timeline 2 - also a very long one</div></td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -173,6 +156,7 @@
 
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
+        
         // ToDo: Replace JS function with use of additional template block for template specific css
         window.addStylesheetToDOM('/static/plan_visual_django/css/ui-layout.css')
         
@@ -199,15 +183,15 @@
         const swimlane_element = document.getElementById("swimlane_data")
         await window.update_swimlane_data(swimlane_element, window.visual_id)
         
-        // Update timeline panel with timelines for this visual in sequence order
-        console.log("Updating timeline panel...")
-        const timeline_element = document.getElementById("timeline_data")
-        await window.update_timeline_data(timeline_element, window.visual_id)
-        
         console.log("About to retrieve style data")
         // Get all plotable styles available to this user
         let response = await get_style_records()
         window.style_data = response.data
+        
+        // Update timeline panel with timelines for this visual in sequence order
+        console.log("Updating timeline panel...")
+        const timeline_element = document.getElementById("timeline_data")
+        await window.update_timeline_panel(timeline_element, window.visual_id)
         
         console.log("About to retrieve shape data")
         // Get all plotable styles available to this user
