@@ -206,12 +206,11 @@ def add_visual(request, plan_id):
 
                 style_for_swimlane = visual_record.default_swimlane_plotable_style
 
-                # First create default swimlane
-                default_swimlane = SwimlaneForVisual.objects.create(
-                    plan_visual=visual_record,
-                    swim_lane_name="(default)",
-                    plotable_style=style_for_swimlane,
-                    sequence_number=1,
+                visual_record.add_swimlanes_to_visual(
+                    style_for_swimlane,
+                    "Swimlane 1",
+                    "Swimlane 2",
+                    "Swimlane 3"
                 )
 
                 TimelineForVisual.create_all_default_timelines(visual_record)
