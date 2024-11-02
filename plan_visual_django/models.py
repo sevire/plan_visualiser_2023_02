@@ -393,7 +393,13 @@ class PlanVisual(models.Model):
 
     def get_swimlanes(self, visible_only_flag=True, sequence_number=None):
         """
-        Finds all the swimlanes attached to this visual which have at least one activity in them.
+        Finds all swimlanes defined for this visual which meet the specific criteria.
+
+        Specifically:
+        - If visible_only_flag is True then only include swimlanes which have at least one enabled activity
+          attached to the swimlane.
+        - If sequence_number is not None, then include all swimlanes which have a sequence number less than the
+          specified one.  Generally used during plotting when working out the vertical position of a swimlane.
 
         :return:
         """
@@ -408,6 +414,9 @@ class PlanVisual(models.Model):
             requested_swimlanes = swimlanes
 
         return requested_swimlanes
+
+    def get_swimlane_by_sequence_number(self, sequence_number):
+        return self.swimlaneforvisual_set.get(sequence_number=sequence_number)
 
     def get_swimlane_plotables(self, sequence_number=None):
         """
@@ -435,6 +444,56 @@ class PlanVisual(models.Model):
         visual_activities = [visual_activity.get_plotable() for visual_activity in self.visualactivity_set.filter(enabled=True)]
 
         return visual_activities
+
+    def get_max_swimlane_sequence_number(self):
+        """
+        Finds the highest sequence number for all of the swimlanes that have been added to this visual.
+
+        :return:
+        """
+        max_sequence = self.swimlaneforvisual_set.aggregate(Max('sequence_number'))['sequence_number__max']
+        if max_sequence is None:
+            max_sequence = 0
+        return max_sequence
+
+    def get_default_swimlane(self):
+        """
+        When a new activity is added we need to select a swimlane to add it to.  If it isn't provided then we choose
+        a default one.  As the rules for choosing the default one may change this method will encapsulate the logic for
+        selecting it.
+
+        For now - just hard code to be the swimlane with the lowest sequence number.
+
+        If there are no swimlanes for the visual then create a default one.
+        :return:
+        """
+        swimlane_for_sequence_number = self.get_swimlane_by_sequence_number(sequence_number=1)
+        if swimlane_for_sequence_number is None:
+            self.add_swimlanes_to_visual(self.default_swimlane_plotable_style)
+
+            # Should be a swimlane now so try again
+            swimlane_for_sequence_number = self.get_swimlane_by_sequence_number(sequence_number=1)
+        return swimlane_for_sequence_number
+
+    def add_swimlanes_to_visual(self, plotable_style, *args):
+        """
+        Creates a new swimlane for each of the swimlane names provided within args, using the provided
+        style.  While in most use cases there won't be any existing swimlanes when this is called, ensure
+        that we continue the sequence numbers from any existing records.
+
+        :param args: list of swimlane names
+        :return:
+        """
+        highest_sequence_number_for_visual = self.get_max_swimlane_sequence_number()
+
+        for swimlane_sequence_num_increment, swimlane_name in enumerate(args, start=1):
+            sequence_number = highest_sequence_number_for_visual + swimlane_sequence_num_increment
+            SwimlaneForVisual.objects.create(
+                plan_visual=self,
+                swim_lane_name=swimlane_name,
+                plotable_style=plotable_style,
+                sequence_number=sequence_number,
+            )
 
     def get_swimlanesforvisual_dimensions(self, sequence_number=None):
         """
@@ -857,7 +916,6 @@ class StaticContent(models.Model):
 
 
 # Defaults to use when creating a new visual before any formatting or layout has been done.
-DEFAULT_SWIMLANE_NAME = "(default)"
 DEFAULT_VERTICAL_POSITIONING_VALUE = 1
 DEFAULT_HEIGHT_IN_TRACKS = 1
 DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT
