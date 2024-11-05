@@ -194,7 +194,7 @@ async function add_modify_text_flow_event_handler(flow_direction: string, activi
 // ====================================================================================================
 // Below are functions need for dispatch table to set values for each field in the activity data panel
 // ====================================================================================================
-function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
+function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean): void {
   // Set to tick for true and cross for false.
   TdRef.textContent = '';
   const iElement = document.createElement('i');
@@ -206,10 +206,18 @@ function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
   TdRef.appendChild(iElement);
 }
 
+function set_text_field(tdRef: HTMLTableCellElement, value: string): void {
+  // It's just a text field so set text-truncate and set value
+  tdRef.classList.add("text-truncate")
+  tdRef.textContent = value
+}
+
 // Dispatch table used to set values of different types for each activity field
 // NOTE: This is work in progress
 const NonEditableDispatchTable: Record<string, Function> = {
-  'milestone_flag': set_boolean_value
+  'milestone_flag': set_boolean_value,
+  'activity_name': set_text_field,
+  'unique_sticky_activity_id': set_text_field
 };
 
 function add_button_group(td_element: Element, aria_label: string) {
