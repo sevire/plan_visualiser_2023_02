@@ -138,21 +138,21 @@
             </div>
         </div>
     </div> 
-    <script src="{% static 'dist/bundle.js' %}"></script>
-        <div id="activity_controls" class="row">
-            <div id="add-remove-activities" class="col-4 panel"></div>
-            <div  id="visual-content" class="canvas-stack col-8">
-                {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
-                <div class="canvas-wrapper bg-primary-subtle">
-                    <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
-                    <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
-                    <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
-                    <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
-                    <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
-                </div>
+    <div id="activity_controls" class="row">
+        <div id="add-remove-activities" class="col-4 panel"></div>
+        <div  id="visual-content" class="canvas-stack col-8">
+            {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
+            <div class="canvas-wrapper bg-primary-subtle">
+                <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
+                <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
+                <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
+                <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
+                <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
             </div>
         </div>
-        <script type="application/javascript">
+    </div>
+    <script src="{% static 'dist/bundle.js' %}"></script>
+    <script type="application/javascript">
 
     document.addEventListener("DOMContentLoaded", async function() {
         console.log("DOM Loaded...")
@@ -199,7 +199,7 @@
         window.shape_data = response.data
         
         console.log("About to retrieve visual settings data")
-        response = await get_visual_settings()
+        response = await get_visual_settings(window.visual_id)
         window.visual_settings = response.data
         
         console.log("Initialising Canvases")

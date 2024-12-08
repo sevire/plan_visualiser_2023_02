@@ -1,4 +1,3 @@
-import json
 import os
 from ddt import ddt, data, unpack
 from django.test import TestCase

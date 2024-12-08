@@ -905,7 +905,8 @@
       "timeline_name": "Timeline 1",
       "timeline_height": 25,
       "plotable_style_odd": 5,
-      "sequence_number": 1
+      "sequence_number": 1,
+      "enabled": true
     }
   },
   {
@@ -917,7 +918,8 @@
       "timeline_name": "Timeline 2",
       "timeline_height": 15,
       "plotable_style_odd": 5,
-      "sequence_number": 2
+      "sequence_number": 2,
+      "enabled": true
     }
   },
   {

@@ -28,6 +28,7 @@ class RenderedCanvasVisualActivityListAPI(APIView):
             rendered_plotables = renderer.render_from_iterable(visual_activity_plotables)
             return JsonResponse(rendered_plotables, safe=False)
 
+
 class RenderedCanvasVisualActivityAPI(APIView):
     """
     This API is used to render a specific visual activity for display as part of the visual
