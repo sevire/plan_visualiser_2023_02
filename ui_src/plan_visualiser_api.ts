@@ -139,9 +139,9 @@ export async function get_shape_records() {
 
   return await api_get(url_string)
 }
-export async function get_visual_settings() {
+export async function get_visual_settings(visualId: number) {
   console.log("Getting visual settings...")
-  const url_string = `/api/v1/model/visuals/${(window as any).visual_id}/`;
+  const url_string = `/api/v1/model/visuals/${visualId}/`;
 
   return await api_get(url_string)
 }

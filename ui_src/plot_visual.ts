@@ -185,6 +185,7 @@ function plot_shape(object_to_render: any, context: CanvasRenderingContext2D | n
 }
 
 function get_canvas_info() {
+  console.log(`get_canvas_info()`)
   const canvas_info: { [key: string]: CanvasRenderingContext2D | null } = {
     background: (document.getElementById("canvas-background")! as HTMLCanvasElement).getContext("2d"),
     swimlanes: (document.getElementById("canvas-swimlanes")! as HTMLCanvasElement).getContext("2d"),
@@ -242,10 +243,10 @@ export function plot_visual(captureImageFlag: boolean = false) {
   // - Extract from canvas to an image and return the URL of the image (I think!)
 
   // Scale factor is calculated so visual fits to width of available screen
-  let scaleFactor: number = 0
+  let scaleFactor: number;
   if (captureImageFlag) {
     console.log(`Capturing visual image`)
-    scaleFactor = (window as any).scale_factor * 2  // Higher resolution for image capture
+    scaleFactor = (window as any).scale_factor // Higher resolution for image capture
   } else {
     scaleFactor = (window as any).scale_factor
   }
@@ -260,6 +261,7 @@ export function plot_visual(captureImageFlag: boolean = false) {
   // There will be a list of plotable objects for different canvases so need to iterate through canvases
   for (let canvas in (window as any).visual_activity_data) {
     // if we are plotting to capture the image we always use the capture canvas
+    // ToDo: Ensure that when rendering for image download we render canvas data from back to front
     let context: CanvasRenderingContext2D
     if (captureImageFlag) {
       context = (window as any).canvas_info.capture
@@ -270,11 +272,14 @@ export function plot_visual(captureImageFlag: boolean = false) {
     // Now iterate through plotables in this canvas
     rendered_objects.forEach((object_to_render: any) => {
       plot_shape(object_to_render, context, scaleFactor);
+
       // If this is the current selected element then highlight it unless we are capturing an image of the visual
       if (canvas == "visual_activities" && !captureImageFlag) {
+
         // Plotable ids have canvas pre-pended for uniqueness so need to strip it off before checking whethe this
         // is the selected id.
         const activity_id_from_plotable_id = object_to_render.plotable_id.substring(9)
+
         console.log(`Checking whether this element is selected activity: plotable_id is ${activity_id_from_plotable_id}`)
         if (activity_id_from_plotable_id == (window as any).selected_activity_id) {
           console.log(`Highlighting activity ${object_to_render.plotable_id}`)
@@ -302,14 +307,19 @@ function clear_canvases() {
   }
 }
 
-export function initialise_canvases() : [number, any] {
+export function initialise_canvases(captureOnly: boolean=false) : [number, any] {
   // Gets canvases from the DOM to plot the visual on, and sets up the right size both for the HTML element
   // and the canvas element (which will depend upon the DPI for the device).
   // Also adds a canvas called capture which is only used when plotting the visual in order to capture it
   // Either for download or to display a thumbnail (for example).
+  // if captureOnly flag is set then we are rendering for image capture so won't need other contexts.
+  console.log(`Initialising canvases, capture only flag is ${captureOnly}`)
 
   // ToDo: Re-factor this or get_canvas_info for when capturing image
-  const canvas_info = get_canvas_info();
+  let canvas_info: { [p: string]: CanvasRenderingContext2D | null } = {};
+  if (!captureOnly) {
+    canvas_info = get_canvas_info();
+  }
 
   let scale_factor;
   let final_canvas_width: number = 0
@@ -317,57 +327,59 @@ export function initialise_canvases() : [number, any] {
   let initial_canvas_display_width = 0
   let initial_canvas_display_height = 0
 
+  const visual_width = (window as any).visual_settings.width;
+
   let firstCanvasFlag: boolean = true  // Some processing only needed first time round loop so use flag.
-  for (let canvas_id in canvas_info) {
-    const canvas_details: CanvasRenderingContext2D|null = canvas_info[canvas_id]
-    const canvas: HTMLCanvasElement = canvas_details!.canvas;
+  if (!captureOnly) {
+    for (let canvas_id in canvas_info) {
+      const canvas_details: CanvasRenderingContext2D | null = canvas_info[canvas_id]
+      const canvas: HTMLCanvasElement = canvas_details!.canvas;
 
-    if (firstCanvasFlag) {
-      // The canvases are all identical so we can use the first one to calculate canvas height and width
-      // and calculate the dpi and scale factor and then just apply these to the other canvases
-      firstCanvasFlag = false;
+      if (firstCanvasFlag) {
+        // The canvases are all identical so we can use the first one to calculate canvas height and width
+        // and calculate the dpi and scale factor and then just apply these to the other canvases
+        firstCanvasFlag = false;
 
-      // Manage canvas element to maintain aspect ratio
-      console.log(`canvas.offsetWidth = ${canvas.offsetWidth}`)
+        // Manage canvas element to maintain aspect ratio
+        console.log(`canvas.offsetWidth = ${canvas.offsetWidth}`)
 
-      // ToDo: Refactor calculation of canvas size to reflect what is being plotted.
-      let aspectRatio = 16 / 32;
+        // ToDo: Refactor calculation of canvas size to reflect what is being plotted.
+        let aspectRatio = 16 / 32;
 
-      // The canvas will have a width based on the html for the template and the screen it is displayed on
-      // We take it and then use that to calculate the resolution of the canvas element to ensure max resolution
-      initial_canvas_display_width = canvas.offsetWidth
-      initial_canvas_display_height = canvas.offsetHeight
+        // The canvas will have a width based on the html for the template and the screen it is displayed on
+        // We take it and then use that to calculate the resolution of the canvas element to ensure max resolution
+        initial_canvas_display_width = canvas.offsetWidth
+        initial_canvas_display_height = canvas.offsetHeight
 
-      // Increase actual size of canvas for retina display
-      let dpi = window.devicePixelRatio;
-      console.log(`devicePixelRatio is ${dpi}`)
+        // Increase actual size of canvas for retina display
+        let dpi = window.devicePixelRatio;
+        console.log(`devicePixelRatio is ${dpi}`)
 
-      final_canvas_width = initial_canvas_display_width * dpi;
-      final_canvas_height = initial_canvas_display_height * dpi;
+        final_canvas_width = initial_canvas_display_width * dpi;
+        final_canvas_height = initial_canvas_display_height * dpi;
 
-      const visual_width = (window as any).visual_settings.width;
-      scale_factor = final_canvas_width / visual_width;
-      console.log(`Scale factor is ${scale_factor}`)
-
-      // Add 'capture' canvas for plotting to download image etc.
-      const captureCanvas = document.createElement('canvas');
-      captureCanvas.width = final_canvas_width * 2;
-      captureCanvas.height = final_canvas_height * 2;
-      const captureContext = captureCanvas.getContext('2d');
-
-      // Add additional capture canvas which will be used by plot_visual when capturing
-      canvas_info.capture = captureContext;
-
+        scale_factor = final_canvas_width / visual_width;
+        console.log(`Scale factor is ${scale_factor}`)
+      }
+      console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_width: ${initial_canvas_display_width}`)
+      console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_height: ${initial_canvas_display_height}`)
+      console.log(`Initialise canvas ${canvas_id}: final_canvas_width:            ${final_canvas_width}`)
+      console.log(`Initialise canvas ${canvas_id}: final_canvas_height:           ${final_canvas_height}`)
+      canvas.width = final_canvas_width;
+      canvas.height = final_canvas_height;
+      canvas.style.width = initial_canvas_display_width + "px"
+      canvas.style.height = initial_canvas_display_height + "px"
     }
-    console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_width: ${initial_canvas_display_width}`)
-    console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_height: ${initial_canvas_display_height}`)
-    console.log(`Initialise canvas ${canvas_id}: final_canvas_width:            ${final_canvas_width}`)
-    console.log(`Initialise canvas ${canvas_id}: final_canvas_height:           ${final_canvas_height}`)
-    canvas.width = final_canvas_width;
-    canvas.height = final_canvas_height;
-    canvas.style.width = initial_canvas_display_width + "px"
-    canvas.style.height = initial_canvas_display_height + "px"
+  } else {
+  // Add 'capture' canvas for plotting to download image etc.
+  const captureCanvas = document.createElement('canvas');
+  captureCanvas.width = 2000; // Hard coding for now
+  scale_factor = captureCanvas.width / visual_width
+  captureCanvas.height = 2000; // ToDo: Replace hard coding of canvas width with more sophisticated approach
+
+  canvas_info.capture = captureCanvas.getContext('2d');
   }
+
   return [scale_factor || 1, canvas_info];
 }
 

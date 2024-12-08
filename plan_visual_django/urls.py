@@ -16,7 +16,7 @@ urlpatterns = [
     # Maintenance of Visuals
     path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage_visuals'),
     path("add-visual/<int:plan_id>", views.add_visual),
-    path("edit-visual/<int:visual_id>", views.edit_visual),
+    path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
 
