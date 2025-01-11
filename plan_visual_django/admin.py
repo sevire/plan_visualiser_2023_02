@@ -1,7 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-
 from plan_visual_django.models import (
     Plan,
     Color,
@@ -46,6 +44,7 @@ class FontAdmin(admin.ModelAdmin):
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
     list_display = ['user', 'style_name']
+
 
 @admin.register(PlanVisual)
 class PlanVisualAdmin(admin.ModelAdmin):

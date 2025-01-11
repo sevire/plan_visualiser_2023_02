@@ -4,6 +4,14 @@ from django.forms import ModelForm, CharField, Form, IntegerField
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
     PlotableStyle, Color
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 class PlanForm(ModelForm):

@@ -8,14 +8,14 @@ urlpatterns = [
     # Management of Plans
     path("", RedirectView.as_view(url='manage-plans', permanent=False), name='index'),
     path("manage-plans", views.manage_plans, name="manage-plans"),
-    path("add-plan", views.add_plan),
-    path("re-upload-plan/<int:pk>", views.re_upload_plan),
+    path("add-plan", views.add_plan, name="add-plan"),
+    path("re-upload-plan/<int:pk>", views.re_upload_plan, name="re-upload-plan"),
     path("delete-plan/<int:pk>/", views.delete_plan, name='delete-plan'),
     path("view-file-types/", FileTypeListView.as_view(), name="view-file-types"),
 
     # Maintenance of Visuals
-    path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage_visuals'),
-    path("add-visual/<int:plan_id>", views.add_visual),
+    path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage-visuals'),
+    path("add-visual/<int:plan_id>", views.add_visual, name="add-visual"),
     path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
