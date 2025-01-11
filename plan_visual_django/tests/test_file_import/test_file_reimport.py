@@ -1,8 +1,6 @@
 import os
-from typing import Tuple, Dict
-
+from typing import Dict
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase,override_settings
 from plan_visual_django.forms import PlanForm, ReUploadPlanForm
@@ -11,9 +9,10 @@ from plan_visual_django.services.plan_file_utilities.plan_field import FileType,
     PlanInputFieldSpecification
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
 
 base_plan_file_name = os.path.join(excel_reimported_files_folder, "PV-Test-03.xlsx")
+
 
 @override_settings(
     MEDIA_ROOT=excel_reimported_files_folder

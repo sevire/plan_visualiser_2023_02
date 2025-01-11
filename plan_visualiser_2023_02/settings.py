@@ -99,6 +99,17 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# ------------------------------------------
+# Session Configuration
+# ------------------------------------------
+
+# Sessions backed by DB is default value but set it explicitly for clarity.
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -137,7 +148,12 @@ LOGGING = {
             "handlers": ["console", "file"],
             "level": LOGGING_LEVEL_L_ROOT,
             "propagate": False
-        }
+        },
+        'django.middleware': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 
@@ -193,10 +209,10 @@ else:
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    # {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
-    # {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    # {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    # {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 MESSAGE_TAGS = {

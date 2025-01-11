@@ -10,17 +10,19 @@ from plan_visual_django.services.plan_file_utilities.plan_parsing import extract
 from plan_visual_django.services.visual.rendering.plotables import get_plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
 
-logging.getLogger()
+logger = logging.getLogger()
 
 
 class Plan(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    # Upload files into folder under MEDIA_ROOT
+    """
+    Upload files into folder under MEDIA_ROOT
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     plan_name = models.CharField(max_length=100)  # Name for this plan - independent of file name.
     file_name = models.CharField(max_length=100)  # Name of file uploaded (may be stored with different name to make unique)
     file = models.FileField(upload_to="plan_files", null=True)  # Includes a File object pointing to the actual file to be parsed
     file_type_name = models.CharField(max_length=50, choices=FileType.as_choices())
+    session_id = models.CharField(max_length=50, null=True, blank=True)  # Stores anonymous user session ID
 
     class Meta:
         constraints: list[UniqueConstraint] = \
@@ -28,6 +30,10 @@ class Plan(models.Model):
 
     def __str__(self):
         return f'{self.plan_name}({self.file_name}:{self.file_type_name})'
+
+    def is_anonymous(self):
+        """Returns True if the plan is linked to a session instead of a user."""
+        return self.user is None and self.session_id is not None
 
     def get_plan_summary_data(self):
         """

@@ -1,0 +1,17 @@
+{% extends "plan_visual_django/pv_base.html" %}
+
+{% block main_content %}
+<h2>Register</h2>
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+</form>
+{% endblock %}

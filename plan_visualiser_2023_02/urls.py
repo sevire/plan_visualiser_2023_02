@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 import plan_visual_django
+from plan_visual_django import views
 
 urlpatterns = [
     path("", RedirectView.as_view(url='pv', permanent=True), name='index'),
@@ -25,4 +26,5 @@ urlpatterns = [
     path("pv/", include('plan_visual_django.urls')),
     path('api/', include('api.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('register/', views.register, name='register'),
 ]

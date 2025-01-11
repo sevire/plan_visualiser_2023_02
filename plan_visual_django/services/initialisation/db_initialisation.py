@@ -66,7 +66,7 @@ initial_data_driver = [
 
 initial_users = [
     {
-        'username': settings.SHARED_DATA_USER,
+        'username': settings.SHARED_DATA_USER_NAME,
         'email': 'shared_data_user@genonline.co.uk',
         'superuser_flag': False,
         'id': 1,  # Id needs to be fixed only for shared_data_user as used as foreign key in some shared data items.
@@ -140,7 +140,7 @@ def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag
         if delete_flag:
             print_status_partial(f"Attempting to delete record with pk={record['pk']}...")
             try:
-                record_for_deletion = model.objects.get()
+                record_for_deletion = model.objects.get(pk=record['pk'])
             except model.DoesNotExist as e:
                 print_status_partial(f"No record found pk={record['pk']}")
             else:
@@ -238,6 +238,9 @@ def create_initial_users(delete=False):
                     del user_data['return']
 
                 print_status_partial(f"Calling {function.__name__}: {user_data}")
+
+                # Need to provide the SECRET_KEY for the project to be used when hashing the password
+                # (will also be used when authenticating)
                 user = function(**user_data)
                 print_status_partial(f"User ({user}) created")
                 if return_flag is True:
