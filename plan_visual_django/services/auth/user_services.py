@@ -1,5 +1,5 @@
 """
-Service to manage information related to users. (xxx-yyy)
+Service to manage information related to users. (xxx-yyy-zzz)
 
 Many of these services are related to current user logged in, which means the information is related to a
 session.  Generally that information is encapsulated within the request object so often that is an input parameter.
