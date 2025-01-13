@@ -73,6 +73,9 @@ else:
     ALLOWED_HOSTS = ['*']
     CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 
+# Modified to support custom user model
+AUTH_USER_MODEL = 'plan_visual_django.CustomUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -110,6 +113,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = True
 
 
+# ------------------------------------------
+# Logging Configuration
+# ------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

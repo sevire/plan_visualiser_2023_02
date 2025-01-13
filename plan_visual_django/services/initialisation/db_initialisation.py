@@ -2,7 +2,7 @@ import json
 import os.path
 from functools import partial
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils.crypto import get_random_string
 from plan_visual_django.models import Color, PlotableStyle, PlotableShapeType, PlotableShape, Font
@@ -20,6 +20,8 @@ standard_styles = 'standard_styles.json'
 standard_data_user = 'shared_data_user.json'
 shape_types = 'shape_types.json'
 shapes = 'shapes.json'
+
+UserModel = get_user_model()
 
 # Note - in the following data structures, order matters as records that are referenced as foreign keys must be added
 #        before the record which references them.
@@ -110,7 +112,7 @@ def add_initial_data(shared_data_user, delete_flag=False):
         add_initial_data_for_model(shared_data_user, initial_model_data, delete_flag)
 
 
-def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag):
+def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete_flag):
     """
     Sets up data in an empty database to 'bootstrap' the app so that required data records are in place when creating
     a new environment.
@@ -214,8 +216,8 @@ def create_initial_users(delete=False):
 
         # Check whether this user exists
         try:
-            user = User.objects.get(username=user_data["username"])
-        except User.DoesNotExist:
+            user = UserModel.objects.get(username=user_data["username"])
+        except UserModel.DoesNotExist:
             if delete:
                 # Nothing to do delete and that's fine.
                 print_status_partial(f"User ({[user_data['username']]}) does not exist, no need to delete")
@@ -228,9 +230,9 @@ def create_initial_users(delete=False):
 
                 # Choose function to use for creating user depending upon whether superuser is required or not
                 if user_data['superuser_flag'] is True:
-                    function = User.objects.create_superuser
+                    function = UserModel.objects.create_superuser
                 else:
-                    function = User.objects.create_user
+                    function = UserModel.objects.create_user
 
                 # Remove superuser flag and return flag from user_data as it's not a recognised keyword and we are using it as kwargs.
                 del user_data['superuser_flag']

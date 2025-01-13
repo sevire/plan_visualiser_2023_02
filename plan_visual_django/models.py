@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
@@ -9,8 +7,19 @@ from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.rendering.plotables import get_plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
+from django.contrib.auth.models import AbstractUser
+
+import logging
 
 logger = logging.getLogger()
+
+
+class CustomUser(AbstractUser):
+    """Custom user model with unique email."""
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.username
 
 
 class Plan(models.Model):
