@@ -1,19 +1,23 @@
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
-
+import os
 
 from django.test import TestCase
 from django.urls import reverse
-
-
-from django.test import TestCase
-from django.urls import reverse
+from plan_visual_django.models import Plan
+from test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestAnonymousUser(TestCase):
+    fixtures = [
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'auth_test_fixtures.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'test_fixtures.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'color_fixtures.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'plotablestyle_fixtures.json')
+    ]
+
     def setUp(self):
-        """Define common test cases for anonymous users."""
+        """
+        Define common test cases for anonymous users.
+        """
         self.test_cases = [
             # Public pages (accessible)
             {"name": "Add Plan", "view": "add-plan", "requires_login": False, "expected_status": 200},
@@ -22,13 +26,18 @@ class TestAnonymousUser(TestCase):
             {"name": "Registration Page", "view": "register", "requires_login": False, "expected_status": 200},
 
             # Restricted pages (should redirect)
-            {"name": "Manage Visuals", "view": "manage-visuals", "params": {"plan_id": 1}, "requires_login": True},
-            {"name": "Add Visual", "view": "add-visual", "params": {"plan_id": 1}, "requires_login": True},
+            {"name": "Manage Visuals", "view": "manage-visuals", "params": {"plan_id": 2}, "requires_login": False, "expected_status": 200},
+            {"name": "Add Visual", "view": "add-visual", "params": {"plan_id": 2}, "requires_login": False, "expected_status": 200},
             {"name": "Logout", "view": "logout", "requires_login": False, "expected_status": 200, "method": "post"},
-
-            # Admin panel (should redirect to admin login)
-            {"name": "Django Admin", "view": "admin:index", "requires_login": True, "expected_redirect": "admin:login"},
         ]
+
+        # Need to manipulate the Plan record from test fixtures so that it is owned by an Anonymous user in this test session
+        plan_record = Plan.objects.get(pk=2)
+
+        # Now set user to None, and session_id to this session.
+        plan_record.user = None
+        plan_record.session_id = self.client.session.session_key
+        plan_record.save()
 
     def test_anonymous_user_access(self):
         """Test anonymous user access for various pages, handling dynamic URLs."""

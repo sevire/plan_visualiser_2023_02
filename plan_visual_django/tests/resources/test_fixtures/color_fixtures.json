@@ -329,9 +329,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-01",
-      "red": 221,
-      "green": 173,
-      "blue": 234,
+      "red": 218,
+      "green": 249,
+      "blue": 158,
       "alpha": 0.0
     }
   },
@@ -341,9 +341,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-02",
-      "red": 205,
-      "green": 132,
-      "blue": 224,
+      "red": 199,
+      "green": 246,
+      "blue": 110,
       "alpha": 0.0
     }
   },
@@ -353,9 +353,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-03",
-      "red": 188,
-      "green": 91,
-      "blue": 214,
+      "red": 181,
+      "green": 243,
+      "blue": 62,
       "alpha": 0.0
     }
   },
@@ -365,9 +365,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-04",
-      "red": 172,
-      "green": 50,
-      "blue": 204,
+      "red": 163,
+      "green": 240,
+      "blue": 14,
       "alpha": 0.0
     }
   },
@@ -377,9 +377,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-05",
-      "red": 137,
-      "green": 40,
-      "blue": 163,
+      "red": 130,
+      "green": 192,
+      "blue": 11,
       "alpha": 0.0
     }
   },
@@ -389,9 +389,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-06",
-      "red": 103,
-      "green": 30,
-      "blue": 122,
+      "red": 97,
+      "green": 144,
+      "blue": 8,
       "alpha": 0.0
     }
   },
@@ -401,9 +401,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-01-07",
-      "red": 68,
-      "green": 20,
-      "blue": 81,
+      "red": 65,
+      "green": 96,
+      "blue": 5,
       "alpha": 0.0
     }
   },
@@ -414,7 +414,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-01",
       "red": 160,
-      "green": 201,
+      "green": 209,
       "blue": 247,
       "alpha": 0.0
     }
@@ -426,7 +426,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-02",
       "red": 113,
-      "green": 175,
+      "green": 186,
       "blue": 243,
       "alpha": 0.0
     }
@@ -438,7 +438,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-03",
       "red": 66,
-      "green": 148,
+      "green": 163,
       "blue": 239,
       "alpha": 0.0
     }
@@ -450,7 +450,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-04",
       "red": 19,
-      "green": 121,
+      "green": 140,
       "blue": 235,
       "alpha": 0.0
     }
@@ -462,7 +462,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-05",
       "red": 15,
-      "green": 97,
+      "green": 112,
       "blue": 188,
       "alpha": 0.0
     }
@@ -474,7 +474,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-06",
       "red": 11,
-      "green": 73,
+      "green": 84,
       "blue": 141,
       "alpha": 0.0
     }
@@ -486,7 +486,7 @@
       "user": 1,
       "name": "palette-for-theme-theme-01-var-02-07",
       "red": 7,
-      "green": 48,
+      "green": 56,
       "blue": 94,
       "alpha": 0.0
     }
@@ -497,9 +497,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-01",
-      "red": 182,
-      "green": 248,
-      "blue": 159,
+      "red": 236,
+      "green": 196,
+      "blue": 171,
       "alpha": 0.0
     }
   },
@@ -509,9 +509,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-02",
-      "red": 146,
-      "green": 245,
-      "blue": 111,
+      "red": 227,
+      "green": 166,
+      "blue": 129,
       "alpha": 0.0
     }
   },
@@ -521,9 +521,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-03",
-      "red": 110,
-      "green": 241,
-      "blue": 64,
+      "red": 218,
+      "green": 137,
+      "blue": 87,
       "alpha": 0.0
     }
   },
@@ -533,9 +533,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-04",
-      "red": 74,
-      "green": 238,
-      "blue": 16,
+      "red": 209,
+      "green": 108,
+      "blue": 45,
       "alpha": 0.0
     }
   },
@@ -545,9 +545,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-05",
-      "red": 59,
-      "green": 190,
-      "blue": 13,
+      "red": 167,
+      "green": 86,
+      "blue": 36,
       "alpha": 0.0
     }
   },
@@ -557,9 +557,9 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-06",
-      "red": 44,
-      "green": 143,
-      "blue": 9,
+      "red": 125,
+      "green": 64,
+      "blue": 27,
       "alpha": 0.0
     }
   },
@@ -569,9 +569,261 @@
     "fields": {
       "user": 1,
       "name": "palette-for-theme-theme-01-var-03-07",
-      "red": 29,
-      "green": 95,
-      "blue": 6,
+      "red": 83,
+      "green": 43,
+      "blue": 18,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 49,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-01",
+      "red": 218,
+      "green": 249,
+      "blue": 158,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 50,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-02",
+      "red": 199,
+      "green": 246,
+      "blue": 110,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 51,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-03",
+      "red": 181,
+      "green": 243,
+      "blue": 62,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 52,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-04",
+      "red": 163,
+      "green": 240,
+      "blue": 14,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 53,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-05",
+      "red": 130,
+      "green": 192,
+      "blue": 11,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 54,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-06",
+      "red": 97,
+      "green": 144,
+      "blue": 8,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 55,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-07",
+      "red": 65,
+      "green": 96,
+      "blue": 5,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 56,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-01",
+      "red": 160,
+      "green": 209,
+      "blue": 247,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 57,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-02",
+      "red": 113,
+      "green": 186,
+      "blue": 243,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 58,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-03",
+      "red": 66,
+      "green": 163,
+      "blue": 239,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 59,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-04",
+      "red": 19,
+      "green": 140,
+      "blue": 235,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 60,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-05",
+      "red": 15,
+      "green": 112,
+      "blue": 188,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 61,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-06",
+      "red": 11,
+      "green": 84,
+      "blue": 141,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 62,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-07",
+      "red": 7,
+      "green": 56,
+      "blue": 94,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 63,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-01",
+      "red": 236,
+      "green": 196,
+      "blue": 171,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 64,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-02",
+      "red": 227,
+      "green": 166,
+      "blue": 129,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 65,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-03",
+      "red": 218,
+      "green": 137,
+      "blue": 87,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 66,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-04",
+      "red": 209,
+      "green": 108,
+      "blue": 45,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 67,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-05",
+      "red": 167,
+      "green": 86,
+      "blue": 36,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 68,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-06",
+      "red": 125,
+      "green": 64,
+      "blue": 27,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 69,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-07",
+      "red": 83,
+      "green": 43,
+      "blue": 18,
       "alpha": 0.0
     }
   }

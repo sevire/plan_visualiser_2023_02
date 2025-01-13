@@ -7,8 +7,8 @@ class Command(BaseCommand):
     Add common data items required by all users.  Includes:
     - Field mapping types for each file format
     - Field mapping for each field in each file format
-    - Color palette
-    - Plotable styles
+    - Color palette for an initial theme
+    - Plotable styles for an initial theme
     """
     help = "Add set of common data items required by all users."
 
