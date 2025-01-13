@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth import get_user_model
 from plan_visual_django.models import (
     Plan,
     Color,
@@ -16,6 +18,16 @@ from plan_visual_django.models import (
     TimelineForVisual,
     StaticContent
 )
+
+
+User = get_user_model()
+
+
+@admin.register(User)
+class CustomUserAdmin(UserAdmin):
+    """Admin configuration for the custom user model."""
+    list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    search_fields = ("username", "email")
 
 
 @admin.register(Plan)
