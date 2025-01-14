@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from plan_visual_django.models import (
     Plan,
     Color,
@@ -22,6 +23,7 @@ from plan_visual_django.models import (
 
 User = get_user_model()
 
+admin.site.register(Permission)
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
