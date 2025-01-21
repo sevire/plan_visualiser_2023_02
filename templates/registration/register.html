@@ -10,8 +10,10 @@
 </ul>
 {% endif %}
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
+    <table class="table">
+        {% csrf_token %}
+        {{ form.as_table }}
+    </table>
+    <input type="submit" class="btn btn-primary mb-3" value="Register">
 </form>
 {% endblock %}
