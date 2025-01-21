@@ -57,11 +57,11 @@ class VisualSettings:
             "track_gap": 4,
             "milestone_width": 10,
             "swimlane_gap": 5,
-            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-001-activities-01"),
-            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-004-milestones-01"),
-            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="app-theme-01-006-swimlanes-01"),
-            "default_timeline_plotable_style_odd": PlotableStyle.objects.get(style_name="app-theme-01-008-timelines-01"),
-            "default_timeline_plotable_style_even": PlotableStyle.objects.get(style_name="app-theme-01-009-timelines-02")
+            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="theme-01-001-activities-01"),
+            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="theme-01-004-milestones-01"),
+            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="theme-01-006-swimlanes-01"),
+            "default_timeline_plotable_style_odd": PlotableStyle.objects.get(style_name="theme-01-008-timelines-01"),
+            "default_timeline_plotable_style_even": PlotableStyle.objects.get(style_name="theme-01-009-timelines-02")
         }
 
 

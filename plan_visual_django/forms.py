@@ -1,17 +1,52 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.forms import ModelForm, CharField, Form, IntegerField
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
     PlotableStyle, Color
+from plan_visual_django.services.auth.user_services import generate_username
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
+User = get_user_model()
 
 
-class RegistrationForm(UserCreationForm):
+class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
+    def clean(self):
+        """Validate form data and ensure either username or email is provided."""
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+
+        # Ensure at least one identifier is provided
+        if not username and not email:
+            raise forms.ValidationError("You must provide either a username or an email.")
+
+        # Allow username-only registrations by explicitly handling missing email
+        if not email:
+            cleaned_data['email'] = None  # Explicitly set email to None if missing
+
+        # Generate a username if none is provided
+        if not username:
+            cleaned_data['username'] = generate_username(email)
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        """Save the user instance after cleaning."""
+        user = super().save(commit=False)
+        user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data.get('email')
+        if commit:
+            user.save()
+        return user
+
+
+class CustomLoginForm(AuthenticationForm):
+    username = forms.CharField(label="Username or Email")
 
 
 class PlanForm(ModelForm):

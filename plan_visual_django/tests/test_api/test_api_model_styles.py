@@ -2,10 +2,12 @@
 Test related to management of styles for plotable objects.
 """
 import os
-from django.contrib.auth.models import User
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
 
+User = get_user_model()
 
 class TestApiPlotableStyles(TestCase):
     fixtures = [

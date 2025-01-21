@@ -1,6 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from plan_visual_django.forms import RegistrationForm
+from plan_visual_django.forms import CustomUserCreationForm
+
+User = get_user_model()
 
 
 class TestDefaultUserRegistration(TestCase):
@@ -27,8 +29,8 @@ class TestDefaultUserRegistration(TestCase):
                     "password1": "SecurePass123!",
                     "password2": "SecurePass123!",
                 },
-                "error_field": "username",
-                "expected_error": "This field is required.",
+                "error_field": "__all__",
+                "expected_error": "You must provide either a username or an email.",
             },
             {
                 "name": "Missing Password",
@@ -84,7 +86,7 @@ class TestDefaultUserRegistration(TestCase):
         ]
 
         for case in test_cases:
-            form = RegistrationForm(data=case["data"])
+            form = CustomUserCreationForm(data=case["data"])
 
             with self.subTest(msg=f"{case['name']} - Form should be invalid"):
                 self.assertFalse(form.is_valid())

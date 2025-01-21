@@ -19,12 +19,14 @@ from django.views.generic import RedirectView
 
 import plan_visual_django
 from plan_visual_django import views
+from plan_visual_django.views import CustomLoginView
 
 urlpatterns = [
     path("", RedirectView.as_view(url='pv', permanent=True), name='index'),
     path("admin/", admin.site.urls),
     path("pv/", include('plan_visual_django.urls')),
     path('api/', include('api.urls')),
+    path('accounts/login/', CustomLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', views.register, name='register'),
 ]

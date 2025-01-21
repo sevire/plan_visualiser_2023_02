@@ -1,12 +1,12 @@
-from django.contrib.auth.models import User
-from django.http import JsonResponse
-from rest_framework.generics import ListAPIView
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from rest_framework import generics
 from plan_visual_django.models import PlotableStyle
 from plan_visual_django.services.auth.user_services import CurrentUser
 from api.v1.model.visual.plotable_style.serializer import ModelVisualStyleSerializer
 from django.db.models import Q
+
+User = get_user_model()
 
 
 class ModelVisualStyleAPI(generics.ListAPIView):
