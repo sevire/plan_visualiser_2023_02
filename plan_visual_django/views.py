@@ -4,6 +4,7 @@ import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import inlineformset_factory, formset_factory
@@ -12,8 +13,9 @@ from django.urls import reverse
 from django.views.generic import DetailView, ListView
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
     SuppliedPlanIncompleteError
-from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
-    SwimlaneDropdownForm
+from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, ReUploadPlanForm, \
+    VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
+    SwimlaneDropdownForm, CustomLoginForm
 from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, StaticContent
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
@@ -27,21 +29,25 @@ import logging
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
-from .forms import RegistrationForm
+from .forms import CustomUserCreationForm
 logger = logging.getLogger(__name__)
 
 
 def register(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # Save the user
             login(request, user)  # Log the user in (optional)
             messages.success(request, 'Registration successful!')
             return redirect('manage-plans')  # Redirect to your home page or dashboard
     else:
-        form = RegistrationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
 
 
 def get_session_user_identifier(request):

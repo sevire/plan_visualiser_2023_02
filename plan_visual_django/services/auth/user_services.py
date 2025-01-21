@@ -5,13 +5,29 @@ Many of these services are related to current user logged in, which means the in
 session.  Generally that information is encapsulated within the request object so often that is an input parameter.
 """
 import logging
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from plan_visual_django.models import Plan, PlanVisual
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.db import models
 
 logger = logging.getLogger()
+
+User = get_user_model()
+
+
+def generate_username(email):
+    """Generate a unique username based on email or a default prefix."""
+    base_username = email.split('@')[0] if email else "user"
+    username = base_username
+    counter = 1
+
+    # Ensure uniqueness of the username
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}_{counter}"
+        counter += 1
+
+    return username
 
 
 class CurrentUser:

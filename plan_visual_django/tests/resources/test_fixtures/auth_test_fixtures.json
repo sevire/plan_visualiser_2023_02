@@ -1,6 +1,6 @@
 [
   {
-    "model": "auth.user",
+    "model": "plan_visual_django.customuser",
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$600000$kOEXvALtd4A6AdBmjZNCh2$mueK1MHq9b87vkajrrEa0Ctw5PVmeAPsK/b7deaT6L4=",
@@ -18,7 +18,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "plan_visual_django.customuser",
     "pk": 6,
     "fields": {
       "password": "pbkdf2_sha256$600000$MOtRFucSwiSH4h7Ubk7VYz$C6X8MajaiFpfZOX/sHefcZvlM7NcHGK5eA7yGLAsIqw=",
@@ -36,7 +36,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "plan_visual_django.customuser",
     "pk": 7,
     "fields": {
       "password": "pbkdf2_sha256$600000$smVrr1FGO31KukdivZtLZ8$0SbY0mStNM8OKmEyvUkGz+oHDgeZYqtiTji9hODvmjE=",
@@ -54,7 +54,7 @@
     }
   },
   {
-    "model": "auth.user",
+    "model": "plan_visual_django.customuser",
     "pk": 8,
     "fields": {
       "password": "pbkdf2_sha256$600000$b1H8OBPg9pNvLogqq7sD40$x2vrkV9mHtcIm9hXL6miJ7X8OPN9WtpJljC1Zdjrowk=",

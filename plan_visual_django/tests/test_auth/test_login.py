@@ -1,6 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 from django.test import TestCase
+
+User = get_user_model()
 
 
 class UserLoginTests(TestCase):
@@ -13,8 +15,10 @@ class UserLoginTests(TestCase):
 
         # Check session authentication
         user_id = self.client.session.get('_auth_user_id')
-        self.assertIsNotNone(user_id)
-        self.assertEqual(int(user_id), self.user.id)
+        with self.subTest("Check user_id not None"):
+            self.assertIsNotNone(user_id)
+        with self.subTest("Check user_id is correct value"):
+            self.assertEqual(int(user_id), self.user.id)
 
     def test_login_without_username(self):
         """
@@ -36,3 +40,4 @@ class UserLoginTests(TestCase):
         with self.subTest("Check that error message is as expected"):
             expected_error = "This field is required."
             self.assertIn(expected_error, form.errors['username'])
+

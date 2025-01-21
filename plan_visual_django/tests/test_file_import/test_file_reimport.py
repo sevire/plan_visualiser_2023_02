@@ -1,6 +1,7 @@
 import os
 from typing import Dict
-from django.contrib.auth.models import User
+
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase,override_settings
 from plan_visual_django.forms import PlanForm, ReUploadPlanForm
@@ -13,6 +14,7 @@ from plan_visual_django.tests.resources.test_configuration import excel_reimport
 
 base_plan_file_name = os.path.join(excel_reimported_files_folder, "PV-Test-03.xlsx")
 
+User = get_user_model()
 
 @override_settings(
     MEDIA_ROOT=excel_reimported_files_folder

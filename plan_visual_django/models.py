@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
@@ -15,11 +16,23 @@ logger = logging.getLogger()
 
 
 class CustomUser(AbstractUser):
-    """Custom user model with unique email."""
-    email = models.EmailField(unique=True)
+    """Custom user model with unique email and optional username."""
+    email = models.EmailField(unique=True, blank=True, null=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        validators=[UnicodeUsernameValidator()]
+    )  # Optional username
+
+    # Set email as the primary identifier for authentication
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []  # Username is no longer required
 
     def __str__(self):
-        return self.username
+        # Use username if available, otherwise fallback to email
+        return self.username if self.username else self.email
 
 
 class Plan(models.Model):

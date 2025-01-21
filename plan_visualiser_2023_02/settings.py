@@ -76,6 +76,9 @@ else:
 # Modified to support custom user model
 AUTH_USER_MODEL = 'plan_visual_django.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'plan_visual_django.authentication.EmailOrUsernameBackend',  # Custom backend
+]
 # Application definition
 
 INSTALLED_APPS = [
