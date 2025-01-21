@@ -3,7 +3,6 @@ from typing import Any
 import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import ProtectedError
@@ -28,9 +27,11 @@ from plan_visual_django.services.visual.model.visual_settings import VisualSetti
 import logging
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from .forms import CustomUserCreationForm
 logger = logging.getLogger(__name__)
+
+User = get_user_model()
 
 
 def register(request):
