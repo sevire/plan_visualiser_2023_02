@@ -6,10 +6,10 @@ session.  Generally that information is encapsulated within the request object s
 """
 import logging
 from django.contrib.auth.models import AnonymousUser
-from plan_visual_django.models import Plan, PlanVisual
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.db import models
+from plan_visual_django.models import Plan, PlanVisual
 
 logger = logging.getLogger()
 
@@ -91,6 +91,39 @@ class CurrentUser:
         if self.is_authenticated():
             return Plan.objects.filter(user=self.user)
         return Plan.objects.filter(session_id=self.session_key)
+
+    def get_num_user_plans(self):
+        """
+        Calculates the number of plans belonging to the current user.
+
+        :return:
+        """
+        return Plan.objects.filter(user=self.user).count()
+
+    def generate_default_plan_name(self):
+        """
+        Calculates a default plan name for the plan based on user.
+        :param user:
+        :return:
+        """
+        user_part_of_name = self.get_user_display_name()
+        num_existing_plans_for_user = self.get_num_user_plans()
+
+        default_plan_name = f"Plan-{user_part_of_name}-{num_existing_plans_for_user+1:03}"
+
+        return default_plan_name
+
+    def get_user_display_name(self):
+        """
+        Gets username if authenticated else returns string of form Anon-xxxxx
+
+        Note the name is used to help generate default names for plans etc and doesn't need
+        to be unique.
+        :return:
+        """
+        if self.is_authenticated():
+            return self.user.username
+        return f"Anon-{self.session_key[-5:]}"
 
     def has_access_to_object(self, obj):
         """

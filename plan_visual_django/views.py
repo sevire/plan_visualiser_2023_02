@@ -86,7 +86,7 @@ def add_plan(request):
                 messages.error(request, f"You have already uploaded a file called {plan.file.name}.")
                 return HttpResponseRedirect(reverse('manage-plans'))
 
-            # Assign the correct attribute dynamically
+            # Assign the correct attribute dynamically (user or session key)
             setattr(plan, plan_user_attribute, plan_user_value)
             plan.file_name = plan.file.name
 
@@ -113,7 +113,7 @@ def add_plan(request):
         return HttpResponseRedirect(reverse('manage-plans'))
 
     elif request.method == "GET":
-        form = PlanForm()
+        form = PlanForm(request=request)
         return render(request, "plan_visual_django/pv_add_plan.html", {"form": form})
 
     else:
