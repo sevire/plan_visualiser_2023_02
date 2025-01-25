@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import ModelForm, CharField, Form, IntegerField
+from django.http import HttpRequest
+
 from plan_visual_django.models import Plan, PlanVisual, VisualActivity, SwimlaneForVisual, TimelineForVisual, \
     PlotableStyle, Color
-from plan_visual_django.services.auth.user_services import generate_username
+from plan_visual_django.services.auth.user_services import generate_username, CurrentUser
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
@@ -54,6 +56,16 @@ class PlanForm(ModelForm):
         model = Plan
         fields = ("plan_name", "file", "file_type_name")
 
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # The request object is only passed in to calculate default plan name which is for
+        # GET request only.  If request is not passed in don't attempt to create default plan name
+        if request is not None:
+            current_user = CurrentUser(request)
+            default_plan_name = current_user.generate_default_plan_name()
+            self.fields['plan_name'].initial = default_plan_name
+
 
 class ReUploadPlanForm(ModelForm):
     class Meta:
@@ -94,7 +106,6 @@ class VisualFormForAdd(ModelForm):
                 self.fields[field_name].initial = field_default
         else:
             super(VisualFormForAdd, self).__init__(*args, **kwargs)
-
 
 
 class VisualFormForEdit(ModelForm):
