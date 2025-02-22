@@ -142,6 +142,11 @@
         <div id="add-remove-activities" class="col-4 panel"></div>
         <div  id="visual-content" class="canvas-stack col-8">
             {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
+            <div id="no-activities-alert" class="alert alert-warning" role="alert"
+                {% if visual.activity_count > 0 %}style="display: none;"{% endif %}>
+                {{ no_activities_message }}
+            </div>
+
             <div class="canvas-wrapper bg-primary-subtle">
                 <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
                 <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>

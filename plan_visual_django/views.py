@@ -30,6 +30,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from .forms import CustomUserCreationForm
+from .services.general.text_constants import MESSAGE_NO_ACTIVITIES_IN_VISUAL
+
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
@@ -598,6 +600,7 @@ def plot_visual(request, visual_id):
         'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
         'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
         'visual': visual,
+        'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
     }
     return render(request, "plan_visual_django/planvisual_detail.html", context)
 
