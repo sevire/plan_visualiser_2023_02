@@ -34,6 +34,13 @@
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Navbar for visual layout">
         <div class="container-sm">
             <a class="navbar-brand" href="#">Plan On One Page</a>
+            {% if help_text %}
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#helpPanel"
+                        aria-expanded="false" aria-controls="helpPanel">
+                    Show Help
+                </button>
+            {% endif %}
+
             <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false"
                     aria-label="Toggle navigation">
@@ -95,7 +102,16 @@
 </div>
 <div id="header-clearance"></div>
 
-
+{% if help_text %}
+    <div class="collapse" id="helpPanel">
+        <div class="card card-body mb-3 bg-secondary-subtle">
+            <h4>{{ help_text.title }}</h4>
+            <div>
+                {{ help_text.content|safe }}  <!-- Safely render the parsed Markdown -->
+            </div>
+        </div>
+    </div>
+{% endif %}
 
 {% if messages %}
     <div class="container-fluid p-0">
@@ -108,6 +124,7 @@
     </div>
 {% endif %}
 <div class="container-fluid">
+
     {% block main_content %}
     {% endblock %}
 </div>

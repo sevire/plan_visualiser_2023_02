@@ -17,7 +17,7 @@ from plan_visual_django.models import (
     VisualActivity,
     PlanActivity,
     TimelineForVisual,
-    StaticContent
+    StaticContent, HelpText
 )
 
 
@@ -115,4 +115,11 @@ class TimelineForVisualAdmin(admin.ModelAdmin):
 class StaticContentAdmin(admin.ModelAdmin):
     list_display = ('title', 'content')  # columns to display on admin page
     search_fields = ['title', 'content']
+
+
+@admin.register(HelpText)
+class HelpTextAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'title', 'updated_at')
+    search_fields = ('slug', 'title', 'content')
+    prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
 

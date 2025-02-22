@@ -96,9 +96,14 @@ class CurrentUser:
         """
         Calculates the number of plans belonging to the current user.
 
+        Plans will be stored either under a user name or a session key.  Depending upon current user
+        get plans for this user.
+
         :return:
         """
-        return Plan.objects.filter(user=self.user).count()
+        if self.is_authenticated():
+            return Plan.objects.filter(user=self.user).count()
+        return Plan.objects.filter(session_id=self.session_key).count()
 
     def generate_default_plan_name(self):
         """
