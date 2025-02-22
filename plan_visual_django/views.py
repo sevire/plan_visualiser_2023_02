@@ -15,7 +15,8 @@ from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseE
 from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, ReUploadPlanForm, \
     VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
     SwimlaneDropdownForm, CustomLoginForm
-from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, StaticContent
+from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, \
+    StaticContent, HelpText
 from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
@@ -114,7 +115,12 @@ def add_plan(request):
 
     elif request.method == "GET":
         form = PlanForm(request=request)
-        return render(request, "plan_visual_django/pv_add_plan.html", {"form": form})
+        context = {
+            "help_text": HelpText.get_help_text("add-plan"),
+            "form": form
+        }
+
+        return render(request, "plan_visual_django/pv_add_plan.html", context)
 
     else:
         raise ValueError(f"Unrecognized METHOD {request.method}")
@@ -186,7 +192,9 @@ def re_upload_plan(request, pk):
     elif request.method == "GET":
         # Populate form with current plan details
         form = ReUploadPlanForm()
+        help_text = HelpText.get_help_text("re-upload-plan")
         context = {
+            'help_text': help_text,
             'form': form,
             'primary_heading': 'Re-upload File For Existing Plan',
             'secondary_heading': plan_record.file_name
@@ -253,7 +261,9 @@ def add_visual(request, plan_id):
             plan = Plan.objects.get(id=plan_id)
 
             form = VisualFormForAdd(plan=plan)
+            help_text = HelpText.get_help_text("add-edit-visual")
             context = {
+                'help_text': help_text,
                 'add_or_edit': 'Add',
                 'form': form
             }
@@ -282,6 +292,7 @@ def edit_visual(request, visual_id):
         elif request.method == "GET":
             form = VisualFormForEdit(instance=instance)
             context = {
+                'help_text': HelpText.get_help_text("add-edit-visual"),
                 'visual': instance,
                 'add_or_edit': 'Edit',
                 'form': form
@@ -295,7 +306,9 @@ def manage_plans(request):
     # ToDo: Clean this up as some redundancy - user is worked out here and in get_user_plans()
     current_user = CurrentUser(request)
     plan_files = current_user.get_user_plans()
+    help_text = HelpText.get_help_text("manage-plans")
     context = {
+        'help_text': help_text,
         'primary_heading': "Manage Plans",
         'secondary_heading': "",
         'user': current_user.user,
@@ -380,6 +393,7 @@ def manage_visuals(request, plan_id):
         plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
 
         context = {
+            'help_text': HelpText.get_help_text("manage-visuals"),
             'primary_heading': f"Manage Visuals For Plan: { plan_record.plan_name }",
             'secondary_heading': f"File: { plan_record.file_name }",
             'plan': plan_record,
@@ -418,7 +432,9 @@ def manage_swimlanes_for_visual(request, visual_id):
     visual = PlanVisual.objects.get(pk=visual_id)
     if request.method == 'GET':
         formset = VisualSwimlaneFormSet(instance=visual)
+
         context = {
+            'help_text': HelpText.get_help_text("manage-swimlanes-for-visual"),
             'visual': visual,
             'formset': formset
         }
@@ -505,6 +521,7 @@ def manage_plotable_styles(request):
     if request.method == 'GET':
         formset = PlotableStyleFormset(instance=user,  form_kwargs=form_kwargs)
         context = {
+            'help_text': HelpText.get_help_text("manage-plotable-styles"),
             'primary_heading': "Manage Styles",
             'secondary_heading': "",
             'formset': formset
@@ -577,6 +594,7 @@ def plot_visual(request, visual_id):
     visual_name = visual.name
 
     context = {
+        'help_text': HelpText.get_help_text("plot-visual"),
         'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
         'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
         'visual': visual,
@@ -662,6 +680,7 @@ def manage_colors(request):
             initial=initial
         )
         context = {
+            'help_text': HelpText.get_help_text("manage-colors"),
             'primary_heading': "Manage Colours",
             'secondary_heading': "",
             'formset': formset
@@ -746,6 +765,8 @@ class FileTypeListView(ListView):
 
         # mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
         context['ordered_mapped_fields'] = mapped_fields_for_file_types
+
+        context['help_text'] = HelpText.get_help_text("list-file-types")
 
         return context
 

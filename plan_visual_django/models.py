@@ -1,3 +1,4 @@
+import markdown
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -941,6 +942,28 @@ class VisualActivity(models.Model):
 class StaticContent(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
+
+
+class HelpText(models.Model):
+    slug = models.SlugField(max_length=100, unique=True)  # Unique slug for identification
+    title = models.CharField(max_length=200, blank=True, null=True)  # Optional title
+    content = models.TextField()  # Markdown-formatted help content
+    updated_at = models.DateTimeField(auto_now=True)  # Track last edited time
+
+    @classmethod
+    def get_help_text(cls, slug):
+        """
+        Fetch and parse help text by slug.
+        """
+        try:
+            help_entry = cls.objects.get(slug=slug)
+            help_entry.content = markdown.markdown(help_entry.content)  # Parse Markdown to HTML
+            return help_entry
+        except cls.DoesNotExist:
+            return None
+
+    def __str__(self):
+        return self.title if self.title else self.slug
 
 
 # Defaults to use when creating a new visual before any formatting or layout has been done.
