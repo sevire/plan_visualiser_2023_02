@@ -258,6 +258,23 @@ export function plot_visual(captureImageFlag: boolean = false) {
     clear_canvases();
   }
 
+  // Get the div element with id no-activities-alert
+  const noActivitiesAlert = document.getElementById("no-activities-alert");
+
+  // Check if there are no elements in visual_activity_data
+  const hasActivities = Object.values((window as any).visual_activity_data).some((canvas: any) => canvas.length > 0);
+
+  if (noActivitiesAlert) {
+    // Set display to 'none' if there are activities, otherwise set to 'block'
+    if (hasActivities) {
+      console.log("Setting 'no-activities-alert' display to 'none'");
+      noActivitiesAlert.style.display = "none";
+    } else {
+      console.log("Setting 'no-activities-alert' display to 'block'");
+      noActivitiesAlert.style.display = "block";
+    }
+  }
+
   // There will be a list of plotable objects for different canvases so need to iterate through canvases
   for (let canvas in (window as any).visual_activity_data) {
     // if we are plotting to capture the image we always use the capture canvas
