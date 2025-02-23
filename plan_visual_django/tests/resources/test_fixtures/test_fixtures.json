@@ -1,262 +1,5 @@
 [
   {
-    "model": "plan_visual_django.planfield",
-    "pk": 1,
-    "fields": {
-      "field_name": "unique_sticky_activity_id",
-      "field_type": "STR",
-      "field_description": "xxx",
-      "required_flag": true,
-      "sort_index": 100
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 2,
-    "fields": {
-      "field_name": "activity_name",
-      "field_type": "STR",
-      "field_description": "The name of the activity which will be displayed on the visual.",
-      "required_flag": true,
-      "sort_index": 200
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 3,
-    "fields": {
-      "field_name": "duration",
-      "field_type": "INT",
-      "field_description": "Number of days duration for the activity.  Zero means that the activity is a milestone.",
-      "required_flag": true,
-      "sort_index": 300
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 4,
-    "fields": {
-      "field_name": "start_date",
-      "field_type": "DATE",
-      "field_description": "The start date of the activity (date only, no time element).",
-      "required_flag": true,
-      "sort_index": 400
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 5,
-    "fields": {
-      "field_name": "end_date",
-      "field_type": "DATE",
-      "field_description": "End date of activity.",
-      "required_flag": true,
-      "sort_index": 500
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 6,
-    "fields": {
-      "field_name": "level",
-      "field_type": "INT",
-      "field_description": "Level of this activity - to help construct the hierarchy within the plan which will then drive option in the visualisation functionality.",
-      "required_flag": false,
-      "sort_index": 600
-    }
-  },
-  {
-    "model": "plan_visual_django.planfield",
-    "pk": 7,
-    "fields": {
-      "field_name": "milestone_flag",
-      "field_type": "BOOL",
-      "field_description": "Not required in input file, is derived from duration and is True if duration is zero.",
-      "required_flag": false,
-      "sort_index": 250
-    }
-  },
-  {
-    "model": "plan_visual_django.planfieldmappingtype",
-    "pk": 1,
-    "fields": {
-      "name": "Excel (SmartSheetDefault)",
-      "description": "This represents the standard fields output from SmartSheet (but with the level formula added)"
-    }
-  },
-  {
-    "model": "plan_visual_django.planfieldmappingtype",
-    "pk": 2,
-    "fields": {
-      "name": "Excel (MS Project Default)",
-      "description": "MS Project standard export"
-    }
-  },
-  {
-    "model": "plan_visual_django.planfieldmappingtype",
-    "pk": 3,
-    "fields": {
-      "name": "test",
-      "description": "test"
-    }
-  },
-  {
-    "model": "plan_visual_django.planfieldmappingtype",
-    "pk": 4,
-    "fields": {
-      "name": "test1",
-      "description": "test1"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 1,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 1,
-      "input_field_name": "Unique Sticky ID",
-      "input_field_type": "STR"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 2,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 2,
-      "input_field_name": "Name",
-      "input_field_type": "STR"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 3,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 3,
-      "input_field_name": "Duration",
-      "input_field_type": "STR_nnd"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 4,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 4,
-      "input_field_name": "Start",
-      "input_field_type": "DATE"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 5,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 5,
-      "input_field_name": "Finish",
-      "input_field_type": "DATE"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 6,
-    "fields": {
-      "plan_field_mapping_type": 1,
-      "mapped_field": 6,
-      "input_field_name": "Level #",
-      "input_field_type": "INT"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 7,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 1,
-      "input_field_name": "ID",
-      "input_field_type": "STR"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 8,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 2,
-      "input_field_name": "Name",
-      "input_field_type": "STR"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 13,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 7,
-      "input_field_name": "Milestone",
-      "input_field_type": "STR_MSTONE_YES_NO"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 9,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 3,
-      "input_field_name": "Duration",
-      "input_field_type": "STR_duration_msp"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 10,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 4,
-      "input_field_name": "Start_Date",
-      "input_field_type": "STR_DATE_DMY_02"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 11,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 5,
-      "input_field_name": "Finish_Date",
-      "input_field_type": "STR_DATE_DMY_02"
-    }
-  },
-  {
-    "model": "plan_visual_django.planmappedfield",
-    "pk": 12,
-    "fields": {
-      "plan_field_mapping_type": 2,
-      "mapped_field": 6,
-      "input_field_name": "Outline_Level",
-      "input_field_type": "STR"
-    }
-  },
-  {
-    "model": "plan_visual_django.filetype",
-    "pk": 1,
-    "fields": {
-      "file_type_name": "Excel (modern) Smartsheet Export",
-      "file_type_description": "Modern Excel Format",
-      "plan_field_mapping_type": 1
-    }
-  },
-  {
-    "model": "plan_visual_django.filetype",
-    "pk": 2,
-    "fields": {
-      "file_type_name": "Excel (modern) MSP Export",
-      "file_type_description": "Project export format 01",
-      "plan_field_mapping_type": 2
-    }
-  },
-  {
     "model": "plan_visual_django.plan",
     "pk": 2,
     "fields": {
@@ -264,7 +7,7 @@
       "plan_name": "Plan 1",
       "file_name": "SmartSheetVisualProject-01-3.xlsx",
       "file": "plan_files/SmartSheetVisualProject-01-3_XzjZ4ZL.xlsx",
-      "file_type": 1
+      "file_type_name": "excel-02-smartsheet-export-01"
     }
   },
   {
@@ -1088,7 +831,8 @@
       "default_activity_shape": 1,
       "default_activity_plotable_style": 3,
       "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5
+      "default_swimlane_plotable_style": 5,
+      "default_timeline_plotable_style_odd": 6
     }
   },
   {
@@ -1108,7 +852,8 @@
       "default_activity_shape": 1,
       "default_activity_plotable_style": 3,
       "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5
+      "default_swimlane_plotable_style": 5,
+      "default_timeline_plotable_style_odd": 6
     }
   },
   {
@@ -1159,8 +904,9 @@
       "timeline_type":"MONTHS",
       "timeline_name": "Timeline 1",
       "timeline_height": 25,
-      "plotable_style": 5,
-      "sequence_number": 1
+      "plotable_style_odd": 5,
+      "sequence_number": 1,
+      "enabled": true
     }
   },
   {
@@ -1171,8 +917,9 @@
       "timeline_type":"QUARTERS",
       "timeline_name": "Timeline 2",
       "timeline_height": 15,
-      "plotable_style": 5,
-      "sequence_number": 2
+      "plotable_style_odd": 5,
+      "sequence_number": 2,
+      "enabled": true
     }
   },
   {

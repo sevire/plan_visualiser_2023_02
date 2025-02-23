@@ -1,6 +1,10 @@
 import django.test
 from ddt import ddt, data, unpack
-from plan_visual_django.models import PlanField, PlanMappedField
+from plan_visual_django.services.plan_file_utilities.plan_field import (
+    PlanFieldEnum,
+    StoredPlanFieldTypeEnum,
+    PlanInputFieldTypeEnum
+)
 from plan_visual_django.services.plan_file_utilities.plan_reader import convert_dispatch
 from plan_visual_django.tests.resources.utilities import date_from_string
 
@@ -19,50 +23,50 @@ export of the plan.
 
 
 plan_fields = {
-    PlanField.PlanFieldName.STICKY_UID: {
-        "field_type": PlanField.StoredPlanFieldType.STRING
+    PlanFieldEnum.STICKY_UID: {
+        "field_type": StoredPlanFieldTypeEnum.STRING.value
     },
-    PlanField.PlanFieldName.DURATION: {
-        "field_type": PlanField.StoredPlanFieldType.INTEGER
+    PlanFieldEnum.DURATION: {
+        "field_type": StoredPlanFieldTypeEnum.INTEGER.value
     },
-    PlanField.PlanFieldName.NAME: {
-        "field_type": PlanField.StoredPlanFieldType.STRING
+    PlanFieldEnum.NAME: {
+        "field_type": StoredPlanFieldTypeEnum.STRING.value
     },
-    PlanField.PlanFieldName.START: {
-        "field_type": PlanField.StoredPlanFieldType.DATE
+    PlanFieldEnum.START: {
+        "field_type": StoredPlanFieldTypeEnum.DATE.value
     },
-    PlanField.PlanFieldName.END: {
-        "field_type": PlanField.StoredPlanFieldType.DATE
+    PlanFieldEnum.END: {
+        "field_type": StoredPlanFieldTypeEnum.DATE.value
     },
-    PlanField.PlanFieldName.LEVEL: {
-        "field_type": PlanField.StoredPlanFieldType.INTEGER
+    PlanFieldEnum.LEVEL: {
+        "field_type": StoredPlanFieldTypeEnum.INTEGER.value
     },
 }
 plan_field_mappings = {
     'SmartSheetExcelExport(Default)': {
-        PlanField.PlanFieldName.STICKY_UID: {
+        PlanFieldEnum.STICKY_UID: {
             "input_field_name": "Unique Sticky ID",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING_OR_INT
+            "input_field_type": PlanInputFieldTypeEnum.STRING_OR_INT.code
         },
-        PlanField.PlanFieldName.DURATION: {
+        PlanFieldEnum.DURATION: {
             "input_field_name": "Duration",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING_nnd
+            "input_field_type": PlanInputFieldTypeEnum.STRING_nnd.code
         },
-        PlanField.PlanFieldName.NAME: {
+        PlanFieldEnum.NAME: {
             "input_field_name": "Task Name",
-            "input_field_type": PlanMappedField.PlanFieldType.STRING
+            "input_field_type": PlanInputFieldTypeEnum.STRING.code
         },
-        PlanField.PlanFieldName.START: {
+        PlanFieldEnum.START: {
             "input_field_name": "Start",
-            "input_field_type": PlanMappedField.PlanFieldType.DATE
+            "input_field_type": PlanInputFieldTypeEnum.DATE.code
         },
-        PlanField.PlanFieldName.END: {
+        PlanFieldEnum.END: {
             "input_field_name": "End",
-            "input_field_type": PlanMappedField.PlanFieldType.DATE
+            "input_field_type": PlanInputFieldTypeEnum.DATE.code
         },
-        PlanField.PlanFieldName.LEVEL: {
+        PlanFieldEnum.LEVEL: {
             "input_field_name": "Duration",
-            "input_field_type": PlanMappedField.PlanFieldType.INTEGER
+            "input_field_type": PlanInputFieldTypeEnum.INTEGER.code
         }
     }
 }
@@ -72,7 +76,7 @@ import_field_test_cases = [
         "field_mapping_type": 'SmartSheetExcelExport(Default)',
         "fields": [
             {
-                "plan_field_name": PlanField.PlanFieldName.STICKY_UID,
+                "plan_field_name": PlanFieldEnum.STICKY_UID,
                 "test_cases": [
                     {
                         "description": "Normal pass through string",
@@ -102,7 +106,7 @@ import_field_test_cases = [
                 ]
             },
             {
-                "plan_field_name": PlanField.PlanFieldName.DURATION,
+                "plan_field_name": PlanFieldEnum.DURATION,
                 "test_cases": [
                     {
                         "description": "String representing integer with d at end",
@@ -127,7 +131,7 @@ import_field_test_cases = [
                 ]
             },
             {
-                "plan_field_name": PlanField.PlanFieldName.NAME,
+                "plan_field_name": PlanFieldEnum.NAME,
                 "test_cases": [
                     {
                         "description": "Checking strings are passed through exactly",
@@ -137,7 +141,7 @@ import_field_test_cases = [
                 ]
             },
             {
-                "plan_field_name": PlanField.PlanFieldName.START,
+                "plan_field_name": PlanFieldEnum.START,
                 "test_cases": [
                     {
                         "description": "Checking dates are converted correctly. Note dates are imported as true Excel dates not strings",
@@ -147,7 +151,7 @@ import_field_test_cases = [
                 ]
             },
             {
-                "plan_field_name": PlanField.PlanFieldName.END,
+                "plan_field_name": PlanFieldEnum.END,
                 "test_cases": [
                     {
                         "description": "Checking dates are converted correctly. Note dates are imported as true Excel dates not strings",
@@ -157,7 +161,7 @@ import_field_test_cases = [
                 ]
             },
             {
-                "plan_field_name": PlanField.PlanFieldName.LEVEL,
+                "plan_field_name": PlanFieldEnum.LEVEL,
                 "test_cases": [
                     {
                         "description": "Level should come in as an integer and is output as the same integer",

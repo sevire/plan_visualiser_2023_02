@@ -1,0 +1,830 @@
+[
+  {
+    "model": "plan_visual_django.color",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "[01]Red",
+      "red": 240,
+      "green": 65,
+      "blue": 90,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "name": "[02]Red-",
+      "red": 215,
+      "green": 51,
+      "blue": 51,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "name": "[03]Red--",
+      "red": 173,
+      "green": 51,
+      "blue": 51,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "name": "[04]Red+",
+      "red": 255,
+      "green": 116,
+      "blue": 116,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "name": "[05]Red++",
+      "red": 251,
+      "green": 188,
+      "blue": 188,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "name": "[06]Amber",
+      "red": 255,
+      "green": 186,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "name": "[07]Amber-",
+      "red": 236,
+      "green": 173,
+      "blue": 3,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "name": "[08]Amber--",
+      "red": 184,
+      "green": 135,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "name": "[09]Amber+",
+      "red": 253,
+      "green": 203,
+      "blue": 67,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "name": "[10]Amber++",
+      "red": 251,
+      "green": 222,
+      "blue": 141,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 11,
+    "fields": {
+      "user": 1,
+      "name": "[11]Green",
+      "red": 49,
+      "green": 250,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 12,
+    "fields": {
+      "user": 1,
+      "name": "[12]Green-",
+      "red": 43,
+      "green": 204,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 13,
+    "fields": {
+      "user": 1,
+      "name": "[13]Green--",
+      "red": 25,
+      "green": 135,
+      "blue": 2,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 14,
+    "fields": {
+      "user": 1,
+      "name": "[14]Green+",
+      "red": 135,
+      "green": 255,
+      "blue": 112,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 15,
+    "fields": {
+      "user": 1,
+      "name": "[15]Green++",
+      "red": 132,
+      "green": 255,
+      "blue": 156,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 16,
+    "fields": {
+      "user": 1,
+      "name": "[16]Blue",
+      "red": 0,
+      "green": 122,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 17,
+    "fields": {
+      "user": 1,
+      "name": "[17]Blue-",
+      "red": 0,
+      "green": 89,
+      "blue": 184,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 18,
+    "fields": {
+      "user": 1,
+      "name": "[18]Blue--",
+      "red": 0,
+      "green": 74,
+      "blue": 153,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 19,
+    "fields": {
+      "user": 1,
+      "name": "[19]Blue+",
+      "red": 61,
+      "green": 154,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 20,
+    "fields": {
+      "user": 1,
+      "name": "[20]Blue++",
+      "red": 112,
+      "green": 230,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 21,
+    "fields": {
+      "user": 1,
+      "name": "[21]Grey",
+      "red": 186,
+      "green": 186,
+      "blue": 186,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 22,
+    "fields": {
+      "user": 1,
+      "name": "[22]Grey-",
+      "red": 130,
+      "green": 130,
+      "blue": 130,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 23,
+    "fields": {
+      "user": 1,
+      "name": "[23]Grey--",
+      "red": 64,
+      "green": 64,
+      "blue": 64,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 24,
+    "fields": {
+      "user": 1,
+      "name": "[24]Grey+",
+      "red": 214,
+      "green": 214,
+      "blue": 214,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 25,
+    "fields": {
+      "user": 1,
+      "name": "[25]Grey++",
+      "red": 235,
+      "green": 234,
+      "blue": 234,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 26,
+    "fields": {
+      "user": 1,
+      "name": "[00]White",
+      "red": 255,
+      "green": 255,
+      "blue": 255,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 27,
+    "fields": {
+      "user": 1,
+      "name": "[00]Black",
+      "red": 0,
+      "green": 0,
+      "blue": 0,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 28,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-01",
+      "red": 218,
+      "green": 249,
+      "blue": 158,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 29,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-02",
+      "red": 199,
+      "green": 246,
+      "blue": 110,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 30,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-03",
+      "red": 181,
+      "green": 243,
+      "blue": 62,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 31,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-04",
+      "red": 163,
+      "green": 240,
+      "blue": 14,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 32,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-05",
+      "red": 130,
+      "green": 192,
+      "blue": 11,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 33,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-06",
+      "red": 97,
+      "green": 144,
+      "blue": 8,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 34,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-01-07",
+      "red": 65,
+      "green": 96,
+      "blue": 5,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 35,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-01",
+      "red": 160,
+      "green": 209,
+      "blue": 247,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 36,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-02",
+      "red": 113,
+      "green": 186,
+      "blue": 243,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 37,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-03",
+      "red": 66,
+      "green": 163,
+      "blue": 239,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 38,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-04",
+      "red": 19,
+      "green": 140,
+      "blue": 235,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 39,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-05",
+      "red": 15,
+      "green": 112,
+      "blue": 188,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 40,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-06",
+      "red": 11,
+      "green": 84,
+      "blue": 141,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 41,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-02-07",
+      "red": 7,
+      "green": 56,
+      "blue": 94,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 42,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-01",
+      "red": 236,
+      "green": 196,
+      "blue": 171,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 43,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-02",
+      "red": 227,
+      "green": 166,
+      "blue": 129,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 44,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-03",
+      "red": 218,
+      "green": 137,
+      "blue": 87,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 45,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-04",
+      "red": 209,
+      "green": 108,
+      "blue": 45,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 46,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-05",
+      "red": 167,
+      "green": 86,
+      "blue": 36,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 47,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-06",
+      "red": 125,
+      "green": 64,
+      "blue": 27,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 48,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-theme-01-var-03-07",
+      "red": 83,
+      "green": 43,
+      "blue": 18,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 49,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-01",
+      "red": 218,
+      "green": 249,
+      "blue": 158,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 50,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-02",
+      "red": 199,
+      "green": 246,
+      "blue": 110,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 51,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-03",
+      "red": 181,
+      "green": 243,
+      "blue": 62,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 52,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-04",
+      "red": 163,
+      "green": 240,
+      "blue": 14,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 53,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-05",
+      "red": 130,
+      "green": 192,
+      "blue": 11,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 54,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-06",
+      "red": 97,
+      "green": 144,
+      "blue": 8,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 55,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-01-07",
+      "red": 65,
+      "green": 96,
+      "blue": 5,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 56,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-01",
+      "red": 160,
+      "green": 209,
+      "blue": 247,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 57,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-02",
+      "red": 113,
+      "green": 186,
+      "blue": 243,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 58,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-03",
+      "red": 66,
+      "green": 163,
+      "blue": 239,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 59,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-04",
+      "red": 19,
+      "green": 140,
+      "blue": 235,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 60,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-05",
+      "red": 15,
+      "green": 112,
+      "blue": 188,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 61,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-06",
+      "red": 11,
+      "green": 84,
+      "blue": 141,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 62,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-02-07",
+      "red": 7,
+      "green": 56,
+      "blue": 94,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 63,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-01",
+      "red": 236,
+      "green": 196,
+      "blue": 171,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 64,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-02",
+      "red": 227,
+      "green": 166,
+      "blue": 129,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 65,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-03",
+      "red": 218,
+      "green": 137,
+      "blue": 87,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 66,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-04",
+      "red": 209,
+      "green": 108,
+      "blue": 45,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 67,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-05",
+      "red": 167,
+      "green": 86,
+      "blue": 36,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 68,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-06",
+      "red": 125,
+      "green": 64,
+      "blue": 27,
+      "alpha": 0.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 69,
+    "fields": {
+      "user": 1,
+      "name": "palette-for-theme-app-theme-01-var-03-07",
+      "red": 83,
+      "green": 43,
+      "blue": 18,
+      "alpha": 0.0
+    }
+  }
+]

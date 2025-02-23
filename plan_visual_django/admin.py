@@ -1,42 +1,40 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-
-from plan_visual_django.models import Plan, Color, Font, PlotableStyle, PlotableShapeType, \
-    PlotableShape, FileType, PlotableShapeAttributesRectangle, PlotableShapeAttributesDiamond, \
-    PlanVisual, SwimlaneForVisual, VisualActivity, PlanMappedField, PlanField, PlanFieldMappingType, PlanActivity, \
-    TimelineForVisual, StaticContent
-
-
-@admin.register(FileType)
-class FileTypeAdmin(admin.ModelAdmin):
-    list_display = ["file_type_name", "plan_field_mapping_type_name", "file_type_description"]
-
-    def plan_field_mapping_type_name(self, obj):
-        return obj.plan_field_mapping_type.name
-
-
-@admin.register(PlanField)
-class PlanFieldAdmin(admin.ModelAdmin):
-    list_display = ["field_name", "field_type", "required_flag", "sort_index"]
-    ordering = ["sort_index"]
-
-
-@admin.register(PlanMappedField)
-class PlanMappedFieldAdmin(admin.ModelAdmin):
-    list_display = ["plan_field_mapping_type", "mapped_field", "input_field_name", "input_field_type"]
-    ordering = ['plan_field_mapping_type', 'mapped_field']
-    list_filter = ('plan_field_mapping_type', )
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
+from plan_visual_django.models import (
+    Plan,
+    Color,
+    Font,
+    PlotableStyle,
+    PlotableShapeType,
+    PlotableShape,
+    PlotableShapeAttributesRectangle,
+    PlotableShapeAttributesDiamond,
+    PlanVisual,
+    SwimlaneForVisual,
+    VisualActivity,
+    PlanActivity,
+    TimelineForVisual,
+    StaticContent, HelpText
+)
 
 
-@admin.register(PlanFieldMappingType)
-class PlanFieldMappingTypeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'description']
+User = get_user_model()
+
+admin.site.register(Permission)
+
+@admin.register(User)
+class CustomUserAdmin(UserAdmin):
+    """Admin configuration for the custom user model."""
+    list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    search_fields = ("username", "email")
 
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ["user", "plan_name", "file_name", "file_type"]
+    list_display = ["user", "plan_name", "file_name", "file_type_name"]
 
 
 @admin.register(Color)
@@ -60,6 +58,7 @@ class FontAdmin(admin.ModelAdmin):
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
     list_display = ['user', 'style_name']
+
 
 @admin.register(PlanVisual)
 class PlanVisualAdmin(admin.ModelAdmin):
@@ -116,4 +115,11 @@ class TimelineForVisualAdmin(admin.ModelAdmin):
 class StaticContentAdmin(admin.ModelAdmin):
     list_display = ('title', 'content')  # columns to display on admin page
     search_fields = ['title', 'content']
+
+
+@admin.register(HelpText)
+class HelpTextAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'title', 'updated_at')
+    search_fields = ('slug', 'title', 'content')
+    prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
 

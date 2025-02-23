@@ -11,7 +11,7 @@ from django.db.models import Subquery, OuterRef
 from plan_visual_django.exceptions import DuplicateSwimlaneException
 from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
-from plan_visual_django.services.visual.visual_settings import VisualSettings
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 
 
 class VisualAutoLayoutManager:

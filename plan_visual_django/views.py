@@ -1,101 +1,131 @@
-import json
 import os
-from typing import List, Dict, Any
-
+from typing import Any
 import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import ProtectedError
-from django.forms import inlineformset_factory, modelformset_factory, formset_factory
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.forms import inlineformset_factory, formset_factory
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
-
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
-    AddPlanError
-from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, VisualActivityFormForEdit, \
-    ReUploadPlanForm, VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
-    SwimlaneDropdownForm
-from plan_visual_django.models import Plan, PlanVisual, PlanField, PlanActivity, SwimlaneForVisual, VisualActivity, \
-    PlotableStyle, TimelineForVisual, Color, StaticContent, FileType, PlanMappedField
-from django.contrib import messages
+    SuppliedPlanIncompleteError
+from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEdit, ReUploadPlanForm, \
+    VisualSwimlaneFormForEdit, VisualTimelineFormForEdit, ColorForm, PlotableStyleForm, \
+    SwimlaneDropdownForm, CustomLoginForm
+from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, \
+    StaticContent, HelpText
 from plan_visual_django.services.general.color_utilities import ColorLib
+from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.services.general.user_services import get_current_user, can_access_plan, can_access_visual
-from plan_visual_django.services.visual.auto_layout import VisualAutoLayoutManager
-from plan_visual_django.services.visual.visual_settings import VisualSettings
+from plan_visual_django.services.auth.user_services import get_current_user, can_access_visual, \
+    CurrentUser
+from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 import logging
-
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import login, get_user_model
+from .forms import CustomUserCreationForm
 logger = logging.getLogger(__name__)
 
-@login_required
-@transaction.atomic
+User = get_user_model()
+
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Save the user
+            login(request, user)  # Log the user in (optional)
+            messages.success(request, 'Registration successful!')
+            return redirect('manage-plans')  # Redirect to your home page or dashboard
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
+
+
+def get_session_user_identifier(request):
+    """Returns a session-based identifier for anonymous users."""
+    if not request.session.session_key:
+        request.session.create()  # Ensure session exists
+    return f"session_{request.session.session_key}"
+
+
 def add_plan(request):
     """
-    Uploads an impoarts a new plan file and adds it and all the activities to the database.
+    Uploads and imports a new plan file and associates it with either the authenticated user
+    or the session if the user is anonymous.
 
-    :param request:
-    :return:
+    :param request: HttpRequest object
+    :return: HttpResponseRedirect or rendered template
     """
+    current_user = CurrentUser(request)
+    plan_user_attribute, plan_user_value = current_user.get_identifier()
+
     if request.method == "POST":
-        logger.debug(f"Uploading new plan...")
+        logger.debug(f"Uploading new plan for {'anonymous user' if current_user.is_anonymous() else current_user.user.username}...")
 
         plan_form = PlanForm(data=request.POST, files=request.FILES)
         if plan_form.is_valid():
-            # Save fields from form but don't commit so can modify other fields before committing.
             plan = plan_form.save(commit=False)
 
-            current_user = get_current_user(request, default_if_logged_out=True)
-            logger.debug(f"Uploading new plan for user {current_user.username}, plan is {plan.plan_name}")
+            logger.debug(f"Plan name is {plan.plan_name}")
 
-            # Check that user hasn't already added a file with this name. Count should be zero
-            count = Plan.objects.filter(user=current_user, file_name=plan.file.name).count()
-            if count > 0:
-                messages.error(request, f"Already uploaded a file called {plan.file.name}.  Record not added")
-            else:
-                # Uploaded file will be given a unique name - so need to store the name of the file the user chose.
-                plan.file_name = plan.file.name
-                plan.user = current_user
+            plan_exists = Plan.objects.filter(
+                **{plan_user_attribute: plan_user_value}, file_name=plan.file.name
+            ).exists()
 
-                # Now can save the record
-                plan.save()
-                logger.info(f"Plan record added for user {current_user}, name = {plan.file.name}")
-                logger.info(f"About to parse new plan for user {current_user}, name = {plan.file.name}")
+            if plan_exists:
+                messages.error(request, f"You have already uploaded a file called {plan.file.name}.")
+                return HttpResponseRedirect(reverse('manage-plans'))
 
-                # Have saved the record, now parse the plan and store activities.
-                # Only store fields which are part of the plan for the given file type.
+            # Assign the correct attribute dynamically (user or session key)
+            setattr(plan, plan_user_attribute, plan_user_value)
+            plan.file_name = plan.file.name
 
-                mapping_type = plan.file_type.plan_field_mapping_type
-                file_reader = ExcelXLSFileReader()
-
-                # Attempt to read and parse the plan, if an error occurs log it to messages and then abort transaction
-                # to ensure there is no plan record saved without correct activities.
+            # Use atomic transaction to ensure all operations succeed or none are committed
+            with transaction.atomic():
                 try:
-                    read_and_parse_plan(plan, mapping_type, file_reader)
-                except PlanParseError as e:
-                    messages.error(request, f"Plan parse error parsing {plan.file.path}, {e}")
-                    transaction.set_rollback(True)
-                except ExcelPlanSheetNotFound as e:
-                    messages.error(request, f"{e}")
-                    transaction.set_rollback(True)
-                else:
+                    plan.save()
+                    logger.info(f"Plan record added for {'anonymous user' if current_user.is_anonymous() else current_user.user.username}, file: {plan.file.name}")
+
+                    # Parse the plan after saving
+                    file_type, plan_field_mapping = FileTypes.get_file_type_by_name(plan.file_type_name)
+                    file_reader = ExcelXLSFileReader()
+
+                    read_and_parse_plan(plan, plan_field_mapping, file_reader)
+
                     messages.success(request, "New plan saved successfully")
+                except (PlanParseError, ExcelPlanSheetNotFound, SuppliedPlanIncompleteError) as e:
+                    messages.error(request, f"Error parsing plan {plan.file.path}: {e}")
+                    transaction.set_rollback(True)
+
         else:
-            messages.error(request, "Failed validation")
+            messages.error(request, "Plan validation failed. Please check the form.")
 
         return HttpResponseRedirect(reverse('manage-plans'))
+
     elif request.method == "GET":
-        form = PlanForm()
-        return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context={'form': form})
+        form = PlanForm(request=request)
+        context = {
+            "help_text": HelpText.get_help_text("add-plan"),
+            "form": form
+        }
+
+        return render(request, "plan_visual_django/pv_add_plan.html", context)
+
     else:
-        raise Exception("Unrecognised METHOD {request['METHOD']}")\
+        raise ValueError(f"Unrecognized METHOD {request.method}")
 
 
-@login_required
 @transaction.atomic  # Ensure that if there is an error either on uploading the plan or parsing the plan no records saved
 def re_upload_plan(request, pk):
     """
@@ -112,8 +142,13 @@ def re_upload_plan(request, pk):
     :param request:
     :return:
     """
+    current_user = CurrentUser(request)
+
     # plan_record needed either as instance to be updated (POST) or instance to populate form from (GET)
     plan_record = Plan.objects.get(id=pk)
+
+    if not current_user.has_access_to_object(plan_record):
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
 
     if request.method == "POST":
         logger.debug(f"Re-uploading plan id for user {request.user.username}, plan id is {pk}")
@@ -130,18 +165,17 @@ def re_upload_plan(request, pk):
             plan_record.file_name = plan_form.cleaned_data['file'].name
             plan_record.save()
 
-            current_user = get_current_user(request, default_if_logged_out=True)
-            logger.debug(f"File uploaded for user {current_user.username}, plan {plan_record.plan_name}")
-            logger.debug(f"Re-importing plan for user {current_user.username}, plan is {plan_record.plan_name}")
+            logger.debug(f"File uploaded for user {current_user.user.username}, plan {plan_record.plan_name}")
+            logger.debug(f"Re-importing plan for user {current_user.user.username}, plan is {plan_record.plan_name}")
 
             # Have saved the record, now parse the plan and store activities.
             # Only store fields which are part of the plan for the given file type.
 
-            mapping_type = plan_record.file_type.plan_field_mapping_type
+            file_type, plan_mapped_fields = FileTypes.get_file_type_by_name(plan_record.file_type_name)
             file_reader = ExcelXLSFileReader()
 
             try:
-                read_and_parse_plan(plan_record, mapping_type, file_reader, update_flag=True)
+                read_and_parse_plan(plan_record, plan_mapped_fields, file_reader, update_flag=True)
             except PlanParseError as e:
                 messages.error(request, f"Plan parse error parsing {plan_record.file.path}, {e}")
                 transaction.set_rollback(True)
@@ -156,24 +190,27 @@ def re_upload_plan(request, pk):
 
         return HttpResponseRedirect(reverse('manage-plans'))
     elif request.method == "GET":
-        if not can_access_plan(request.user, pk):
-            messages.error(request, "Plan does not exist or you do not have access")
-            return HttpResponseRedirect(reverse('manage-plans'))
-        else:
-            # Populate form with current plan details
-            form = ReUploadPlanForm()
-            context = {
-                'form': form,
-                'primary_heading': 'Re-upload File For Existing Plan',
-                'secondary_heading': plan_record.file_name
-            }
-            return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context=context)
+        # Populate form with current plan details
+        form = ReUploadPlanForm()
+        help_text = HelpText.get_help_text("re-upload-plan")
+        context = {
+            'help_text': help_text,
+            'form': form,
+            'primary_heading': 'Re-upload File For Existing Plan',
+            'secondary_heading': plan_record.file_name
+        }
+        return render(request=request, template_name="plan_visual_django/pv_add_plan.html", context=context)
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
-@login_required
 def add_visual(request, plan_id):
+    current_user = CurrentUser(request)
+    plan = Plan.objects.get(id=plan_id)
+
+    if not current_user.has_access_to_object(plan):
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
+
     if request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
         if visual_form.is_valid():
@@ -188,40 +225,45 @@ def add_visual(request, plan_id):
                 return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
 
             # Save fields from form but don't commit so can modify other fields before comitting.
-            visual_record = visual_form.save(commit=False)
+            with transaction.atomic():
+                # We need to successfully create the visual, timeline and swimlane records
+                visual_record = visual_form.save(commit=False)
 
-            # Add plan to record
-            plan = Plan.objects.get(id=plan_id)
-            visual_record.plan = plan
+                # Add plan to record
+                plan = Plan.objects.get(id=plan_id)
+                visual_record.plan = plan
 
-            # Now can save and commit the record
-            visual_record.save()
-            messages.success(request, "New visual for plan saved successfully")
+                # Now can save and commit the record
+                visual_record.save()
 
-            # Now create default versions of objects which are required as part of any visual activity
-            # This logic assumes that there will be certain default records in the database such as Color
-            # and PlotableFormat records.
+                # Now create default versions of objects which are required as part of any visual activity
+                # This logic assumes that there will be certain default records in the database such as Color
+                # and PlotableFormat records.
 
-            style_for_swimlane = visual_record.default_swimlane_plotable_style
+                style_for_swimlane = visual_record.default_swimlane_plotable_style
 
-            # First create default swimlane
-            default_swimlane = SwimlaneForVisual.objects.create(
-                plan_visual=visual_record,
-                swim_lane_name="(default)",
-                plotable_style=style_for_swimlane,
-                sequence_number=1,
-            )
+                visual_record.add_swimlanes_to_visual(
+                    style_for_swimlane,
+                    "Swimlane 1",
+                    "Swimlane 2",
+                    "Swimlane 3"
+                )
 
-        return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
+                TimelineForVisual.create_all_default_timelines(visual_record)
+                messages.success(request, "New visual for plan saved successfully")
+
+        return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
     elif request.method == "GET":
-        if not can_access_plan(request.user, plan_id):
+        if not current_user.has_access_to_object(plan):
             messages.error(request, "Plan does not exist or you do not have access")
             return HttpResponseRedirect(reverse('manage-plans'))
         else:
             plan = Plan.objects.get(id=plan_id)
 
             form = VisualFormForAdd(plan=plan)
+            help_text = HelpText.get_help_text("add-edit-visual")
             context = {
+                'help_text': help_text,
                 'add_or_edit': 'Add',
                 'form': form
             }
@@ -230,11 +272,12 @@ def add_visual(request, plan_id):
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
-@login_required
 def edit_visual(request, visual_id):
-    if not can_access_visual(request.user, visual_id):
-        messages.error(request, "Visual does not exist or you do not have access")
-        return HttpResponseRedirect(reverse('manage-plans'))
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
     else:
         instance = PlanVisual.objects.get(id=visual_id)
         plan_id = instance.plan.id
@@ -245,10 +288,11 @@ def edit_visual(request, visual_id):
                 visual_record = visual_form.save()
                 messages.success(request, "Visual updated successfully")
 
-            return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
+            return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
         elif request.method == "GET":
             form = VisualFormForEdit(instance=instance)
             context = {
+                'help_text': HelpText.get_help_text("add-edit-visual"),
                 'visual': instance,
                 'add_or_edit': 'Edit',
                 'form': form
@@ -258,27 +302,27 @@ def edit_visual(request, visual_id):
             raise Exception("Unrecognised METHOD {request['METHOD']}")
 
 
-@login_required
 def manage_plans(request):
-    user = get_current_user(request)
-    if user is None:
-        messages.error(request, "No user logged in")
-        return HttpResponseRedirect('/accounts/login')
-
-    plan_files = Plan.objects.filter(user=user)
+    # ToDo: Clean this up as some redundancy - user is worked out here and in get_user_plans()
+    current_user = CurrentUser(request)
+    plan_files = current_user.get_user_plans()
+    help_text = HelpText.get_help_text("manage-plans")
     context = {
+        'help_text': help_text,
         'primary_heading': "Manage Plans",
         'secondary_heading': "",
-        'user': user,
+        'user': current_user.user,
         'plan_files': plan_files
     }
     return render(request, "plan_visual_django/pv_manage_plans.html", context)
 
 
-@login_required
 def delete_plan(request, pk):
     # ToDo: refactor to be consistent in naming of pk and plan_id (and other examples)
-    if not can_access_plan(request.user, pk):
+    current_user = CurrentUser(request)
+    plan_record = Plan.objects.get(id=pk)
+
+    if not current_user.has_access_to_object(plan_record):
         messages.error(request, "Plan does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
     else:
@@ -320,10 +364,9 @@ def delete_visual(request, pk):
         else:
             messages.success(request, f"Record deleted for {visual_record.name}")
 
-        return HttpResponseRedirect(reverse('manage_visuals', args=[plan_id]))
+        return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
 
 
-@login_required
 def manage_visuals(request, plan_id):
     """
     View for managing the visuals associated with a given uploaded plan, for the current user.
@@ -335,9 +378,13 @@ def manage_visuals(request, plan_id):
     :param plan_id:
     :return:
     """
-    if not can_access_plan(request.user, plan_id):
-        messages.error(request, "Plan does not exist or you do not have access")
-        return HttpResponseRedirect(reverse('manage-plans'))
+    current_user = CurrentUser(request)
+
+    # plan_record needed either as instance to be updated (POST) or instance to populate form from (GET)
+    plan_record = Plan.objects.get(id=plan_id)
+
+    if not current_user.has_access_to_object(plan_record):
+        return HttpResponseForbidden("Plan does not exist or you do not have access")
     else:
         plan_record = Plan.objects.get(id=plan_id)
         visuals = plan_record.planvisual_set.all()
@@ -346,6 +393,7 @@ def manage_visuals(request, plan_id):
         plan_summary_data_display = [(name, value) for name, value in plan_summary_data.values()]
 
         context = {
+            'help_text': HelpText.get_help_text("manage-visuals"),
             'primary_heading': f"Manage Visuals For Plan: { plan_record.plan_name }",
             'secondary_heading': f"File: { plan_record.file_name }",
             'plan': plan_record,
@@ -384,7 +432,9 @@ def manage_swimlanes_for_visual(request, visual_id):
     visual = PlanVisual.objects.get(pk=visual_id)
     if request.method == 'GET':
         formset = VisualSwimlaneFormSet(instance=visual)
+
         context = {
+            'help_text': HelpText.get_help_text("manage-swimlanes-for-visual"),
             'visual': visual,
             'formset': formset
         }
@@ -420,7 +470,8 @@ def manage_timelines_for_visual(request, visual_id):
             "timeline_type",
             "timeline_name",
             "timeline_height",
-            "plotable_style",
+            "plotable_style_odd",
+            "plotable_style_even",
             "sequence_number",
         ),
         extra=1,
@@ -470,6 +521,7 @@ def manage_plotable_styles(request):
     if request.method == 'GET':
         formset = PlotableStyleFormset(instance=user,  form_kwargs=form_kwargs)
         context = {
+            'help_text': HelpText.get_help_text("manage-plotable-styles"),
             'primary_heading': "Manage Styles",
             'secondary_heading': "",
             'formset': formset
@@ -521,7 +573,6 @@ def create_milestone_swimlane(request, visual_id):
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
 
 
-@login_required
 def plot_visual(request, visual_id):
     """
     Screen for full dynamic editing of a visual for a given plan.
@@ -530,9 +581,12 @@ def plot_visual(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
         messages.error(request, "Visual does not exist or you do not have access")
-        return HttpResponseRedirect(reverse('manage-plans'))
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
 
     visual = PlanVisual.objects.get(id=visual_id)
 
@@ -540,6 +594,7 @@ def plot_visual(request, visual_id):
     visual_name = visual.name
 
     context = {
+        'help_text': HelpText.get_help_text("plot-visual"),
         'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
         'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
         'visual': visual,
@@ -625,6 +680,7 @@ def manage_colors(request):
             initial=initial
         )
         context = {
+            'help_text': HelpText.get_help_text("manage-colors"),
             'primary_heading': "Manage Colours",
             'secondary_heading': "",
             'formset': formset
@@ -684,15 +740,33 @@ def swimlane_actions(request, visual_id):
 
 
 class FileTypeListView(ListView):
+    """
+    Note have refactored this from when FileType was a DB model but now it is hard-coded.  Have just refactored the code
+    to work without actually accessing a model.  Still works well but in an ideal world would have replaced
+    with a more appropriate class based view.
+
+    ToDo: Re-visit refactor of FileTypeListView and assess whether there is a better non-model base class to use
+    """
     template_name = "plan_visual_django/pv_list_file_types.html"
-    model = FileType
+
+    def get_queryset(self):
+        return FileTypes.file_type_data.items()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['primary_heading'] = "Support File Types and Field Mappings"
 
-        mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
+        mapped_fields_for_file_types = []
+        for file_type, fields in context['object_list']:
+            # Prepare a list of tuples: (field_name, field) for every field in fields dictionary.
+            mapping_type_fields = [(field_name, field) for field_name, field in fields.items()]
+
+            mapped_fields_for_file_types.append((file_type, mapping_type_fields))
+
+        # mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
         context['ordered_mapped_fields'] = mapped_fields_for_file_types
+
+        context['help_text'] = HelpText.get_help_text("list-file-types")
 
         return context
 

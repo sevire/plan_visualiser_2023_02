@@ -1,15 +1,20 @@
 import os
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from typing import Dict
+
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase,override_settings
 from plan_visual_django.forms import PlanForm, ReUploadPlanForm
-from plan_visual_django.models import FileType, Plan, PlanActivity
+from plan_visual_django.models import Plan, PlanActivity
+from plan_visual_django.services.plan_file_utilities.plan_field import FileType, FileTypes, PlanFieldEnum, \
+    PlanInputFieldSpecification
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
 
 base_plan_file_name = os.path.join(excel_reimported_files_folder, "PV-Test-03.xlsx")
+
+User = get_user_model()
 
 @override_settings(
     MEDIA_ROOT=excel_reimported_files_folder
@@ -26,7 +31,7 @@ class TestFileReimport(TestCase):
         :return:
         """
         user = User.objects.get(pk=1)
-        file_type = FileType.objects.get(pk=1)
+        file_type_name: str = "excel-02-smartsheet-export-01"
 
         filename = base_plan_file_name
         with open(filename, 'rb') as file_data:
@@ -34,7 +39,7 @@ class TestFileReimport(TestCase):
             form_data = {
                 'plan_name': 'PV-Test-03',
                 'file': uploaded_file,
-                'file_type': file_type,
+                'file_type_name': file_type_name,
             }
             form_files = {
                 'file': uploaded_file,
@@ -47,7 +52,7 @@ class TestFileReimport(TestCase):
                 plan.file_name = base_plan_file_name
                 plan.save()
 
-                mapping_type = plan.file_type.plan_field_mapping_type
+                file_type, mapping_type = FileTypes.get_file_type_by_name(plan.file_type_name)
                 file_reader = ExcelXLSFileReader()
 
                 read_and_parse_plan(plan, mapping_type, file_reader)
@@ -62,7 +67,7 @@ class TestFileReimport(TestCase):
 
     def reimport_plan(self, plan_file_name):
         filename = os.path.join(excel_reimported_files_folder, plan_file_name)
-        with open(filename, 'rb') as file_data:
+        with (open(filename, 'rb') as file_data):
             uploaded_file = SimpleUploadedFile(plan_file_name, file_data.read())
             form_data = {
                 'file': uploaded_file,
@@ -77,10 +82,12 @@ class TestFileReimport(TestCase):
                 plan.file_name = plan_file_name
                 plan.save()
 
-                mapping_type = plan.file_type.plan_field_mapping_type
+                mapping_type: FileType
+                plan_field_mapping: Dict[PlanFieldEnum, PlanInputFieldSpecification]
+                mapping_type, plan_field_mapping = FileTypes.get_file_type_by_name(plan.file_type_name)
                 file_reader = ExcelXLSFileReader()
 
-                read_and_parse_plan(plan, mapping_type, file_reader, update_flag=True)
+                read_and_parse_plan(plan, plan_field_mapping, file_reader, update_flag=True)
                 pass
             else:
                 self.fail("Form invalid")

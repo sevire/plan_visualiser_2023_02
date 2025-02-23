@@ -2,18 +2,16 @@ import json
 import os.path
 from functools import partial
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils.crypto import get_random_string
-from plan_visual_django.models import Color, PlotableStyle, PlanFieldMappingType, PlanMappedField, PlanField, \
-    PlotableShapeType, PlotableShape, FileType, Font
+from plan_visual_django.models import Color, PlotableStyle, PlotableShapeType, PlotableShape, Font
 import logging
 
 logger = logging.getLogger(__name__)
 
 root = settings.BASE_DIR
 json_dir = 'plan_visual_django/fixtures'
-plan_fields = 'plan_fields.json'
 file_types = 'file_type.json'
 mapped_fields = 'mapped_fields.json'
 field_mapping_types = 'mapping_types.json'
@@ -23,36 +21,11 @@ standard_data_user = 'shared_data_user.json'
 shape_types = 'shape_types.json'
 shapes = 'shapes.json'
 
+UserModel = get_user_model()
+
 # Note - in the following data structures, order matters as records that are referenced as foreign keys must be added
 #        before the record which references them.
 initial_data_driver = [
-    {
-        "dumpdata_filename": 'plan_fields.json',
-        "model": PlanField,
-        "field_name_for_messages": "field_name"
-    },
-    {
-        "dumpdata_filename": 'mapping_types.json',
-        "model": PlanFieldMappingType,
-        "field_name_for_messages": "name"
-    },
-    {
-        "dumpdata_filename": 'mapped_fields.json',
-        "model": PlanMappedField,
-        "field_name_for_messages": "input_field_name",
-        "foreign_keys": [
-            "plan_field_mapping_type",
-            "mapped_field"
-        ]
-    },
-    {
-        "dumpdata_filename": 'file_type.json',
-        "model": FileType,
-        "field_name_for_messages": "file_type_name",
-        "foreign_keys": [
-            "plan_field_mapping_type",
-        ]
-    },
     {
         "dumpdata_filename": 'standard_colors.json',
         "model": Color,
@@ -95,7 +68,7 @@ initial_data_driver = [
 
 initial_users = [
     {
-        'username': settings.SHARED_DATA_USER,
+        'username': settings.SHARED_DATA_USER_NAME,
         'email': 'shared_data_user@genonline.co.uk',
         'superuser_flag': False,
         'id': 1,  # Id needs to be fixed only for shared_data_user as used as foreign key in some shared data items.
@@ -139,7 +112,7 @@ def add_initial_data(shared_data_user, delete_flag=False):
         add_initial_data_for_model(shared_data_user, initial_model_data, delete_flag)
 
 
-def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag):
+def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete_flag):
     """
     Sets up data in an empty database to 'bootstrap' the app so that required data records are in place when creating
     a new environment.
@@ -169,7 +142,7 @@ def add_initial_data_for_model(shared_user: User, data_driver: dict, delete_flag
         if delete_flag:
             print_status_partial(f"Attempting to delete record with pk={record['pk']}...")
             try:
-                record_for_deletion = model.objects.get()
+                record_for_deletion = model.objects.get(pk=record['pk'])
             except model.DoesNotExist as e:
                 print_status_partial(f"No record found pk={record['pk']}")
             else:
@@ -243,8 +216,8 @@ def create_initial_users(delete=False):
 
         # Check whether this user exists
         try:
-            user = User.objects.get(username=user_data["username"])
-        except User.DoesNotExist:
+            user = UserModel.objects.get(username=user_data["username"])
+        except UserModel.DoesNotExist:
             if delete:
                 # Nothing to do delete and that's fine.
                 print_status_partial(f"User ({[user_data['username']]}) does not exist, no need to delete")
@@ -257,9 +230,9 @@ def create_initial_users(delete=False):
 
                 # Choose function to use for creating user depending upon whether superuser is required or not
                 if user_data['superuser_flag'] is True:
-                    function = User.objects.create_superuser
+                    function = UserModel.objects.create_superuser
                 else:
-                    function = User.objects.create_user
+                    function = UserModel.objects.create_user
 
                 # Remove superuser flag and return flag from user_data as it's not a recognised keyword and we are using it as kwargs.
                 del user_data['superuser_flag']
@@ -267,6 +240,9 @@ def create_initial_users(delete=False):
                     del user_data['return']
 
                 print_status_partial(f"Calling {function.__name__}: {user_data}")
+
+                # Need to provide the SECRET_KEY for the project to be used when hashing the password
+                # (will also be used when authenticating)
                 user = function(**user_data)
                 print_status_partial(f"User ({user}) created")
                 if return_flag is True:

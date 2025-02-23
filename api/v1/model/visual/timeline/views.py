@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.v1.model.visual.timeline.serializer import ModelVisualTimelineListSerialiser, ModelVisualTimelineSerialiser
+from api.v1.model.visual.timeline.serializer import ModelVisualTimelineListSerialiser, \
+    ModelVisualTimelineReadSerialiser, ModelVisualTimelineUpdateSerialiser
 from plan_visual_django.models import PlanVisual, TimelineForVisual
 
 class TimelineListViewDispatcher(View):
@@ -18,7 +19,6 @@ class TimelineListViewDispatcher(View):
     def patch(request, *args, **kwargs):
         view = ModelVisualTimelineUpdateAPI.as_view()
         return view(request, *args, **kwargs)
-
 
 
 class ModelVisualTimelineListAPI(ListAPIView):
@@ -35,15 +35,16 @@ class ModelVisualTimelineAPI(APIView):
     @staticmethod
     def get(request, visual_id, timeline_seq_num):
         visual_timeline_queryset = PlanVisual.objects.get(id=visual_id).timelineforvisual_set.get(sequence_number=timeline_seq_num)
-        serializer = ModelVisualTimelineSerialiser(instance=visual_timeline_queryset)
+        serializer = ModelVisualTimelineReadSerialiser(instance=visual_timeline_queryset)
 
         response = serializer.data
 
         return JsonResponse(response, safe=False)
 
+
 class ModelVisualTimelineUpdateAPI(APIView):
     """
-    Updates some or all of multiple timeline records for a given visual.
+    Updates some or all of the multiple timeline records for a given visual.
 
     While the id (Primary Key) of each timeline will be provided, this endpoint will validate that each id sits within
     the supplied visual.
@@ -86,14 +87,13 @@ class ModelVisualTimelineUpdateAPI(APIView):
                     if instance.plan_visual_id != visual_id:
                         return Response({"error": f"Supplied timeline ids do not belong to supplied visual"},
                                         status=status.HTTP_400_BAD_REQUEST)
-                    serializer_for_current_record = ModelVisualTimelineSerialiser(instance, data=timeline_update_record, partial=True)
+                    serializer_for_current_record = ModelVisualTimelineUpdateSerialiser(instance, data=timeline_update_record, partial=True)
                     if serializer_for_current_record.is_valid(raise_exception=True):
                         serializer_for_current_record.save()
                 except TimelineForVisual.DoesNotExist:
                     return Response({"error": f"Object with id={timeline_update_record['id']} not found"}, status=status.HTTP_400_BAD_REQUEST)
 
             # For the updates which include sequnce number, apply updates to object but don't save until all changes made.
-            objects_with_sequence_number_updates = [TimelineForVisual.objects.get(id=record['id']) for record in updates_with_sequence_number]
             for timeline_update_record in updates_with_sequence_number:
                 try:
                     instance = TimelineForVisual.objects.get(id=timeline_update_record['id'])
@@ -103,14 +103,14 @@ class ModelVisualTimelineUpdateAPI(APIView):
                                         status=status.HTTP_400_BAD_REQUEST)
                     existing_item = TimelineForVisual.objects.filter(plan_visual_id=visual_id).filter(sequence_number=timeline_update_record["sequence_number"]).first()
                     if existing_item is None:
-                        serializer_for_current_record = ModelVisualTimelineSerialiser(instance, data=timeline_update_record, partial=True)
+                        serializer_for_current_record = ModelVisualTimelineReadSerialiser(instance, data=timeline_update_record, partial=True)
                         if serializer_for_current_record.is_valid(raise_exception=True):
                             serializer_for_current_record.save()
                     elif existing_item.id in updates_dict:
                         temp_sequence_number = -1  # Assign intermediate value
                         existing_item.sequence_number = temp_sequence_number
                         existing_item.save()
-                        serializer_for_current_record = ModelVisualTimelineSerialiser(instance, data=timeline_update_record, partial=True)
+                        serializer_for_current_record = ModelVisualTimelineReadSerialiser(instance, data=timeline_update_record, partial=True)
                         if serializer_for_current_record.is_valid(raise_exception=True):
                             serializer_for_current_record.save()
                     else:

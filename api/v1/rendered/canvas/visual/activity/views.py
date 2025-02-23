@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
-from plan_visual_django.models import PlanVisual, Plan
-from plan_visual_django.services.visual.renderers import CanvasRenderer
+from plan_visual_django.models import PlanVisual
+from plan_visual_django.services.visual.rendering.renderers import CanvasRenderer
 
 
 class RenderedCanvasVisualActivityListAPI(APIView):
@@ -27,6 +27,7 @@ class RenderedCanvasVisualActivityListAPI(APIView):
             renderer = CanvasRenderer()
             rendered_plotables = renderer.render_from_iterable(visual_activity_plotables)
             return JsonResponse(rendered_plotables, safe=False)
+
 
 class RenderedCanvasVisualActivityAPI(APIView):
     """

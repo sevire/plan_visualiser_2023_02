@@ -1,164 +1,62 @@
-import logging
-
+import markdown
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.services.general.date_utilities import DatePlotter
+from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
-from plan_visual_django.services.visual.plotables import get_plotable
-from plan_visual_django.services.visual.visual_elements import Timeline
+from plan_visual_django.services.visual.rendering.plotables import get_plotable
+from plan_visual_django.services.visual.model.timelines import Timeline
+from django.contrib.auth.models import AbstractUser
 
-logging.getLogger()
+import logging
 
-
-class PlanField(models.Model):
-    """
-    Includes an entry for each field which is required (or optional) for each activity within the plan.
-
-    The field names defined here need map directly on to the variable names for each field used within the app, so
-    these need to be maintained to be consistent with the code.
-
-    To do this I've restricted the choices for the field, but allowed other attributes to be entered.
-    """
-
-    # Classes to support Enums which drive Choices in the model and can be used in code. Neat!
-    class PlanFieldName(models.TextChoices):
-        STICKY_UID = "unique_sticky_activity_id", True, 'Unique id for activity'
-        NAME = "activity_name", True, 'Name of activity'
-        DURATION = "duration", False, 'Work effort for activity (not stored, used to work out whether this is a milestone)'
-        MILESTONE_FLAG = "milestone_flag", True, 'Is this activity a milestone'
-        START = "start_date", True, 'Start date of activity'
-        END = "end_date", True, 'End date of activity'
-        LEVEL = "level", True, 'The level in the hierarchy of the an activity'
+logger = logging.getLogger()
 
 
-        """
-        Controls creation of a PlanFieldName object so that it stores the 
-        """
-        def __new__(cls, value, is_stored):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.is_stored = is_stored
-            return obj
+class CustomUser(AbstractUser):
+    """Custom user model with unique email and optional username."""
+    email = models.EmailField(unique=True, blank=True, null=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        validators=[UnicodeUsernameValidator()]
+    )  # Optional username
 
-    class StoredPlanFieldType(models.TextChoices):
-        INTEGER = "INT", "Integer"
-        STRING = "STR", "String"
-        DATE = "DATE", "Date (without time)"
-        BOOL = "BOOL", "Boolean"
-
-    field_name = models.CharField(max_length=50, choices=PlanFieldName.choices, help_text="field name used in common datastructure for plan")
-    field_type = models.CharField(max_length=20, choices=StoredPlanFieldType.choices)
-    field_description = models.TextField(max_length=1000)
-    required_flag = models.BooleanField(default=True)
-    sort_index = models.IntegerField()
-
-    class Meta:
-        ordering = ('sort_index', )
-
-    def get_plan_field_name(self):
-        return self.PlanFieldName(self.field_name)
-
-    def get_stored_plan_field_type(self):
-        return self.StoredPlanFieldType(self.field_type)
-    def __str__(self):
-        return f'{self.field_name}:{self.field_type}'
-
-    @staticmethod
-    def plan_headings(include_not_stored=False):
-        headings = [field.field_name for field in PlanField.objects.all() if field.get_plan_field_name().is_stored is True]
-        return headings
-
-
-class PlanFieldMappingType(models.Model):
-    """
-    Schema which defines how input fields from a plan are mapped to stored fields for that plan.
-    In practice there will be a PlanMappedField record for every input field which references
-    the appropriate mapping type as a foreign key.
-    """
-    name = models.CharField(max_length=50)
-    description = models.TextField(max_length=1000)
+    # Set email as the primary identifier for authentication
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []  # Username is no longer required
 
     def __str__(self):
-        return self.name
-
-    def is_complete(self):
-        """
-        Checks whether all the compulsoary fields have a mapping.
-        :return:
-        """
-        mapped_compulsory_fields = self.planmappedfield_set.filter(mapped_field__required_flag=True)
-        expected_compulsory_fields = PlanField.objects.filter(required_flag=True)
-
-        mapped_count = mapped_compulsory_fields.count()
-        expected_count = expected_compulsory_fields.count()
-
-        return mapped_count == expected_count
-
-
-class PlanMappedField(models.Model):
-    class PlanFieldType(models.TextChoices):
-        INTEGER = "INT", "Integer"
-        FLOAT = "FLOAT", "Decimal Number"
-        STRING = "STR", "String"
-        STRING_OR_INT = "STR_OR_INT", "String or integer"
-        STRING_nnd = "STR_nnd", "String of form nnd where nn is an integer value"
-        STRING_nn_Days = "STR_duration_msp", "String representing duration from MSP project in Excel"
-        STRING_DATE_DMY_01 = "STR_DATE_DMY_01", "String of form dd MMM YYYY"
-        STRING_DATE_DMY_02 = "STR_DATE_DMY_02", "String of form dd MMMMM YYYY HH:MM"
-        STRING_MILESTONE_YES_NO = "STR_MSTONE_YES_NO", "Milestone flag as string, Yes or No"
-        DATE = "DATE", "Date (without time)"
-
-    plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
-    mapped_field = models.ForeignKey(PlanField, on_delete=models.CASCADE)
-    input_field_name = models.CharField(max_length=50)
-    input_field_type = models.CharField(max_length=20, choices=PlanFieldType.choices)
-
-    def get_plan_field_type(self):
-        return self.PlanFieldType(self.input_field_type)
-
-    def __str__(self):
-        return f'{self.plan_field_mapping_type}:{self.mapped_field} -> {self.input_field_name}:{self.input_field_type}'
-
-
-class FileType(models.Model):
-    """
-    Each plan is assigned a given file type, which encapsulates two properties of the plan, which are:
-    - What is the technical format that the plan is provided in, which is needed in order to dispatch the file
-      to the right logic to read it correctly.
-    - What is the mapping schema for the plan, which maps input fields to the fields needed in the app which
-      define the plan.
-
-    NOTE: At the time of writing we only support Excel input files so we only need to store the mapping type
-          for now.
-
-    The File Type describes the technical format within which the plan data is expected to be provided for a given plan.
-    """
-    file_type_title = models.CharField(max_length=50)  # Of form this_is_a_title - used in plan reading logic
-    file_type_name = models.CharField(max_length=50)
-    file_type_description = models.TextField(max_length=1000)
-    plan_field_mapping_type = models.ForeignKey(PlanFieldMappingType, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.file_type_name
+        # Use username if available, otherwise fallback to email
+        return self.username if self.username else self.email
 
 
 class Plan(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    # Upload files into folder under MEDIA_ROOT
+    """
+    Upload files into folder under MEDIA_ROOT
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     plan_name = models.CharField(max_length=100)  # Name for this plan - independent of file name.
     file_name = models.CharField(max_length=100)  # Name of file uploaded (may be stored with different name to make unique)
     file = models.FileField(upload_to="plan_files", null=True)  # Includes a File object pointing to the actual file to be parsed
-    file_type = models.ForeignKey(FileType, on_delete=models.CASCADE)
+    file_type_name = models.CharField(max_length=50, choices=FileType.as_choices())
+    session_id = models.CharField(max_length=50, null=True, blank=True)  # Stores anonymous user session ID
 
     class Meta:
         constraints: list[UniqueConstraint] = \
             [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.plan_name}({self.file_name}:{self.file_type})'
+        return f'{self.plan_name}({self.file_name}:{self.file_type_name})'
+
+    def is_anonymous(self):
+        """Returns True if the plan is linked to a session instead of a user."""
+        return self.user is None and self.session_id is not None
 
     def get_plan_summary_data(self):
         """
@@ -183,6 +81,7 @@ class PlanActivity(models.Model):
 
     class Meta:
         verbose_name_plural = " Plan activities"
+        unique_together = (('plan', 'unique_sticky_activity_id'),)
 
     def __str__(self):
         return f'{self.activity_name:.20}'
@@ -254,7 +153,7 @@ class PlotableStyle(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.style_name}, fill:{self.fill_color.name}, line:{self.line_color.name}'
+        return f'{self.style_name}'
 
     def to_dict(self):
         """
@@ -359,6 +258,9 @@ class PlanVisual(models.Model):
     default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")
     default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
     default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
+    default_timeline_height = models.FloatField(default=20)
+    default_timeline_plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_odd")
+    default_timeline_plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_even", null=True)
 
     class Meta:
         unique_together = ["plan", "name"]
@@ -398,7 +300,7 @@ class PlanVisual(models.Model):
         activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
         activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
         activity_record['text_flow'] = visual_activity.get_text_flow()
-        activity_record['plotable_style'] = visual_activity.plotable_style.to_dict()
+        activity_record['plotable_style'] = visual_activity.plotable_style_odd.to_dict()
 
         # Now add the plan activity record data for this activity
         activity_record['activity_name'] = plan_activity.activity_name
@@ -461,7 +363,7 @@ class PlanVisual(models.Model):
         earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
         latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
 
-        timeline_records = self.timelineforvisual_set.all()
+        timeline_records = self.timelineforvisual_set.filter(enabled=True)
 
         # Create dictionary of timeline objects based on timeline data from database
         self.timeline_objects = {timeline.timeline_name: Timeline.from_data_record(earliest_start_date, latest_end_date, timeline) for timeline in timeline_records}
@@ -491,9 +393,9 @@ class PlanVisual(models.Model):
         :return:
         """
         if sequence_num is None:
-            timelines = self.timelineforvisual_set.all()
+            timelines = self.timelineforvisual_set.filter(enabled=True)
         else:
-            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num)
+            timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num, enabled=True)
         timeline_height = timelines.aggregate(total_sum=Sum('timeline_height'))['total_sum'] or 0
 
         return timeline_height
@@ -513,14 +415,20 @@ class PlanVisual(models.Model):
         if sequence_number:
             timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_number)
         else:
-            timelines = self.timelineforvisual_set.all()
+            timelines = self.timelineforvisual_set.filter(enabled=True)
 
         timeline_plotables = [timeline.get_plotables() for timeline in timelines]
         return timeline_plotables
 
     def get_swimlanes(self, visible_only_flag=True, sequence_number=None):
         """
-        Finds all the swimlanes attached to this visual which have at least one activity in them.
+        Finds all swimlanes defined for this visual which meet the specific criteria.
+
+        Specifically:
+        - If visible_only_flag is True then only include swimlanes which have at least one enabled activity
+          attached to the swimlane.
+        - If sequence_number is not None, then include all swimlanes which have a sequence number less than the
+          specified one.  Generally used during plotting when working out the vertical position of a swimlane.
 
         :return:
         """
@@ -535,6 +443,9 @@ class PlanVisual(models.Model):
             requested_swimlanes = swimlanes
 
         return requested_swimlanes
+
+    def get_swimlane_by_sequence_number(self, sequence_number):
+        return self.swimlaneforvisual_set.get(sequence_number=sequence_number)
 
     def get_swimlane_plotables(self, sequence_number=None):
         """
@@ -562,6 +473,56 @@ class PlanVisual(models.Model):
         visual_activities = [visual_activity.get_plotable() for visual_activity in self.visualactivity_set.filter(enabled=True)]
 
         return visual_activities
+
+    def get_max_swimlane_sequence_number(self):
+        """
+        Finds the highest sequence number for all of the swimlanes that have been added to this visual.
+
+        :return:
+        """
+        max_sequence = self.swimlaneforvisual_set.aggregate(Max('sequence_number'))['sequence_number__max']
+        if max_sequence is None:
+            max_sequence = 0
+        return max_sequence
+
+    def get_default_swimlane(self):
+        """
+        When a new activity is added we need to select a swimlane to add it to.  If it isn't provided then we choose
+        a default one.  As the rules for choosing the default one may change this method will encapsulate the logic for
+        selecting it.
+
+        For now - just hard code to be the swimlane with the lowest sequence number.
+
+        If there are no swimlanes for the visual then create a default one.
+        :return:
+        """
+        swimlane_for_sequence_number = self.get_swimlane_by_sequence_number(sequence_number=1)
+        if swimlane_for_sequence_number is None:
+            self.add_swimlanes_to_visual(self.default_swimlane_plotable_style)
+
+            # Should be a swimlane now so try again
+            swimlane_for_sequence_number = self.get_swimlane_by_sequence_number(sequence_number=1)
+        return swimlane_for_sequence_number
+
+    def add_swimlanes_to_visual(self, plotable_style, *args):
+        """
+        Creates a new swimlane for each of the swimlane names provided within args, using the provided
+        style.  While in most use cases there won't be any existing swimlanes when this is called, ensure
+        that we continue the sequence numbers from any existing records.
+
+        :param args: list of swimlane names
+        :return:
+        """
+        highest_sequence_number_for_visual = self.get_max_swimlane_sequence_number()
+
+        for swimlane_sequence_num_increment, swimlane_name in enumerate(args, start=1):
+            sequence_number = highest_sequence_number_for_visual + swimlane_sequence_num_increment
+            SwimlaneForVisual.objects.create(
+                plan_visual=self,
+                swim_lane_name=swimlane_name,
+                plotable_style=plotable_style,
+                sequence_number=sequence_number,
+            )
 
     def get_swimlanesforvisual_dimensions(self, sequence_number=None):
         """
@@ -627,8 +588,10 @@ class TimelineForVisual(models.Model):
     timeline_type = models.CharField(max_length=20, choices=TimelineLabelType.choices)
     timeline_name = models.CharField(max_length=50)
     timeline_height = models.FloatField(default=10)
-    plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE)
+    plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="plotable_style_odd")
+    plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="plotable_style_even", null=True, blank=True)
     sequence_number = models.IntegerField()
+    enabled = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [
@@ -666,6 +629,43 @@ class TimelineForVisual(models.Model):
         collection_as_plotables = [element.plot_element() for element in collection.collection]
 
         return collection_as_plotables
+
+    @classmethod
+    def create_default_timeline(cls, visual: PlanVisual, timeline_type: TimelineLabelType, enabled=False):
+        """
+        Create a timeline record of given type with default settings.
+        :param timeline_type:
+        :param visual:
+        :return:
+        """
+        highest_sequence_number = TimelineForVisual.objects.filter(plan_visual=visual).aggregate(Max('sequence_number'))['sequence_number__max']
+        if highest_sequence_number is None:
+            highest_sequence_number = 0
+        cls.objects.create(
+            plan_visual=visual,
+            timeline_type=timeline_type.name,
+            timeline_height=visual.default_timeline_height,
+            timeline_name=timeline_type.value,
+            plotable_style_odd=visual.default_timeline_plotable_style_odd,
+            plotable_style_even=visual.default_timeline_plotable_style_even,
+            sequence_number=highest_sequence_number + 1,
+            enabled=enabled
+        )
+
+    @classmethod
+    def create_all_default_timelines(cls, visual: PlanVisual):
+        """
+        Creates an instance of each timeline type with default settings, in a default sequence.
+
+        :return:
+        """
+        for timeline in TimelineForVisual.TimelineLabelType:
+
+            if timeline == "MONTHS":
+                enabled = True
+            else:
+                enabled = False
+            cls.create_default_timeline(visual=visual, timeline_type=TimelineForVisual.TimelineLabelType[timeline], enabled=enabled)
 
 
 class SwimlaneForVisual(models.Model):
@@ -944,8 +944,29 @@ class StaticContent(models.Model):
     content = models.TextField()
 
 
+class HelpText(models.Model):
+    slug = models.SlugField(max_length=100, unique=True)  # Unique slug for identification
+    title = models.CharField(max_length=200, blank=True, null=True)  # Optional title
+    content = models.TextField()  # Markdown-formatted help content
+    updated_at = models.DateTimeField(auto_now=True)  # Track last edited time
+
+    @classmethod
+    def get_help_text(cls, slug):
+        """
+        Fetch and parse help text by slug.
+        """
+        try:
+            help_entry = cls.objects.get(slug=slug)
+            help_entry.content = markdown.markdown(help_entry.content)  # Parse Markdown to HTML
+            return help_entry
+        except cls.DoesNotExist:
+            return None
+
+    def __str__(self):
+        return self.title if self.title else self.slug
+
+
 # Defaults to use when creating a new visual before any formatting or layout has been done.
-DEFAULT_SWIMLANE_NAME = "(default)"
 DEFAULT_VERTICAL_POSITIONING_VALUE = 1
 DEFAULT_HEIGHT_IN_TRACKS = 1
 DEFAULT_TEXT_HORIZONTAL_ALIGNMENT = VisualActivity.HorizontalAlignment.LEFT

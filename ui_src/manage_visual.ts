@@ -15,6 +15,7 @@ import {highlight_activity, plot_visual} from "./plot_visual";
 import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
+import {clearElement, createDropdown, populateDropdown} from "./widgets";
 
 export async function createPlanTree() {
   // We are going to create a tree of elements to represent the hierarchical plan structure.  We will iterate through
@@ -193,7 +194,7 @@ async function add_modify_text_flow_event_handler(flow_direction: string, activi
 // ====================================================================================================
 // Below are functions need for dispatch table to set values for each field in the activity data panel
 // ====================================================================================================
-function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
+function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean): void {
   // Set to tick for true and cross for false.
   TdRef.textContent = '';
   const iElement = document.createElement('i');
@@ -205,10 +206,18 @@ function set_boolean_value(TdRef: HTMLTableCellElement, value:boolean) {
   TdRef.appendChild(iElement);
 }
 
+function set_text_field(tdRef: HTMLTableCellElement, value: string): void {
+  // It's just a text field so set text-truncate and set value
+  tdRef.classList.add("text-truncate")
+  tdRef.textContent = value
+}
+
 // Dispatch table used to set values of different types for each activity field
 // NOTE: This is work in progress
 const NonEditableDispatchTable: Record<string, Function> = {
-  'milestone_flag': set_boolean_value
+  'milestone_flag': set_boolean_value,
+  'activity_name': set_text_field,
+  'unique_sticky_activity_id': set_text_field
 };
 
 function add_button_group(td_element: Element, aria_label: string) {
@@ -371,140 +380,58 @@ function select_for_edit(activity_id:string, clear=false) {
         add_text_flow_buttons(td_element, activity, 'Text Flow Control')
       } else if (key === "plotable_shape") {
         // Start by clearing the element before updating it for this activity.
-        td_element.textContent = '';
+        clearElement(td_element as HTMLElement)
 
-        let shape_names: [[string, number]] = (window as any).shape_data.map((obj: any) => [obj.name, obj.id]);
-        // Add div for Bootstrap Dropdown
-        const dropdownDiv = document.createElement("div")
-        dropdownDiv.classList.add("dropdown")
-        td_element.appendChild(dropdownDiv)
+        let button: HTMLButtonElement = createDropdown(
+          td_element as HTMLElement,
+          activity.visual_data[key].name
+        );
 
-        // Add button to Dropdown
-        const dropdownButton = document.createElement("button")
-        dropdownButton.setAttribute("type", "button")
-        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
-        dropdownButton.setAttribute("aria-expanded", "false")
-        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
-        dropdownButton.textContent = "Change Shape"
-        dropdownDiv.appendChild(dropdownButton)
-
-        // Add dropdown menu to Dropdown
-        const dropdownMenu = document.createElement("ul")
-        dropdownMenu.classList.add("dropdown-menu")
-        dropdownDiv.appendChild(dropdownMenu)
-
-        // Add dropdown entry for each swimlane associated with this visual
-        shape_names.forEach((shape_name: [string, number]) => {
-          const shapeEntry = document.createElement('li');
-          shapeEntry.classList.add("dropdown-item")
-          shapeEntry.setAttribute("href", "#")
-          shapeEntry.setAttribute("id", String(shape_name[1]))
-          shapeEntry.textContent = shape_name[0];
-
-          shapeEntry.addEventListener('click', async function (event) {
-            console.log(`New shape selected for element, ${event.target}`)
-            const targetSelectedElement = event.target as HTMLLIElement;
-            const shape_id = parseInt(targetSelectedElement.id);
-            console.log(`Shape selected: text:${targetSelectedElement.textContent}, id:${shape_id}`);
-
-            await update_shape_for_activity_handler(activity_id, shape_id);
-            await get_visual_activity_data((window as any).visual_id)
-            plot_visual()
-          })
-          dropdownMenu.appendChild(shapeEntry);
-        });
+        populateDropdown(
+          button,
+          (window as any).shape_data.map((obj: any) => [obj.name, obj.id]),
+          async (shape_id: number) => {
+                     await update_shape_for_activity_handler(activity_id, shape_id);
+                     await get_visual_activity_data((window as any).visual_id)
+                     plot_visual()
+                 }
+       );
       } else if (key === "plotable_style") {
         // Start by clearing the element before updating it for this activity.
-        td_element.textContent = '';
+        clearElement(td_element as HTMLElement)
 
-        let style_names: [[string, number]] = (window as any).style_data.map((obj: any) => [obj.style_name, obj.id]);
+        let button: HTMLButtonElement = createDropdown(
+          td_element as HTMLElement,
+          activity.visual_data[key].style_name
+        );
 
-        // Add div for Bootstrap Dropdown
-        const dropdownDiv = document.createElement("div")
-        dropdownDiv.classList.add("dropdown")
-        td_element.appendChild(dropdownDiv)
-
-        // Add button to Dropdown
-        const dropdownButton = document.createElement("button")
-        dropdownButton.setAttribute("type", "button")
-        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
-        dropdownButton.setAttribute("aria-expanded", "false")
-        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
-        dropdownButton.textContent = "Change Style"
-        dropdownDiv.appendChild(dropdownButton)
-
-        // Add dropdown menu to Dropdown
-        const dropdownMenu = document.createElement("ul")
-        dropdownMenu.classList.add("dropdown-menu")
-        dropdownDiv.appendChild(dropdownMenu)
-
-        // Add dropdown entry for each plotable_style
-        console.log(`Adding style names in change style dropdown ${style_names}`)
-        style_names.forEach((style_name: [string, number]) => {
-          console.log(`Adding dropdown item for ${style_name}`)
-
-          const styleEntry = document.createElement('li');
-          styleEntry.classList.add("dropdown-item")
-          styleEntry.setAttribute("href", "#")
-          styleEntry.setAttribute("id", String(style_name[1]))
-          styleEntry.textContent = style_name[0];
-
-          styleEntry.addEventListener('click', async function (event) {
-            console.log(`New style selected for element, ${event.target}`)
-            const targetSelectedElement = event.target as HTMLLIElement;
-            const style_id = parseInt(targetSelectedElement.id);
-            console.log(`Shape selected: text:${targetSelectedElement.textContent}, id:${style_id}`);
-
-            await update_style_for_activity_handler(activity_id, style_id);
-            await get_visual_activity_data((window as any).visual_id)
-            plot_visual()
-          })
-          dropdownMenu.appendChild(styleEntry);
-        });
+        populateDropdown(
+          button,
+          (window as any).style_data.map((obj: any) => [obj.style_name, obj.id]),
+          async (style_id: number) => {
+                     await update_style_for_activity_handler(activity_id, style_id);
+                     await get_visual_activity_data((window as any).visual_id)
+                     plot_visual()
+                 }
+       );
       } else if (key === "swimlane") {
         // Start by clearing the element before updating it for this activity.
-        td_element.textContent = "";
+        clearElement(td_element as HTMLElement)
 
-        let swimlane_names: [[string, number]] = (window as any).swimlane_data.map((obj: any) => [obj.swim_lane_name, obj.id]);
-        // Add div for Bootstrap Dropdown
-        const dropdownDiv = document.createElement("div")
-        dropdownDiv.classList.add("dropdown")
-        td_element.appendChild(dropdownDiv)
+        let button: HTMLButtonElement = createDropdown(
+          td_element as HTMLElement,
+          activity.visual_data[key].swim_lane_name
+        );
 
-        // Add button to Dropdown
-        const dropdownButton = document.createElement("button")
-        dropdownButton.setAttribute("type", "button")
-        dropdownButton.setAttribute("data-bs-toggle", "dropdown")
-        dropdownButton.setAttribute("aria-expanded", "false")
-        dropdownButton.classList.add("btn", "btn-sm", "btn-secondary", "dropdown-toggle")
-        dropdownButton.textContent = "Change Swimlane"
-        dropdownDiv.appendChild(dropdownButton)
-
-        // Add dropdown menu to Dropdown
-        const dropdownMenu = document.createElement("ul")
-        dropdownMenu.classList.add("dropdown-menu")
-        dropdownDiv.appendChild(dropdownMenu)
-
-        // Add dropdown entry for each swimlane associated with this visual
-        swimlane_names.forEach((swimlane_name: [string, number]) => {
-          const swimlaneEntry = document.createElement('li');
-          swimlaneEntry.classList.add("dropdown-item")
-          swimlaneEntry.setAttribute("href", "#")
-          swimlaneEntry.setAttribute("id", String(swimlane_name[1]))
-          swimlaneEntry.textContent = swimlane_name[0];
-
-          swimlaneEntry.addEventListener('click', async function (event) {
-            console.log(`New swimlane selected for element, ${event.target}`)
-            const targetSelectedElement = event.target as HTMLLIElement;
-            const swimlane_id = parseInt(targetSelectedElement.id);
-            console.log(`Swimlane selected: text:${targetSelectedElement.textContent}, id:${swimlane_id}`);
-
-            await update_swimlane_for_activity_handler(activity_id, swimlane_id);
-            await get_visual_activity_data((window as any).visual_id)
-            plot_visual()
-          })
-          dropdownMenu.appendChild(swimlaneEntry);
-        });
+        populateDropdown(
+          button,
+          (window as any).swimlane_data.map((obj: any) => [obj.swim_lane_name, obj.id]),
+          async (swimlane_id: number) => {
+                     await update_swimlane_for_activity_handler(activity_id, swimlane_id);
+                     await get_visual_activity_data((window as any).visual_id)
+                     plot_visual()
+                 }
+       );
       } else {
         td_element.textContent = activity_field_val;
       }

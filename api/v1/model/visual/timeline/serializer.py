@@ -9,8 +9,14 @@ class ModelVisualTimelineListSerialiser(ModelSerializer):
         depth= 2
 
 
-class ModelVisualTimelineSerialiser(ModelSerializer):
+class ModelVisualTimelineReadSerialiser(ModelSerializer):
     class Meta:
         model = TimelineForVisual
         fields = "__all__"
         depth= 2
+
+
+class ModelVisualTimelineUpdateSerialiser(ModelSerializer):
+    class Meta:
+        model = TimelineForVisual
+        fields = "__all__"

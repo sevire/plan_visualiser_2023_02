@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser, \
     ModelVisualActivitySerialiserForUpdate
-from plan_visual_django.models import (PlanVisual, VisualActivity, SwimlaneForVisual, DEFAULT_SWIMLANE_NAME,
+from plan_visual_django.models import (PlanVisual, VisualActivity,
                                        DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
     DEFAULT_TEXT_HORIZONTAL_ALIGNMENT)
 
@@ -124,24 +124,10 @@ class ModelVisualActivityAPI(APIView):
                 initial_plotable_shape = visual.default_activity_shape
                 initial_plotable_style = visual.default_activity_plotable_style
 
-            # Check whether there is already a default swimlane for this visual.  If not create one.
-            try:
-                initial_swimlane = SwimlaneForVisual.objects.get(
-                    plan_visual=visual,
-                    swim_lane_name=DEFAULT_SWIMLANE_NAME
-                )
-            except SwimlaneForVisual.DoesNotExist:
-                # Work out the maximum sequence number and choose the next one.
-                max_value = SwimlaneForVisual.objects.filter(plan_visual_id=visual_id).aggregate(Max('sequence_number'))
-                new_seq_num = max_value['sequence_number__max'] + 1
 
-                initial_swimlane = SwimlaneForVisual(
-                    plan_visual=visual,
-                    swim_lane_name=DEFAULT_SWIMLANE_NAME,
-                    sequence_number=new_seq_num,
-                    plotable_style=visual.default_swimlane_plotable_style
-                )
-                initial_swimlane.save()
+            # Check whether there is already a default swimlane for this visual.  If not create one.
+            initial_swimlane = visual.get_default_swimlane()
+
 
             new_visual_activity = VisualActivity(
                 visual=visual,

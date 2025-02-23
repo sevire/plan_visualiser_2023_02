@@ -1,4 +1,7 @@
 import logging
+
+from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldEnum, PlanFieldNameEnum
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,11 +36,10 @@ def update_plan_activity(plan, activity, action):
             for visual_activity in visual_activities:
                 visual_activity.delete()
     else:
-        from plan_visual_django.models import PlanField
-        if PlanField.PlanFieldName.MILESTONE_FLAG in activity:
-            milestone_flag = activity[PlanField.PlanFieldName.MILESTONE_FLAG]
+        if PlanFieldNameEnum.MILESTONE_FLAG.value in activity:
+            milestone_flag = activity[PlanFieldNameEnum.MILESTONE_FLAG.name]
         else:
-            if activity[PlanField.PlanFieldName.DURATION] == 0:
+            if activity[PlanFieldNameEnum.DURATION.value] == 0:
                 milestone_flag = True
             else:
                 milestone_flag = False
@@ -156,15 +158,29 @@ def extract_summary_plan_info(plan) -> dict:
     from plan_visual_django.models import PlanActivity
     activities = PlanActivity.objects.filter(plan=plan)
     milestones = activities.filter(milestone_flag=True)
-    earliest_start_date = activities.order_by('start_date').first().start_date
-    latest_end_date = activities.order_by('-end_date').first().end_date
-    duration = latest_end_date - earliest_start_date
-    levels = activities.values('level').distinct().count()
+
+    num_activities = activities.count()
+    num_milestones = milestones.count()
+
+    if num_activities == 0:
+        earliest_start_date = None
+        latest_end_date = None
+        duration = None
+        levels = None
+    else:
+        earliest_activity = activities.order_by('start_date').first()
+        earliest_start_date = earliest_activity.start_date if earliest_activity else None
+
+        latest_activity = activities.order_by('-end_date').first()
+        latest_end_date = latest_activity.end_date if latest_activity else None
+
+        duration = latest_end_date - earliest_start_date
+        levels = activities.values('level').distinct().count()
 
     return {
         'plan_file_name': ("Last uploaded file name", plan.file_name),
-        'number_of_activities': ("# Activities", activities.count()),
-        'number_of_milestones': ("# Milestones", milestones.count()),
+        'number_of_activities': ("# Activities", num_activities),
+        'number_of_milestones': ("# Milestones", num_milestones),
         'earliest_start_date': ("Earliest date", earliest_start_date),
         'latest_end_date': ("Latest date", latest_end_date),
         'duration': ("Plan Duration", duration),

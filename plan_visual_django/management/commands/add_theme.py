@@ -44,11 +44,11 @@ class Command(BaseCommand):
     - Create a range of styles depending upon how many seed colors were provided.
 
     """
-    help = "Add set of theme colors and styles based on seed color"
+    help = "Add set of theme colors and styles based on up to three seed colours"
 
     def add_arguments(self, parser):
         parser.add_argument('theme-name', type=str, help='Theme name')
-        parser.add_argument('colors', nargs='+', type=str, help='Hex RGB colors')
+        parser.add_argument('colors', nargs=3, type=str, help='Hex RGB colors')
 
     def handle(self, *args, **options):
         theme_name = options['theme-name']
@@ -57,6 +57,6 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f"You supplied {len(colors)} colors - max of 3 allowed"))
             return
 
-        theme=ThemeManager(theme_name, 7, *colors)
+        theme = ThemeManager(theme_name, 7, *colors)
         theme.display_theme()
         theme.add_to_database()

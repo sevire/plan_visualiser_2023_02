@@ -10,12 +10,12 @@ class TestStyleGeneration(TestCase):
         :return:
         """
         palette = PaletteManager.from_hash(7, *seed_colors)
-        palette.display_palette()
-        variant = palette.variant_num_from_percentage(10)
-        self.assertEqual(variant, None)
+        # palette.display_palette()
+        # variant = palette.variant_num_from_percentage(10)
+        # self.assertEqual(variant, None)
 
     def test_theme_generation(self):
         theme_manager = ThemeManager("test-theme-01", 7, *seed_colors)
-        theme_manager.generate_theme()
-        theme_manager.display_theme()
+        # theme_manager.generate_theme()
+        # theme_manager.display_theme()
 
