@@ -940,8 +940,24 @@ class VisualActivity(models.Model):
 
 
 class StaticContent(models.Model):
+    slug = models.SlugField(max_length=50, unique=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
+
+    @classmethod
+    def get_static_text(cls, slug):
+        """
+        Fetch and parse help text by slug.
+        """
+        try:
+            help_entry = cls.objects.get(slug=slug)
+            help_entry.content = markdown.markdown(help_entry.content)  # Parse Markdown to HTML
+            return help_entry
+        except cls.DoesNotExist:
+            return None
+
+    def __str__(self):
+        return self.title if self.title else self.slug
 
 
 class HelpText(models.Model):

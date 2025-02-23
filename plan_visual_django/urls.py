@@ -31,7 +31,7 @@ urlpatterns = [
     path("manage-plotable-styles/", views.manage_plotable_styles, name='manage-styles'),
 
     # Static pages
-    path("textpages/<int:pk>", StaticPageView.as_view(), name='static-pages'),
+    path("textpages/<slug:page_slug>", StaticPageView.as_view(), name='static-pages'),
 ]
 
 
