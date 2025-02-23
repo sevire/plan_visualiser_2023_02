@@ -2,7 +2,7 @@
 
 // Ensure that the content of the page sits underneath the fixed header
 #header-clearance {
-  padding-top:120px;
+  padding-top: var(--navbar-height, 120px);
 }
 
 #login-button {
