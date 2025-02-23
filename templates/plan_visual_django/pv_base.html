@@ -30,7 +30,7 @@
 
 </head>
 <body>
-<div class="fixed-top">
+<div id="fixed-top-element" class="fixed-top">
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Navbar for visual layout">
         <div class="container-sm">
             <a class="navbar-brand" href="#">Plan On One Page</a>
@@ -42,7 +42,7 @@
             {% endif %}
 
             <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false"
+                    data-bs-target="#main_navbar" aria-controls="navbarsExample03" aria-expanded="false"
                     aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -128,6 +128,18 @@
     {% block main_content %}
     {% endblock %}
 </div>
+<script language="javascript">
+    function setNavbarHeight() {
+        console.log('setNavbarHeight');
+        const navbar = document.getElementById('fixed-top-element');
+        if (navbar) {
+           const navbarHeight = navbar.offsetHeight;
+           document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        }
+   }
+   document.addEventListener('DOMContentLoaded', setNavbarHeight);
+   window.addEventListener('resize', setNavbarHeight);
+</script>
 
 </body>
 </html>
