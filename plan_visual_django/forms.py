@@ -96,16 +96,23 @@ class VisualFormForAdd(ModelForm):
 
     def __init__(self, *args, **kwargs):
         plan = kwargs.pop("plan", None)
+        user = kwargs.pop("user", None)
+        super(VisualFormForAdd, self).__init__(*args, **kwargs)
 
         if plan is not None: # None means we have been called from POST processing so data already populated
-            super(VisualFormForAdd, self).__init__(*args, **kwargs)
-
             field_defaults = VisualSettings.calculate_defaults_for_visual(plan)
 
             for field_name, field_default in field_defaults.items():
                 self.fields[field_name].initial = field_default
-        else:
-            super(VisualFormForAdd, self).__init__(*args, **kwargs)
+
+            # Set dropdown for style so it only includes styles for this user and shared ones.
+            filtered_styles = PlotableStyle.objects.for_user(user)
+
+            self.fields["default_activity_plotable_style"].queryset = filtered_styles
+            self.fields["default_milestone_plotable_style"].queryset = filtered_styles
+            self.fields["default_swimlane_plotable_style"].queryset = filtered_styles
+            self.fields["default_timeline_plotable_style_odd"].queryset = filtered_styles
+            self.fields["default_timeline_plotable_style_even"].queryset = filtered_styles
 
 
 class VisualFormForEdit(ModelForm):
@@ -129,6 +136,19 @@ class VisualFormForEdit(ModelForm):
             "default_timeline_plotable_style_odd",
             "default_timeline_plotable_style_even"
         )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+        # Get correct queryset for styles relatig to this user plus shared styles
+        filtered_styles = PlotableStyle.objects.for_user(user)
+
+        self.fields["default_activity_plotable_style"].queryset = filtered_styles
+        self.fields["default_milestone_plotable_style"].queryset = filtered_styles
+        self.fields["default_swimlane_plotable_style"].queryset = filtered_styles
+        self.fields["default_timeline_plotable_style_odd"].queryset = filtered_styles
+        self.fields["default_timeline_plotable_style_even"].queryset = filtered_styles
 
 
 class VisualActivityFormForEdit(ModelForm):
