@@ -414,7 +414,10 @@ def manage_swimlanes_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
 
@@ -423,7 +426,6 @@ def manage_swimlanes_for_visual(request, visual_id):
         SwimlaneForVisual,
 
         fields=(
-            "sequence_number",
             "swim_lane_name",
             "plotable_style",
         ),
@@ -436,6 +438,7 @@ def manage_swimlanes_for_visual(request, visual_id):
         formset = VisualSwimlaneFormSet(instance=visual)
 
         context = {
+            'primary_heading': "Manage Swimlanes",
             'help_text': HelpText.get_help_text("manage-swimlanes-for-visual"),
             'visual': visual,
             'formset': formset
@@ -460,7 +463,10 @@ def manage_timelines_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
 
@@ -469,15 +475,11 @@ def manage_timelines_for_visual(request, visual_id):
         TimelineForVisual,
 
         fields=(
-            "timeline_type",
-            "timeline_name",
-            "timeline_height",
             "plotable_style_odd",
             "plotable_style_even",
-            "sequence_number",
         ),
-        extra=1,
-        can_delete=True,
+        extra=0,
+        can_delete=False,
         form=VisualTimelineFormForEdit
     )
     visual = PlanVisual.objects.get(pk=visual_id)
