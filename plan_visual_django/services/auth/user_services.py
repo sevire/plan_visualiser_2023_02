@@ -9,7 +9,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.db import models
-from plan_visual_django.models import Plan, PlanVisual
 
 logger = logging.getLogger()
 
@@ -88,6 +87,7 @@ class CurrentUser:
         - Authenticated users: Query by user ID.
         - Anonymous users: Query by session key.
         """
+        from plan_visual_django.models import Plan
         if self.is_authenticated():
             return Plan.objects.filter(user=self.user)
         return Plan.objects.filter(session_id=self.session_key)
@@ -101,6 +101,7 @@ class CurrentUser:
 
         :return:
         """
+        from plan_visual_django.models import Plan
         if self.is_authenticated():
             return Plan.objects.filter(user=self.user).count()
         return Plan.objects.filter(session_id=self.session_key).count()
@@ -197,52 +198,3 @@ def get_session_user_identifier(request):
     return f"session_{request.session.session_key}"
 
 
-def get_user_plans(request):
-    """Retrieve plans for authenticated users or anonymous session users."""
-    current_user = get_current_user(request, allow_anonymous=True, default_if_logged_out=False)
-
-    if isinstance(current_user, AnonymousUser):
-        user_identifier = get_session_user_identifier(request)  # Fetch plans by session ID
-        return Plan.objects.filter(session_id=user_identifier)
-
-    return Plan.objects.filter(user=current_user)
-
-
-def can_access_plan(user:User, plan_id: Plan):
-    """
-    Return true if the user can access the plan, otherwise return false
-
-    :param user:
-    :param plan:
-    :return:
-    """
-    try:
-        plan = Plan.objects.get(id=plan_id)
-    except Plan.DoesNotExist:
-        return False
-    if user.is_superuser:
-        return True
-    elif plan.user == user:
-        return True
-    else:
-        return False
-
-
-def can_access_visual(user, visual_id:PlanVisual):
-    """
-    Return true if the user can access the visual, otherwise return false
-
-    :param visual_id:
-    :param user:
-    :return:
-    """
-    try:
-        visual = PlanVisual.objects.get(id=visual_id)
-    except PlanVisual.DoesNotExist:
-        return False
-    if user.is_superuser:
-        return True
-    elif visual.plan.user == user:
-        return True
-    else:
-        return False

@@ -21,7 +21,7 @@ from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.services.auth.user_services import get_current_user, can_access_visual, \
+from plan_visual_django.services.auth.user_services import get_current_user, \
     CurrentUser
 from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
@@ -262,7 +262,7 @@ def add_visual(request, plan_id):
         else:
             plan = Plan.objects.get(id=plan_id)
 
-            form = VisualFormForAdd(plan=plan)
+            form = VisualFormForAdd(plan=plan, user=current_user.user)
             help_text = HelpText.get_help_text("add-edit-visual")
             context = {
                 'help_text': help_text,
@@ -292,7 +292,7 @@ def edit_visual(request, visual_id):
 
             return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
         elif request.method == "GET":
-            form = VisualFormForEdit(instance=instance)
+            form = VisualFormForEdit(instance=instance, user=current_user.user)
             context = {
                 'help_text': HelpText.get_help_text("add-edit-visual"),
                 'visual': instance,
