@@ -442,6 +442,7 @@ def manage_swimlanes_for_visual(request, visual_id):
 
         context = {
             'primary_heading': "Manage Swimlanes",
+            'secondary_heading': f"Visual: {visual.name}",
             'help_text': HelpText.get_help_text("manage-swimlanes-for-visual"),
             'visual': visual,
             'formset': formset
