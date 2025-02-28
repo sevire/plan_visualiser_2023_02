@@ -349,7 +349,10 @@ def delete_plan(request, pk):
 
 @login_required
 def delete_visual(request, pk):
-    if not can_access_visual(request.user, pk):
+    current_user = CurrentUser(request)
+    visual_record = PlanVisual.objects.get(id=pk)
+
+    if not current_user.has_access_to_object(visual_record):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
     else:
@@ -448,6 +451,13 @@ def manage_swimlanes_for_visual(request, visual_id):
     if request.method == 'POST':
         formset = VisualSwimlaneFormSet(request.POST, instance=visual)
         if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data.get("DELETE"):
+                    continue
+                if not form.instance.pk:
+                    # This is a new swimlane so set sequence number to be next in sequence
+                    max_sequence_number = visual.get_max_swimlane_sequence_number()
+                    form.instance.sequence_number = max_sequence_number + 1
             formset.save()
             return redirect(f'/pv/manage-swimlanes-for-visual/{visual_id}')
         else:
@@ -555,7 +565,10 @@ def create_milestone_swimlane(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual_record = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual_record):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
