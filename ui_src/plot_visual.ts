@@ -244,11 +244,16 @@ export function plot_visual(captureImageFlag: boolean = false) {
 
   // Scale factor is calculated so visual fits to width of available screen
   let scaleFactor: number;
+  let canvasInfo: { [key: string]: CanvasRenderingContext2D | null } = {};
   if (captureImageFlag) {
-    console.log(`Capturing visual image`)
-    scaleFactor = (window as any).scale_factor // Higher resolution for image capture
+    console.log(`Capturing visual image`);
+    [scaleFactor, canvasInfo] = (window as any).initialise_canvases(true);
+
+    // ToDo: This is a bit of a hack to fix download image bug quickly - come back and fix
+    (window as any).canvas_info.capture = canvasInfo.capture
   } else {
     scaleFactor = (window as any).scale_factor
+    canvasInfo = (window as any).canvas_info;
   }
   console.log("Plotting activity shapes...")
   console.log(`Selected activity id is ${(window as any).selected_activity_id}`)
@@ -258,7 +263,7 @@ export function plot_visual(captureImageFlag: boolean = false) {
     clear_canvases();
   }
 
-  // Get the div element with id no-activities-alert
+  // Get the div element with id no-activities-alert so we can display or hide it
   const noActivitiesAlert = document.getElementById("no-activities-alert");
 
   // Check if there are no elements in visual_activity_data
@@ -279,11 +284,11 @@ export function plot_visual(captureImageFlag: boolean = false) {
   for (let canvas in (window as any).visual_activity_data) {
     // if we are plotting to capture the image we always use the capture canvas
     // ToDo: Ensure that when rendering for image download we render canvas data from back to front
-    let context: CanvasRenderingContext2D
+    let context: CanvasRenderingContext2D | null
     if (captureImageFlag) {
-      context = (window as any).canvas_info.capture
+      context = canvasInfo.capture
     } else {
-      context = (window as any).canvas_info[canvas];
+      context = canvasInfo[canvas];
     }
     const rendered_objects = (window as any).visual_activity_data[canvas]
     // Now iterate through plotables in this canvas
