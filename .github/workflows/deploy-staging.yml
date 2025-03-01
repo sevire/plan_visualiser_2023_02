@@ -64,7 +64,7 @@ jobs:
         POSTGRES_PASSWORD: test_password
         SECRET_KEY: test_secret_key_1234567890
       run: |
-        python manage.py test
+        python manage.py test --verbosity=2
 
   build_and_push:
     runs-on: ubuntu-latest
