@@ -59,6 +59,7 @@ jobs:
         DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         POSTGRES_DB: localhost
         POSTGRES_PASSWORD: test_password
+        SECRET_KEY: test_secret_key_1234567890
       run: |
         python manage.py test
 
