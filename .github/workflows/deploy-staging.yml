@@ -45,6 +45,9 @@ jobs:
     - name: Create logs directory
       run: mkdir -p logs
 
+    - name: Create static directory
+      run: mkdir static
+
     - name: Run migrations
       env:
         DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
