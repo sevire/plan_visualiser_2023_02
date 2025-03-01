@@ -41,4 +41,4 @@ class TestApiSerialisers(TestCase):
         if approx_flag and not isinstance(value_to_check, str):
             self.assertAlmostEqual(field_value, value_to_check)
         else:
-            self.assertEquals(field_value, object_to_check[field_name])
+            self.assertEqual(field_value, object_to_check[field_name])
