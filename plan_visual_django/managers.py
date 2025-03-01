@@ -16,7 +16,9 @@ class PlotableStyleManager(models.Manager):
         :param include_shared:
         :return:
         """
-        allowed_users = [user]
+        allowed_users = []
+        if user and hasattr(user, 'is_authenticated') and user.is_authenticated:
+            allowed_users.append(user)
         if include_shared:
             shared_user = get_shared_user()
             allowed_users.append(shared_user)

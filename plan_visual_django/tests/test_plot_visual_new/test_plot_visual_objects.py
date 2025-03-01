@@ -66,7 +66,7 @@ class TestPlotVisualObjects(TestCase):
         if approx_flag:
             self.assertAlmostEqual(field_value, getattr(activity_plotable, field_name))
         else:
-            self.assertEquals(field_value, getattr(activity_plotable, field_name))
+            self.assertEqual(field_value, getattr(activity_plotable, field_name))
 
     @data(*generate_test_data_field_stream_multiple_inputs([
         # visual_id, swimlane_seq_num, sticky_id, top, left, width, height
@@ -83,7 +83,7 @@ class TestPlotVisualObjects(TestCase):
         activity_plotable = activity.get_plotable()
 
         # Access and check the appropriate field value depending upon which expected field has been passed in.
-        self.assertEquals(field_value, getattr(activity_plotable, field_name))
+        self.assertEqual(field_value, getattr(activity_plotable, field_name))
 
 
     @data(*generate_test_data_field_stream_multiple_inputs(
