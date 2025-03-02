@@ -1,6 +1,5 @@
 import os
 from typing import Dict
-
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase,override_settings
@@ -11,6 +10,9 @@ from plan_visual_django.services.plan_file_utilities.plan_field import FileType,
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
+
+import logging
+logger = logging.getLogger(__name__)
 
 base_plan_file_name = os.path.join(excel_reimported_files_folder, "PV-Test-03.xlsx")
 
@@ -36,6 +38,7 @@ class TestFileReimport(TestCase):
         filename = base_plan_file_name
         with open(filename, 'rb') as file_data:
             uploaded_file = SimpleUploadedFile(base_plan_file_name, file_data.read())
+            print(f"Base plan file name to be saved: [{uploaded_file.name}]")
             form_data = {
                 'plan_name': 'PV-Test-03',
                 'file': uploaded_file,
@@ -77,6 +80,7 @@ class TestFileReimport(TestCase):
             }
 
             form = ReUploadPlanForm(form_data, form_files, instance=self.plan_before_test)
+            print(f"Re-upload plan file name to be saved: {plan_file_name}")
             if form.is_valid():
                 plan = form.save(commit=False)
                 plan.file_name = plan_file_name
@@ -143,9 +147,16 @@ class TestFileReimport(TestCase):
 
     def test_activity_added(self):
         """
-        Checking that if a file is reimported which has a row deleted, the plan records
-        in the database after the reimport are don't include the missing row.
-        :return:
+        Tests that a new activity is successfully added to a plan after reimporting,
+        and ensures no original activities are incorrectly removed. The method validates
+        both the persistence of pre-existing activities and the addition of the specified
+        new activity by comparing their unique identifiers and relevant attributes.
+
+        :raises self.fail: If an existing activity is erroneously removed from the plan
+            after reimporting.
+        :raises self.assertEqual: If the `activity_name` of an existing activity does not
+            match between `activities_before` and `plan_activities_after_test`.
+        :raises self.assertTrue: If the new activity is not successfully added to the plan.
         """
         self.reimport_plan("PV-Test-03-t02-activity-added.xlsx")
 
