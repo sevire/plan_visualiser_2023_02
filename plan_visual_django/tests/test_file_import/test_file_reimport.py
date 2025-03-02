@@ -38,7 +38,7 @@ class TestFileReimport(TestCase):
         filename = base_plan_file_name
         with open(filename, 'rb') as file_data:
             uploaded_file = SimpleUploadedFile(base_plan_file_name, file_data.read())
-            logger.debug(f"Base plan file name to be saved: [{uploaded_file.name}]")
+            logger.info(f"Base plan file name to be saved: [{uploaded_file.name}]")
             form_data = {
                 'plan_name': 'PV-Test-03',
                 'file': uploaded_file,
