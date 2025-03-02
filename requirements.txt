@@ -17,7 +17,7 @@ httpie==3.2.3
 idna==3.10
 iniconfig==2.0.0
 Markdown==3.7
-markdown-it-py==3.0.0
+markdown-it-py>=2.2.0
 mdurl==0.1.2
 model-bakery==1.17.0
 multidict==6.1.0
