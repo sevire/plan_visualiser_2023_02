@@ -38,7 +38,6 @@ class TestFileReimport(TestCase):
         filename = base_plan_file_name
         with open(filename, 'rb') as file_data:
             uploaded_file = SimpleUploadedFile(base_plan_file_name, file_data.read())
-            logger.info(f"Base plan file name to be saved: [{uploaded_file.name}]")
             form_data = {
                 'plan_name': 'PV-Test-03',
                 'file': uploaded_file,
@@ -51,8 +50,10 @@ class TestFileReimport(TestCase):
             form = PlanForm(form_data, form_files)
             if form.is_valid():
                 plan = form.save(commit=False)
+
                 plan.user = user
                 plan.file_name = base_plan_file_name
+                logger.info(f"Base plan file name to be saved: [{plan.file_name}]")
                 plan.save()
 
                 file_type, mapping_type = FileTypes.get_file_type_by_name(plan.file_type_name)
