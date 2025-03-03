@@ -52,7 +52,7 @@ class TestFileReimport(TestCase):
                 plan = form.save(commit=False)
 
                 plan.user = user
-                plan.file_name = base_plan_file_name
+                plan.file_name = plan.file.name
                 logger.info(f"Base plan file name to be saved: [{plan.file_name}]")
                 plan.save()
 
