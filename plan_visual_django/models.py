@@ -558,7 +558,7 @@ class PlanVisual(models.Model):
 
     def get_plotables(self):
         """
-        Returns all plotable elements for the visual (and by recursion all sub-elements of those elements.
+        Returns all plotable elements for the visual (and by recursion all sub-elements of those elements).
 
         Specifically, returns:
         - timelines (which will implicitly return timeline_labels)
@@ -609,7 +609,7 @@ class TimelineForVisual(models.Model):
         """
         Calculates the labels for a given timeline.  This involves:
         - Getting overall start and end date for the visual based on the activities and all the timelines (as timelines
-          will round down and up to the nearest unit (month, quarter etc) depending upon the configuration of the timeline
+          will round down and up to the nearest unit (month, quarter etc) depending upon the configuration of the timeline)
         - Create a list of labels, each of which has a start and end date and a label.
         :return:
         """
@@ -860,6 +860,8 @@ class VisualActivity(models.Model):
     class Meta:
         verbose_name_plural = 'visual activities'
         unique_together = ['visual', 'unique_id_from_plan']
+
+        ordering = ['pk']
 
     def __str__(self):
         return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'
