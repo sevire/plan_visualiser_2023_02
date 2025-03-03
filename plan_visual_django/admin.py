@@ -113,8 +113,9 @@ class TimelineForVisualAdmin(admin.ModelAdmin):
 
 @admin.register(StaticContent)
 class StaticContentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'content')  # columns to display on admin page
-    search_fields = ['title', 'content']
+    list_display = ('slug', 'title', 'content')  # columns to display on admin page
+    search_fields = ['slug', 'title', 'content']
+    prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
 
 
 @admin.register(HelpText)

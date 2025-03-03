@@ -2,14 +2,15 @@ import markdown
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from django.conf import settings
 from django.db.models import UniqueConstraint, Max, Min, Sum
+from plan_visual_django.managers import PlotableStyleManager
 from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.rendering.plotables import get_plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 import logging
 
@@ -145,6 +146,8 @@ class PlotableStyle(models.Model):
     line_thickness = models.IntegerField()
     font = models.ForeignKey(Font, on_delete=models.PROTECT)
     font_size = models.IntegerField(default=10)  # Font size in points (probably!)
+
+    objects = PlotableStyleManager()
 
     class Meta:
         ordering = ["user", "style_name"]
@@ -555,7 +558,7 @@ class PlanVisual(models.Model):
 
     def get_plotables(self):
         """
-        Returns all plotable elements for the visual (and by recursion all sub-elements of those elements.
+        Returns all plotable elements for the visual (and by recursion all sub-elements of those elements).
 
         Specifically, returns:
         - timelines (which will implicitly return timeline_labels)
@@ -606,7 +609,7 @@ class TimelineForVisual(models.Model):
         """
         Calculates the labels for a given timeline.  This involves:
         - Getting overall start and end date for the visual based on the activities and all the timelines (as timelines
-          will round down and up to the nearest unit (month, quarter etc) depending upon the configuration of the timeline
+          will round down and up to the nearest unit (month, quarter etc) depending upon the configuration of the timeline)
         - Create a list of labels, each of which has a start and end date and a label.
         :return:
         """
@@ -858,6 +861,8 @@ class VisualActivity(models.Model):
         verbose_name_plural = 'visual activities'
         unique_together = ['visual', 'unique_id_from_plan']
 
+        ordering = ['pk']
+
     def __str__(self):
         return f'Visual:{self.visual.name} unique_plan_activity_id:{self.unique_id_from_plan}'
 
@@ -940,8 +945,24 @@ class VisualActivity(models.Model):
 
 
 class StaticContent(models.Model):
+    slug = models.SlugField(max_length=50, unique=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
+
+    @classmethod
+    def get_static_text(cls, slug):
+        """
+        Fetch and parse help text by slug.
+        """
+        try:
+            help_entry = cls.objects.get(slug=slug)
+            help_entry.content = markdown.markdown(help_entry.content)  # Parse Markdown to HTML
+            return help_entry
+        except cls.DoesNotExist:
+            return None
+
+    def __str__(self):
+        return self.title if self.title else self.slug
 
 
 class HelpText(models.Model):

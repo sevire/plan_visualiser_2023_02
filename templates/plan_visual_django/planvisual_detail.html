@@ -1,15 +1,15 @@
-    {% extends "plan_visual_django/pv_base.html" %}
-    {% load static %}
-    
-    {% block main_content %}
+{% extends "plan_visual_django/pv_base.html" %}
+{% load static %}
+
+{% block main_content %}
     <div id="top-row-controls" class="row mb-3">
         <div id="swimlane_data" class="col-4 top-row-control">
             <div class="container p-0">
                 <table class="table table-sm table-fixed table-secondary">
                     <thead class="table-primary">
-                        <tr>
-                            <th colspan="2">Swimlanes</th>
-                        </tr>
+                    <tr>
+                        <th colspan="2"><a href="{% url "manage-swimlanes" visual.id %}">Swimlanes</a></th>
+                    </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -20,105 +20,114 @@
             <div class="container p-0">
                 <table id="layout-activity" class="table table-sm table-fixed table-secondary">
                     <thead class="table-primary">
-                        <tr>
-                            <th colspan="2">Activity Properties</th>
-                        </tr>
+                    <tr>
+                        <th colspan="2">Activity Properties</th>
+                    </tr>
                     </thead>
                     <tbody id="plan-activity-properties">
-                        <tr><th class="text-primary fst-italic" colspan="2">Plan Attributes (not editable)</th></tr>
-                        <tr>
-                            <th class="align-middle text-end" >Id</th>
-                            <td id="unique_sticky_activity_id" class="text-start">AAA-01</td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Name</th>
-                            <td id="activity_name" class="text-start"><div class="text-truncate">Activity 1 - this is long to test truncation</div></td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Milestone?</th>
-                            <td id="milestone_flag" class="text-start"><i class="bi bi-check"></i></td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Start Date</th>
-                            <td id="start_date" class="text-start">2023-MAR-28</td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >End Date</th>
-                            <td id="end_date" class="text-start">2023-OCT-25</td>
-                        </tr>
+                    <tr>
+                        <th class="text-primary fst-italic" colspan="2">Plan Attributes (not editable)</th>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Id</th>
+                        <td id="unique_sticky_activity_id" class="text-start">AAA-01</td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Name</th>
+                        <td id="activity_name" class="text-start">
+                            <div class="text-truncate">Activity 1 - this is long to test truncation</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Milestone?</th>
+                        <td id="milestone_flag" class="text-start"><i class="bi bi-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Start Date</th>
+                        <td id="start_date" class="text-start">2023-MAR-28</td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">End Date</th>
+                        <td id="end_date" class="text-start">2023-OCT-25</td>
+                    </tr>
                     </tbody>
                     <tbody id="visual-activity-properties">
-                        <tr><th class="text-primary fst-italic" colspan="2">Visual Attributes</th></tr>
-                        <tr>
-                            <th class="align-middle text-end" >Swimlane</th>
-                            <td id="swimlane" class="text-start">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Change Swimlane
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Swimlane 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Swimlane 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Swimlane 3</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Track</th>
-                            <td id="vertical_positioning_value" class="text-start undefined">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
+                    <tr>
+                        <th class="text-primary fst-italic" colspan="2">Visual Attributes</th>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Swimlane</th>
+                        <td id="swimlane" class="text-start">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    Change Swimlane
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Swimlane 1</a></li>
+                                    <li><a class="dropdown-item" href="#">Swimlane 2</a></li>
+                                    <li><a class="dropdown-item" href="#">Swimlane 3</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Track</th>
+                        <td id="vertical_positioning_value" class="text-start undefined">
+                            <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
+                                <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
+                                <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                            </div>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Text Flow</th>
-                            <td id="text_flow" class="text-start undefined">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Height</th>
-                            <td id="height_in_tracks" class="text-start undefined">
-                                <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-                                    <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-                                </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Text Flow</th>
+                        <td id="text_flow" class="text-start undefined">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Height</th>
+                        <td id="height_in_tracks" class="text-start undefined">
+                            <div class="btn-group btn-group-sm up-down-control" role="group" aria-label="Basic example">
+                                <button class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
+                                <button class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                            </div>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Shape</th>
-                            <td id="plotable_shape" class="text-start undefined">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Change Shape
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">DIAMOND</a></li>
-                                        <li><a class="dropdown-item" href="#">RECTANGLE</a></li>
-                                        <li><a class="dropdown-item" href="#">ROUNDED RECTANGLE</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="align-middle text-end" >Style</th>
-                            <td id="plotable_style" class="text-start undefined">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Change Style
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Style 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Style 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Style 3</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Shape</th>
+                        <td id="plotable_shape" class="text-start undefined">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    Change Shape
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">DIAMOND</a></li>
+                                    <li><a class="dropdown-item" href="#">RECTANGLE</a></li>
+                                    <li><a class="dropdown-item" href="#">ROUNDED RECTANGLE</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="align-middle text-end">Style</th>
+                        <td id="plotable_style" class="text-start undefined">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    Change Style
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Style 1</a></li>
+                                    <li><a class="dropdown-item" href="#">Style 2</a></li>
+                                    <li><a class="dropdown-item" href="#">Style 3</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -127,9 +136,9 @@
             <div class="container p-0">
                 <table class="table table-sm table-fixed w-auto table-secondary">
                     <thead class="table-primary">
-                        <tr>
-                            <th colspan="3">Timelines</th>
-                        </tr>
+                    <tr>
+                        <th colspan="3">Timelines</th>
+                    </tr>
                     </thead>
                     <tbody>
 
@@ -137,86 +146,107 @@
                 </table>
             </div>
         </div>
-    </div> 
+    </div>
     <div id="activity_controls" class="row">
         <div id="add-remove-activities" class="col-4 panel"></div>
-        <div  id="visual-content" class="canvas-stack col-8">
-            {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
-            <div class="canvas-wrapper bg-primary-subtle">
-                <div class="canvas-layer"><canvas id="canvas-background"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-swimlanes"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-timelines"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-activities"></canvas></div>
-                <div class="canvas-layer"><canvas id="canvas-highlight"></canvas></div>
+        <div class="visual-wrapper col-8 panel">
+            <div class="d-flex align-items-center text-sm-start bg-primary-subtle p-2 mb-3">
+                <h6 class="fw-bold mb-0">Plan On One Page</h6>
             </div>
+
+            <div id="visual-content" class="canvas-stack">
+            {% include 'plan_visual_django/_visual_buttons_new_ui.html' %}
+            <div id="no-activities-alert" class="alert alert-warning" role="alert"
+                 {% if visual.activity_count > 0 %}style="display: none;"{% endif %}>
+                {{ no_activities_message }}
+            </div>
+
+            <div class="canvas-wrapper bg-primary-subtle">
+                <div class="canvas-layer">
+                    <canvas id="canvas-background" style="border: black solid 3px"></canvas>
+                </div>
+                <div class="canvas-layer">
+                    <canvas id="canvas-swimlanes"></canvas>
+                </div>
+                <div class="canvas-layer">
+                    <canvas id="canvas-timelines"></canvas>
+                </div>
+                <div class="canvas-layer">
+                    <canvas id="canvas-activities"></canvas>
+                </div>
+                <div class="canvas-layer">
+                    <canvas id="canvas-highlight"></canvas>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
     <script src="{% static 'dist/bundle.js' %}"></script>
     <script type="application/javascript">
 
-    document.addEventListener("DOMContentLoaded", async function() {
-        console.log("DOM Loaded...")
-        
-        // ToDo: Replace JS function with use of additional template block for template specific css
-        window.addStylesheetToDOM('/static/plan_visual_django/css/ui-layout.css')
-        
-        // Get data for the visual based upon the id from body element
-        window.visual_id = {{ visual.id }}
-    
-        const root_element = document.getElementById("add-remove-activities")
-        console.log("About to call window.get_plan_activity_data")
-            
-        await window.get_plan_activity_data(window.visual_id)
-        await window.get_visual_activity_data(window.visual_id)
-        const plan_tree_data = await createPlanTree()
-        
-        plan_tree = plan_tree_data[0]
-        initial_selected_activity_div = plan_tree_data[1]
-        
-        root_element.appendChild(plan_tree)
-        
-        // Add event to download image button to capture and download image
-        await window.add_download_image_event_listener()
-        
-        // Update swimlane panel with swimlanes for this visual in sequence order
-        console.log("Updating swimlane panel...")
-        const swimlane_element = document.getElementById("swimlane_data")
-        await window.update_swimlane_data(swimlane_element, window.visual_id)
-        
-        console.log("About to retrieve style data")
-        // Get all plotable styles available to this user
-        let response = await get_style_records()
-        window.style_data = response.data
-        
-        // Update timeline panel with timelines for this visual in sequence order
-        console.log("Updating timeline panel...")
-        const timeline_element = document.getElementById("timeline_data")
-        await window.update_timeline_panel(timeline_element, window.visual_id)
-        
-        console.log("About to retrieve shape data")
-        // Get all plotable styles available to this user
-        response = await get_shape_records()
-        window.shape_data = response.data
-        
-        console.log("About to retrieve visual settings data")
-        response = await get_visual_settings(window.visual_id)
-        window.visual_settings = response.data
-        
-        console.log("Initialising Canvases")
-        let [scale_factor, canvas_info] = window.initialise_canvases()
-        window.scale_factor = scale_factor;
-        window.canvas_info = canvas_info
-        
-        console.log("Plotting visual")
-        window.plot_visual()
-        
-        // Now simulate clicking on first plan activity to initialise plan and activity panels
-        if (initial_selected_activity_div) {
-          console.log(`Clicking on first activity so is selected ${initial_selected_activity_div}`)
-          initial_selected_activity_div.click();
-          window.selected_activity_id = initial_selected_activity_div.id
-        }
-    })
+        document.addEventListener("DOMContentLoaded", async function () {
+            console.log("DOM Loaded...")
 
-</script>
-    {% endblock %}
+            // ToDo: Replace JS function with use of additional template block for template specific css
+            window.addStylesheetToDOM('/static/plan_visual_django/css/ui-layout.css')
+
+            // Get data for the visual based upon the id from body element
+            window.visual_id = {{ visual.id }}
+
+            const root_element = document.getElementById("add-remove-activities")
+            console.log("About to call window.get_plan_activity_data")
+
+            await window.get_plan_activity_data(window.visual_id)
+            await window.get_visual_activity_data(window.visual_id)
+            const plan_tree_data = await createPlanTree()
+
+            plan_tree = plan_tree_data[0]
+            initial_selected_activity_div = plan_tree_data[1]
+
+            root_element.appendChild(plan_tree)
+
+            // Add event to download image button to capture and download image
+            await window.add_download_image_event_listener()
+
+            // Update swimlane panel with swimlanes for this visual in sequence order
+            console.log("Updating swimlane panel...")
+            const swimlane_element = document.getElementById("swimlane_data")
+            await window.update_swimlane_data(swimlane_element, window.visual_id)
+
+            console.log("About to retrieve style data")
+            // Get all plotable styles available to this user
+            let response = await get_style_records()
+            window.style_data = response.data
+
+            // Update timeline panel with timelines for this visual in sequence order
+            console.log("Updating timeline panel...")
+            const timeline_element = document.getElementById("timeline_data")
+            await window.update_timeline_panel(timeline_element, window.visual_id)
+
+            console.log("About to retrieve shape data")
+            // Get all plotable styles available to this user
+            response = await get_shape_records()
+            window.shape_data = response.data
+
+            console.log("About to retrieve visual settings data")
+            response = await get_visual_settings(window.visual_id)
+            window.visual_settings = response.data
+
+            console.log("Initialising Canvases")
+            let [scale_factor, canvas_info] = window.initialise_canvases()
+            window.scale_factor = scale_factor;
+            window.canvas_info = canvas_info
+
+            console.log("Plotting visual")
+            window.plot_visual()
+
+            // Now simulate clicking on first plan activity to initialise plan and activity panels
+            if (initial_selected_activity_div) {
+                console.log(`Clicking on first activity so is selected ${initial_selected_activity_div}`)
+                initial_selected_activity_div.click();
+                window.selected_activity_id = initial_selected_activity_div.id
+            }
+        })
+
+    </script>
+{% endblock %}

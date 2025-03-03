@@ -22,7 +22,7 @@ from plan_visual_django import views
 from plan_visual_django.views import CustomLoginView
 
 urlpatterns = [
-    path("", RedirectView.as_view(url='pv', permanent=True), name='index'),
+    path("", RedirectView.as_view(url='pv/textpages/landing-page/', permanent=True), name='index'),
     path("admin/", admin.site.urls),
     path("pv/", include('plan_visual_django.urls')),
     path('api/', include('api.urls')),

@@ -21,7 +21,7 @@ from plan_visual_django.services.general.color_utilities import ColorLib
 from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.services.auth.user_services import get_current_user, can_access_visual, \
+from plan_visual_django.services.auth.user_services import get_current_user, \
     CurrentUser
 from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
@@ -30,6 +30,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from .forms import CustomUserCreationForm
+from .services.general.text_constants import MESSAGE_NO_ACTIVITIES_IN_VISUAL
+
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
@@ -260,7 +262,7 @@ def add_visual(request, plan_id):
         else:
             plan = Plan.objects.get(id=plan_id)
 
-            form = VisualFormForAdd(plan=plan)
+            form = VisualFormForAdd(plan=plan, user=current_user.user)
             help_text = HelpText.get_help_text("add-edit-visual")
             context = {
                 'help_text': help_text,
@@ -290,7 +292,7 @@ def edit_visual(request, visual_id):
 
             return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
         elif request.method == "GET":
-            form = VisualFormForEdit(instance=instance)
+            form = VisualFormForEdit(instance=instance, user=current_user.user)
             context = {
                 'help_text': HelpText.get_help_text("add-edit-visual"),
                 'visual': instance,
@@ -347,7 +349,10 @@ def delete_plan(request, pk):
 
 @login_required
 def delete_visual(request, pk):
-    if not can_access_visual(request.user, pk):
+    current_user = CurrentUser(request)
+    visual_record = PlanVisual.objects.get(id=pk)
+
+    if not current_user.has_access_to_object(visual_record):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
     else:
@@ -412,7 +417,10 @@ def manage_swimlanes_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
 
@@ -421,7 +429,6 @@ def manage_swimlanes_for_visual(request, visual_id):
         SwimlaneForVisual,
 
         fields=(
-            "sequence_number",
             "swim_lane_name",
             "plotable_style",
         ),
@@ -434,6 +441,8 @@ def manage_swimlanes_for_visual(request, visual_id):
         formset = VisualSwimlaneFormSet(instance=visual)
 
         context = {
+            'primary_heading': "Manage Swimlanes",
+            'secondary_heading': f"Visual: {visual.name}",
             'help_text': HelpText.get_help_text("manage-swimlanes-for-visual"),
             'visual': visual,
             'formset': formset
@@ -443,6 +452,13 @@ def manage_swimlanes_for_visual(request, visual_id):
     if request.method == 'POST':
         formset = VisualSwimlaneFormSet(request.POST, instance=visual)
         if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data.get("DELETE"):
+                    continue
+                if not form.instance.pk:
+                    # This is a new swimlane so set sequence number to be next in sequence
+                    max_sequence_number = visual.get_max_swimlane_sequence_number()
+                    form.instance.sequence_number = max_sequence_number + 1
             formset.save()
             return redirect(f'/pv/manage-swimlanes-for-visual/{visual_id}')
         else:
@@ -458,7 +474,10 @@ def manage_timelines_for_visual(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
 
@@ -467,15 +486,11 @@ def manage_timelines_for_visual(request, visual_id):
         TimelineForVisual,
 
         fields=(
-            "timeline_type",
-            "timeline_name",
-            "timeline_height",
             "plotable_style_odd",
             "plotable_style_even",
-            "sequence_number",
         ),
-        extra=1,
-        can_delete=True,
+        extra=0,
+        can_delete=False,
         form=VisualTimelineFormForEdit
     )
     visual = PlanVisual.objects.get(pk=visual_id)
@@ -551,7 +566,10 @@ def create_milestone_swimlane(request, visual_id):
     :param visual_id:
     :return:
     """
-    if not can_access_visual(request.user, visual_id):
+    current_user = CurrentUser(request)
+    visual_record = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual_record):
         messages.error(request, "Visual does not exist or you do not have access")
         return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
@@ -598,6 +616,7 @@ def plot_visual(request, visual_id):
         'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
         'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
         'visual': visual,
+        'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
     }
     return render(request, "plan_visual_django/planvisual_detail.html", context)
 
@@ -774,6 +793,8 @@ class FileTypeListView(ListView):
 class StaticPageView(DetailView):
     model = StaticContent
     template_name = "plan_visual_django/static_content.html"
+    slug_field = 'slug'
+    slug_url_kwarg = 'page_slug'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
