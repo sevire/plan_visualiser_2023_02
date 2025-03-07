@@ -1,4 +1,4 @@
-from coverage.annotate import os
+import os
 from django.test import TestCase
 from ddt import ddt, data, unpack
 from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
