@@ -27,6 +27,7 @@ echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:0:4}"
 
 
 cd /var/www/app_root/app || exit
+pwd
 git pull https://github.com/sevire/plan_visualiser_2023_02.git master
 
 # Authorise access to registry and login
