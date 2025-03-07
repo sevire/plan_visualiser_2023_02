@@ -91,7 +91,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'plan_visual_django.apps.PlanVisualDjangoConfig',
-    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -172,8 +171,7 @@ ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
-        ,
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -281,3 +279,5 @@ SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
 SHARED_DATA_PREFIX = "AAA"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+VERSION = "0.1.0"
