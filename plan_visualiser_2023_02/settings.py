@@ -91,7 +91,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'plan_visual_django.apps.PlanVisualDjangoConfig',
-    'markdownify',
 ]
 
 MIDDLEWARE = [
