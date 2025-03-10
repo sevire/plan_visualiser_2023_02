@@ -28,7 +28,14 @@ echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:0:4}"
 
 cd /var/www/app_root/app || exit
 pwd
-git pull https://github.com/sevire/plan_visualiser_2023_02.git master
+
+if [ "$DJANGO_ENVIRONMENT" = "staging" ]; then
+    git pull https://github.com/sevire/plan_visualiser_2023_02.git Development
+elif [ "$DJANGO_ENVIRONMENT" = "production" ]; then
+    git pull https://github.com/sevire/plan_visualiser_2023_02.git master
+else
+    echo "WARNING: DJANGO_ENVIRONMENT is not set to a valid value (staging or production)."
+fi
 
 # Authorise access to registry and login
 doctl auth init --access-token $DO_DOCKER_REGISTRY_API_TOKEN
