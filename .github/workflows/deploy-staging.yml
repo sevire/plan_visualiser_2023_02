@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_and_push
     steps:
-      - name: Checkout master branch
+      - name: Checkout Development branch
         uses: actions/checkout@v3
 
       - name: install ssh keys
