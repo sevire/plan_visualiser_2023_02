@@ -189,7 +189,7 @@ WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-if DJANGO_ENVIRONMENT == 'production':
+if DJANGO_ENVIRONMENT == 'production' or DJANGO_ENVIRONMENT == 'staging':
     print("Using PostgreSQL database in staging/production")
     # Use the PostgreSQL database in production
     DATABASES = {
