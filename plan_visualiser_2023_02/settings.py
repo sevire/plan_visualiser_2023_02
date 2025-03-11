@@ -198,7 +198,7 @@ if DJANGO_ENVIRONMENT == 'production' or DJANGO_ENVIRONMENT == 'staging':
             'NAME': os.getenv('POSTGRES_NAME'),
             'USER': os.getenv('POSTGRES_USER'),
             'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_DB', 'db'),
+            'HOST': os.getenv('POSTGRES_DB', 'postgres_pv'),
             'PORT': '5432',
         }
     }
