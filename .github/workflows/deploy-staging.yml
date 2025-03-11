@@ -131,7 +131,7 @@ jobs:
       - name: connect and pull
         run: |
           chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
-          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- postgres ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
+          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- postgres postgres ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
 
       - name: clean up after ssh session.
         run: rm -rf ~/.ssh
