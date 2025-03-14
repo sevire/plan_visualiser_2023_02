@@ -57,6 +57,7 @@ jobs:
     - name: Run tests
       env:
         DJANGO_ENVIRONMENT: production
+        DJANGO_DB_HOST: postgres
         POSTGRES_NAME: test_db
         POSTGRES_USER: test_user
         DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
