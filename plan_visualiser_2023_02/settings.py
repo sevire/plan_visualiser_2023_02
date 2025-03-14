@@ -90,8 +90,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     'rest_framework',
+    'markdownify',
     'plan_visual_django.apps.PlanVisualDjangoConfig',
-    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -172,8 +172,7 @@ ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
-        ,
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -191,7 +190,7 @@ WSGI_APPLICATION = "plan_visualiser_2023_02.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-if DJANGO_ENVIRONMENT == 'production':
+if DJANGO_ENVIRONMENT == 'production' or DJANGO_ENVIRONMENT == 'staging':
     print("Using PostgreSQL database in staging/production")
     # Use the PostgreSQL database in production
     DATABASES = {
@@ -200,7 +199,7 @@ if DJANGO_ENVIRONMENT == 'production':
             'NAME': os.getenv('POSTGRES_NAME'),
             'USER': os.getenv('POSTGRES_USER'),
             'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_DB', 'localhost'),
+            'HOST': os.getenv('DJANGO_DB_HOST', 'db'),
             'PORT': '5432',
         }
     }
@@ -281,3 +280,5 @@ SHARED_DATA_USER_EMAIL = 'tbg-pv-automateddatauser@genonline.co.uk'
 SHARED_DATA_PREFIX = "AAA"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+VERSION = "0.1.1"

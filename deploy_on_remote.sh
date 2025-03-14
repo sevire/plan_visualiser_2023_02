@@ -16,7 +16,7 @@ export DO_DOCKER_REGISTRY_NAME=${DO_DOCKER_REGISTRY_NAME_ARG:-$7}
 export DO_DOCKER_REGISTRY_API_TOKEN=${DO_DOCKER_REGISTRY_API_TOKEN_ARG:-$8}
 
 # Print out the values of the variables to help with debugging
-echo "using POSTGRES_DB_NAME: ${POSTGRES_DB_NAME:0:4}"
+echo "using POSTGRES_DB_NAME: ${POSTGRES_DB_NAME}"
 echo "using POSTGRES_USER: ${POSTGRES_USER:0:4}"
 echo "using POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:0:4}"
 echo "using DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:0:4}"
@@ -27,7 +27,15 @@ echo "using DO_DOCKER_REGISTRY_API_TOKEN: ${DO_DOCKER_REGISTRY_API_TOKEN:0:4}"
 
 
 cd /var/www/app_root/app || exit
-git pull https://github.com/sevire/plan_visualiser_2023_02.git master
+pwd
+
+if [ "$DJANGO_ENVIRONMENT" = "staging" ]; then
+    git pull https://github.com/sevire/plan_visualiser_2023_02.git Development
+elif [ "$DJANGO_ENVIRONMENT" = "production" ]; then
+    git pull https://github.com/sevire/plan_visualiser_2023_02.git master
+else
+    echo "WARNING: DJANGO_ENVIRONMENT is not set to a valid value (staging or production)."
+fi
 
 # Authorise access to registry and login
 doctl auth init --access-token $DO_DOCKER_REGISTRY_API_TOKEN
