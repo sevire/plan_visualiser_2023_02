@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     'rest_framework',
+    'markdownify',
     'plan_visual_django.apps.PlanVisualDjangoConfig',
 ]
 
@@ -280,4 +281,4 @@ SHARED_DATA_PREFIX = "AAA"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
