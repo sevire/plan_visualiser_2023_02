@@ -116,12 +116,12 @@ export async function createPlanTree() {
     // so that we can simulate a click after the pages has been built to pre-select the first
     // activity in the plan within the plan activity panel.
     if (i == 0) {
-      console.log(`Saving first activity div so can click later ${activityDiv}`)
-      initial_selected_activity_div = activityDiv
+      console.log(`Saving first activity div so can click later ${activityDiv}`);
+      initial_selected_activity_div = activityDiv;
     }
   }
 
-  console.log("topLevelElements before return", topLevelElements)
+  console.log("topLevelElements before return", topLevelElements);
   return [topLevelElements[0], initial_selected_activity_div];
 }
 
