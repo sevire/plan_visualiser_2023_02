@@ -70,7 +70,7 @@ else:
     LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
     LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
 
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['localhost']
     CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://138.68.160.214']
 
 # Modified to support custom user model

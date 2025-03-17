@@ -29,8 +29,11 @@ fi
 echo "Tests passed successfully."
 
 echo "Re-building Docker images..."
+
+echo "Checking .env file..."
 test -e .env && source .env || echo "$0: warn: no '.env' file in $(pwd): default values will be used"
 
+echo "Setting up log folder and file..."
 readonly LOG_DIR=$(pwd)/docker-build-logs
 test -d $LOG_DIR || mkdir -p $LOG_DIR
 
@@ -38,11 +41,8 @@ readonly LOGFILE=${LOG_DIR}/plan_visualiser-"$(date '+%Y%m%d-%H%M%S')".log
 exec 1>$LOGFILE
 exec 2>&1
 
-#echo "Taking docker down before rebuild"  # Not sure whether this is necessary but haven't found better way yet.
-#docker compose down
-
 echo "Docker compose beginning..."
-docker compose -f devops/docker/docker-compose-local.yml up --detach --build
+docker compose -f devops/docker/docker-compose-dev.yml up --detach --build
 
 echo "Docker compose complete, pruning beginning..."
 docker system prune -f
