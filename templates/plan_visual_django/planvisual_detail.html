@@ -198,10 +198,15 @@
 
             await window.get_plan_activity_data(window.visual_id)
             await window.get_visual_activity_data(window.visual_id)
-            const plan_tree_data = await createPlanTree()
+            const plan_tree_data = await window.createPlanTree()
 
-            plan_tree = plan_tree_data[0]
-            initial_selected_activity_div = plan_tree_data[1]
+            console.log(`plan_tree_data = ${plan_tree_data}...`)
+            console.log(`plan_tree_data[0] = ${plan_tree_data[0]}...`)
+
+            const plan_tree = plan_tree_data[0];
+            console.log(`plan_tree = ${plan_tree}...`)
+
+            const initial_selected_activity_div = plan_tree_data[1];
 
             root_element.appendChild(plan_tree)
 
