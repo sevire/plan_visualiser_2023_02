@@ -4,8 +4,6 @@
 # .env used for sensitive env variables used in building docker images so not stored in repo.
 .env
 
-# Ignore the build directory
-/plan_visual_django/static/dist/
 /**/.ds_store
 /**/__pycache__/
 /logs/
