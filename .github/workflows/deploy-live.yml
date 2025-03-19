@@ -87,6 +87,7 @@ jobs:
       - name: Run tests
         env:
           DJANGO_ENVIRONMENT: production
+          DJANGO_DB_HOST: postgres
           POSTGRES_NAME: test_db
           POSTGRES_USER: test_user
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
@@ -98,7 +99,6 @@ jobs:
 
   build_and_push:
     runs-on: ubuntu-latest
-#    needs: setup_new_server
     strategy:
       max-parallel: 4
       matrix:
@@ -123,17 +123,15 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build Docker image for Nginx
-        run: |
-          docker build \
-            --file ./devops/docker/nginx/DockerfileLive \
-            --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7) \
+        run: docker build
+            --file ./devops/docker/nginx/DockerfileLive
+            --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
             .
 
       - name: Build Docker image for Gunicorn
-        run: |
-          docker build \
-            --file ./devops/docker/gunicorn/Dockerfile \
-            --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7) \
+        run: docker build
+            --file ./devops/docker/gunicorn/Dockerfile
+            --tag ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
             .
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials

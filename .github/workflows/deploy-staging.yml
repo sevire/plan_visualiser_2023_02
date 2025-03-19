@@ -108,13 +108,10 @@ jobs:
       run: doctl registry login --expiry-seconds 1200
 
     - name: Push Nginx image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.DO_DOCKER_REGISTRY_NAME
-        }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
+      run: docker push ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
 
     - name: Push Gunicorn image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.DO_DOCKER_REGISTRY_NAME
-        }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head
-        -c7)
+      run: docker push ${{ secrets.DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
 
   deploy_code_and_pull_docker:
     runs-on: ubuntu-latest
@@ -123,16 +120,16 @@ jobs:
       - name: Checkout Development branch
         uses: actions/checkout@v3
 
-      - name: install ssh keys
+      - name: Install SSH keys
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
 
-      - name: connect and pull
+      - name: Connect and pull Docker images on droplet
         run: |
           chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
-          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- postgres postgres postgres ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
+          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
 
-      - name: clean up after ssh session.
+      - name: Clean up SSH keys
         run: rm -rf ~/.ssh

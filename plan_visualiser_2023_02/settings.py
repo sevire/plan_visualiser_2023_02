@@ -196,7 +196,7 @@ if DJANGO_ENVIRONMENT == 'production' or DJANGO_ENVIRONMENT == 'staging':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_NAME'),
+            'NAME': os.getenv('POSTGRES_DB_NAME'),
             'USER': os.getenv('POSTGRES_USER'),
             'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
             'HOST': os.getenv('DJANGO_DB_HOST', 'db'),
