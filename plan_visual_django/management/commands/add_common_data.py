@@ -34,8 +34,10 @@ class Command(BaseCommand):
             add_initial_data(None, delete)
             create_initial_users(delete=True)
 
-            # Add intial data via service
-            populate_help_text_fields(fixture_file="plan_visual_django/fixtures/help_text.json")
+            # NOTE: Don't delete help text data - it's not necessary (I think!)
         else:
             user = create_initial_users(delete=False)
             add_initial_data(user, delete)
+
+            # Add intial data via service
+            populate_help_text_fields(fixture_file="plan_visual_django/fixtures/help_text.json")
