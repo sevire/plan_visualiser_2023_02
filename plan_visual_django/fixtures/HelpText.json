@@ -1,0 +1,102 @@
+[
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 1,
+    "fields": {
+      "slug": "manage-plans",
+      "title": "Manage Plans Screen",
+      "content": "In this screen you can see all the plans that have been uploaded and then have the choice of:\r\n\r\n- Adding a new plan\r\n- Deleting a plan\r\n- Re-uploading the latest version of the plan\r\n- Going to the Manage Visuals screen for a given plan",
+      "updated_at": "2025-02-22T10:57:49.090Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 2,
+    "fields": {
+      "slug": "add-edit-visual",
+      "title": "Add or Edit Visual For Plan",
+      "content": "This screen allows you to create a new visual (or modify the settings for and existing visual) for the selected plan and set a number of parameters which influence the layout and look and feel of the visual.\r\n\r\nMost values have suggested defaults which means that you can create a new visual very quickly and come back later to adjust any settings as you wish.\r\n\r\nThe attributes which can be set in this screen are:\r\n\r\n<table class=\"table table-primary\" style=\"width: auto; table-layout: auto\">\r\n    <tbody>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold; text-align: right; font-weight: bold\">\r\n            Name\r\n        </td>\r\n        <td>Name of visual to help organise several visuals for same plan. Default will be suggested.</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Width in pixels</td>\r\n        <td>(not really sure whether we need these!!)</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Max Height in pixels</td>\r\n        <td>(not really sure whether we need these!!)</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Include Title</td>\r\n        <td>IncludeFlag to include the name of the visual on the visual itself (not implemented)</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Default activity shape</td>\r\n        <td>Shape to use for activities</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Default milestone shape</td>\r\n        <td>Default shape to use for milestones</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Track Height</td>\r\n        <td>Height of each track in pixels (activities typically fit into a single track so this is the height of most\r\n            activities which appear on the visual.\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Default timeline height in pixels</td>\r\n        <td>(not sure this is relevant now we have flags for timelines?</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Track Gap in pixels</td>\r\n        <td>The vertical gap between each track, and therefore the gap between activities which are in adjacent tracks\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Milestone width in pixels</td>\r\n        <td>Milestones will appear as a shape with a constant width as the duration for a milestone is zero. This is the\r\n            width to use for milestones. Its value may need to be adjusted to ensure the milestones are visible on plans\r\n            which span a large number of days. (Probably should calculate a default value which is about the width of\r\n            one day or similar?)\r\n        </td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Swimlane gap in pixels</td>\r\n        <td>the vertical gap between each swimlane.</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold\">Default styles for each element</td>\r\n        <td>Default styles for the following elements:\r\n            <ul>\r\n                <li>Activity</li>\r\n                <li>Milestone</li>\r\n                <li>Swimlane</li>\r\n                <li>Timeline (even numbered timeline elements)</li>\r\n                <li>Timeline (odd numbered timeline elements)</li>\r\n            </ul>\r\n        </td>\r\n    </tr>\r\n    </tbody>\r\n</table>",
+      "updated_at": "2025-02-22T14:48:09.238Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 3,
+    "fields": {
+      "slug": "re-upload-plan",
+      "title": "Re-upload Plan",
+      "content": "Upload the latest version of a previously uploaded plan. This allows a plan to be updated without having to rebuild the visual for that plan.  All visuals will continue to work in a way consistent with the following rules\n\n- Any new activities won't be included in the visual.\n- Existing activities will remain in the visual if they already were but will be updated if dates have changed\n- Any activities which have been removed will be removed from the visual",
+      "updated_at": "2025-02-21T16:25:10.344Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 4,
+    "fields": {
+      "slug": "add-plan",
+      "title": "Adding a New Plan",
+      "content": "Add a new plan by selecting the (Excel) file which is the export of the plan to Excel, then choosing the correct format for the plan.  A name is suggested for the plan but you can amend this if you wish to.  The Excel file which represents the plan must conform to one of the recognised formats, such as default MS Project export, or Smartsheet export.",
+      "updated_at": "2025-02-21T16:31:14.529Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 5,
+    "fields": {
+      "slug": "plot-visual",
+      "title": "Manage and Display The Visual",
+      "content": "This is the main screen you will use to create and modify a visual for one or your plans.  There are various panels on this screen:\r\n\r\n- On the left hand side, at the bottom, is the Activities Panel.  This panel shows all the activities in the plan, with indentation to reflect the structure of the plan (if levels are included in the imported plan).  Activities that are included in the visual are shown in a different colour (pale pink) and if you select and activity and then click on it again, this will toggle its inclusion in the visual. Note this isn't a GANTT chart - it just shows the activities from the plan so that you can add or remove them from the visual.\r\n- Next to the Activities Panel is the visual itself, showing any timelines that have been configured, then all swimlanes which have at least one activity in them and the activities which have been added, displayed on whichever track within the swimlane has been chosen for that activity.\r\n- At the top of the screen there are three panels, which are the Swimlane Panel, the Activity Properties Panel, and the Timelines Panel\r\n    - The Swimlanes Panel shows all swimlanes which have been added to the visual, and has buttons which allow the user to move the swimlanes up or down relative to each other, which is reflected in the visual, or to compress the swimlane (remove any empty tracks) or auto-layout the swimlane, which seeks to layout activities on within the swimlane making the best use of space by placing activities on the same track where this makes sense.\r\n    - The Activity Properties Panel shows the key attributes of the activity currently selected within the Activities Panel, including those which define how it is represented in the visual (such as which swimlane it is included in). The attributes which can be modified in this panel for the currently selected activity are:\r\n        - Swimlane (dropdown)\r\n        - Track (arrows to move up or down within the swimlane)\r\n        - Text Flow (Left aligned flowing to the right, out of the activity if required, Right aligned flowing left, out of the shape if required, or central, flowing out of the shape in both directions if required.\r\n        - Height (arrows to increase or decrease the number of tracks an activity covers)\r\n        - Shape (dropdown - allows the shape to be used to display the activity to be modified)\r\n        - Style (dropdown) - allows the style of the activity to be modified\r\n    - The Timelines Panel lists all the timelines that have been implemented and allows the user to change the order that they appear in the visual and toggle them on or off for the current visual.",
+      "updated_at": "2025-02-21T17:33:45.831Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 6,
+    "fields": {
+      "slug": "manage-visuals",
+      "title": "Manage Visuals For Plan",
+      "content": "For any plan that you have uploaded, you can create one or more visualisations of that plan.  This screen shows you all the visuals you have created for the selected plan, with a thumbnail of that visual, and allows you to click on any visual to edit the visual, or to modify the settings for that visual.",
+      "updated_at": "2025-02-22T11:07:15.947Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 7,
+    "fields": {
+      "slug": "manage-swimlanes-for-visual",
+      "title": "Manage Swimlanes For Visual",
+      "content": "Each visual will include one or more swimlanes.  When a visual is created three swimlanes are added automatically, but these can be added to or the names changed if required.\r\n\r\nWhen new activities are added to the visual they are initially added to the top swimlane, underneath the existing activities in that swimlane, but the activity can then be moved to another swimlane and positioned as required.\r\n\r\nThis screen is used to add new swimlanes, change the names of existing swimlanes or change the styling for a swimlane.\r\n\r\nMake changes to each swimlane using the form, or fill in the details of a new swimlane, then click SUBMIT and all changes will be made.  To add more than one swimlane, press SUBMIT for each one.",
+      "updated_at": "2025-02-22T14:59:49.160Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 8,
+    "fields": {
+      "slug": "manage-colors",
+      "title": "Manage Colours",
+      "content": "Colours are used within styles which can be applied to different elements of a visual, such as activities, swimlanes.  A number of standard colours are available but a registered user can define their own colours which can then be used in styles.\r\n\r\nThis screen allows a user to add colours, giving them a name which can then be selected when creating or modifying styles, modify existing colours, or delete colours.\r\n\r\nOnly colours which have been created by a user can be deleted or modified (i.e. standard colours can not be deleted or modified.",
+      "updated_at": "2025-02-22T15:13:11.723Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 9,
+    "fields": {
+      "slug": "manage-plotable-styles",
+      "title": "Manage Plotable Styles",
+      "content": "Each plotable element on the visual has a style which sets the background colour, outline colour, the font colour, outline thickness, font and font size.\r\n\r\nA number of standard styles are created which are available when styling the visual, but a registered user can define their own plotable styles if desired.\r\n\r\nThis screen allows existing styles to be modified or new styles defined.\r\n\r\nAny defined colours can be used in styles, which includes standard styles and user defined styles.",
+      "updated_at": "2025-02-22T15:12:14.479Z"
+    }
+  },
+  {
+    "model": "plan_visual_django.helptext",
+    "pk": 10,
+    "fields": {
+      "slug": "list-file-types",
+      "title": "List File Types",
+      "content": "At the latest version of the app, plan files must be Excel files where each row represents and activity on the plan and each column represents a different attribute of that activity.  In order for visuals to be created, certain columns/fields are required to be provided.  These are:\r\n\r\n<table class=\"table bg-secondary\" style=\"width: auto; table-layout: auto\">\r\n    <tbody>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">STICKY_UID</td>\r\n        <td>\r\n            Most project planning applications assign a unique id to each activity when it is added to the plan\r\n            and that id is maintained for that activity. It isn't a sequence number and as other activities\r\n            get added before or after it, the id maintains its value, hence the name - STICKY_ID.\r\n\r\n            The attribute is important in creating visuals from a plan which is going to be updated becaue in order to\r\n            correcly process a new version of an already uploaded plan, the app needs to be able to identify which\r\n            activities are already in the visual, which have been added or removed.\r\n\r\n            Note: Some planning apps don't provide a unique id by default (such as SmartSheet) and in those cases,\r\n            the user will need to add this column wichin SmartSheet manually before exporting the plan. Each file type\r\n            on this page includes a link to a page which has more detailed instructions on how to ensure the exported\r\n            file is of the right format.\r\n            td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">NAME</td>\r\n        <td>Activity Name</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">DURATION</td>\r\n        <td><span style=\"font-weight: bold\">Only</span> used to identify Milestones.  A Milestone is defined as an activity with duration of zero.</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">START</td>\r\n        <td>Start Date</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">END</td>\r\n        <td>End Date</td>\r\n    </tr>\r\n    <tr>\r\n        <td style=\"white-space: nowrap; text-align: right; font-weight: bold;\">LEVEL</td>\r\n        <td>Used in defining the hierarchy for the plan.\r\n            \r\n        A plan comprises a hierarchical structure where high level activities are made up of lower level\r\n        activities in a recursive manner.  This structure is important as when defining which activities to place on\r\n        the visual, typically you would either place a high level activity or its lower level sub-activities, but\r\n        not both (to make good use of the space available).  This principle will also be adopted by automated\r\n        algorithms for creating visuals.  If level is not included then the app will still work but it will be much more\r\n        difficult to create a good visual as it won't be obvious which activities are sub-\r\n        activities of others.</td>\r\n    </tr>\r\n    </tbody>\r\n</table>\r\n\r\n\r\nVarious formats are supported (and these will be added to as support for different use cases increases).\r\n\r\nThis screen allows the user to see what the mapping is for each defined type, so that they can check that their exported Excel file conforms to an agreed mapping, or can use to define a mapping for an export.\r\n\r\nThe intention is to minimise the effort expensed by a user in order to use the app so mappings have been chosen to be as near to default or standard export formats for the expected use cases (such as MS Project Excel File Export and SmartSheet File Export).\r\n\r\nFeel free to contact the developer if you'd like to see additional mappings.  In the future it is expected that users with the appropriate level will be able to add their own mappings.\r\n\r\nMicrosoft Project allows the user to export any project plan to Excel and it is easy to ensure that the minimum fields required to support creating a Plan Visualisation are included in the exported file.",
+      "updated_at": "2025-02-22T16:35:23.759Z"
+    }
+  }
+]
