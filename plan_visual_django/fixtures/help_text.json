@@ -5,7 +5,7 @@
     "fields": {
       "slug": "manage-plans",
       "title": "Manage Plans Screen",
-      "content": "In this screen you can see all the plans that have been uploaded and then have the choice of:\r\n\r\n- Adding a new plan\r\n- Deleting a plan\r\n- Re-uploading the latest version of the plan\r\n- Going to the Manage Visuals screen for a given plan",
+      "content": "In this screen you can see all the plans that have been uploaded and then have the choice to:\r\n\r\n- Adding a new plan\r\n- Deleting a plan\r\n- Re-uploading the latest version of the plan\r\n- Going to the Manage Visuals screen for a given plan",
       "updated_at": "2025-02-22T10:57:49.090Z"
     }
   },
