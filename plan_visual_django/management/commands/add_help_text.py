@@ -1,6 +1,7 @@
 # myapp/management/commands/add_helptext.py
 from django.core.management.base import BaseCommand, CommandError
 from plan_visual_django.models import HelpText
+from plan_visual_django.services.initialisation.add_help_text_service import add_help_text_service
 
 
 class Command(BaseCommand):
@@ -26,24 +27,7 @@ class Command(BaseCommand):
         overwrite = options['overwrite']  # Check if overwrite flag is provided
 
         try:
-            # Check if a HelpText record with this slug exists
-            help_text = HelpText.objects.filter(slug=slug).first()
-
-            if help_text:
-                if overwrite:
-                    # Overwrite the record
-                    help_text.title = title
-                    help_text.content = content
-                    help_text.save()
-                    self.stdout.write(self.style.SUCCESS(f"Successfully overwrote HelpText with slug '{slug}'."))
-                else:
-                    raise CommandError(
-                        f"A HelpText record with slug '{slug}' already exists. Use '--overwrite' to update it."
-                    )
-            else:
-                # Create a new record if the slug does not exist
-                HelpText.objects.create(slug=slug, title=title, content=content)
-                self.stdout.write(self.style.SUCCESS(f"Successfully added HelpText '{title}' with slug '{slug}'."))
+            add_help_text_service(slug, title, content, overwrite)
 
         except Exception as e:
             raise CommandError(f"An error occurred while saving HelpText: {e}")
