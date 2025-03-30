@@ -151,35 +151,6 @@ class VisualFormForEdit(ModelForm):
         self.fields["default_timeline_plotable_style_even"].queryset = filtered_styles
 
 
-class VisualActivityFormForEdit(ModelForm):
-    def __init__(self, *args, **kwargs):
-        unique_id = kwargs['instance'].unique_id_from_plan
-        visual = kwargs['instance'].visual
-        activity_from_plan = visual.plan.planactivity_set.filter(unique_sticky_activity_id=unique_id)
-        activity_name = activity_from_plan[0].activity_name
-
-        super().__init__(*args, **kwargs)
-
-        new_fields = {'unique_id_from_plan': CharField(max_length=50), 'activity': CharField(max_length=200)}
-
-        new_fields.update(self.fields)
-        self.fields = new_fields
-        self.fields['swimlane'].queryset = SwimlaneForVisual.objects.filter(plan_visual=visual)
-        self.initial['activity'] = activity_name
-        self.fields['unique_id_from_plan'].label = "Id"
-        self.fields['vertical_positioning_value'].label = "Track #"
-        self.initial['unique_id_from_plan'] = unique_id
-
-        # Set the order of fields in the form with activity first
-
-    field_order = ["unique_id_from_plan", "activity", "swimlane", "vertical_positioning_value"]
-
-
-    class Meta:
-        model = VisualActivity
-        fields = "__all__"
-
-
 class SwimlaneDropdownForm(ModelForm):
     """
     This form is used to create a dropdown list of swimlanes within a visual for the user to select. Will be used when

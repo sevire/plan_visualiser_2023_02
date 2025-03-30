@@ -7,6 +7,7 @@ from plan_visual_django.managers import PlotableStyleManager
 from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
 from plan_visual_django.services.visual.rendering.plotables import get_plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
 from django.contrib.auth.models import AbstractUser
@@ -184,68 +185,6 @@ class PlotableStyle(models.Model):
         return f"{self.font_size}px {self.font.font_name}"
 
 
-class PlotableShapeType(models.Model):
-    """
-    I'm re-factoring this as I move the app to a server for alpha testing.  I'm struggling to remember how I originally
-    envisaged this working but I have decide how I now think it should work and am re-working around that.
-
-    So...
-
-    A Shape Type is a category which indicates the way a shape is defined.  For example, almost every shape
-    I will use in the visual (or even every shape) will be based around a rectangle and be defined by the scheme:
-
-    - top
-    - left
-    - width
-    - height
-
-    There may be additional parameters which impact things like corner radius for a rounded rectangle which
-    will be added through shape specific models.
-
-    At some point I may introduce more sophisticate shape types, to allow less regular shapes to be used (although I'm
-    not sure whether that will really be necessary), such as shapes defined by a set of points, or svg shapes.
-
-    Then each shape will fit into one of the defined shape types.
-    """
-    name = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class PlotableShape(models.Model):
-    class PlotableShapeName(models.TextChoices):
-        RECTANGLE = "RECTANGLE", "Rectangle"
-        ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rounded Rectangle"
-        BULLET = "BULLET", "Bullet"
-        DIAMOND = "DIAMOND", "Diamond"
-        ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
-
-    shape_type = models.ForeignKey(PlotableShapeType, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, choices=PlotableShapeName.choices)
-
-    def get_plotable_shape(self):
-        return self.PlotableShapeName(self.name)
-
-    def __str__(self):
-        return self.name
-
-    def to_json(self):
-        return self.shape_type
-
-
-class PlotableShapeAttributesRectangle(models.Model):
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    width = models.FloatField()
-    height = models.FloatField()
-
-
-class PlotableShapeAttributesDiamond(models.Model):
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    width = models.FloatField()
-    height = models.FloatField()
-
-
 class PlanVisual(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=False)
     name = models.CharField(max_length=100)
@@ -256,8 +195,8 @@ class PlanVisual(models.Model):
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
-    default_milestone_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_milestone_shape")
-    default_activity_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_activity_shape")
+    default_milestone_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
+    default_activity_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")
     default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
     default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
@@ -790,7 +729,7 @@ class SwimlaneForVisual(models.Model):
 
         swimlane_plotable = get_plotable(
             f"swimlane-{self.id}",
-            PlotableShape.PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
+            PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
             top=this_top,
             left=0,  # Hard-coding for now as nothing will appear to the left of the swimlane
             width=self.plan_visual.width,
@@ -849,7 +788,7 @@ class VisualActivity(models.Model):
     unique_id_from_plan = models.CharField(max_length=50)  # ID from imported plan which will not change
     enabled = models.BooleanField()
     swimlane = models.ForeignKey(SwimlaneForVisual, on_delete=models.CASCADE)
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
+    plotable_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     vertical_positioning_value = models.FloatField()
     height_in_tracks = models.FloatField(default=1)
     text_horizontal_alignment = models.CharField(max_length=20, choices=HorizontalAlignment.choices)
@@ -928,8 +867,8 @@ class VisualActivity(models.Model):
             width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
 
         plotable = get_plotable(
-            "activity-"+self.unique_id_from_plan,
-            self.plotable_shape.name,
+            plotable_id="activity-"+self.unique_id_from_plan,
+            plotable_shape_name=PlotableShapeName.get_by_value(self.plotable_shape),
             top=activity_top,
             left=left,
             width=width,

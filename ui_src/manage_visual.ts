@@ -358,7 +358,7 @@ function select_for_edit(activity_id:string, clear=false) {
   if (clear) {
     console.log("Clear is set - don't update visual fields (as this activity not in visual)")
   } else {
-    // No populate each of the visual related fields (only if activity is in the visual)
+    // Now populate each of the visual related fields (only if activity is in the visual)
     edit_visual_activity_td_elements.forEach(td_element => {
       const key = td_element.id;
       let activity_field_val = activity.visual_data[key];
@@ -384,17 +384,20 @@ function select_for_edit(activity_id:string, clear=false) {
 
         let button: HTMLButtonElement = createDropdown(
           td_element as HTMLElement,
-          activity.visual_data[key].name
+          activity.visual_data[key].value
         );
 
         populateDropdown(
           button,
           (window as any).shape_data.map((obj: any) => [obj.name, obj.id]),
           async (shape_id: number) => {
-                     await update_shape_for_activity_handler(activity_id, shape_id);
-                     await get_visual_activity_data((window as any).visual_id)
-                     plot_visual()
-                 }
+            // Lookup shape name from id as that is what needs to be updated in the database
+            const shape_name = (window as any).shape_data.find((obj: any) => obj.id === shape_id).name;
+
+            await update_shape_for_activity_handler(activity_id, shape_name);
+            await get_visual_activity_data((window as any).visual_id)
+            plot_visual()
+         }
        );
       } else if (key === "plotable_style") {
         // Start by clearing the element before updating it for this activity.

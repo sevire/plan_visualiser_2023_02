@@ -792,29 +792,6 @@
     }
   },
   {
-    "model": "plan_visual_django.plotableshapetype",
-    "pk": 1,
-    "fields": {
-      "name": "RECTANGLE_BASED"
-    }
-  },
-  {
-    "model": "plan_visual_django.plotableshape",
-    "pk": 1,
-    "fields": {
-      "shape_type": 1,
-      "name": "RECTANGLE"
-    }
-  },
-  {
-    "model": "plan_visual_django.plotableshape",
-    "pk": 2,
-    "fields": {
-      "shape_type": 1,
-      "name": "DIAMOND"
-    }
-  },
-  {
     "model": "plan_visual_django.planvisual",
     "pk": 4,
     "fields": {
@@ -930,7 +907,7 @@
       "unique_id_from_plan": "ID-026",
       "enabled":  true,
       "swimlane": 4,
-      "plotable_shape": 1,
+      "plotable_shape": "RECTANGLE",
       "vertical_positioning_value": 5,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",
@@ -947,7 +924,7 @@
       "unique_id_from_plan": "ID-025",
       "enabled":  true,
       "swimlane": 5,
-      "plotable_shape": 1,
+      "plotable_shape": "RECTANGLE",
       "vertical_positioning_value": 1,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",
@@ -964,7 +941,7 @@
       "unique_id_from_plan": "ID-024",
       "enabled":  true,
       "swimlane": 5,
-      "plotable_shape": 1,
+      "plotable_shape": "RECTANGLE",
       "vertical_positioning_value": 10,
       "height_in_tracks": 2,
       "text_horizontal_alignment":  "LEFT",
@@ -981,7 +958,7 @@
       "unique_id_from_plan": "ID-001",
       "enabled":  false,
       "swimlane": 5,
-      "plotable_shape": 1,
+      "plotable_shape": "RECTANGLE",
       "vertical_positioning_value": 9,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",
@@ -998,7 +975,7 @@
       "unique_id_from_plan": "ID-001",
       "enabled":  true,
       "swimlane": 100,
-      "plotable_shape": 1,
+      "plotable_shape": "RECTANGLE",
       "vertical_positioning_value": 9,
       "height_in_tracks": 1,
       "text_horizontal_alignment":  "LEFT",

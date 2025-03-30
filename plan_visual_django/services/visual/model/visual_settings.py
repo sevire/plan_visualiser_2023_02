@@ -1,3 +1,6 @@
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
+
+
 class VisualSettings:
     """
     Holds key information about the visual which is required to physically plot it.
@@ -41,7 +44,6 @@ class VisualSettings:
         :return:
         """
 
-        from plan_visual_django.models import PlotableShape
         from plan_visual_django.models import PlotableStyle
 
         num_visuals_for_plan = plan.planvisual_set.count()
@@ -51,8 +53,8 @@ class VisualSettings:
             "width": 1200,
             "max_height": 800,
             "include_title": False,
-            "default_activity_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.RECTANGLE),
-            "default_milestone_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.DIAMOND),
+            "default_activity_shape": PlotableShapeName.RECTANGLE,
+            "default_milestone_shape": PlotableShapeName.DIAMOND,
             "track_height": 20,
             "track_gap": 4,
             "milestone_width": 10,

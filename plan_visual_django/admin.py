@@ -8,10 +8,6 @@ from plan_visual_django.models import (
     Color,
     Font,
     PlotableStyle,
-    PlotableShapeType,
-    PlotableShape,
-    PlotableShapeAttributesRectangle,
-    PlotableShapeAttributesDiamond,
     PlanVisual,
     SwimlaneForVisual,
     VisualActivity,
@@ -64,26 +60,6 @@ class PlotableStyleAdmin(admin.ModelAdmin):
 class PlanVisualAdmin(admin.ModelAdmin):
     list_display =  ('name', 'plan')
     ordering = ('plan',)
-
-
-@admin.register(PlotableShapeType)
-class PlotableShapeTypeAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShape)
-class PlotableShapeAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShapeAttributesRectangle)
-class PlotableShapeAttributesRectangleAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShapeAttributesDiamond)
-class PlotableShapeAttributesDiamondAdmin(admin.ModelAdmin):
-    exclude = []
 
 
 @admin.register(SwimlaneForVisual)
