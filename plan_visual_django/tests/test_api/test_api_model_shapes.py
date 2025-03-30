@@ -30,8 +30,8 @@ class TestApiPlotableShapes(TestCase):
         response = self.client.get(url)
         json_response = response.json()
         returned_api_plotable_shape_names = [shape["name"] for shape in json_response]
-        with self.subTest(num_shapes=2):
-            self.assertEqual(2, len(returned_api_plotable_shape_names))
+        with self.subTest(num_shapes=5):
+            self.assertEqual(5, len(returned_api_plotable_shape_names))
 
         for expected_plotable_style in expected_plotable_shapes:
             with self.subTest(expected_plotable_style=expected_plotable_style):

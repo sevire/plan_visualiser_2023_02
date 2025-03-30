@@ -32,7 +32,7 @@ class Command(BaseCommand):
             raise CommandError(message)
 
         except Exception as e:
-            message = f"Error adding HelpText {slug}: {e}"
+            message = f"Error adding HelpText: {e}"
             print(message)
             raise CommandError(message)
 

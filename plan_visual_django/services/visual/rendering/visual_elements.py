@@ -41,7 +41,7 @@ class VisualElement:
     def plot_element(self):
         plotable:Plotable = get_plotable(
             plotable_id=self.plotable_id,
-            shape_name=self.shape,
+            plotable_shape_name=self.shape,
             top=self.top,
             left=self.left,
             width=self.width,
@@ -56,7 +56,7 @@ class VisualElement:
 
     def render_element(self, renderer):
         plotable = self.plot_element()
-        renderer.plot_plotable(plotable)
+        renderer.render_plotable(plotable)
 
     def _set_element_specific_attributes(self, **kwargs):
         """
