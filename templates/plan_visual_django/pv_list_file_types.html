@@ -3,11 +3,15 @@
 {% block main_content %}
     <div class="row">
 
-        {% for filetype_object, mapping_for_file_type in ordered_mapped_fields %}
+        {% for filetype_object, mapping_for_file_type, slug_for_static_page in ordered_mapped_fields %}
             <div class="col-sm-4">
                 <div class="card h-100">
                     <div class="card-body bg-secondary-subtle">
-                    <h5 class="card-title">{{ filetype_object.title}}</h5>
+                        <h5 class="card-title">
+                            <a class="text-primary text-decoration-none fw-bold" href="{% url 'static-pages' slug_for_static_page %}">
+                                {{ filetype_object.title}}
+                            </a>
+                        </h5>
                     <p style="height: 100px; overflow-y: auto;" class="card-text mb-auto">{{ filetype_object.description }}</p>
                     <table class="table">
                         {%  for field_mapping in mapping_for_file_type %}
