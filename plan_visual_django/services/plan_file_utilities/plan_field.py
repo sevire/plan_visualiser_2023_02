@@ -142,14 +142,14 @@ class PlanFieldEnum(Enum):
 
 class FileType(Enum):
     EXCEL_MSP_EXPORT_DEFAULT = (
-        "Excel - Default MSP Export Format",
+        "Excel - Default MSP Export",
         "excel-01-msp-export-default-01",
         """Represents mapping of all field names from Microsoft Project export to Excel, using 
         default field names.
         """
     )
     SMARTSHEET_EXPORT_01 = (
-        "Smartsheet - Default export with added Row Id column",
+        "Excel - Default Smartsheet Export (with Id)",
         "excel-02-smartsheet-export-01",
         """Represents one of several field mappings from a Smartsheet export to Excel.  Note that Smartsheet
         doesn't have build-in columns for ID or Level, so there are no default names."""
@@ -211,7 +211,7 @@ class FileTypes:
     file_type_data = {
         FileType.EXCEL_MSP_EXPORT_DEFAULT: {
             PlanFieldEnum.STICKY_UID: PlanInputFieldSpecification("ID", PlanInputFieldTypeEnum.STRING),
-            PlanFieldEnum.NAME: PlanInputFieldSpecification("Task_Name", PlanInputFieldTypeEnum.STRING),
+            PlanFieldEnum.NAME: PlanInputFieldSpecification("Name", PlanInputFieldTypeEnum.STRING),
             PlanFieldEnum.DURATION: PlanInputFieldSpecification("Duration", PlanInputFieldTypeEnum.STRING_nn_Days),
             PlanFieldEnum.START: PlanInputFieldSpecification("Start_Date",
                                                              PlanInputFieldTypeEnum.STRING_DATE_DMY_02),
@@ -219,12 +219,12 @@ class FileTypes:
             PlanFieldEnum.LEVEL: PlanInputFieldSpecification("Outline_Level", PlanInputFieldTypeEnum.INTEGER),
         },
         FileType.SMARTSHEET_EXPORT_01: {
-            PlanFieldEnum.STICKY_UID: PlanInputFieldSpecification("Row ID", PlanInputFieldTypeEnum.FLOAT),
-            PlanFieldEnum.NAME: PlanInputFieldSpecification("Task", PlanInputFieldTypeEnum.STRING),
+            PlanFieldEnum.STICKY_UID: PlanInputFieldSpecification("Id", PlanInputFieldTypeEnum.FLOAT),
+            PlanFieldEnum.NAME: PlanInputFieldSpecification("Task Name", PlanInputFieldTypeEnum.STRING),
             PlanFieldEnum.DURATION: PlanInputFieldSpecification("Duration", PlanInputFieldTypeEnum.STRING_nnd),
-            PlanFieldEnum.START: PlanInputFieldSpecification("Start Date", PlanInputFieldTypeEnum.DATE),
-            PlanFieldEnum.END: PlanInputFieldSpecification("End Date", PlanInputFieldTypeEnum.DATE),
-            PlanFieldEnum.LEVEL: PlanInputFieldSpecification("Task", PlanInputFieldTypeEnum.FLOAT, PlanFieldInputSourceEnum.INDENT)
+            PlanFieldEnum.START: PlanInputFieldSpecification("Start", PlanInputFieldTypeEnum.DATE),
+            PlanFieldEnum.END: PlanInputFieldSpecification("Finish", PlanInputFieldTypeEnum.DATE),
+            PlanFieldEnum.LEVEL: PlanInputFieldSpecification("Task Name", PlanInputFieldTypeEnum.FLOAT, PlanFieldInputSourceEnum.INDENT)
         },
     }
 

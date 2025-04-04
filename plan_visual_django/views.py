@@ -779,8 +779,9 @@ class FileTypeListView(ListView):
         for file_type, fields in context['object_list']:
             # Prepare a list of tuples: (field_name, field) for every field in fields dictionary.
             mapping_type_fields = [(field_name, field) for field_name, field in fields.items()]
+            slug_for_static_page = "file-type-" + file_type.file_type_name.lower().replace(" ", "-")
 
-            mapped_fields_for_file_types.append((file_type, mapping_type_fields))
+            mapped_fields_for_file_types.append((file_type, mapping_type_fields, slug_for_static_page))
 
         # mapped_fields_for_file_types = [(file_type, PlanMappedField.objects.filter(plan_field_mapping_type=file_type.plan_field_mapping_type).order_by('mapped_field__sort_index')) for file_type in context['object_list']]
         context['ordered_mapped_fields'] = mapped_fields_for_file_types
