@@ -439,8 +439,8 @@ function select_for_edit(activity_id:string, clear=false) {
         td_element.textContent = activity_field_val;
       }
     });
+    highlight_activity(activity_id)
   }
-  highlight_activity(activity_id)
 }
 
 async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivElement, topLevelElements: any) {
