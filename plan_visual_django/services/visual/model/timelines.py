@@ -61,6 +61,7 @@ class Timeline(VisualElementCollection):
             return HalfYearTimeline(start_date, end_date, timeline)
         elif timeline.timeline_type == TimelineForVisual.TimelineLabelType.YEAR:
             return YearTimeline(start_date, end_date, timeline)
+        return None
 
 
 class MonthTimeline(Timeline):

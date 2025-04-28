@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { get_visual_activity_data } from "./plan_visualiser_api";
+import { get_visual_activity_data, get_visual_settings } from "./plan_visualiser_api";
 import { plot_visual } from "./plot_visual";
 export class Dropdown {
     constructor(id, activity_unique_id, options, select_handler) {
@@ -38,6 +38,9 @@ export class Dropdown {
                 console.log(`Swimlane selected: text:${this.selectedOption}, id:${swimlane_id}`);
                 yield this.select_handler(this.activity_unique_id, swimlane_id);
                 yield get_visual_activity_data(window.visual_id);
+                // Need visual settings as it included visual height which is needed to plot.
+                const response = yield get_visual_settings(window.visual_id);
+                window.visual_settings = response.data;
                 plot_visual();
             }));
             if (this.element) {

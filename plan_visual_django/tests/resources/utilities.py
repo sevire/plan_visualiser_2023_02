@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from plan_visual_django.models import PlotableStyle, Font
+
 
 def date_from_string(date_string: str, datetime_flag=False):
     """
@@ -96,5 +98,25 @@ def generate_test_data_field_stream_multiple_inputs(test_data, expected_value_fi
         expected_values = case[field_start:]
         for field, value in zip(expected_value_field_names, expected_values):
             yield *input_values, field, value
+
+def create_default_styles_for_tests(color_to_use, user_to_use):
+    styles = {
+        "default_activity_plotable_style": "theme-01-001-activities-01",
+        "default_milestone_plotable_style": "theme-01-004-milestones-01",
+        "default_swimlane_plotable_style": "theme-01-006-swimlanes-01",
+        "default_timeline_plotable_style_odd": "theme-01-008-timelines-01",
+        "default_timeline_plotable_style_even": "theme-01-009-timelines-02",
+    }
+    for style_name, style_value in styles.items():
+        PlotableStyle.objects.create(
+            fill_color=color_to_use,
+            line_color=color_to_use,
+            font_color=color_to_use,
+            line_thickness=10,
+            font=Font.objects.get(pk=1),
+            font_size=10,
+            user=user_to_use,
+            style_name=style_value
+        )
 
 

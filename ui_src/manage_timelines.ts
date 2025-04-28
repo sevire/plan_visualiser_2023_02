@@ -1,6 +1,6 @@
 import {
   get_timeline_data,
-  get_visual_activity_data,
+  get_visual_activity_data, get_visual_settings,
   update_timeline_records, update_visual_activities
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
@@ -20,6 +20,11 @@ async function manage_arrow_click(visual_id:number, timeline_record: any, direct
   await update_timeline_panel(timeline_element!, visual_id)
 
   await get_visual_activity_data(visual_id)
+
+  // Need visual settings as it included visual height which is needed to plot.
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
   plot_visual()
 }
 
@@ -50,6 +55,11 @@ function createAndPopulateDropdown(
     async (style_id: number) => {
       await update_style_for_timeline_handler(visualId, timelineRecordId, style_id, isOdd);
       await get_visual_activity_data((window as any).visual_id)
+
+      // Need visual settings as it includes visual height which is needed to plot.
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
+
       plot_visual()
     }
   );
@@ -145,6 +155,11 @@ export async function update_timeline_panel(timeline_html_panel:HTMLElement, vis
       await update_timeline_records(visual_id, data)
       await update_timeline_panel(timeline_html_panel, visual_id)
       await get_visual_activity_data(visual_id)
+
+      // Need visual settings as it included visual height which is needed to plot.
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
+
       plot_visual()
     })
     buttonGroup2.appendChild(timelineToggleButton)

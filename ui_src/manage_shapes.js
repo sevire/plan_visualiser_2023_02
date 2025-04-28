@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { get_plan_activity } from "./manage_visual";
-import { update_visual_activities } from "./plan_visualiser_api";
+import { get_visual_settings, update_visual_activities } from "./plan_visualiser_api";
 import { plot_visual } from "./plot_visual";
 export function update_shape_for_activity_handler(unique_id, shape_id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,6 +23,8 @@ export function update_shape_for_activity_handler(unique_id, shape_id) {
             }
         ];
         yield update_visual_activities(activity.visual_data.visual.id, data);
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
         plot_visual();
     });
 }

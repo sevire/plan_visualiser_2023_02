@@ -79,6 +79,14 @@ class Plotable(ABC):
         :return:
         """
 
+    @abstractmethod
+    def get_bottom(self):
+        """
+        Calculate bottom edge of enclosing rectangle, which is (usually) the max of left + width for each plotable
+
+        :return:
+        """
+
 
 class RectangleBasedPlotable(Plotable):
     """

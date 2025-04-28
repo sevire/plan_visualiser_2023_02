@@ -4,7 +4,8 @@ import markdown
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction, IntegrityError
 from django.db.models import ProtectedError
 from django.forms import inlineformset_factory, formset_factory
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -205,73 +206,102 @@ def re_upload_plan(request, pk):
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
-
 def add_visual(request, plan_id):
     current_user = CurrentUser(request)
-    plan = Plan.objects.get(id=plan_id)
 
-    if not current_user.has_access_to_object(plan):
-        return HttpResponseForbidden("You do not have permission to edit this activity.")
+    # Check if the plan exists and user has access
+    try:
+        plan = Plan.objects.get(id=plan_id)
+        if not current_user.has_access_to_object(plan):
+            return HttpResponseForbidden("You do not have permission to edit this plan.")
+    except ObjectDoesNotExist:
+        messages.error(request, "Plan does not exist.")
+        return HttpResponseRedirect(reverse("manage-plans"))
 
     if request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
         if visual_form.is_valid():
-            # Before attempting to save, check whether the name of this visual already exists for this plan
-            if PlanVisual.objects.filter(plan_id=plan_id, name=visual_form.cleaned_data["name"]).exists():
-                messages.error(request, f"Name for new visual {visual_form.cleaned_data['name']} already exists - choose another one.")
-                form = VisualFormForAdd()
-                context = {
-                    'add_or_edit': 'Add',
-                    'form': visual_form
-                }
-                return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+            try:
+                with transaction.atomic():
+                    # Combine form's data with additional fields in business logic
+                    visual_record = PlanVisual(
+                        name=visual_form.cleaned_data["name"],
+                        width=visual_form.cleaned_data["width"],
+                        max_height=visual_form.cleaned_data["max_height"],
+                        include_title=visual_form.cleaned_data["include_title"],
+                        default_activity_shape=visual_form.cleaned_data["default_activity_shape"],
+                        default_milestone_shape=visual_form.cleaned_data["default_milestone_shape"],
+                        track_height=visual_form.cleaned_data["track_height"],
+                        track_gap=visual_form.cleaned_data["track_gap"],
+                        milestone_width=visual_form.cleaned_data["milestone_width"],
+                        swimlane_gap=visual_form.cleaned_data["swimlane_gap"],
+                        default_activity_plotable_style=visual_form.cleaned_data["default_activity_plotable_style"],
+                        default_milestone_plotable_style=visual_form.cleaned_data["default_milestone_plotable_style"],
+                        default_swimlane_plotable_style=visual_form.cleaned_data["default_swimlane_plotable_style"],
+                        default_timeline_plotable_style_odd=visual_form.cleaned_data["default_timeline_plotable_style_odd"],
+                        default_timeline_plotable_style_even=visual_form.cleaned_data["default_timeline_plotable_style_even"],
+                        plan=plan,  # Set the `plan` here before saving
+                    )
 
-            # Save fields from form but don't commit so can modify other fields before comitting.
-            with transaction.atomic():
-                # We need to successfully create the visual, timeline and swimlane records
-                visual_record = visual_form.save(commit=False)
+                    # Attempt to save (will enforce the unique constraint at the database level)
+                    visual_record.save()
 
-                # Add plan to record
-                plan = Plan.objects.get(id=plan_id)
-                visual_record.plan = plan
+                    # Add default swimlanes and timelines
+                    style_for_swimlane = visual_record.default_swimlane_plotable_style
+                    visual_record.add_swimlanes_to_visual(
+                        style_for_swimlane,
+                        "Swimlane 1", "Swimlane 2", "Swimlane 3"
+                    )
+                    TimelineForVisual.create_all_default_timelines(visual_record)
 
-                # Now can save and commit the record
-                visual_record.save()
+                    # Notify success
+                    messages.success(request, "New visual for plan saved successfully.")
 
-                # Now create default versions of objects which are required as part of any visual activity
-                # This logic assumes that there will be certain default records in the database such as Color
-                # and PlotableFormat records.
+                # Redirect to visuals management
+                return HttpResponseRedirect(reverse("manage-visuals", args=[plan_id]))
 
-                style_for_swimlane = visual_record.default_swimlane_plotable_style
+            except IntegrityError as e:
+                # Handle duplicate name violation gracefully
+                if "unique constraint" in str(e).lower():
+                    messages.error(
+                        request,
+                        f"Name for new visual '{visual_form.cleaned_data['name']}' already exists. Choose another one."
+                    )
+                else:
+                    raise  # Raise other exceptions for debugging or further error handling
 
-                visual_record.add_swimlanes_to_visual(
-                    style_for_swimlane,
-                    "Swimlane 1",
-                    "Swimlane 2",
-                    "Swimlane 3"
-                )
+            except Exception as e:
+                # Handle unexpected errors
+                messages.error(request, "An unexpected error occurred while saving the visual.")
+                raise
 
-                TimelineForVisual.create_all_default_timelines(visual_record)
-                messages.success(request, "New visual for plan saved successfully")
-
-        return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
-    elif request.method == "GET":
-        if not current_user.has_access_to_object(plan):
-            messages.error(request, "Plan does not exist or you do not have access")
-            return HttpResponseRedirect(reverse('manage-plans'))
-        else:
-            plan = Plan.objects.get(id=plan_id)
-
-            form = VisualFormForAdd(plan=plan, user=current_user.user)
-            help_text = HelpText.get_help_text("add-edit-visual")
-            context = {
-                'help_text': help_text,
-                'add_or_edit': 'Add',
-                'form': form
+        # If form is invalid, re-render the page with form errors
+        messages.error(request, "The provided data was invalid. Please correct the errors and try again.")
+        return render(
+            request=request,
+            template_name="plan_visual_django/pv_add_edit_visual.html",
+            context={
+                "add_or_edit": "Add",
+                "form": visual_form,
             }
-            return render(request=request, template_name="plan_visual_django/pv_add_edit_visual.html", context=context)
+        )
+
+    elif request.method == "GET":
+        # Display the form for adding a visual
+        form = VisualFormForAdd(plan=plan, user=current_user.user)
+        help_text = HelpText.get_help_text("add-edit-visual")
+        return render(
+            request=request,
+            template_name="plan_visual_django/pv_add_edit_visual.html",
+            context={
+                "help_text": help_text,
+                "add_or_edit": "Add",
+                "form": form,
+            }
+        )
+
     else:
-        raise Exception("Unrecognised METHOD {request['METHOD']}")
+        raise Exception(f"Unrecognized METHOD: {request.method}")
 
 
 def edit_visual(request, visual_id):
