@@ -1,14 +1,17 @@
+from typing import Iterable, Dict
+
 import markdown
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint, Max, Min, Sum
-from plan_visual_django.managers import PlotableStyleManager
+from plan_visual_django.managers import PlotableStyleManager, PlanVisualManager
 from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
-from plan_visual_django.services.visual.rendering.plotables import get_plotable
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
+from plan_visual_django.services.visual.rendering.plotables import get_plotable, Plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
@@ -66,6 +69,27 @@ class Plan(models.Model):
         """
         summary = extract_summary_plan_info(self)
         return summary
+
+    def create_visual(self):
+        """
+        Creates a new visual under this plan, and adds default timelines and swimlanes.
+
+        :return:
+        """
+
+        VisualSettings.calculate_defaults_for_visual(self)
+
+        PlanVisual.objects.create(
+            plan=self,
+            name="Default visual",
+            width=30,
+            max_height=20,
+            include_title=True,
+            track_height=20,
+            track_gap=4,
+            milestone_width=10,
+            swimlane_gap=5,
+        )
 
 
 class PlanActivity(models.Model):
@@ -204,6 +228,8 @@ class PlanVisual(models.Model):
     default_timeline_plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_odd")
     default_timeline_plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_even", null=True)
 
+    objects = PlanVisualManager()
+
     class Meta:
         unique_together = ["plan", "name"]
 
@@ -301,9 +327,16 @@ class PlanVisual(models.Model):
         visual_ids = self.visualactivity_set.filter(enabled=True).values_list('unique_id_from_plan', flat=True)
 
         # Filter PlanActivity objects by plan and unique_sticky_activity_id(from the previous query),
-        # then get the minimum start_date
-        earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
-        latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
+        # then get the minimum start_date. If there are no activities in the visual yet, then we need
+        # to use some defaults so that timelines can be generated from something.  So use the earliest
+        # date in the plan as the earliest date, and the end of that month as the latest.
+        if len(visual_ids) == 0:
+            plan_info = extract_summary_plan_info(self.plan)
+            _, earliest_start_date = plan_info['earliest_start_date']
+            _, latest_end_date = plan_info['latest_end_date']
+        else:
+            earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
+            latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
 
         timeline_records = self.timelineforvisual_set.filter(enabled=True)
 
@@ -457,14 +490,17 @@ class PlanVisual(models.Model):
         """
         highest_sequence_number_for_visual = self.get_max_swimlane_sequence_number()
 
+        swimlanes = []
         for swimlane_sequence_num_increment, swimlane_name in enumerate(args, start=1):
             sequence_number = highest_sequence_number_for_visual + swimlane_sequence_num_increment
-            SwimlaneForVisual.objects.create(
+            swimlane = SwimlaneForVisual.objects.create(
                 plan_visual=self,
                 swim_lane_name=swimlane_name,
                 plotable_style=plotable_style,
                 sequence_number=sequence_number,
             )
+            swimlanes.append(swimlane)
+        return swimlanes
 
     def get_swimlanesforvisual_dimensions(self, sequence_number=None):
         """
@@ -512,6 +548,60 @@ class PlanVisual(models.Model):
             "visual_activities": self.get_visual_activity_plotables()
         }
         return plotables
+
+    def _get_dimensions_recursive(self, plotable_iterable: Plotable | Dict[str, Plotable | Dict[str, Plotable]], lowest_top=-1, highest_bottom=-1, highest_right=-1, lowest_left=-1):
+        """
+        Method to support calculation of dimensions for a visual.  Takes a collection of plotables or a plotable, as
+        well as current values for dimensions and then either:
+            - Recursively calls the function again for each plotable if the passed in object is a collection, or
+            - Updates dimensions based on dimensions of passed in plotable if that is what was provided and then
+              returns.
+
+        :param plotable_iterable:
+        :param lowest_top:
+        :param highest_bottom:
+        :param highest_right:
+        :param lowest_left:
+        :return:
+        """
+        if isinstance(plotable_iterable, Plotable):
+            if lowest_top == -1 or plotable_iterable.get_top() < lowest_top:
+                lowest_top = plotable_iterable.get_top()
+            if highest_bottom == -1 or plotable_iterable.get_bottom() > highest_bottom:
+                highest_bottom = plotable_iterable.get_bottom()
+            if highest_right == -1 or plotable_iterable.get_right() > highest_right:
+                highest_right = plotable_iterable.get_right()
+            if lowest_left == -1 or plotable_iterable.get_left() < lowest_left:
+                lowest_left = plotable_iterable.get_left()
+            return lowest_top, highest_bottom, highest_right, lowest_left
+        elif isinstance(plotable_iterable, Iterable):
+            # Need to distinguish between Dict and other types of iterable
+            if isinstance(plotable_iterable, Dict):
+                # Ignore keys, just get values and iterate recursively through those.
+                values = plotable_iterable.values()
+            else:
+                values = plotable_iterable
+            for next_item in values:
+                updated_lowest_top, updated_highest_bottom, updated_highest_right, updated_lowest_left = self._get_dimensions_recursive(next_item, lowest_top, highest_bottom, highest_right, lowest_left)
+                lowest_top, highest_bottom, highest_right, lowest_left = updated_lowest_top, updated_highest_bottom, updated_highest_right, updated_lowest_left
+            return lowest_top, highest_bottom, highest_right, lowest_left
+        else:
+            raise ValueError(f"Plotable or Iterable expected, got {plotable_iterable}:{type(plotable_iterable)}")
+
+    def get_visual_dimensions(self, lowest_top=-1, highest_bottom=-1, highest_right=-1, lowest_left=-1):
+        """
+        By calculating all plotables for the visual and then extracting the lowest top, highest bottom, lowest left and
+        highest right, work out the dimensions of the visual, which is effectively an imaginary rectangle,
+        exactly the right size to cover the visual.
+
+        :return:
+        """
+        plotables = self.get_plotables()
+        lowest_top, highest_bottom, highest_right, lowest_left = self._get_dimensions_recursive(plotables)
+        width = highest_right - lowest_left
+        height = highest_bottom - lowest_top
+
+        return lowest_top, lowest_left, width, height, highest_right, highest_bottom
 
 
 class TimelineForVisual(models.Model):

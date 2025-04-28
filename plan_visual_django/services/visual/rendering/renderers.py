@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict
+from typing import Iterable, Dict, List
 
 from api.v1.model.visual.plotable_shape.serializer import PlotableShapeSerializer
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
@@ -120,12 +120,12 @@ class CanvasRenderer(VisualRenderer):
         :return:
         """
         width, height = visual_collection.get_dimensions()
-        self.browser_data['settings']['canvas_width'] = width + 10  # Just adding a bit of padding for debug
-        self.browser_data['settings']['canvas_height'] = height + 10
+        self.browser_data['settings']['canvas_width'] = width
+        self.browser_data['settings']['canvas_height'] = height
         super().render_visual(visual_collection)
         return self.browser_data
 
-    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: [Dict]):
+    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: List[Dict]):
         if isinstance(plotable_iterable, Plotable):
             rendered_objects.extend(self.render_plotable(plotable_iterable))
         elif isinstance(plotable_iterable, Iterable):

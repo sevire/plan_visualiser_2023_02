@@ -1,6 +1,6 @@
 import {
   get_swimlane_data,
-  get_visual_activity_data,
+  get_visual_activity_data, get_visual_settings,
   update_swimlane_records,
   update_visual_activities
 } from "./plan_visualiser_api";
@@ -23,6 +23,11 @@ async function manage_arrow_click(
   await update_panel_func!(panel_element!, visual_id)
 
   await get_visual_activity_data(visual_id)
+
+  // Need visual settings as it included visual height which is needed to plot.
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
   plot_visual()
 }
 

@@ -1,4 +1,4 @@
-import {get_visual_activity_data} from "./plan_visualiser_api";
+import {get_visual_activity_data, get_visual_settings} from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 
 export class Dropdown {
@@ -47,8 +47,12 @@ export class Dropdown {
 
             await this.select_handler(this.activity_unique_id, swimlane_id);
             await get_visual_activity_data((window as any).visual_id)
-            plot_visual()
 
+            // Need visual settings as it included visual height which is needed to plot.
+            const response = await get_visual_settings((window as any).visual_id);
+            (window as any).visual_settings = response.data
+
+            plot_visual()
         })
 
         if(this.element) {

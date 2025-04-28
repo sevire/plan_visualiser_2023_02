@@ -6,7 +6,7 @@
 import {
   add_activity_to_visual,
   get_plan_activity_data,
-  get_visual_activity_data,
+  get_visual_activity_data, get_visual_settings,
   remove_activity_from_visual,
   update_visual_activities
 } from "./plan_visualiser_api";
@@ -160,6 +160,11 @@ async function add_move_track_event_handler(direction: string, activity: any) {
   await update_activity_track(activity.visual_data.unique_id_from_plan, direction)
   await get_plan_activity_data((window as any).visual_id)
   await get_visual_activity_data((window as any).visual_id)
+
+  // Need visual settings as it included visual height which is needed to plot.
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
   plot_visual()
 }
 
@@ -178,6 +183,11 @@ async function add_modify_track_height_event_handler(direction: string, activity
   await update_activity_track_height(activity.visual_data.unique_id_from_plan, api_direction)
   await get_plan_activity_data((window as any).visual_id)
   await get_visual_activity_data((window as any).visual_id)
+
+  // Need visual settings as it included visual height which is needed to plot.
+    const response = await get_visual_settings((window as any).visual_id);
+    (window as any).visual_settings = response.data
+
   plot_visual()
 }
 
@@ -188,6 +198,11 @@ async function add_modify_text_flow_event_handler(flow_direction: string, activi
   await update_activity_text_flow(activity.visual_data.unique_id_from_plan, flow_direction)
   await get_plan_activity_data((window as any).visual_id)
   await get_visual_activity_data((window as any).visual_id)
+
+  // Need visual settings as it included visual height which is needed to plot.
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
   plot_visual()
 }
 
@@ -396,6 +411,11 @@ function select_for_edit(activity_id:string, clear=false) {
 
             await update_shape_for_activity_handler(activity_id, shape_name);
             await get_visual_activity_data((window as any).visual_id)
+
+            // Need visual settings as it included visual height which is needed to plot.
+            const response = await get_visual_settings((window as any).visual_id);
+            (window as any).visual_settings = response.data
+
             plot_visual()
          }
        );
@@ -412,9 +432,14 @@ function select_for_edit(activity_id:string, clear=false) {
           button,
           (window as any).style_data.map((obj: any) => [obj.style_name, obj.id]),
           async (style_id: number) => {
-                     await update_style_for_activity_handler(activity_id, style_id);
-                     await get_visual_activity_data((window as any).visual_id)
-                     plot_visual()
+                    await update_style_for_activity_handler(activity_id, style_id);
+                    await get_visual_activity_data((window as any).visual_id)
+
+                    // Need visual settings as it included visual height which is needed to plot.
+                    const response = await get_visual_settings((window as any).visual_id);
+                    (window as any).visual_settings = response.data
+
+                    plot_visual()
                  }
        );
       } else if (key === "swimlane") {
@@ -430,9 +455,14 @@ function select_for_edit(activity_id:string, clear=false) {
           button,
           (window as any).swimlane_data.map((obj: any) => [obj.swim_lane_name, obj.id]),
           async (swimlane_id: number) => {
-                     await update_swimlane_for_activity_handler(activity_id, swimlane_id);
-                     await get_visual_activity_data((window as any).visual_id)
-                     plot_visual()
+                    await update_swimlane_for_activity_handler(activity_id, swimlane_id);
+                    await get_visual_activity_data((window as any).visual_id)
+
+                    // Need visual settings as it included visual height which is needed to plot.
+                    const response = await get_visual_settings((window as any).visual_id);
+                    (window as any).visual_settings = response.data
+
+                    plot_visual()
                  }
        );
       } else {
@@ -455,6 +485,10 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
       await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
       await get_plan_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 
+      // Need visual settings as it included visual height which is needed to plot.
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
+
       plot_visual()
 
       // Now it is in the visual and current activity we should select it for edit.
@@ -463,6 +497,10 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
       // Means we have just toggled it to not in so need to remove it
       await remove_from_visual(activity.plan_data.unique_sticky_activity_id)
       await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
+
+      // Need visual settings as it included visual height which is needed to plot.
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
 
       plot_visual()
 
