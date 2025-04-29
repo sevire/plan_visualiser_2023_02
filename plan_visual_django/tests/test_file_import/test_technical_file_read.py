@@ -16,7 +16,7 @@ from plan_visual_django.models import Plan
 from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldInputSourceEnum
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.resources.utilities import date_from_string
-from plan_visual_django.tests.resources.test_configuration import \
+from plan_visual_django.tests.resources.unit_test_configuration import \
     (test_data_base_folder, test_fixtures_folder, excel_input_files_folder)
 
 # Define input file parameters and expected results separately as we may want the same data in various different input

@@ -3,7 +3,7 @@ import os
 from django.test import TestCase
 from plan_visual_django.models import PlanVisual, Plan, PlotableStyle, CustomUser, Color, Font
 from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
-from test_configuration import test_data_base_folder, test_fixtures_folder
+from unit_test_configuration import test_data_base_folder, test_fixtures_folder
 from utilities import create_default_styles_for_tests
 
 

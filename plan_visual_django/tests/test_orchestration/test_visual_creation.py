@@ -1,7 +1,7 @@
 import os
 from django.test import TestCase
 from plan_visual_django.models import Plan, PlanVisual, TimelineForVisual, PlotableStyle, Color
-from test_configuration import test_fixtures_folder, test_data_base_folder
+from unit_test_configuration import test_fixtures_folder, test_data_base_folder
 from utilities import create_default_styles_for_tests
 
 

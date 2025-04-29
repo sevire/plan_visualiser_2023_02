@@ -4,7 +4,7 @@ from django.test import TestCase
 from plan_visual_django.models import PlanVisual, Plan, PlotableStyle, PlanActivity, VisualActivity, TimelineForVisual, \
     SwimlaneForVisual
 from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
-from test_configuration import test_fixtures_folder, test_data_base_folder
+from unit_test_configuration import test_fixtures_folder, test_data_base_folder
 
 
 @ddt

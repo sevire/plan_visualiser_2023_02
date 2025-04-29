@@ -5,7 +5,7 @@ from api.v1.model.visual.activity.serializer import ModelVisualActivitySerialise
     ModelVisualActivitySerialiserForUpdate
 from api.v1.rendered.canvas.visual.settings.serializer import ModelVisualSerialiser
 from plan_visual_django.models import VisualActivity, PlanVisual
-from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.unit_test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestSerializers(TestCase):
