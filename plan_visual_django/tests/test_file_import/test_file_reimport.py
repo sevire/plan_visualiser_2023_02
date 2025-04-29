@@ -9,7 +9,7 @@ from plan_visual_django.services.plan_file_utilities.plan_field import FileType,
     PlanInputFieldSpecification
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.tests.resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.unit_test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
 
 import logging
 logger = logging.getLogger(__name__)
