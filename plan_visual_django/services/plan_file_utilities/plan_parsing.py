@@ -51,10 +51,11 @@ def update_plan_activity(plan, activity, action):
             record.start_date = activity['start_date']
             record.end_date = activity['end_date']
             record.level = activity['level'] if 'level' in activity else 1
+            record.sequence_number = activity['sequence_number']
 
             record.save()
         elif action == "add":
-            record = PlanActivity(
+            record = PlanActivity.objects.create(
                 plan=plan,
                 unique_sticky_activity_id=activity['unique_sticky_activity_id'],
                 activity_name=activity['activity_name'],
@@ -62,8 +63,8 @@ def update_plan_activity(plan, activity, action):
                 start_date=activity['start_date'],
                 end_date=activity['end_date'],
                 level=activity['level'] if 'level' in activity else 1,
+                sequence_number=activity['sequence_number'],
             )
-            record.save()
 
 
 def parse_plan_file(raw_data, headers, file_reader, plan_field_mapping):
@@ -105,6 +106,12 @@ def read_and_parse_plan(plan, plan_field_mapping, file_reader, update_flag=False
         plan_field_mapping=plan_field_mapping,
         file_reader=file_reader
     )
+
+    # Allocate sequence numbers to the activities.  Then if this is a re-upload as we go through the different
+    # types of update, we apply the new sequence number as needed.
+    for sequence_number, activity in enumerate(parsed_data, start=1):
+        activity['sequence_number'] = sequence_number
+
     if update_flag is False:
         # This is a new plan file so we simply add all records to the plan_activity table.
         for activity in parsed_data:

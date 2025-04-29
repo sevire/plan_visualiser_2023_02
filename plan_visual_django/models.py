@@ -99,6 +99,7 @@ class PlanActivity(models.Model):
     """
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     unique_sticky_activity_id = models.CharField(max_length=50)
+    sequence_number = models.IntegerField(default=0)
     activity_name = models.CharField(max_length=200)
     milestone_flag = models.BooleanField(default=False)
     start_date = models.DateField()
@@ -106,6 +107,7 @@ class PlanActivity(models.Model):
     level = models.IntegerField(default=1)
 
     class Meta:
+        ordering = ["plan", "sequence_number"]
         verbose_name_plural = " Plan activities"
         unique_together = (('plan', 'unique_sticky_activity_id'),)
 
