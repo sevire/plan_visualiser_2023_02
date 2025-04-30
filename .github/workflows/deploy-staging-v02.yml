@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/common/_common-deploy.yml
+    uses: ./.github/workflows/_common-deploy.yml
     with:
       branch: Development
       environment: staging
