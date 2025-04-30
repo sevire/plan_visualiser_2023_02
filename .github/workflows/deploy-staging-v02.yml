@@ -1,0 +1,21 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - Development
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/common/_common-deploy.yml
+    with:
+      branch: Development
+      environment: staging
+      python_version: "3.12"
+    secrets:
+      DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+      DOCKER_REGISTRY_API_TOKEN: ${{ secrets.STAGING_DOCKER_REGISTRY_API_TOKEN }}
+      DOCKER_REGISTRY_NAME: ${{ secrets.STAGING_DOCKER_REGISTRY_NAME }}
+      SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+      SERVER_HOST_IP: ${{ secrets.STAGING_SERVER_HOST_IP }}

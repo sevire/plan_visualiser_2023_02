@@ -1,0 +1,118 @@
+name: Common Deployment Workflow
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch being deployed (e.g., development, main)
+        required: true
+        type: string
+      environment:
+        description: Deployment environment (e.g., staging, live)
+        required: true
+        type: string
+      python_version:
+        description: Python version
+        required: true
+        type: string
+    secrets:
+      DATABASE_URL:
+        required: true
+      DOCKER_REGISTRY_API_TOKEN:
+        required: true
+      DOCKER_REGISTRY_NAME:
+        required: true
+      SSH_PRIVATE_KEY:
+        required: true
+      SERVER_HOST_IP:
+        required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd "pg_isready -U test_user -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout ${inputs.branch}
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${inputs.python_version}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python manage.py migrate
+
+      - name: Run Tests
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECRET_KEY: test_secret_key
+        run: python manage.py test
+
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout ${inputs.branch}
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DOCKER_REGISTRY_API_TOKEN }}
+
+      - name: Build and Push Docker Images
+        run: |
+          docker build -f ./devops/docker/nginx/Dockerfile -t ${{ secrets.DOCKER_REGISTRY_NAME }}/nginx:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_REGISTRY_NAME }}/nginx:${{ github.sha }}
+
+          docker build -f ./devops/docker/gunicorn/Dockerfile -t ${{ secrets.DOCKER_REGISTRY_NAME }}/gunicorn:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_REGISTRY_NAME }}/gunicorn:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: Checkout ${inputs.branch}
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Server (${inputs.environment})
+        run: |
+          ssh root@${{ secrets.SERVER_HOST_IP }} "bash -s" << EOF
+          docker pull ${{ secrets.DOCKER_REGISTRY_NAME }}/nginx:${{ github.sha }}
+          docker pull ${{ secrets.DOCKER_REGISTRY_NAME }}/gunicorn:${{ github.sha }}
+          docker-compose -f /path/to/docker-compose.yml up -d
+          EOF
+
+      - name: Clean Up
+        run: rm -rf ~/.ssh
