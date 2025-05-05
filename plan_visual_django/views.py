@@ -296,6 +296,8 @@ def add_visual(request, plan_id):
             request=request,
             template_name="plan_visual_django/pv_add_edit_visual.html",
             context={
+                "primary_heading": "Add Visual for Plan",
+                "secondary_heading": plan.file_name,
                 "help_text": help_text,
                 "add_or_edit": "Add",
                 "form": form,
@@ -315,6 +317,8 @@ def edit_visual(request, visual_id):
     else:
         instance = PlanVisual.objects.get(id=visual_id)
         plan_id = instance.plan.id
+        plan = Plan.objects.get(id=plan_id)
+
         if request.method == "POST":
             visual_form = VisualFormForEdit(data=request.POST, files=request.FILES, instance=instance)
             if visual_form.is_valid():
@@ -326,6 +330,8 @@ def edit_visual(request, visual_id):
         elif request.method == "GET":
             form = VisualFormForEdit(instance=instance, user=current_user.user)
             context = {
+                "primary_heading": "Edit Visual for Plan",
+                "secondary_heading": plan.file_name,
                 'help_text': HelpText.get_help_text("add-edit-visual"),
                 'visual': instance,
                 'add_or_edit': 'Edit',
