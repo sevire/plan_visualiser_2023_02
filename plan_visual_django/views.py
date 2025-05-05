@@ -119,6 +119,8 @@ def add_plan(request):
     elif request.method == "GET":
         form = PlanForm(request=request)
         context = {
+            "primary_heading": "Upload New Plan",
+            "secondary_heading": "",
             "help_text": HelpText.get_help_text("add-plan"),
             "form": form
         }
