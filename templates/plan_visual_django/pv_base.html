@@ -102,16 +102,19 @@
 </div>
 <div id="header-clearance"></div>
 
-{% if help_text %}
-    <div class="collapse" id="helpPanel">
-        <div class="card card-body mb-3 bg-secondary-subtle">
-            <h4>{{ help_text.title|default:"No help text" }}</h4>
-            <div>
-                {{ help_text.content|default:"No help text"|safe }}  <!-- Safely render the parsed Markdown -->
+{% with help_text_confirmed=help_text|default:"no-help-text" %}
+    {% if help_text_confirmed != "no-help-text" %}
+        <div class="collapse" id="helpPanel">
+            <div class="card card-body mb-3 bg-secondary-subtle">
+                <h4>{{ help_text_confirmed.title|safe }}</h4>
+                <div>
+                    {{ help_text_confirmed.content|safe }}  <!-- Safely render the parsed Markdown -->
+                </div>
             </div>
         </div>
-    </div>
-{% endif %}
+    {% endif %}
+{% endwith %}
+
 
 {% if messages %}
     <div class="container-fluid p-0">
