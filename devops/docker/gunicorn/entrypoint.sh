@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-echo "Echoing current directory..."
+echo "entrypoint.sh starting..."
+echo "Echoing current directory"
 pwd
 
 echo "Listing current directory"
 ls
 
-echo "Applying migrations..."
+echo "Applying migrations...\n"
 python manage.py migrate --noinput
 
 echo "Collecting static..."
@@ -22,3 +23,5 @@ python manage.py update_pk_value
 
 echo "Starting gunicorn..."
 gunicorn plan_visualiser_2023_02.wsgi:application --bind 0.0.0.0:8000
+
+echo "entrypoint.sh finishing"

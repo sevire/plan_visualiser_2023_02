@@ -7,10 +7,10 @@ environment = os.getenv('DJANGO_ENVIRONMENT', 'development')
 
 if environment == 'production':
     print('Using PRODUCTION environment')
-    from .production import *
+    from .production_only_settings import *
 elif environment == 'staging':
     print('Using STAGING environment')
-    from .staging import *
+    from .staging_only_settings import *
 else:
     print('Using DEVELOPMENT environment')
-    from .development import *
+    from .development_only_settings import *

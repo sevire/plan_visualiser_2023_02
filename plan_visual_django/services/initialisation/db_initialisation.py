@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils.crypto import get_random_string
-from plan_visual_django.models import Color, PlotableStyle, PlotableShape, Font
+from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,14 +40,6 @@ initial_data_driver = [
         "field_name_for_messages": "font_name",
     },
     {
-        "dumpdata_filename": 'shapes.json',
-        "model": PlotableShape,
-        "field_name_for_messages": "name",
-        "foreign_keys": [
-            "shape_type",
-        ]
-    },
-    {
         "dumpdata_filename": 'standard_styles.json',
         "model": PlotableStyle,
         "field_name_for_messages": "style_name",
@@ -58,6 +50,11 @@ initial_data_driver = [
             "font_color",
             "font"
         ]
+    },
+    {
+        "dumpdata_filename": 'static_content.json',
+        "model": StaticContent,
+        "field_name_for_messages": "title",
     }
 ]
 
