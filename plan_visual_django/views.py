@@ -830,6 +830,8 @@ class StaticPageView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['primary_heading'] = self.object.title
+        context['secondary_heading'] = ""
         context['markdown_text'] = markdown.markdown(self.object.content, extensions=['nl2br'])
+        context['help_text'] = None
         return context
 

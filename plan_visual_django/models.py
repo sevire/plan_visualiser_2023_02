@@ -1,7 +1,5 @@
 from typing import Iterable, Dict
-
 import markdown
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint, Max, Min, Sum
@@ -57,7 +55,7 @@ class Plan(models.Model):
             [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.plan_name}({self.file_name}:{self.file_type_name})'
+        return f'{self.plan_name}'
 
     def is_anonymous(self):
         """Returns True if the plan is linked to a session instead of a user."""

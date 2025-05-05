@@ -78,7 +78,7 @@ class VisualActivityAdmin(admin.ModelAdmin):
 
 @admin.register(PlanActivity)
 class PlanActivityAdmin(admin.ModelAdmin):
-    list_display = ('unique_sticky_activity_id', 'activity_name', 'start_date', 'end_date')
+    list_display = ('plan', 'sequence_number', 'unique_sticky_activity_id', 'activity_name', 'start_date', 'end_date')
     list_filter = ('plan',)
 
 

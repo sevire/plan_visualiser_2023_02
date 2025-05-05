@@ -31,6 +31,62 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 
+# ------------------------------------------
+# Logging Configuration
+# ------------------------------------------
+# Set logging levels from env variable if present but use defaults based on development if not.
+LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'DEBUG').upper()  # Handler/Console
+LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'DEBUG').upper()  # Handler/File
+LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
+LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname:6} {asctime} {name} ({filename}:{lineno}): {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": LOGGING_LEVEL_H_CONSOLE,
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
+        },
+        "file": {
+            "level": LOGGING_LEVEL_H_FILE,
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "devops/logs/app_logs/debug.log"),
+            "maxBytes": 1024*1024*2, # 2 MB - Keep size low enough so PyCharm log analyser can work
+            "backupCount": 5,
+            "formatter": "verbose"
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": LOGGING_LEVEL_L_DJANGO,
+            "propagate": False,
+        },
+        "root": {
+            "handlers": ["console", "file"],
+            "level": LOGGING_LEVEL_L_ROOT,
+            "propagate": False
+        },
+        'django.middleware': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

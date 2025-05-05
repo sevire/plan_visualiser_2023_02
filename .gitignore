@@ -25,3 +25,4 @@ db.sqlite3-journal
 /plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/plan_files/
 /plan_visual_django/tests/resources/input_files/excel_plan_files/plan_files/
 /plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/~$PV-Test-03-t02-activity-added-not-end.xlsx
+/devops/logs/

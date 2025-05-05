@@ -1,5 +1,4 @@
 from django.core.management import BaseCommand
-
 from plan_visual_django.services.initialisation.add_help_text_service import populate_help_text_fields
 from plan_visual_django.services.initialisation.db_initialisation import create_initial_users, add_initial_data
 
