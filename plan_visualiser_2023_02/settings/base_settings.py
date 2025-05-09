@@ -35,10 +35,10 @@ ROOT_URLCONF = "plan_visualiser_2023_02.urls"
 # Logging Configuration
 # ------------------------------------------
 # Set logging levels from env variable if present but use defaults based on development if not.
-LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'DEBUG').upper()  # Handler/Console
-LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'DEBUG').upper()  # Handler/File
-LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'DEBUG').upper()  # Logger/Django
-LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'DEBUG').upper()  # Logger/Root
+LOGGING_LEVEL_H_CONSOLE = os.getenv('LOGGING_LEVEL_H_CONSOLE', 'INFO').upper()  # Handler/Console
+LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'INFO').upper()  # Handler/File
+LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
+LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 
 LOGGING = {
     "version": 1,

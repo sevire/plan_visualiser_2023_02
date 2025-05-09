@@ -1,7 +1,7 @@
 services:
   django_gunicorn:
     build:
-      context: .
+      context: ../..
       dockerfile: ./devops/docker/gunicorn/Dockerfile
     volumes:
     - static:/static

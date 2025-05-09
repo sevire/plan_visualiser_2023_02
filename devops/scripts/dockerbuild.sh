@@ -16,6 +16,7 @@ if [ -d "$ISOLATED_DIR" ]; then
 fi
 mkdir -p "$ISOLATED_DIR"
 
+
 # Clone the repo or fetch latest code
 echo "Cloning the latest commit into the isolated directory..."
 git clone . "$ISOLATED_DIR" --quiet
@@ -25,13 +26,23 @@ cd "$ISOLATED_DIR" || exit
 echo "Resetting to the latest commit..."
 git reset --hard HEAD --quiet
 
+# Add directory for log files of form $ISOLATED_DIR/devops/logs/app_logs
+APPS_LOG_DIR="$ISOLATED_DIR/devops/logs/app_logs"
+
+if mkdir -p "$APPS_LOG_DIR"; then
+  echo "Successfully created: $APPS_LOG_DIR"
+else
+  echo "Failed to create: $APPS_LOG_DIR" >&2
+  exit 1
+fi
+
 # Go back to the original working directory
 cd - > /dev/null || exit
 
 # First check whether we need to override WIP test.
 if [ "$1" != "--no-wip" ]
 then
-  # Check whether last commit was WIP commit.  If so then don't do anything.
+  # Check whether last commit was WIP (work in progress) commit.  If so then don't do anything.
   LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
   if [[ $LAST_COMMIT_MSG = *'[WIP]'* ]]
   then
@@ -55,6 +66,7 @@ fi
 echo "Tests passed successfully."
 
 echo "Re-building Docker images..."
+echo "Before building images - working folder is $PWD"
 docker compose -f devops/docker/docker-compose-dev.yml build || {
     echo "Error: Failed to build Docker images."
     exit 1
