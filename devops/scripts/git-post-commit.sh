@@ -23,9 +23,9 @@ fi
 # =============================
 COMMIT_MSG=$(git log -1 --pretty=%B)
 JIRA_ISSUE=$(echo "$COMMIT_MSG" | grep -oE '\[[A-Z]+-[0-9]+\]' | tr -d '[]')
-
-echo "Debug Info: Commit message: $COMMIT_MSG" >> /tmp/git_hook_debug.log
-echo "Debug Info: Jira issue: $JIRA_ISSUE" >> /tmp/git_hook_debug.log
+GIT_HOOK_DEBUG_LOG_FILE="devops/logs/git_hook_debug.log"
+echo "Debug Info: Commit message: $COMMIT_MSG" >> "$GIT_HOOK_DEBUG_LOG_FILE"
+echo "Debug Info: Jira issue: $JIRA_ISSUE" >> "$GIT_HOOK_DEBUG_LOG_FILE"
 
 # =============================
 # Post to Jira (if key + env present)
@@ -43,8 +43,8 @@ if [ -n "$JIRA_ISSUE" ] && [ -n "$JIRA_URL" ] && [ -n "$JIRA_USER" ] && [ -n "$J
         "$JIRA_URL/rest/api/2/issue/$JIRA_ISSUE/comment")
 
     HTTP_CODE="$RESPONSE"
-    echo "Jira API HTTP Status: $HTTP_CODE" >> /tmp/git_hook_debug.log
-    cat /tmp/jira_response.json >> /tmp/git_hook_debug.log
+    echo "Jira API HTTP Status: $HTTP_CODE" >> "$GIT_HOOK_DEBUG_LOG_FILE"
+    cat /tmp/jira_response.json >> "$GIT_HOOK_DEBUG_LOG_FILE"
 
     if [ "$HTTP_CODE" -ge 300 ]; then
         echo "Error: Jira API call failed with status $HTTP_CODE"
