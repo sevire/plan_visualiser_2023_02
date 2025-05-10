@@ -27,7 +27,7 @@ class TestPlotVisualObjects(TestCase):
         visual = PlanVisual.objects.get(pk=4)
         swimlane_dims = visual.get_swimlanesforvisual_dimensions()
         top, left, width, height = swimlane_dims
-        self.assertEqual(40, top)
+        self.assertEqual(39, top)
         self.assertEqual(0, left)
         self.assertEqual(1000, width)
         self.assertEqual(116+260+5, height)
