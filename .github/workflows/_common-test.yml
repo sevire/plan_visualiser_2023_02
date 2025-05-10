@@ -1,0 +1,35 @@
+name: Run Tests
+
+on:
+  workflow_call:  # Makes this workflow reusable
+    inputs:
+      python_version:
+        required: true
+        type: string
+      environment:
+        required: false
+        default: "local"
+        type: string
+
+jobs:
+  test:
+    name: Run Tests in ${{ inputs.environment }} Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Install testing dependencies
+
+      - name: Run Unit Tests
+        run: |
+          python manage.py test
