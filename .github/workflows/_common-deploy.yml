@@ -42,20 +42,16 @@ jobs:
       - name: Checkout ${inputs.branch}
         uses: actions/checkout@v3
 
-      - name: Set up SSH
+      - name: Install SSH keys
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_HOST_IP }} >> ~/.ssh/known_hosts
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
 
-      - name: Deploy to Server (${inputs.environment})
+      - name: Connect and pull Docker images on droplet
         run: |
-          ssh root@${{ secrets.SERVER_HOST_IP }} "bash -s" << EOF
-          docker pull ${{ secrets.DOCKER_REGISTRY_NAME }}/nginx:${{ github.sha }}
-          docker pull ${{ secrets.DOCKER_REGISTRY_NAME }}/gunicorn:${{ github.sha }}
-          docker-compose -f /path/to/docker-compose.yml up -d
-          EOF
+          chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
+          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
 
-      - name: Clean Up
+      - name: Clean up SSH keys
         run: rm -rf ~/.ssh
