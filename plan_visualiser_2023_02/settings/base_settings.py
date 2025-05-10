@@ -40,6 +40,10 @@ LOGGING_LEVEL_H_FILE = os.getenv('LOGGING_LEVEL_H_FILE', 'INFO').upper()  # Hand
 LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # Logger/Django
 LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 
+# Log folder configuration
+LOG_FOLDER = os.path.join(BASE_DIR, "devops/logs")
+os.makedirs(LOG_FOLDER, exist_ok=True)  # Ensure the directory exists
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
