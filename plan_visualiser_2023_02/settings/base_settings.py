@@ -41,7 +41,8 @@ LOGGING_LEVEL_L_DJANGO = os.getenv('LOGGING_LEVEL_L_DJANGO', 'INFO').upper()  # 
 LOGGING_LEVEL_L_ROOT = os.getenv('LOGGING_LEVEL_L_ROOT', 'INFO').upper()  # Logger/Root
 
 # Log folder configuration
-LOG_FOLDER = os.path.join(BASE_DIR, "devops/logs")
+print("Creating log folder if it doesn't exist...")
+LOG_FOLDER = os.path.join(BASE_DIR, "devops/logs/app_logs")
 os.makedirs(LOG_FOLDER, exist_ok=True)  # Ensure the directory exists
 
 LOGGING = {
