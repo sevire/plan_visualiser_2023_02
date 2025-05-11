@@ -57,13 +57,13 @@ jobs:
       - name: Install SSH keys
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "$SECRET_SSH_STAGING_PRIVATE_KEY" > ~/.ssh/id_rsa
-          ssh-keyscan -H "$SECRET_DO_DROPLET_STAGING_HOST_IP" > ~/.ssh/known_hosts
+          echo "${{ SECRET_SSH_STAGING_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ SECRET_DO_DROPLET_STAGING_HOST_IP }}" > ~/.ssh/known_hosts
 
       - name: Connect and pull Docker images on droplet
         run: |
           chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
-          ssh -o StrictHostKeyChecking=no root@"$SECRET_DO_DROPLET_STAGING_HOST_IP" 'bash -s' -- "$SECRET_POSTGRES_DB_NAME" "$SECRET_POSTGRES_USER" "$SECRET_POSTGRES_PASSWORD" "$SECRET_DJANGO_SECRET_KEY" $(echo $GITHUB_SHA | head -c7) staging "$SECRET_DO_DOCKER_REGISTRY_NAME" "$SECRET_DO_DOCKER_REGISTRY_API_TOKEN" < ./deploy_on_remote.sh
+          ssh -o StrictHostKeyChecking=no root@"${{ SECRET_DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- "${{ SECRET_POSTGRES_DB_NAME }}" "${{ SECRET_POSTGRES_USER }}" "${{ SECRET_POSTGRES_PASSWORD }}" "${{ SECRET_DJANGO_SECRET_KEY }}" $(echo $GITHUB_SHA | head -c7) staging "${{ SECRET_DO_DOCKER_REGISTRY_NAME }}" "${{ SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" < ./deploy_on_remote.sh
 
       - name: Clean up SSH keys
         run: rm -rf ~/.ssh
