@@ -57,7 +57,7 @@ jobs:
       - name: Install SSH keys
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SECRET_SSH_STAGING_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SECRET_DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.SECRET_DO_DROPLET_STAGING_HOST_IP }}" > ~/.ssh/known_hosts
 
       - name: Connect and pull Docker images on droplet
