@@ -16,11 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      SECRET_STAGING_DATABASE_URL:
-        required: true
       SECRET_STAGING_DOCKER_REGISTRY_API_TOKEN:
-        required: true
-      SECRET_STAGING_DOCKER_REGISTRY_NAME:
         required: true
       SECRET_DO_STAGING_DROPLET_SSH_PRIVATE_KEY:
         required: true
