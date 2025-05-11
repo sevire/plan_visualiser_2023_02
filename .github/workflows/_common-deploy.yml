@@ -16,15 +16,27 @@ on:
         required: true
         type: string
     secrets:
-      DATABASE_URL:
+      SECRET_STAGING_DATABASE_URL:
         required: true
-      DOCKER_REGISTRY_API_TOKEN:
+      SECRET_STAGING_DOCKER_REGISTRY_API_TOKEN:
         required: true
-      DOCKER_REGISTRY_NAME:
+      SECRET_STAGING_DOCKER_REGISTRY_NAME:
         required: true
-      SSH_PRIVATE_KEY:
+      SECRET_SSH_STAGING_PRIVATE_KEY:
         required: true
-      SERVER_HOST_IP:
+      SECRET_DO_DROPLET_STAGING_HOST_IP:
+        required: true
+      SECRET_POSTGRES_DB_NAME:
+        required: true
+      SECRET_POSTGRES_USER:
+        required: true
+      SECRET_POSTGRES_PASSWORD:
+        required: true
+      SECRET_DJANGO_SECRET_KEY:
+        required: true
+      SECRET_DO_DOCKER_REGISTRY_NAME:
+        required: true
+      SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
         required: true
 
 jobs:
@@ -39,19 +51,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Existing deployment steps
-      - name: Checkout ${inputs.branch}
+      - name: Checkout ${{ inputs.branch }}
         uses: actions/checkout@v3
 
       - name: Install SSH keys
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DO_DROPLET_STAGING_HOST_IP }} > ~/.ssh/known_hosts
+          echo "$SECRET_SSH_STAGING_PRIVATE_KEY" > ~/.ssh/id_rsa
+          ssh-keyscan -H "$SECRET_DO_DROPLET_STAGING_HOST_IP" > ~/.ssh/known_hosts
 
       - name: Connect and pull Docker images on droplet
         run: |
           chmod +x ./deploy_on_remote.sh  # Note this is on the runner - not the live server!!
-          ssh -o StrictHostKeyChecking=no root@"${{ secrets.DO_DROPLET_STAGING_HOST_IP }}" 'bash -s' -- ${{ secrets.POSTGRES_DB_NAME }} ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_PASSWORD }} ${{ secrets.DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ secrets.DO_DOCKER_REGISTRY_NAME }} ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
+          ssh -o StrictHostKeyChecking=no root@"$SECRET_DO_DROPLET_STAGING_HOST_IP" 'bash -s' -- ${{ SECRET_POSTGRES_DB_NAME }} ${{ SECRET_POSTGRES_USER }} ${{ SECRET_POSTGRES_PASSWORD }} ${{ SECRET_DJANGO_SECRET_KEY }} $(echo $GITHUB_SHA | head -c7) staging ${{ SECRET_DO_DOCKER_REGISTRY_NAME }} ${{ SECRET_DO_DOCKER_REGISTRY_API_TOKEN }} < ./deploy_on_remote.sh
 
       - name: Clean up SSH keys
         run: rm -rf ~/.ssh
