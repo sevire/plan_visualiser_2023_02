@@ -16,8 +16,6 @@ on:
         required: true
         type: string
     secrets:
-      SECRET_STAGING_DOCKER_REGISTRY_API_TOKEN:
-        required: true
       SECRET_DO_STAGING_DROPLET_SSH_PRIVATE_KEY:
         required: true
       SECRET_DO_DROPLET_STAGING_HOST_IP:
@@ -54,7 +52,7 @@ jobs:
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
-        token: ${{ secrets.SECRET_STAGING_DOCKER_REGISTRY_API_TOKEN }}
+        token: ${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}
 
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v3
