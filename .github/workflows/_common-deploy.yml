@@ -22,7 +22,7 @@ on:
         required: true
       SECRET_STAGING_DOCKER_REGISTRY_NAME:
         required: true
-      SECRET_SSH_STAGING_PRIVATE_KEY:
+      SECRET_DO_STAGING_DROPLET_SSH_PRIVATE_KEY:
         required: true
       SECRET_DO_DROPLET_STAGING_HOST_IP:
         required: true
