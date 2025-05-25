@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   django_gunicorn:
     image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_django_gunicorn:latest

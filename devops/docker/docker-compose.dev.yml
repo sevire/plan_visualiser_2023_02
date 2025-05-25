@@ -1,8 +1,7 @@
 services:
   django_gunicorn:
-    build:
-      context: .
-      dockerfile: ./docker/gunicorn/Dockerfile
+    image: ${GUNICORN_IMAGE}:latest
+
     volumes:
       - static:/static
       - /Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build:/app
@@ -12,12 +11,14 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - ../devops/env/.env.dev
+      - ../env/.env.dev
 
   nginx:
+    image: ${NGINX_IMAGE}:latest
+
     build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
+      context: ../..
+      dockerfile: ../docker/nginx/Dockerfile
     volumes:
       - static:/static
     ports:
@@ -25,12 +26,12 @@ services:
     depends_on:
       - django_gunicorn
     env_file:
-      - ../devops/env/.env.dev
+      - ../env/.env.dev
 
   db:
-    image: postgres
+    image: ${POSTGRES_IMAGE}:latest
     env_file:
-    - ../devops/env/.env.dev
+    - ../env/.env.dev
     volumes:
       - data:/var/lib/postgresql/data
     healthcheck:
