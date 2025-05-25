@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  django_gunicorn:
+    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_django_gunicorn:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_ENVIRONMENT: base
+    volumes:
+      - static:/static
+    depends_on:
+      - db
+
+  nginx:
+    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - static:/static
+    depends_on:
+      - django_gunicorn
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  static:
+  postgres_data:

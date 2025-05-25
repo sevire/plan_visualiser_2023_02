@@ -1,0 +1,44 @@
+services:
+  django_gunicorn:
+    build:
+      context: .
+      dockerfile: ./docker/gunicorn/Dockerfile
+    volumes:
+      - static:/static
+      - /Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ../devops/env/.env.dev
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - django_gunicorn
+    env_file:
+      - ../devops/env/.env.dev
+
+  db:
+    image: postgres
+    env_file:
+    - ../devops/env/.env.dev
+    volumes:
+      - data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  static:
+  data:

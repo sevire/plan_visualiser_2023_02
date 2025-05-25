@@ -14,8 +14,16 @@ jobs:
       environment: live
       python_version: "3.12"
     secrets:
-      DATABASE_URL: ${{ secrets.LIVE_DATABASE_URL }}
-      DOCKER_REGISTRY_API_TOKEN: ${{ secrets.LIVE_DOCKER_REGISTRY_API_TOKEN }}
-      DOCKER_REGISTRY_NAME: ${{ secrets.LIVE_DOCKER_REGISTRY_NAME }}
-      SSH_PRIVATE_KEY: ${{ secrets.LIVE_SSH_PRIVATE_KEY }}
-      SERVER_HOST_IP: ${{ secrets.LIVE_SERVER_HOST_IP }}
+      # Declare secrets used in _common-deploy.yml (but standardise name for common processing)
+
+      # Non environment specific secrets...
+      SECRET_DO_DOCKER_REGISTRY_NAME: ${{ secrets.DO_DOCKER_REGISTRY_NAME }}
+      SECRET_POSTGRES_DB_NAME: ${{ secrets.POSTGRES_DB_NAME }}
+      SECRET_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      SECRET_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      SECRET_DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      SECRET_DO_DOCKER_REGISTRY_API_TOKEN: ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }}
+
+      # Environment specific secrets...
+      SECRET_DO_DROPLET_SSH_PRIVATE_KEY: ${{ secrets.DO_LIVE_DROPLET_SSH_PRIVATE_KEY }}
+      SECRET_DO_DROPLET_HOST_IP: ${{ secrets.DO_DROPLET_LIVE_HOST_IP }}

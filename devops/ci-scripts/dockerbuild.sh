@@ -6,39 +6,6 @@
 
 echo "dockerbuild.sh starting..."
 
-# Define a directory for isolating the latest commit code
-ISOLATED_DIR="/Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build"
-
-# Clean the directory or create it if it doesn't exist
-if [ -d "$ISOLATED_DIR" ]; then
-  echo "Cleaning up isolated build directory..."
-  rm -rf "$ISOLATED_DIR"
-fi
-mkdir -p "$ISOLATED_DIR"
-
-
-# Clone the repo or fetch latest code
-echo "Cloning the latest commit into the isolated directory..."
-git clone . "$ISOLATED_DIR" --quiet
-cd "$ISOLATED_DIR" || exit
-
-# Ensure that the directory is "cleaned" to match the latest commit
-echo "Resetting to the latest commit..."
-git reset --hard HEAD --quiet
-
-# Add directory for log files of form $ISOLATED_DIR/devops/logs/app_logs
-APPS_LOG_DIR="$ISOLATED_DIR/devops/logs/app_logs"
-
-if mkdir -p "$APPS_LOG_DIR"; then
-  echo "Successfully created: $APPS_LOG_DIR"
-else
-  echo "Failed to create: $APPS_LOG_DIR" >&2
-  exit 1
-fi
-
-# Go back to the original working directory
-cd - > /dev/null || exit
-
 # First check whether we need to override WIP test.
 if [ "$1" != "--no-wip" ]
 then
@@ -52,6 +19,28 @@ then
       echo "Not work in progress commit so building docker images and deploying locally"
   fi
 fi
+
+# Define a directory for isolating the latest commit code
+ISOLATED_DIR="/Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build"
+
+# Clean the directory or create it if it doesn't exist
+if [ -d "$ISOLATED_DIR" ]; then
+  echo "Cleaning up isolated build directory..."
+  rm -rf "$ISOLATED_DIR"
+fi
+mkdir -p "$ISOLATED_DIR"
+
+# Clone the repo or fetch latest code
+echo "Cloning the latest commit into the isolated directory..."
+git clone . "$ISOLATED_DIR" --quiet
+cd "$ISOLATED_DIR" || exit
+
+# Ensure that the directory is "cleaned" to match the latest commit
+echo "Resetting to the latest commit..."
+git reset --hard HEAD --quiet
+
+# Go back to the original working directory
+cd - > /dev/null || exit
 
 echo "Running tests..."
 python manage.py test
