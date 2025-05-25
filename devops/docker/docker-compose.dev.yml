@@ -15,10 +15,6 @@ services:
 
   nginx:
     image: ${NGINX_IMAGE}:latest
-
-    build:
-      context: ../..
-      dockerfile: ../docker/nginx/Dockerfile
     volumes:
       - static:/static
     ports:
