@@ -22,8 +22,8 @@ fi
 # Extract commit message + Jira key
 # =============================
 COMMIT_MSG=$(git log -1 --pretty=%B)
-JIRA_ISSUE=$(echo "$COMMIT_MSG" | grep -oE '\[[A-Z]+-[0-9]+\]' | tr -d '[]')
 GIT_HOOK_DEBUG_LOG_FILE="devops/logs/git_hook_debug.log"
+JIRA_ISSUE=$(echo "$COMMIT_MSG" | grep -oE '\[[A-Z]+-[0-9]+\]' | tr -d '[]')
 
 echo "Debug Info: Commit message: $COMMIT_MSG" >> "$GIT_HOOK_DEBUG_LOG_FILE"
 echo "Debug Info: Jira issue: $JIRA_ISSUE" >> "$GIT_HOOK_DEBUG_LOG_FILE"

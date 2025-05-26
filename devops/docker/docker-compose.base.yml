@@ -3,8 +3,6 @@ services:
     image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
     ports:
       - "8000:8000"
-    environment:
-      DJANGO_ENVIRONMENT: base
     volumes:
       - static:/static
     depends_on:

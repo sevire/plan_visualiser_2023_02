@@ -74,4 +74,4 @@ docker compose --env-file ./devops/env/.env.build.base -f ./devops/docker/docker
 }
 
 echo "Deployment to local Docker environment complete."
-echo "dockerbuild.sh finishing"
+echo "dev-post-commit-build-docker.sh finishing"

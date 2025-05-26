@@ -8,16 +8,18 @@ services:
       - static:/static
       - /Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build:/app
     env_file:
-      - ../env/.env.dev
+      - ../../devops/env/.env.dev
 
   nginx:
     image: ${NGINX_IMAGE}:dev
     volumes:
       - static:/static
     env_file:
-      - ../env/.env.dev
+      - ../../devops/env/.env.dev
 
   db:
     image: ${POSTGRES_IMAGE}:dev
+    ports:
+    - "5432:5432"
     env_file:
-    - ../env/.env.dev
+      - ../../devops/env/.env.dev

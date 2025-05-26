@@ -1,5 +1,5 @@
 # Define a build argument for the Python version
-ARG PYTHON_VERSION=3.12.0
+ARG PYTHON_VERSION=3.11.0
 
 # Use the argument in the FROM directive
 # Default version (3.11.0) used if ARG isn't supplied during the build

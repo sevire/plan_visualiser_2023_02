@@ -25,6 +25,10 @@ echo "
 || Collecting static...                                        ||
 =================================================================
 "
+if [ ! -d "static" ]; then
+    echo "Creating static directory..."
+    mkdir static
+fi
 
 python manage.py collectstatic --noinput
 
