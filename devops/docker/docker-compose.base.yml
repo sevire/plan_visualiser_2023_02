@@ -1,6 +1,6 @@
 services:
   django_gunicorn:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_django_gunicorn:latest
+    image: ${GUNICORN_IMAGE}:latest
     ports:
       - "8000:8000"
     environment:
@@ -11,7 +11,7 @@ services:
       - db
 
   nginx:
-    image: registry.digitalocean.com/gen-business-docker-rep-01/plan_visualiser_nginx:latest
+    image: ${NGINX_IMAGE}:latest
     ports:
       - "80:80"
     volumes:
@@ -20,7 +20,7 @@ services:
       - django_gunicorn
 
   db:
-    image: postgres:latest
+    image: ${POSTGRES_IMAGE}:latest
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
