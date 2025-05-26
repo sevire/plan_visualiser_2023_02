@@ -1,9 +1,6 @@
 /node_modules/
 /plan_files/
 
-# .env used for sensitive env variables used in building docker images so not stored in repo.
-.env
-
 /**/.ds_store
 /**/__pycache__/
 /logs/
@@ -28,4 +25,5 @@ db.sqlite3-journal
 /devops/logs/
 
 # Ignore env files
-devops/env/*.env
+devops/env/*
+devops/env/.*

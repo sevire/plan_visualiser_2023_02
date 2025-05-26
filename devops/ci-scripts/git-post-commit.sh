@@ -7,7 +7,7 @@ set -e
 # Load environment variables
 # =============================
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-ENV_FILE="$REPO_ROOT/.env"
+ENV_FILE="$REPO_ROOT/devops/env/.env.git-hooks"
 
 if [ -f "$ENV_FILE" ]; then
     set -a
@@ -58,8 +58,8 @@ fi
 # =============================
 # Rebuild Docker image
 # =============================
-echo "Running dockerbuild.sh..."
-"$REPO_ROOT/devops/scripts/dockerbuild.sh" || {
+echo "Running dev-post-commit-build-docker.sh..."
+"$REPO_ROOT/devops/ci-scripts/dev-post-commit-build-docker.sh" || {
     echo "Error: Docker build failed"
     exit 1
 }
