@@ -1,6 +1,6 @@
 services:
   django_gunicorn:
-    image: ${GUNICORN_IMAGE}:latest
+    image: ${GUNICORN_IMAGE}:dev
     ports:
       - "8000:8000"
     environment:
@@ -11,7 +11,7 @@ services:
       - db
 
   nginx:
-    image: ${NGINX_IMAGE}:latest
+    image: ${NGINX_IMAGE}:dev
     ports:
       - "80:80"
     volumes:
@@ -20,7 +20,7 @@ services:
       - django_gunicorn
 
   db:
-    image: ${POSTGRES_IMAGE}:latest
+    image: ${POSTGRES_IMAGE}:dev
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres

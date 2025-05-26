@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-echo "entrypoint.sh starting..."
+echo "
+=================================================================
+||                                                               ||
+||                 ENTRYPOINT.SH STARTING                        ||
+||                 $(date '+%Y-%m-%d %H:%M:%S')                 ||
+||                                                               ||
+=================================================================
+"
+
 echo "Echoing current directory"
 pwd
-
-echo "Listing current directory"
-ls
 
 echo "Applying migrations...\n"
 python manage.py migrate --noinput
@@ -23,5 +28,14 @@ python manage.py update_pk_value
 
 echo "Starting gunicorn..."
 gunicorn plan_visualiser_2023_02.wsgi:application --bind 0.0.0.0:8000
+
+echo "
+=================================================================
+||                                                               ||
+||                 ENTRYPOINT.SH FINISHED                        ||
+||                 $(date '+%Y-%m-%d %H:%M:%S')                 ||
+||                                                               ||
+=================================================================
+"
 
 echo "entrypoint.sh finishing"

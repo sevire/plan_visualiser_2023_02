@@ -3,7 +3,7 @@ ARG PYTHON_VERSION=3.12.0
 
 # Use the argument in the FROM directive
 # Default version (3.11.0) used if ARG isn't supplied during the build
-FROM python:${PYTHON_VERSION}-slim
+FROM python:${PYTHON_VERSION}
 
 WORKDIR /app
 
