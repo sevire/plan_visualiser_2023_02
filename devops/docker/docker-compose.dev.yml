@@ -1,37 +1,23 @@
+# This file contains development-specific overrides for docker-compose.base.yml
+# It should be used in conjunction with the base configuration file
+
 services:
   django_gunicorn:
+    image: ${GUNICORN_IMAGE}:dev
     volumes:
       - static:/static
       - /Users/Development/PycharmProjects/project_working_area/plan_visualiser_2023_02/local_docker_build:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
     env_file:
       - ../env/.env.dev
 
   nginx:
+    image: ${NGINX_IMAGE}:dev
     volumes:
       - static:/static
-    ports:
-      - "80:80"
-    depends_on:
-      - django_gunicorn
     env_file:
       - ../env/.env.dev
 
   db:
+    image: ${POSTGRES_IMAGE}:dev
     env_file:
     - ../env/.env.dev
-    volumes:
-      - data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  static:
-  data:

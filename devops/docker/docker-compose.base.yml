@@ -1,6 +1,6 @@
 services:
   django_gunicorn:
-    image: ${GUNICORN_IMAGE}:dev
+    image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
     ports:
       - "8000:8000"
     environment:
@@ -8,10 +8,11 @@ services:
     volumes:
       - static:/static
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   nginx:
-    image: ${NGINX_IMAGE}:dev
+    image: ${REGISTRY_PREFIX}${NGINX_IMAGE}
     ports:
       - "80:80"
     volumes:
@@ -20,11 +21,7 @@ services:
       - django_gunicorn
 
   db:
-    image: ${POSTGRES_IMAGE}:dev
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    image: ${REGISTRY_PREFIX}{POSTGRES_IMAGE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

@@ -4,7 +4,7 @@ echo "
 =================================================================
 ||                                                               ||
 ||                 ENTRYPOINT.SH STARTING                        ||
-||                 $(date '+%Y-%m-%d %H:%M:%S')                 ||
+||                 $(date '+%Y-%m-%d %H:%M:%S')                         ||
 ||                                                               ||
 =================================================================
 "
@@ -32,10 +32,8 @@ gunicorn plan_visualiser_2023_02.wsgi:application --bind 0.0.0.0:8000
 echo "
 =================================================================
 ||                                                               ||
-||                 ENTRYPOINT.SH FINISHED                        ||
-||                 $(date '+%Y-%m-%d %H:%M:%S')                 ||
+||                 ENTRYPOINT.SH STARTING GUNICORN (LAST TASK)   ||
+||                 $(date '+%Y-%m-%d %H:%M:%S')                         ||
 ||                                                               ||
 =================================================================
 "
-
-echo "entrypoint.sh finishing"
