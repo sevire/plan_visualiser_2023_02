@@ -17,7 +17,6 @@ echo "
 || Applying migrations...                                      ||
 =================================================================
 "
-
 python manage.py migrate --noinput
 
 echo "
@@ -25,11 +24,6 @@ echo "
 || Collecting static...                                        ||
 =================================================================
 "
-if [ ! -d "static" ]; then
-    echo "Creating static directory..."
-    mkdir static
-fi
-
 python manage.py collectstatic --noinput
 
 # Add common data and initial users

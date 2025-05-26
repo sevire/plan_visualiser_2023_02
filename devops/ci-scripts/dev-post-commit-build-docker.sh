@@ -39,6 +39,9 @@ cd "$ISOLATED_DIR" || exit
 echo "Resetting to the latest commit..."
 git reset --hard HEAD --quiet
 
+# Add static folder (may change location of this later)
+mkdir -p "static"
+
 # Go back to the original working directory
 cd - > /dev/null || exit
 
