@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# =============================
+# Git Post-Commit Hook Script
+# Handles Jira updates and Docker rebuilds in development environment
+# =============================
+
 # Exit on any error
 set -e
 
@@ -59,7 +64,7 @@ fi
 # Rebuild Docker image
 # =============================
 echo "Running dev-post-commit-build-docker.sh..."
-"$REPO_ROOT/devops/ci-scripts/dev-post-commit-build-docker.sh" || {
+"$REPO_ROOT/devops/ci-scripts/dev-build-docker.sh" || {
     echo "Error: Docker build failed"
     exit 1
 }

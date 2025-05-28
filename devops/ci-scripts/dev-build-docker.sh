@@ -59,7 +59,7 @@ echo "Tests passed successfully."
 
 echo "Re-building Docker images..."
 echo "Before building images - working folder is $PWD"
-./devops/ci-scripts/build-images.sh development || {
+./devops/ci-scripts/build-images.sh development --include-postgres || {
     echo "Error: Failed to build Docker images."
     exit 1
 }
