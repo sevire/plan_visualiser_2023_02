@@ -16,7 +16,7 @@ from plan_visual_django.models import Plan
 from plan_visual_django.services.plan_file_utilities.plan_field import PlanFieldInputSourceEnum
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.tests.resources.utilities import date_from_string
-from plan_visual_django.tests.resources.test_configuration import \
+from plan_visual_django.tests.resources.unit_test_configuration import \
     (test_data_base_folder, test_fixtures_folder, excel_input_files_folder)
 
 # Define input file parameters and expected results separately as we may want the same data in various different input
@@ -40,29 +40,29 @@ expected_result_activity_01 = {
     'activity_data': [
         {
             'activity_sequence_number': 1,  # Note this isn't the 'sticky' id, that won't always be here
-            'Row ID': "ID-0007",
+            'Id': "ID-0007",
             'Level #': 0.0,
-            'Task': 'Project Start',
-            'Start Date': date_from_string('2023-01-01', datetime_flag=True),
-            'End Date': date_from_string('2023-01-01', datetime_flag=True),
+            'Task Name': 'Project Start',
+            'Start': date_from_string('2023-01-01', datetime_flag=True),
+            'Finish': date_from_string('2023-01-01', datetime_flag=True),
             'Duration': "0",
         },
         {
             'activity_sequence_number': 4,  # Note this isn't the 'sticky' id, that won't always be here
-            'Row ID': "ID-0005",
+            'Id': "ID-0005",
             'Level #': 2.0,
-            'Task': 'Activity 5',
-            'Start Date': date_from_string('2023-01-02', datetime_flag=True),
-            'End Date': date_from_string('2023-01-13', datetime_flag=True),
+            'Task Name': 'Activity 5',
+            'Start': date_from_string('2023-01-02', datetime_flag=True),
+            'Finish': date_from_string('2023-01-13', datetime_flag=True),
             'Duration': "10d",
         },
         {
             'activity_sequence_number': 7,  # Note this isn't the 'sticky' id, that won't always be here
-            'Row ID': "ID-0004",
+            'Id': "ID-0004",
             'Level #': 0.0,
-            'Task': 'Activity 4',
-            'Start Date': date_from_string('2023-01-30', datetime_flag=True),
-            'End Date': date_from_string('2023-02-10', datetime_flag=True),
+            'Task Name': 'Activity 4',
+            'Start': date_from_string('2023-01-30', datetime_flag=True),
+            'Finish': date_from_string('2023-02-10', datetime_flag=True),
             'Duration': "10d",
         }
     ]

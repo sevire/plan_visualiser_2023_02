@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { get_timeline_data, get_visual_activity_data, update_timeline_records, update_visual_activities } from "./plan_visualiser_api";
+import { get_timeline_data, get_visual_activity_data, get_visual_settings, update_timeline_records, update_visual_activities } from "./plan_visualiser_api";
 import { plot_visual } from "./plot_visual";
 import { get_plan_activity } from "./manage_visual";
 import { add_arrow_button_to_element, } from "./manage_swimlanes";
@@ -21,6 +21,9 @@ function manage_arrow_click(visual_id, timeline_record, direction) {
         const timeline_element = document.getElementById("timeline_data");
         yield update_timeline_panel(timeline_element, visual_id);
         yield get_visual_activity_data(visual_id);
+        // Need visual settings as it included visual height which is needed to plot.
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
         plot_visual();
     });
 }
@@ -43,6 +46,9 @@ function createAndPopulateDropdown(dropdownParent, styleName, styleData, visualI
     populateDropdown(dropDownButton, styleData.map(obj => [obj.style_name, obj.id]), (style_id) => __awaiter(this, void 0, void 0, function* () {
         yield update_style_for_timeline_handler(visualId, timelineRecordId, style_id, isOdd);
         yield get_visual_activity_data(window.visual_id);
+        // Need visual settings as it includes visual height which is needed to plot.
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
         plot_visual();
     }));
     return dropDownButton;
@@ -108,6 +114,9 @@ export function update_timeline_panel(timeline_html_panel, visual_id) {
                 yield update_timeline_records(visual_id, data);
                 yield update_timeline_panel(timeline_html_panel, visual_id);
                 yield get_visual_activity_data(visual_id);
+                // Need visual settings as it included visual height which is needed to plot.
+                const response = yield get_visual_settings(window.visual_id);
+                window.visual_settings = response.data;
                 plot_visual();
             }));
             buttonGroup2.appendChild(timelineToggleButton);

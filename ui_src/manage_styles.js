@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { get_plan_activity } from "./manage_visual";
-import { update_timeline_records, update_visual_activities } from "./plan_visualiser_api";
+import { get_visual_settings, update_timeline_records, update_visual_activities } from "./plan_visualiser_api";
 import { plot_visual } from "./plot_visual";
 export function update_style_for_activity_handler(unique_id, style_id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,6 +23,9 @@ export function update_style_for_activity_handler(unique_id, style_id) {
             }
         ];
         yield update_visual_activities(activity.visual_data.visual.id, data);
+        // Need visual settings as it included visual height which is needed to plot.
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
         plot_visual();
     });
 }
@@ -43,6 +46,9 @@ export function update_style_for_timeline_handler(visual_id, timeline_id, style_
             data[0].plotable_style_even = style_id;
         }
         yield update_timeline_records(visual_id, data);
+        // Need visual settings as it included visual height which is needed to plot.
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
         plot_visual();
     });
 }

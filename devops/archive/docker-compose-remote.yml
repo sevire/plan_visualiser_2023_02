@@ -1,0 +1,51 @@
+version: '3.8'
+# ============================================================================
+# = Compose file to be run on remote server (Staging or Production)          =
+# = after images have been re-built, typically by Github actions.            =
+# ============================================================================
+services:
+  django_gunicorn:
+    image: ${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-django_gunicorn:${DOCKER_IMAGE_TAG}
+    volumes:
+      - /var/www/app_root/app:/app
+      - static:/static
+
+    ports:
+    - "8000:8000"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ENVIRONMENT=${DJANGO_ENVIRONMENT}
+  nginx:
+    image: ${DO_DOCKER_REGISTRY_NAME}/plan_visualiser_2023_02-nginx:${DOCKER_IMAGE_TAG}
+    volumes:
+      - /var/www/app_root/ssl:/etc/nginx/ssl
+      - static:/static
+    ports:
+    - "80:80"
+    - "443:443"
+    depends_on:
+    - django_gunicorn
+  db:
+    image: postgres
+    environment:
+      - "POSTGRES_DB=${POSTGRES_DB_NAME}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+    volumes:
+    - data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  static:
+  data:

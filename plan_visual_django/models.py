@@ -1,13 +1,15 @@
+from typing import Iterable, Dict
 import markdown
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint, Max, Min, Sum
-from plan_visual_django.managers import PlotableStyleManager
+from plan_visual_django.managers import PlotableStyleManager, PlanVisualManager
 from plan_visual_django.services.general.date_utilities import DatePlotter
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
-from plan_visual_django.services.visual.rendering.plotables import get_plotable
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
+from plan_visual_django.services.visual.model.visual_settings import VisualSettings
+from plan_visual_django.services.visual.rendering.plotables import get_plotable, Plotable
 from plan_visual_django.services.visual.model.timelines import Timeline
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
@@ -53,7 +55,7 @@ class Plan(models.Model):
             [UniqueConstraint(fields=['user', 'plan_name'], name="unique_filename_for_user")]
 
     def __str__(self):
-        return f'{self.plan_name}({self.file_name}:{self.file_type_name})'
+        return f'{self.plan_name}'
 
     def is_anonymous(self):
         """Returns True if the plan is linked to a session instead of a user."""
@@ -66,6 +68,27 @@ class Plan(models.Model):
         summary = extract_summary_plan_info(self)
         return summary
 
+    def create_visual(self):
+        """
+        Creates a new visual under this plan, and adds default timelines and swimlanes.
+
+        :return:
+        """
+
+        VisualSettings.calculate_defaults_for_visual(self)
+
+        PlanVisual.objects.create(
+            plan=self,
+            name="Default visual",
+            width=30,
+            max_height=20,
+            include_title=True,
+            track_height=20,
+            track_gap=4,
+            milestone_width=10,
+            swimlane_gap=5,
+        )
+
 
 class PlanActivity(models.Model):
     """
@@ -74,6 +97,7 @@ class PlanActivity(models.Model):
     """
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     unique_sticky_activity_id = models.CharField(max_length=50)
+    sequence_number = models.IntegerField(default=0)
     activity_name = models.CharField(max_length=200)
     milestone_flag = models.BooleanField(default=False)
     start_date = models.DateField()
@@ -81,6 +105,7 @@ class PlanActivity(models.Model):
     level = models.IntegerField(default=1)
 
     class Meta:
+        ordering = ["plan", "sequence_number"]
         verbose_name_plural = " Plan activities"
         unique_together = (('plan', 'unique_sticky_activity_id'),)
 
@@ -184,68 +209,6 @@ class PlotableStyle(models.Model):
         return f"{self.font_size}px {self.font.font_name}"
 
 
-class PlotableShapeType(models.Model):
-    """
-    I'm re-factoring this as I move the app to a server for alpha testing.  I'm struggling to remember how I originally
-    envisaged this working but I have decide how I now think it should work and am re-working around that.
-
-    So...
-
-    A Shape Type is a category which indicates the way a shape is defined.  For example, almost every shape
-    I will use in the visual (or even every shape) will be based around a rectangle and be defined by the scheme:
-
-    - top
-    - left
-    - width
-    - height
-
-    There may be additional parameters which impact things like corner radius for a rounded rectangle which
-    will be added through shape specific models.
-
-    At some point I may introduce more sophisticate shape types, to allow less regular shapes to be used (although I'm
-    not sure whether that will really be necessary), such as shapes defined by a set of points, or svg shapes.
-
-    Then each shape will fit into one of the defined shape types.
-    """
-    name = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class PlotableShape(models.Model):
-    class PlotableShapeName(models.TextChoices):
-        RECTANGLE = "RECTANGLE", "Rectangle"
-        ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rounded Rectangle"
-        BULLET = "BULLET", "Bullet"
-        DIAMOND = "DIAMOND", "Diamond"
-        ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
-
-    shape_type = models.ForeignKey(PlotableShapeType, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, choices=PlotableShapeName.choices)
-
-    def get_plotable_shape(self):
-        return self.PlotableShapeName(self.name)
-
-    def __str__(self):
-        return self.name
-
-    def to_json(self):
-        return self.shape_type
-
-
-class PlotableShapeAttributesRectangle(models.Model):
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    width = models.FloatField()
-    height = models.FloatField()
-
-
-class PlotableShapeAttributesDiamond(models.Model):
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
-    width = models.FloatField()
-    height = models.FloatField()
-
-
 class PlanVisual(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=False)
     name = models.CharField(max_length=100)
@@ -256,14 +219,16 @@ class PlanVisual(models.Model):
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
-    default_milestone_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_milestone_shape")
-    default_activity_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE, related_name="default_activity_shape")
+    default_milestone_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
+    default_activity_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     default_activity_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_activity_plotable_style")
     default_milestone_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_milestone_plotable_style")
     default_swimlane_plotable_style = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_swimlane_plotable_style")
     default_timeline_height = models.FloatField(default=20)
     default_timeline_plotable_style_odd = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_odd")
     default_timeline_plotable_style_even = models.ForeignKey(PlotableStyle, on_delete=models.CASCADE, related_name="default_timeline_plotable_style_even", null=True)
+
+    objects = PlanVisualManager()
 
     class Meta:
         unique_together = ["plan", "name"]
@@ -362,9 +327,16 @@ class PlanVisual(models.Model):
         visual_ids = self.visualactivity_set.filter(enabled=True).values_list('unique_id_from_plan', flat=True)
 
         # Filter PlanActivity objects by plan and unique_sticky_activity_id(from the previous query),
-        # then get the minimum start_date
-        earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
-        latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
+        # then get the minimum start_date. If there are no activities in the visual yet, then we need
+        # to use some defaults so that timelines can be generated from something.  So use the earliest
+        # date in the plan as the earliest date, and the end of that month as the latest.
+        if len(visual_ids) == 0:
+            plan_info = extract_summary_plan_info(self.plan)
+            _, earliest_start_date = plan_info['earliest_start_date']
+            _, latest_end_date = plan_info['latest_end_date']
+        else:
+            earliest_start_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Min('start_date'))['start_date__min']
+            latest_end_date = self.plan.planactivity_set.filter(unique_sticky_activity_id__in=visual_ids).aggregate(Max('end_date'))['end_date__max']
 
         timeline_records = self.timelineforvisual_set.filter(enabled=True)
 
@@ -518,14 +490,17 @@ class PlanVisual(models.Model):
         """
         highest_sequence_number_for_visual = self.get_max_swimlane_sequence_number()
 
+        swimlanes = []
         for swimlane_sequence_num_increment, swimlane_name in enumerate(args, start=1):
             sequence_number = highest_sequence_number_for_visual + swimlane_sequence_num_increment
-            SwimlaneForVisual.objects.create(
+            swimlane = SwimlaneForVisual.objects.create(
                 plan_visual=self,
                 swim_lane_name=swimlane_name,
                 plotable_style=plotable_style,
                 sequence_number=sequence_number,
             )
+            swimlanes.append(swimlane)
+        return swimlanes
 
     def get_swimlanesforvisual_dimensions(self, sequence_number=None):
         """
@@ -573,6 +548,60 @@ class PlanVisual(models.Model):
             "visual_activities": self.get_visual_activity_plotables()
         }
         return plotables
+
+    def _get_dimensions_recursive(self, plotable_iterable: Plotable | Dict[str, Plotable | Dict[str, Plotable]], lowest_top=-1, highest_bottom=-1, highest_right=-1, lowest_left=-1):
+        """
+        Method to support calculation of dimensions for a visual.  Takes a collection of plotables or a plotable, as
+        well as current values for dimensions and then either:
+            - Recursively calls the function again for each plotable if the passed in object is a collection, or
+            - Updates dimensions based on dimensions of passed in plotable if that is what was provided and then
+              returns.
+
+        :param plotable_iterable:
+        :param lowest_top:
+        :param highest_bottom:
+        :param highest_right:
+        :param lowest_left:
+        :return:
+        """
+        if isinstance(plotable_iterable, Plotable):
+            if lowest_top == -1 or plotable_iterable.get_top() < lowest_top:
+                lowest_top = plotable_iterable.get_top()
+            if highest_bottom == -1 or plotable_iterable.get_bottom() > highest_bottom:
+                highest_bottom = plotable_iterable.get_bottom()
+            if highest_right == -1 or plotable_iterable.get_right() > highest_right:
+                highest_right = plotable_iterable.get_right()
+            if lowest_left == -1 or plotable_iterable.get_left() < lowest_left:
+                lowest_left = plotable_iterable.get_left()
+            return lowest_top, highest_bottom, highest_right, lowest_left
+        elif isinstance(plotable_iterable, Iterable):
+            # Need to distinguish between Dict and other types of iterable
+            if isinstance(plotable_iterable, Dict):
+                # Ignore keys, just get values and iterate recursively through those.
+                values = plotable_iterable.values()
+            else:
+                values = plotable_iterable
+            for next_item in values:
+                updated_lowest_top, updated_highest_bottom, updated_highest_right, updated_lowest_left = self._get_dimensions_recursive(next_item, lowest_top, highest_bottom, highest_right, lowest_left)
+                lowest_top, highest_bottom, highest_right, lowest_left = updated_lowest_top, updated_highest_bottom, updated_highest_right, updated_lowest_left
+            return lowest_top, highest_bottom, highest_right, lowest_left
+        else:
+            raise ValueError(f"Plotable or Iterable expected, got {plotable_iterable}:{type(plotable_iterable)}")
+
+    def get_visual_dimensions(self, lowest_top=-1, highest_bottom=-1, highest_right=-1, lowest_left=-1):
+        """
+        By calculating all plotables for the visual and then extracting the lowest top, highest bottom, lowest left and
+        highest right, work out the dimensions of the visual, which is effectively an imaginary rectangle,
+        exactly the right size to cover the visual.
+
+        :return:
+        """
+        plotables = self.get_plotables()
+        lowest_top, highest_bottom, highest_right, lowest_left = self._get_dimensions_recursive(plotables)
+        width = highest_right - lowest_left
+        height = highest_bottom - lowest_top
+
+        return lowest_top, lowest_left, width, height, highest_right, highest_bottom
 
 
 class TimelineForVisual(models.Model):
@@ -790,7 +819,7 @@ class SwimlaneForVisual(models.Model):
 
         swimlane_plotable = get_plotable(
             f"swimlane-{self.id}",
-            PlotableShape.PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
+            PlotableShapeName.RECTANGLE,  # Note for now swimlanes will always be rectangles so hard-code
             top=this_top,
             left=0,  # Hard-coding for now as nothing will appear to the left of the swimlane
             width=self.plan_visual.width,
@@ -849,7 +878,7 @@ class VisualActivity(models.Model):
     unique_id_from_plan = models.CharField(max_length=50)  # ID from imported plan which will not change
     enabled = models.BooleanField()
     swimlane = models.ForeignKey(SwimlaneForVisual, on_delete=models.CASCADE)
-    plotable_shape = models.ForeignKey(PlotableShape, on_delete=models.CASCADE)
+    plotable_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     vertical_positioning_value = models.FloatField()
     height_in_tracks = models.FloatField(default=1)
     text_horizontal_alignment = models.CharField(max_length=20, choices=HorizontalAlignment.choices)
@@ -928,8 +957,8 @@ class VisualActivity(models.Model):
             width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
 
         plotable = get_plotable(
-            "activity-"+self.unique_id_from_plan,
-            self.plotable_shape.name,
+            plotable_id="activity-"+self.unique_id_from_plan,
+            plotable_shape_name=PlotableShapeName.get_by_value(self.plotable_shape),
             top=activity_top,
             left=left,
             width=width,

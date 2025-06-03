@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict
+from typing import Iterable, Dict, List
+
+from api.v1.model.visual.plotable_shape.serializer import PlotableShapeSerializer
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
 from plan_visual_django.services.visual.rendering.visual_elements import VisualElementCollection, VisualElement
@@ -10,11 +12,11 @@ class VisualRenderer(ABC):
     An object which carries out the physical plotting of objects within the visual.
     """
 
-    def plot_visual(self, visual: VisualElementCollection):
+    def render_visual(self, visual: VisualElementCollection):
         for collection in visual.collection:
-            self.plot_collection(collection)
+            self.render_collection(collection)
 
-    def plot_collection(self, collection: VisualElementCollection):
+    def render_collection(self, collection: VisualElementCollection):
         """
         Recursive method which iterates through a collection and either plots the object if it is a Plotable, or
         calls this method recursively if the item is another collection.
@@ -25,15 +27,15 @@ class VisualRenderer(ABC):
         for item, level in collection.iter():
             if type(item) == type(VisualElement) or issubclass(type(item), VisualElement):
                 plotable = item.plot_element()
-                self.plot_plotable(plotable)
+                self.render_plotable(plotable)
             elif type(item) == type(VisualElementCollection):
-                self.plot_collection(item)
+                self.render_collection(item)
             else:
                 raise Exception(f"Unexpected type {type(item)} when plotting visual")
 
 
     @abstractmethod
-    def plot_plotable(self, item: Plotable):
+    def render_plotable(self, item: Plotable):
         pass
 
 
@@ -109,7 +111,7 @@ class CanvasRenderer(VisualRenderer):
         }
         return shape_format_dict
 
-    def plot_visual(self, visual_collection: VisualElementCollection):
+    def render_visual(self, visual_collection: VisualElementCollection):
         """
         For the canvas plotter, the plot data will be accumulated in an object which then needs to be returned so that
         it can be included within the template and sent to the browser.
@@ -118,14 +120,14 @@ class CanvasRenderer(VisualRenderer):
         :return:
         """
         width, height = visual_collection.get_dimensions()
-        self.browser_data['settings']['canvas_width'] = width + 10  # Just adding a bit of padding for debug
-        self.browser_data['settings']['canvas_height'] = height + 10
-        super().plot_visual(visual_collection)
+        self.browser_data['settings']['canvas_width'] = width
+        self.browser_data['settings']['canvas_height'] = height
+        super().render_visual(visual_collection)
         return self.browser_data
 
-    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: [Dict]):
+    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: List[Dict]):
         if isinstance(plotable_iterable, Plotable):
-            rendered_objects.extend(self.plot_plotable(plotable_iterable))
+            rendered_objects.extend(self.render_plotable(plotable_iterable))
         elif isinstance(plotable_iterable, Iterable):
             for next_plotable_iterable in plotable_iterable:
                 self._render_iterable(next_plotable_iterable, rendered_objects)
@@ -154,7 +156,7 @@ class CanvasRenderer(VisualRenderer):
 
         return canvas_objects
 
-    def plot_plotable(self, item: Plotable):
+    def render_plotable(self, item: Plotable):
         # ToDo: Replace rectangle with more generic plotable and associated processing.
         """
         Return structure with information required for browser to plot the shape.  Note when we send this to the
@@ -175,7 +177,7 @@ class CanvasRenderer(VisualRenderer):
                 {
                     "plotable_id": item.plotable_id,
                     'shape_type': 'rectangle',
-                    'shape_name': item.shape,
+                    'shape_name': item.shape.value,
                     'shape_plot_dims': {
                         'top': item.top,
                         'left': item.left,
@@ -205,5 +207,5 @@ class CanvasRenderer(VisualRenderer):
         else:
             raise ValueError(f"item of type which can't be rendered {item}:{item.__class__.__name__}")
 
-    def plot_collection(self, collection: VisualElementCollection):
-        super().plot_collection(collection)
+    def render_collection(self, collection: VisualElementCollection):
+        super().render_collection(collection)

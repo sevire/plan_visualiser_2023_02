@@ -3,6 +3,7 @@ from datetime import datetime, date
 from plan_visual_django.services.general.date_utilities import DatePlotter, num_months_between_dates, month_increment, \
     last_day_of_month, first_day_of_month
 from plan_visual_django.services.general.utilities import is_odd
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
 from plan_visual_django.services.visual.rendering.visual_elements import VisualElementCollection, VisualElement
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 
@@ -60,6 +61,7 @@ class Timeline(VisualElementCollection):
             return HalfYearTimeline(start_date, end_date, timeline)
         elif timeline.timeline_type == TimelineForVisual.TimelineLabelType.YEAR:
             return YearTimeline(start_date, end_date, timeline)
+        return None
 
 
 class MonthTimeline(Timeline):
@@ -95,9 +97,8 @@ class MonthTimeline(Timeline):
 
             element = VisualElement()
 
-            from plan_visual_django.models import PlotableShape
             element.plotable_id = f"timeline-{self.timeline_record.id}-{period_num+1:03}"
-            element.shape=PlotableShape.PlotableShapeName.RECTANGLE
+            element.shape=PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset
             element.width=width
@@ -177,9 +178,8 @@ class HalfYearTimeline(Timeline):
 
             element = VisualElement()
 
-            from plan_visual_django.models import PlotableShape
             element.plotable_id = f"timeline-{self.timeline_record.id}-{period_num+1:03}"
-            element.shape=PlotableShape.PlotableShapeName.RECTANGLE
+            element.shape=PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset
             element.width=width
@@ -272,9 +272,8 @@ class YearTimeline(Timeline):
 
             element = VisualElement()
 
-            from plan_visual_django.models import PlotableShape
             element.plotable_id = f"timeline-{self.timeline_record.id}-{period_num+1:03}"
-            element.shape=PlotableShape.PlotableShapeName.RECTANGLE
+            element.shape=PlotableShapeName.RECTANGLE
             element.top=top_offset
             element.left=left + left_offset
             element.width=width
@@ -352,8 +351,7 @@ class QuarterTimeline(Timeline):
 
             element = VisualElement()
 
-            from plan_visual_django.models import PlotableShape
-            element.shape = PlotableShape.PlotableShapeName.RECTANGLE
+            element.shape = PlotableShapeName.RECTANGLE
             element.top = top_offset
             element.left = left + left_offset
             element.width = width

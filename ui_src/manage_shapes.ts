@@ -1,5 +1,5 @@
 import {get_plan_activity} from "./manage_visual";
-import {update_visual_activities} from "./plan_visualiser_api";
+import {get_visual_settings, update_visual_activities} from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 
 export async function update_shape_for_activity_handler(unique_id:string, shape_id:number) {
@@ -9,11 +9,14 @@ export async function update_shape_for_activity_handler(unique_id:string, shape_
   console.log(`Updating style id to ${shape_id}`)
 
   const data = [
-  {
-    id: activity.visual_data.id,
-    plotable_shape: shape_id
-  }
-]
-await update_visual_activities(activity.visual_data.visual.id, data)
-plot_visual()
+    {
+      id: activity.visual_data.id,
+      plotable_shape: shape_id
+    }
+  ]
+  await update_visual_activities(activity.visual_data.visual.id, data)
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
+  plot_visual()
 }

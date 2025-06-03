@@ -9,7 +9,7 @@ from plan_visual_django.services.plan_file_utilities.plan_field import FileType,
     PlanInputFieldSpecification
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
-from plan_visual_django.tests.resources.test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.unit_test_configuration import excel_reimported_files_folder, test_data_base_folder, test_fixtures_folder
 
 import logging
 logger = logging.getLogger(__name__)
@@ -182,5 +182,54 @@ class TestFileReimport(TestCase):
                 with self.subTest(test_type=test_type):
                     added_activity = plan_activities_after_test.get(unique_sticky_activity_id="ID-0008")
                     self.assertTrue(True, "Activity ID-0008 added as expected")
+
+    def test_sequence_after_added_activity(self):
+        """
+        It is critical that the sequence of activities in the plan is the same as that from the imported file, as the
+        plan is effectively a tree structure and each activity relates to the previous one.
+
+        When an activity is added to the plan, we need to ensure that this hasn't broken the correct sequence, as
+        pk/ids may not be sequential for a re-imported plan (new activities will receive an id bigger than all existing
+        ids).
+
+        :return:
+        """
+
+        unique_id_sequence_original = [
+            'ID-0007',
+            'ID-0001',
+            'ID-0002',
+            'ID-0005',
+            'ID-0006',
+            'ID-0003',
+            'ID-0004',
+        ]
+        unique_id_sequence_reimport_plan_expected = [
+            'ID-0007',
+            'ID-0001',
+            'ID-0008',
+            'ID-0002',
+            'ID-0005',
+            'ID-0006',
+            'ID-0003',
+            'ID-0004',
+        ]
+        # First check that original plan is in expected sequence.
+        with self.subTest("Checking original plan sequence..."):
+            sticky_ids_before = [activity.unique_sticky_activity_id for activity in self.activities_before]
+            self.assertEqual(unique_id_sequence_original, sticky_ids_before)
+
+        # Now reimport the plan with the added activity (not at end)
+        self.reimport_plan("PV-Test-03-t02-activity-added-not-end.xlsx")
+
+        # We have now imported a new file for this plan and so check that new task has been added.
+
+        plan_after_test = Plan.objects.get(id=self.plan_id)
+        plan_activities_after_test = list(plan_after_test.planactivity_set.all())
+
+        unique_id_sequence_reimport_plan = [activity.unique_sticky_activity_id for activity in plan_activities_after_test]
+        with self.subTest("Checking re-imported plan sequence..."):
+            self.assertEqual(unique_id_sequence_reimport_plan_expected, unique_id_sequence_reimport_plan)
+
 
 

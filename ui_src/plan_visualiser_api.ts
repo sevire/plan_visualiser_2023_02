@@ -71,7 +71,7 @@ export async function get_visual_activity_data(visual_id: number) {
     console.log(`No activity data returned for visual ${visual_id}`);
     (window as any).visual_activity_data = {}
   } else {
-    console.log(`xxx Activity data returned for visual ${visual_id}`);
+    console.log(`Activity data returned for visual ${visual_id}`);
     (window as any).visual_activity_data = response.data
   }
 }
@@ -139,6 +139,7 @@ export async function get_shape_records() {
 
   return await api_get(url_string)
 }
+
 export async function get_visual_settings(visualId: number) {
   console.log("Getting visual settings...")
   const url_string = `/api/v1/model/visuals/${visualId}/`;

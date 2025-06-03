@@ -16,26 +16,33 @@ export function add_download_image_event_listener() {
     download_image_button.addEventListener('click', downloadImage);
 }
 function renderForImageCreation() {
-    // Re-draw visual elements for each canvas but onto a single consolidating canvas.
-    console.log(`downloadImage: About to plot to capture canvas`);
-    plot_visual(true);
+    return __awaiter(this, void 0, void 0, function* () {
+        // Re-draw visual elements for each canvas but onto a single consolidating canvas.
+        console.log(`downloadImage: About to plot to capture canvas`);
+        // Need visual settings as it included visual height which is needed to plot.
+        const response = yield get_visual_settings(window.visual_id);
+        window.visual_settings = response.data;
+        plot_visual(true);
+    });
 }
 function getImageUrlForCanvas(canvas) {
     console.log(`Visual thumbnail - canvas is ${canvas}`);
     return canvas.toDataURL("image/png");
 }
 function downloadImage() {
-    renderForImageCreation();
-    console.log(`Finished plotting, about to convert to image and get url`);
-    const dataUrl = getImageUrlForCanvas(window.canvas_info.capture.canvas);
-    // Now create a link to the url and simulate clicking on it so user just sees download
-    let link = document.createElement('a');
-    link.download = 'visual.png';
-    link.href = dataUrl;
-    // The link needs to be part of the document body to be "clickable".
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    return __awaiter(this, void 0, void 0, function* () {
+        yield renderForImageCreation();
+        console.log(`Finished plotting, about to convert to image and get url`);
+        const dataUrl = getImageUrlForCanvas(window.canvas_info.capture.canvas);
+        // Now create a link to the url and simulate clicking on it so user just sees download
+        let link = document.createElement('a');
+        link.download = 'visual.png';
+        link.href = dataUrl;
+        // The link needs to be part of the document body to be "clickable".
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
 }
 function captureVisualAsImage(canvas) {
     return getImageUrlForCanvas(canvas);

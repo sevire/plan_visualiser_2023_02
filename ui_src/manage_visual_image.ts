@@ -6,14 +6,18 @@ export function add_download_image_event_listener() {
   // This function will add the event listener to the button to invoke the logic when clicked.
   const download_image_button = document.querySelector("#download-image-button");
 
-  download_image_button!.addEventListener('click', downloadImage
-);
+  download_image_button!.addEventListener('click', downloadImage);
 }
 
 
-function renderForImageCreation() {
+async function renderForImageCreation() {
   // Re-draw visual elements for each canvas but onto a single consolidating canvas.
   console.log(`downloadImage: About to plot to capture canvas`)
+
+  // Need visual settings as it included visual height which is needed to plot.
+  const response = await get_visual_settings((window as any).visual_id);
+  (window as any).visual_settings = response.data
+
   plot_visual(true)
 }
 
@@ -22,8 +26,8 @@ function getImageUrlForCanvas(canvas: HTMLCanvasElement): string {
   return canvas.toDataURL("image/png")
 }
 
-function downloadImage() {
-  renderForImageCreation();
+async function downloadImage() {
+  await renderForImageCreation();
   console.log(`Finished plotting, about to convert to image and get url`)
   const dataUrl = getImageUrlForCanvas((window as any).canvas_info.capture.canvas)
 

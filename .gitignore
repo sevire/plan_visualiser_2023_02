@@ -1,9 +1,6 @@
 /node_modules/
 /plan_files/
 
-# .env used for sensitive env variables used in building docker images so not stored in repo.
-.env
-
 /**/.ds_store
 /**/__pycache__/
 /logs/
@@ -24,3 +21,9 @@ db.sqlite3-journal
 /ui_src/manage_swimlanes.js
 /plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/plan_files/
 /plan_visual_django/tests/resources/input_files/excel_plan_files/plan_files/
+/plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/~$PV-Test-03-t02-activity-added-not-end.xlsx
+/devops/logs/
+
+# Ignore env files
+devops/env/*
+devops/env/.*

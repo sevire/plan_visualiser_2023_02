@@ -8,10 +8,6 @@ from plan_visual_django.models import (
     Color,
     Font,
     PlotableStyle,
-    PlotableShapeType,
-    PlotableShape,
-    PlotableShapeAttributesRectangle,
-    PlotableShapeAttributesDiamond,
     PlanVisual,
     SwimlaneForVisual,
     VisualActivity,
@@ -66,26 +62,6 @@ class PlanVisualAdmin(admin.ModelAdmin):
     ordering = ('plan',)
 
 
-@admin.register(PlotableShapeType)
-class PlotableShapeTypeAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShape)
-class PlotableShapeAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShapeAttributesRectangle)
-class PlotableShapeAttributesRectangleAdmin(admin.ModelAdmin):
-    exclude = []
-
-
-@admin.register(PlotableShapeAttributesDiamond)
-class PlotableShapeAttributesDiamondAdmin(admin.ModelAdmin):
-    exclude = []
-
-
 @admin.register(SwimlaneForVisual)
 class SwimlaneForVisualAdmin(admin.ModelAdmin):
     list_display = ("plan_visual", "sequence_number", "swim_lane_name")
@@ -102,7 +78,7 @@ class VisualActivityAdmin(admin.ModelAdmin):
 
 @admin.register(PlanActivity)
 class PlanActivityAdmin(admin.ModelAdmin):
-    list_display = ('unique_sticky_activity_id', 'activity_name', 'start_date', 'end_date')
+    list_display = ('plan', 'sequence_number', 'unique_sticky_activity_id', 'activity_name', 'start_date', 'end_date')
     list_filter = ('plan',)
 
 
@@ -113,7 +89,7 @@ class TimelineForVisualAdmin(admin.ModelAdmin):
 
 @admin.register(StaticContent)
 class StaticContentAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'title', 'content')  # columns to display on admin page
+    list_display = ('slug', 'title')  # columns to display on admin page
     search_fields = ['slug', 'title', 'content']
     prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
 

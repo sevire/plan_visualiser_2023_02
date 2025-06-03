@@ -8,6 +8,18 @@ from plan_visual_django.models import Plan, PlanVisual
 
 
 class ModelPlanActivityListAPI(ListAPIView):
+    """
+    Provides a view to retrieve a list of activities associated with a specific plan.
+
+    This API view is designed to fetch and return a list of activities related to a
+    given plan identified by its unique ID. It queries the database for the activities
+    associated with the specified plan and serializes them into a JSON response.
+
+    :ivar serializer_class: The serializer class used to format the response data.
+    :type serializer_class: type
+    :ivar queryset: The default queryset used for retrieving objects, if applicable.
+    :type queryset: type
+    """
     def get(self, request, id=None, **kwargs):
         plan = Plan.objects.get(id=id)
 

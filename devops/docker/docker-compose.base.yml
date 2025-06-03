@@ -1,0 +1,33 @@
+services:
+  django_gunicorn:
+    image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
+    ports:
+      - "8000:8000"
+    volumes:
+      - static:/static
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: ${REGISTRY_PREFIX}${NGINX_IMAGE}
+    ports:
+      - "80:80"
+    volumes:
+      - static:/static
+    depends_on:
+      - django_gunicorn
+
+  db:
+    image: ${REGISTRY_PREFIX}{POSTGRES_IMAGE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  static:
+  postgres_data:

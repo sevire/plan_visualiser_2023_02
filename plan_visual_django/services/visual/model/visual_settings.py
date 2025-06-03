@@ -1,3 +1,6 @@
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
+
+
 class VisualSettings:
     """
     Holds key information about the visual which is required to physically plot it.
@@ -8,7 +11,7 @@ class VisualSettings:
     def __init__(self, visual_id: int):
         self.visual_id = visual_id
         from plan_visual_django.models import PlanVisual
-        self.visual = PlanVisual.objects.get(id=visual_id)
+        self.visual: PlanVisual = PlanVisual.objects.get(id=visual_id)
 
         self.width: float = self.visual.width
         self.height: float = self.visual.max_height
@@ -29,41 +32,67 @@ class VisualSettings:
         else:
             self.default_timeline_plotable_style_even = self.visual.default_timeline_plotable_style_odd
 
-
     @staticmethod
-    def calculate_defaults_for_visual(plan):
+    def calculate_defaults_for_visual(plan, **exclude):
         """
         Encapsulates calculation of default values for a new visual.  May want to make this
         more sophisticated (e.g. allow default values to be stored in the database) but for
         now just have default values defined in a single place in the code.
 
+        exclude is a dictionary of the fields which have been specified by the caller and so don't need defaults. Only
+        the defaults which aren't excluded should be calculated, as the others may fail depending upon context which is
+        why the user/caller has the option to provide them.
+
         :param plan:
         :return:
         """
+        defaults = {}
+        excluded_field_names = exclude.keys()
 
-        from plan_visual_django.models import PlotableShape
+        # Local function to help in setting only defaults that user hasn't already specified.
+        def set_default(key, calculate_value):
+            if key not in excluded_field_names:
+                defaults[key] = calculate_value()
+
         from plan_visual_django.models import PlotableStyle
+        default_field_names = {
+            "name",
+            "width",
+            "max_height",
+            "include_title",
+            "default_activity_shape",
+            "default_milestone_shape",
+            "track_height",
+            "track_gap",
+            "milestone_width",
+            "swimlane_gap",
+            "default_activity_plotable_style",
+            "default_milestone_plotable_style",
+            "default_swimlane_plotable_style",
+            "default_timeline_plotable_style_odd",
+            "default_timeline_plotable_style_even",
+        }
 
         num_visuals_for_plan = plan.planvisual_set.count()
 
-        return {
-            "name": f"{plan.plan_name}-Visual-{num_visuals_for_plan+1:02d}",
-            "width": 1200,
-            "max_height": 800,
-            "include_title": False,
-            "default_activity_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.RECTANGLE),
-            "default_milestone_shape": PlotableShape.objects.get(name=PlotableShape.PlotableShapeName.DIAMOND),
-            "track_height": 20,
-            "track_gap": 4,
-            "milestone_width": 10,
-            "swimlane_gap": 5,
-            "default_activity_plotable_style": PlotableStyle.objects.get(style_name="theme-01-001-activities-01"),
-            "default_milestone_plotable_style": PlotableStyle.objects.get(style_name="theme-01-004-milestones-01"),
-            "default_swimlane_plotable_style": PlotableStyle.objects.get(style_name="theme-01-006-swimlanes-01"),
-            "default_timeline_plotable_style_odd": PlotableStyle.objects.get(style_name="theme-01-008-timelines-01"),
-            "default_timeline_plotable_style_even": PlotableStyle.objects.get(style_name="theme-01-009-timelines-02")
-        }
+        # Only set defaults for field names that haven't been specified.
+        set_default("name", lambda: f"{plan.plan_name}-Visual-{num_visuals_for_plan+1:02d}")
+        set_default("width", lambda: 1200)
+        set_default("max_height", lambda: 800)
+        set_default("include_title", lambda: False)
+        set_default("default_activity_shape", lambda: PlotableShapeName.RECTANGLE.name)
+        set_default("default_milestone_shape", lambda: PlotableShapeName.DIAMOND.name)
+        set_default("track_height", lambda: 20)
+        set_default("track_gap", lambda: 4)
+        set_default("milestone_width", lambda: 10)
+        set_default("swimlane_gap", lambda: 5)
+        set_default("default_activity_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-001-activities-01"))
+        set_default("default_milestone_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-004-milestones-01"))
+        set_default("default_swimlane_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-006-swimlanes-01"))
+        set_default("default_timeline_plotable_style_odd", lambda: PlotableStyle.objects.get(style_name="theme-01-008-timelines-01"))
+        set_default("default_timeline_plotable_style_even", lambda: PlotableStyle.objects.get(style_name="theme-01-009-timelines-02"))
 
+        return defaults
 
 class VisualSettingsCanvas(VisualSettings):
     """

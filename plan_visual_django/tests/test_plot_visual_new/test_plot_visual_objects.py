@@ -8,7 +8,7 @@ import os
 from ddt import ddt, data, unpack
 from django.test import TestCase
 from plan_visual_django.models import PlanVisual
-from plan_visual_django.tests.resources.test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.unit_test_configuration import test_data_base_folder, test_fixtures_folder
 from plan_visual_django.tests.resources.utilities import generate_test_data_field_stream_multiple_inputs, date_from_string
 from plan_visual_django.tests.resources.utilities import extract_object_from_list_by_field
 

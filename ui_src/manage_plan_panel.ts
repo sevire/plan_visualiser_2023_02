@@ -37,7 +37,6 @@ export function change_track_value(event: Event) {
   const activity = get_activity((window as any).selected_activity_id)
   if (activity) {
     activity.track = new_track_value;
-    // continue your code execution
   } else {
     console.log("Can't find activity");
   }

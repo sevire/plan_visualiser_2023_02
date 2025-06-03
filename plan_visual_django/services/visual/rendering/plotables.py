@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from plan_visual_django.exceptions import MissingPlotableIdError
+from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
 
 
 class Plotable(ABC):
@@ -78,6 +79,14 @@ class Plotable(ABC):
         :return:
         """
 
+    @abstractmethod
+    def get_bottom(self):
+        """
+        Calculate bottom edge of enclosing rectangle, which is (usually) the max of left + width for each plotable
+
+        :return:
+        """
+
 
 class RectangleBasedPlotable(Plotable):
     """
@@ -94,7 +103,7 @@ class RectangleBasedPlotable(Plotable):
     def __init__(
             self,
             plotable_id,
-            shape,
+            shape: PlotableShapeName,
             top: float,
             left: float,
             width: float,
@@ -224,21 +233,21 @@ class RectangleBasedPlotable(Plotable):
         pass
 
 
-def get_plotable(plotable_id, shape_name, **kwargs):
+def get_plotable(plotable_id: str, plotable_shape_name: PlotableShapeName, **kwargs):
     """
     Decides which subclass of plotable is required based on which shape is to be plotted.
 
-    :param shape:
+    :param plotable_id: An identifier which is unique across the whole visual.
+    :param plotable_shape_name: 
 
     :return:
     """
-    from plan_visual_django.models import PlotableShape
     plotable_factory_dispatch_table = {
-        PlotableShape.PlotableShapeName.RECTANGLE: RectangleBasedPlotable,
-        PlotableShape.PlotableShapeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
-        PlotableShape.PlotableShapeName.BULLET: RectangleBasedPlotable,
-        PlotableShape.PlotableShapeName.DIAMOND: RectangleBasedPlotable,
-        PlotableShape.PlotableShapeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
+        PlotableShapeName.RECTANGLE: RectangleBasedPlotable,
+        PlotableShapeName.ROUNDED_RECTANGLE: RectangleBasedPlotable,
+        PlotableShapeName.BULLET: RectangleBasedPlotable,
+        PlotableShapeName.DIAMOND: RectangleBasedPlotable,
+        PlotableShapeName.ISOSCELES_TRIANGLE: RectangleBasedPlotable
     }
-    class_to_use = plotable_factory_dispatch_table[shape_name]
-    return class_to_use(plotable_id, shape_name, **kwargs)
+    class_to_use = plotable_factory_dispatch_table[plotable_shape_name]
+    return class_to_use(plotable_id, plotable_shape_name, **kwargs)

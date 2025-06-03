@@ -252,8 +252,9 @@ export function plot_visual(captureImageFlag: boolean = false) {
     // ToDo: This is a bit of a hack to fix download image bug quickly - come back and fix
     (window as any).canvas_info.capture = canvasInfo.capture
   } else {
-    scaleFactor = (window as any).scale_factor
-    canvasInfo = (window as any).canvas_info;
+    // Since adding dynamic visual height calculation, we need to call initialise_canvases every time we
+    // plot the visual.
+    [scaleFactor, canvasInfo] = (window as any).initialise_canvases();
   }
   console.log("Plotting activity shapes...")
   console.log(`Selected activity id is ${(window as any).selected_activity_id}`)
@@ -348,8 +349,12 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
   let final_canvas_height: number = 0
   let initial_canvas_display_width = 0
   let initial_canvas_display_height = 0
+  let adjusted_canvas_display_height: number = 0;
+
 
   const visual_width = (window as any).visual_settings.width;
+  const visual_height = (window as any).visual_settings.visual_height;
+  const aspect_ratio = visual_height / visual_width;
 
   let firstCanvasFlag: boolean = true  // Some processing only needed first time round loop so use flag.
   if (!captureOnly) {
@@ -366,8 +371,6 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
         console.log(`canvas.offsetWidth = ${canvas.offsetWidth}`)
 
         // ToDo: Refactor calculation of canvas size to reflect what is being plotted.
-        let aspectRatio = 16 / 32;
-
         // The canvas will have a width based on the html for the template and the screen it is displayed on
         // We take it and then use that to calculate the resolution of the canvas element to ensure max resolution
         initial_canvas_display_width = canvas.offsetWidth
@@ -377,29 +380,37 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
         let dpi = window.devicePixelRatio;
         console.log(`devicePixelRatio is ${dpi}`)
 
+        // final_canvas_width is the plotable width which will be used when plotting the visual
         final_canvas_width = initial_canvas_display_width * dpi;
-        final_canvas_height = initial_canvas_display_height * dpi;
 
+        // scale_factor is the factor that dimensions from the rendered visual will need to be multiplied
+        // in order to fill the full width of the canvas
         scale_factor = final_canvas_width / visual_width;
+
+        // Now we have the scale_factor we can calculate the true height both of the canvas html element
+        // and the plotable height of the canvas so that the visual fits neatly inside the canvas.
+        adjusted_canvas_display_height = visual_height / scale_factor
+        final_canvas_height = final_canvas_width * aspect_ratio;
+
         console.log(`Scale factor is ${scale_factor}`)
       }
       console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_width: ${initial_canvas_display_width}`)
-      console.log(`Initialise canvas ${canvas_id}: initial_canvas_display_height: ${initial_canvas_display_height}`)
+      console.log(`Initialise canvas ${canvas_id}: ajdusted_canvas_display_height: ${adjusted_canvas_display_height}`)
       console.log(`Initialise canvas ${canvas_id}: final_canvas_width:            ${final_canvas_width}`)
       console.log(`Initialise canvas ${canvas_id}: final_canvas_height:           ${final_canvas_height}`)
       canvas.width = final_canvas_width;
       canvas.height = final_canvas_height;
       canvas.style.width = initial_canvas_display_width + "px"
-      canvas.style.height = initial_canvas_display_height + "px"
+      canvas.style.height = adjusted_canvas_display_height + "px"
     }
   } else {
-  // Add 'capture' canvas for plotting to download image etc.
-  const captureCanvas = document.createElement('canvas');
-  captureCanvas.width = 2000; // Hard coding for now
-  scale_factor = captureCanvas.width / visual_width
-  captureCanvas.height = 2000; // ToDo: Replace hard coding of canvas width with more sophisticated approach
+    // Add 'capture' canvas for plotting to download image etc.
+    const captureCanvas = document.createElement('canvas');
+    captureCanvas.width = 2000; // Hard coding for now
+    scale_factor = captureCanvas.width / visual_width
+    captureCanvas.height = 2000; // ToDo: Replace hard coding of canvas width with more sophisticated approach
 
-  canvas_info.capture = captureCanvas.getContext('2d');
+    canvas_info.capture = captureCanvas.getContext('2d');
   }
 
   return [scale_factor || 1, canvas_info];

@@ -1,0 +1,25 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - Development
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/_common-deploy.yml
+    with:
+      branch: Development
+      environment: staging
+      python_version: "3.12"
+    secrets:
+      # Declare secrets used in _common-deploy.yml (but standardise name for common processing)
+      SECRET_DO_DOCKER_REGISTRY_NAME: ${{ secrets.DO_DOCKER_REGISTRY_NAME }}
+      SECRET_DO_DROPLET_SSH_PRIVATE_KEY: ${{ secrets.DO_STAGING_DROPLET_SSH_PRIVATE_KEY }}
+      SECRET_DO_DROPLET_HOST_IP: ${{ secrets.DO_DROPLET_STAGING_HOST_IP }}
+      SECRET_POSTGRES_DB_NAME: ${{ secrets.POSTGRES_DB_NAME }}
+      SECRET_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      SECRET_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      SECRET_DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      SECRET_DO_DOCKER_REGISTRY_API_TOKEN: ${{ secrets.DO_DOCKER_REGISTRY_API_TOKEN }}
