@@ -54,7 +54,7 @@ jobs:
       run: doctl registry login --expiry-seconds 1200
 
     - name: Push Nginx image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-nginx:$(echo $GITHUB_SHA | head -c7)
+      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-nginx:$(echo $GITHUB_SHA | head -c7)
 
     - name: Push Gunicorn image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan_visualiser_2023_02-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
+      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
