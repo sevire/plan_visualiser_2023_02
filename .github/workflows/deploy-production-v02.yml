@@ -1,4 +1,4 @@
-name: Deploy to Live
+name: Deploy to Live from master
 
 on:
   push:
