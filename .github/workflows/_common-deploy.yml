@@ -44,6 +44,7 @@ jobs:
     uses: ./.github/workflows/_build-and-push.yml
     with:
       python_version: ${{ inputs.python_version }}
+    secrets: inherit
 
   pull-and-deploy:
     needs: [ build-and-push ]
