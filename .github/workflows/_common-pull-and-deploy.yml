@@ -1,0 +1,41 @@
+name: Build Docker images and push to Digital Ocean Repository
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        description: Python version
+        required: true
+        type: string
+    secrets:
+      SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
+        required: true
+      SECRET_DO_DOCKER_REGISTRY_NAME:
+        required: true
+
+jobs:
+  pull-and-deploy-docker-images:
+    runs-on: ubuntu-latest
+    steps:
+    # Install python on the runner to run deployment script deploy_on_remote.sh
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+
+    # Checkout code as it contains deployment script deploy_on_remote.sh
+    - name: Checkout ${{ inputs.branch }}
+      uses: actions/checkout@v3
+
+    # Install SHH keys in order to ssh into the target server to deploy new docker images.
+    - name: Install SSH keys
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SECRET_DO_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H "${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" > ~/.ssh/known_hosts
+
+    # Ensure the deployment script is executable and then run it
+    - name: Connect and pull Docker images on droplet
+      run: |
+        chmod +x ./devops/ci-scripts/deploy-on-remote.sh  # Note this is on the runner - not the live server!!
+        ssh -o StrictHostKeyChecking=no root@"${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" 'bash -s' -- "${{ secrets.SECRET_POSTGRES_DB_NAME }}" "${{ secrets.SECRET_POSTGRES_USER }}" "${{ secrets.SECRET_POSTGRES_PASSWORD }}" "${{ secrets.SECRET_DJANGO_SECRET_KEY }}" $(echo $GITHUB_SHA | head -c7) staging "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" < ./devops/ci-scripts/deploy-on-remote.sh
