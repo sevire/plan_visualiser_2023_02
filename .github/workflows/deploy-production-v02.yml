@@ -1,17 +1,18 @@
 name: Deploy to Live from master
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
   deploy:
     uses: ./.github/workflows/_common-deploy.yml
     with:
-      branch: main
-      environment: live
+      branch: master
+      environment: production
       python_version: "3.12"
     secrets:
       # Declare secrets used in _common-deploy.yml (but standardise name for common processing)
