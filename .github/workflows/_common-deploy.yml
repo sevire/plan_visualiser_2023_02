@@ -47,7 +47,14 @@ jobs:
     secrets: inherit
 
   pull-and-deploy:
-    needs: [ build-and-push ]
+    needs: [ pre-deploy-test, build-and-push ]
+    if: |
+      always() &&
+      needs.pre-deploy-test.result == 'success' &&
+      (
+        (inputs.environment == 'production') ||
+        (inputs.environment != 'production' && needs.build-and-push.result == 'success')
+      )
     uses: ./.github/workflows/_common-pull-and-deploy.yml
     with:
       python_version: ${{ inputs.python_version }}
