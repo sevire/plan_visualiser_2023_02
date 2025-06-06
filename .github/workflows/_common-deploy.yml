@@ -58,5 +58,6 @@ jobs:
     uses: ./.github/workflows/_common-pull-and-deploy.yml
     with:
       python_version: ${{ inputs.python_version }}
+      environment: ${{ inputs.environment }}
 
     secrets: inherit
