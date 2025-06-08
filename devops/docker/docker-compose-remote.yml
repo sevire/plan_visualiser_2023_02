@@ -24,7 +24,7 @@ services:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DJANGO_ENVIRONMENT=${DJANGO_ENVIRONMENT}
   nginx:
-    image: ${DOCKER_REGISTRY}/planvisualiser/nginx:${DOCKER_IMAGE_TAG}
+    image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/nginx:${DOCKER_IMAGE_TAG}
     volumes:
       - /var/www/app_root/ssl:/etc/nginx/ssl
       - static:/static
