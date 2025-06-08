@@ -73,5 +73,5 @@ jobs:
     # Creates additional tag indicating this is the latest Gunicorn image
     - name: Create alias tag for Nginx image as latest and push
       run: |
-        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
-        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
+        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
+        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ inputs.environment }}-latest
