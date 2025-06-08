@@ -46,32 +46,32 @@ jobs:
     - name: Build Docker image for Nginx with version tag
       run: docker build
         --file ./devops/docker/nginx/Dockerfile
-        --tag ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+        --tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
         .
 
     # Builds the Gunicorn Docker image using the specified Dockerfile
     - name: Build Docker image for Gunicorn with version tag
       run: docker build
         --file ./devops/docker/gunicorn/Dockerfile
-        --tag ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+        --tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
         .
 
     # Uploads the built Nginx image to the DigitalOcean Container Registry
     - name: Push Nginx image to DigitalOcean Container Registry
-      run: docker push ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
 
     # Creates additional tag indicating this is the latest Nginx image
     - name: Create alias tag for Nginx image as latest and push
       run: |
-        docker tag ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ inputs.environment }}-latest
-        docker push ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ inputs.environment }}-latest
+        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ inputs.environment }}-latest
+        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ inputs.environment }}-latest
 
     # Uploads the built Gunicorn image to the DigitalOcean Container Registry
     - name: Push Gunicorn image to DigitalOcean Container Registry
-      run: docker push ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
 
     # Creates additional tag indicating this is the latest Gunicorn image
     - name: Create alias tag for Nginx image as latest and push
       run: |
-        docker tag ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
-        docker push ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
+        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
+        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
