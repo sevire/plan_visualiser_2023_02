@@ -2,6 +2,11 @@ name: Build Docker images and push to Digital Ocean Repository
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        description: Environment we are deploying to
+        required: true
+        type: string
     secrets:
       SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
         required: true
@@ -15,34 +20,58 @@ jobs:
     - name: Checkout Development or master branch
       uses: actions/checkout@v3
 
+    - name: Set up version variables
+      id: version
+      run: |
+          echo "SEMANTIC_VERSION=$(cat devops/VERSION)" >> $GITHUB_OUTPUT
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+    - name: Set Image Tag With version number and build number
+      id: set-image-tag
+      run: |
+        IMAGE_TAG="v${{ steps.version.outputs.SEMANTIC_VERSION }}-build.${{ steps.version.outputs.BUILD_NUMBER }}"
+        echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
     # Installs the Digital Ocean CLI tool for interacting with DO services
     - name: Install Digital Ocean command line - doctl
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}
 
-    # Builds the Nginx Docker image using the specified Dockerfile
-    - name: Build Docker image for Nginx
-      run: docker build
-        --file ./devops/docker/nginx/Dockerfile
-        --tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-nginx:$(echo $GITHUB_SHA | head -c7)
-        .
-
-    # Builds the Gunicorn Docker image using the specified Dockerfile
-    - name: Build Docker image for Gunicorn
-      run: docker build
-        --file ./devops/docker/gunicorn/Dockerfile
-        --tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
-        .
-
     # Authenticates with the DigitalOcean Container Registry using temporary credentials
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
 
+    # Builds the Nginx Docker image using the specified Dockerfile
+    - name: Build Docker image for Nginx with version tag
+      run: docker build
+        --file ./devops/docker/nginx/Dockerfile
+        --tag ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+        .
+
+    # Builds the Gunicorn Docker image using the specified Dockerfile
+    - name: Build Docker image for Gunicorn with version tag
+      run: docker build
+        --file ./devops/docker/gunicorn/Dockerfile
+        --tag ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+        .
+
     # Uploads the built Nginx image to the DigitalOcean Container Registry
     - name: Push Nginx image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-nginx:$(echo $GITHUB_SHA | head -c7)
+      run: docker push ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+
+    # Creates additional tag indicating this is the latest Nginx image
+    - name: Create alias tag for Nginx image as latest and push
+      run: |
+        docker tag ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ inputs.environment }}-latest
+        docker push ${DOCKER_REGISTRY}/planvisualiser/nginx:${{ inputs.environment }}-latest
 
     # Uploads the built Gunicorn image to the DigitalOcean Container Registry
     - name: Push Gunicorn image to DigitalOcean Container Registry
-      run: docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/plan-visualiser-django_gunicorn:$(echo $GITHUB_SHA | head -c7)
+      run: docker push ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+
+    # Creates additional tag indicating this is the latest Gunicorn image
+    - name: Create alias tag for Nginx image as latest and push
+      run: |
+        docker tag ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
+        docker push ${DOCKER_REGISTRY}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
