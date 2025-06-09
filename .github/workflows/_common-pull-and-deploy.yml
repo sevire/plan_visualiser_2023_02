@@ -31,16 +31,16 @@ jobs:
     - name: Checkout ${{ inputs.branch }}
       uses: actions/checkout@v3
 
-    - name: Set up version variables to allow pulling the right image from Digital Ocean repo.
-      id: version
-      run: |
-          echo "SEMANTIC_VERSION=$(cat devops/VERSION)" >> $GITHUB_OUTPUT
-          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_OUTPUT
+    # Extract the image tag which was created during build and push from Github artifacts
+    - name: Download image tag from staging
+      uses: actions/download-artifact@v3
+      with:
+        name: image-tag
 
-    - name: Set Image Tag With version number and build number
+    - name: Set Image Tag
       id: set-image-tag
       run: |
-        IMAGE_TAG="v${{ steps.version.outputs.SEMANTIC_VERSION }}-build.${{ steps.version.outputs.BUILD_NUMBER }}"
+        IMAGE_TAG=$(cat successful_staging_tag.txt)
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
     # Install SHH keys in order to ssh into the target server to deploy new docker images.

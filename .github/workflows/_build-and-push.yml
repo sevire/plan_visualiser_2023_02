@@ -31,6 +31,17 @@ jobs:
       run: |
         IMAGE_TAG="v${{ steps.version.outputs.SEMANTIC_VERSION }}-build.${{ steps.version.outputs.BUILD_NUMBER }}"
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        
+        # Save the tag for production use
+        echo "${IMAGE_TAG}" > successful_staging_tag.txt
+
+    # Stores image tag as Github artifact
+    - name: Upload tag file as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: image-tag
+        path: successful_staging_tag.txt
+        retention-days: 5
 
     # Installs the Digital Ocean CLI tool for interacting with DO services
     - name: Install Digital Ocean command line - doctl
