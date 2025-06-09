@@ -16,6 +16,8 @@ on:
         required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
+    permissions:
+      actions: read
 
 jobs:
   pull-and-deploy-docker-images:
@@ -36,6 +38,9 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: image-tag
+        workflow: _common-pull-and-deploy.yml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set Image Tag
       id: set-image-tag
