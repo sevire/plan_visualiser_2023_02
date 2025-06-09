@@ -37,7 +37,7 @@ jobs:
 
     # Stores image tag as Github artifact
     - name: Upload tag file as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: image-tag
         path: successful_staging_tag.txt

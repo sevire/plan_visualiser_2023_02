@@ -33,7 +33,7 @@ jobs:
 
     # Extract the image tag which was created during build and push from Github artifacts
     - name: Download image tag from staging
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: image-tag
 
