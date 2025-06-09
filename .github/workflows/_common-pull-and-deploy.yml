@@ -19,9 +19,6 @@ on:
 
 jobs:
   pull-and-deploy-docker-images:
-    permissions:
-      actions: read
-
     runs-on: ubuntu-latest
     steps:
     # Install python on the runner to run deployment script deploy_on_remote.sh

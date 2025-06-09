@@ -10,6 +10,9 @@ on:
 jobs:
   deploy:
     uses: ./.github/workflows/_common-deploy.yml
+    permissions:
+      actions: read    # Explicitly grant actions:read to the called workflow
+      contents: read   # If needed
     with:
       branch: master
       environment: production
