@@ -36,6 +36,9 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: image-tag
+        workflow: _common-pull-and-deploy.yml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set Image Tag
       id: set-image-tag
