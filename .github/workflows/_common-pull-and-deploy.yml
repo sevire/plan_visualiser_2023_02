@@ -31,6 +31,18 @@ jobs:
     - name: Checkout ${{ inputs.branch }}
       uses: actions/checkout@v3
 
+    # Extract the image tag which was created during build and push from Github artifacts
+    - name: Download image tag from staging
+      uses: actions/download-artifact@v4
+      with:
+        name: image-tag
+
+    - name: Set Image Tag
+      id: set-image-tag
+      run: |
+        IMAGE_TAG=$(cat successful_staging_tag.txt)
+        echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
     # Install SHH keys in order to ssh into the target server to deploy new docker images.
     - name: Install SSH keys
       run: |
@@ -42,4 +54,4 @@ jobs:
     - name: Connect and pull Docker images on droplet
       run: |
         chmod +x ./devops/ci-scripts/deploy-on-remote.sh  # Note this is on the runner - not the live server!!
-        ssh -o StrictHostKeyChecking=no root@"${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" 'bash -s' -- "${{ secrets.SECRET_POSTGRES_DB_NAME }}" "${{ secrets.SECRET_POSTGRES_USER }}" "${{ secrets.SECRET_POSTGRES_PASSWORD }}" "${{ secrets.SECRET_DJANGO_SECRET_KEY }}" $(echo $GITHUB_SHA | head -c7) ${{ inputs.environment }} "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" < ./devops/ci-scripts/deploy-on-remote.sh
+        ssh -o StrictHostKeyChecking=no root@"${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" 'bash -s' -- "${{ secrets.SECRET_POSTGRES_DB_NAME }}" "${{ secrets.SECRET_POSTGRES_USER }}" "${{ secrets.SECRET_POSTGRES_PASSWORD }}" "${{ secrets.SECRET_DJANGO_SECRET_KEY }}" ${{ steps.set-image-tag.outputs.IMAGE_TAG }} "${{ inputs.environment }}" "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" < ./devops/ci-scripts/deploy-on-remote.sh
