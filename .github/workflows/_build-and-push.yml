@@ -16,9 +16,11 @@ jobs:
   build_and_push_docker_images:
     runs-on: ubuntu-latest
     steps:
-    # Checks out the repository code to the runner
+    # Checks out the repository code to the runner with write access to allow commit
     - name: Checkout Development or master branch
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up version variables
       id: version
@@ -33,15 +35,18 @@ jobs:
         echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
         
         # Save the tag for production use
-        echo "${IMAGE_TAG}" > successful_staging_tag.txt
+        echo "${IMAGE_TAG}" > devops/image_tag.txt
 
-    # Stores image tag as Github artifact
-    - name: Upload tag file as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: image-tag
-        path: successful_staging_tag.txt
-        retention-days: 5
+    # Commits successful_staging_tag.txt to repo for use in production deployment later
+    - name: Commit file with image tag for later use by deploy to Production
+      if: inputs.environment == 'staging' && github.actor != 'github-actions[bot]'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"        
+        git checkout ${{ github.ref_name }}
+        git add devops/image_tag.txt
+        git commit -m "Update image tag for staging deploy [ci skip]"
+        git push
 
     # Installs the Digital Ocean CLI tool for interacting with DO services
     - name: Install Digital Ocean command line - doctl
