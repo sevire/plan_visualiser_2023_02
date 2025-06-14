@@ -7,7 +7,6 @@ services:
   django_gunicorn:
     image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
-      - /var/www/app_root/app:/app
       - static:/static
 
     ports:

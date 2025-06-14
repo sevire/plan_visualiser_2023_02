@@ -1,12 +1,10 @@
+# Build and push creates images (usually as part of deployment to Staging) which will become the production images
+# once tested.
+
 name: Build Docker images and push to Digital Ocean Repository
 
 on:
   workflow_call:
-    inputs:
-      environment:
-        description: Environment we are deploying to
-        required: true
-        type: string
     secrets:
       SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
         required: true
@@ -79,8 +77,8 @@ jobs:
     # Creates additional tag indicating this is the latest Nginx image
     - name: Create alias tag for Nginx image as latest and push
       run: |
-        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ inputs.environment }}-latest
-        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ inputs.environment }}-latest
+        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:latest
+        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:latest
 
     # Uploads the built Gunicorn image to the DigitalOcean Container Registry
     - name: Push Gunicorn image to DigitalOcean Container Registry
@@ -89,5 +87,5 @@ jobs:
     # Creates additional tag indicating this is the latest Gunicorn image
     - name: Create alias tag for Nginx image as latest and push
       run: |
-        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:${{ inputs.environment }}-latest
-        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ inputs.environment }}-latest
+        docker tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }} ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/gunicorn:latest
+        docker push ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:latest

@@ -14,4 +14,7 @@ COPY devops/docker/gunicorn/entrypoint.sh /
 RUN pip install --upgrade pip
 RUN pip install -r /requirements.txt
 
+# Copy application code into image
+COPY . /app/
+
 ENTRYPOINT ["sh", "/entrypoint.sh"]
