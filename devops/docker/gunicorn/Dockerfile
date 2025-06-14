@@ -15,6 +15,6 @@ RUN pip install --upgrade pip
 RUN pip install -r /requirements.txt
 
 # Copy application code into image
-COPY . /app/
+COPY . .
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
