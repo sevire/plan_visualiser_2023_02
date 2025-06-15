@@ -58,7 +58,7 @@ jobs:
     # Builds the Nginx Docker image using the specified Dockerfile
     - name: Build Docker image for Nginx with version tag
       run: docker build
-        --file ./devops/docker/nginx/Dockerfile
+        --file ./devops/docker/nginx/DockerfileRemote
         --tag ${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}/planvisualiser/nginx:${{ steps.set-image-tag.outputs.IMAGE_TAG }}
         .
 
