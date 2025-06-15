@@ -44,8 +44,6 @@ jobs:
     needs: [ pre-deploy-test ]
     if: inputs.environment != 'production'
     uses: ./.github/workflows/_build-and-push.yml
-    with:
-      environment: ${{ inputs.environment }}
     secrets: inherit
 
   pull-and-deploy:

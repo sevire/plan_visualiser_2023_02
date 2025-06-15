@@ -14,4 +14,13 @@ COPY devops/docker/gunicorn/entrypoint.sh /
 RUN pip install --upgrade pip
 RUN pip install -r /requirements.txt
 
+# Copy application code into image
+COPY . .
+
+# Add these debugging commands
+RUN echo "Listing contents of /app:" && \
+    ls -la /app && \
+    echo "Current working directory:" && \
+    pwd
+
 ENTRYPOINT ["sh", "/entrypoint.sh"]
