@@ -32,6 +32,8 @@ services:
     - "443:443"
     depends_on:
     - django_gunicorn
+    environment:
+      - DJANGO_ENVIRONMENT=${DJANGO_ENVIRONMENT}
   db:
     image: postgres
     environment:
