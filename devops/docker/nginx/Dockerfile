@@ -10,6 +10,6 @@ COPY ./devops/docker/nginx/docker-nginx-entrypoint.sh /docker-nginx-entrypoint.s
 
 RUN chmod +x /docker-nginx-entrypoint.sh
 
-# Start Nginx with your default entrypoint
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Start Nginx with correct entrypoint script
+ENTRYPOINT ["/docker-nginx-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
