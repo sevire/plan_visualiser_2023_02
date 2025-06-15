@@ -4,7 +4,7 @@
 set -e
    
 # Check the ENVIRONMENT variable to select the config file (default to dev)
-case "$ENVIRONMENT" in
+case "$DJANGO_ENVIRONMENT" in
     production)
         echo "Using production configuration"
         cp /etc/nginx/default-production.conf /etc/nginx/conf.d/default.conf
