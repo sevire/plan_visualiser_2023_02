@@ -6,7 +6,7 @@ COPY ./devops/docker/nginx/default-staging.conf /etc/nginx/default-staging.conf
 COPY ./devops/docker/nginx/default-production.conf /etc/nginx/default-production.conf
 
 # Add an entry point script to allow runtime setup
-COPY nginx/docker-nginx-entrypoint.sh /docker-nginx-entrypoint.sh
+COPY ./devops/docker/nginx/docker-nginx-entrypoint.sh /docker-nginx-entrypoint.sh
 
 RUN chmod +x /docker-nginx-entrypoint.sh
 
