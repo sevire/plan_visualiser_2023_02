@@ -26,10 +26,16 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
-
     # Checkout code as it contains deployment script deploy_on_remote.sh
     - name: Checkout ${{ inputs.branch }}
       uses: actions/checkout@v3
+
+    # Log messages to diagnose issue with wrong image being pulled
+    - name: Logging messages to confirm which commit is being checked out.
+      run: |
+        echo "Checked out Commit SHA: $(git rev-parse HEAD)"
+        echo "Image Tag Content:"
+        cat devops/image_tag.txt
 
     # Read image tag from repo which was written during build of images as part of staging deployment.
     - name: Read image tag
