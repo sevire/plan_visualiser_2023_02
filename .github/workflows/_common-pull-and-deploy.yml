@@ -11,6 +11,10 @@ on:
         description: Environment we are deploying to
         required: true
         type: string
+      branch:
+        description: Branch being deployed (e.g., development, main)
+        required: true
+        type: string
     secrets:
       SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
         required: true
@@ -29,6 +33,9 @@ jobs:
     # Checkout code as it contains deployment script deploy_on_remote.sh
     - name: Checkout ${{ inputs.branch }}
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetch all history so we can pull the latest commit
+        ref: ${{ inputs.branch }}  # Ensure this is the branch where the commit was pushed
 
     # Log messages to diagnose issue with wrong image being pulled
     - name: Logging messages to confirm which commit is being checked out.
