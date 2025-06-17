@@ -59,5 +59,6 @@ jobs:
     with:
       python_version: ${{ inputs.python_version }}
       environment: ${{ inputs.environment }}
+      branch: ${{ inputs.branch }}
 
     secrets: inherit
