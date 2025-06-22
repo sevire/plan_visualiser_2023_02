@@ -1,8 +1,7 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from plan_visual_django.services.initialisation.db_initialisation import set_initial_user_data, create_initial_users
-from utilities import set_env_variables
+from plan_visual_django.tests.resources.utilities import set_env_variables
 
 User = get_user_model()
 
