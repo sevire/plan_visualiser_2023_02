@@ -58,23 +58,6 @@ jobs:
         echo "${{ secrets.SECRET_DO_DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H "${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" > ~/.ssh/known_hosts
 
-    - name: Load .env file into environment
-      run: |
-        # Identify the appropriate .env file based on the environment
-        if [ "${{ inputs.environment }}" = "staging" ]; then
-          export ENV_FILE="./devops/env/.env.default-users.staging"
-        elif [ "${{ inputs.environment }}" = "production" ]; then
-          export ENV_FILE="./devops/env/.env.default-users.production"
-        else
-          echo "Unknown environment: ${{ inputs.environment }}" && exit 1
-        fi
-
-        # Load the .env file into the runner's environment
-        set -o allexport
-        source $ENV_FILE
-        set +o allexport
-
-
     # Ensure the deployment script is executable and then run it
     - name: Connect and pull Docker images on droplet
       run: |
