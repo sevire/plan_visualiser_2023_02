@@ -1,6 +1,22 @@
 from datetime import datetime
-
 from plan_visual_django.models import PlotableStyle, Font
+import os
+
+
+def set_env_variables(env_vars: dict, delete: bool = False):
+    """
+    Sets environment variables from a dictionary for testing purposes.
+    Can also remove environment variables if delete flag is set.
+
+    :param env_vars: Dictionary containing environment variable names and values
+    :param delete: If True, removes the environment variables instead of setting them
+    """
+    for key, value in env_vars.items():
+        if delete:
+            if key in os.environ:
+                del os.environ[key]
+        else:
+            os.environ[key] = str(value)
 
 
 def date_from_string(date_string: str, datetime_flag=False):

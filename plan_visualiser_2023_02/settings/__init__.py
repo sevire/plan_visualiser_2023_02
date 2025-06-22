@@ -3,15 +3,16 @@ import os
 print("Checking DJANGO_SETTINGS_MODULE...")
 print(f"DJANGO_SETTINGS_MODULE (before): {os.getenv('DJANGO_SETTINGS_MODULE')}")
 
-environment = os.getenv('DJANGO_ENVIRONMENT', 'development')
+CURRENT_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
 
 # Log the derived environment
-print(f"DJANGO_ENVIRONMENT = {environment}")
-if environment == 'production':
+print(f"DJANGO_ENVIRONMENT = {CURRENT_ENVIRONMENT}")
+if CURRENT_ENVIRONMENT == 'production':
     print("Using PRODUCTION environment")
     from .production_only_settings import *
-elif environment == 'staging':
+elif CURRENT_ENVIRONMENT == 'staging':
     print("Using STAGING environment")
+
     from .staging_only_settings import *
 else:
     print("Using DEVELOPMENT environment")

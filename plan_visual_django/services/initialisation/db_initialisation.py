@@ -4,7 +4,6 @@ from functools import partial
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
-from django.utils.crypto import get_random_string
 from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent
 import logging
 
@@ -58,26 +57,12 @@ initial_data_driver = [
     }
 ]
 
-initial_users = [
-    {
-        'username': settings.SHARED_DATA_USER_NAME,
-        'email': 'shared_data_user@genonline.co.uk',
-        'superuser_flag': False,
-        'id': 1,  # Id needs to be fixed only for shared_data_user as used as foreign key in some shared data items.
-        'return': True  # User will be returned for use in creating initial data
-    },
-    {
-        'username': "admin",
-        'email': 'admin_user@genonline.co.uk',
-        'id': 2,  # Need to specify id as we haven't reset pk counts yet and db will try to give id of 1
-        'superuser_flag': True
-    },
-    {
-        'username': "app_user_01",
-        'email': 'initial_app_user@genonline.co.uk',
-        'id': 3,  # Need to specify id as we haven't reset pk counts yet and db will try to give id of 1
-        'superuser_flag': False
-    }
+# The data for each initial user is stored in a set of environment variables, the names of which follow a set schema:
+initial_users_config = [
+    # Name of env variable, superuser flag, user index
+    {"SHARED_USER", False, 1},
+    {"ADMIN", True, 2},
+    {"APP_USER_1", False, 3},
 ]
 
 
@@ -183,8 +168,37 @@ def print_status(phase, message, delete_flag=False):
 def json_pathname(filename):
     return os.path.join(root, json_dir, filename)
 
+def set_initial_user_data(initial_users_config_data):
+    """
+    Reads environment variables for initial users based on environment prefix.
+    Returns list of user data dictionaries containing username, email, and password.
+    """
 
-def create_initial_users(delete=False):
+    # Work out names of environment variables to read.
+    user_data = []
+    for user, superuser_flag, user_index in initial_users_config_data:
+        username_env_name = f"{user}_NAME"
+        password_env_name = f"{user}_PASSWORD"
+        email_domain_env_name = "INITIAL_USER_EMAIL_DOMAIN"
+
+        username = os.environ.get(username_env_name)
+        password = os.environ.get(password_env_name)
+        email_domain = os.environ.get(email_domain_env_name)
+
+        user_record = {}
+
+        user_record['username'] = username
+        user_record['password'] = password
+        user_record['email'] = f"{username}@{email_domain}"
+        user_record['superuser_flag'] = superuser_flag
+        user_record['id'] = user_index
+
+        user_data.append(user_record)
+
+    return user_data
+
+
+def create_initial_users(user_data, delete=False):
     """
     Creates users which are required when setting up a new environment.  Which are:
     - A superuser which can be used for admin related activities
@@ -202,55 +216,60 @@ def create_initial_users(delete=False):
     print_status_partial = partial(print_status, prompt_string, delete_flag=delete)
     user_to_return = None  # Will be populated by which ever record has the return flag set
 
-    for user_data in initial_users:
-        print_status_partial(f"Setting up user {user_data['username']}...")
-        return_flag = user_data.get("return", False)
+    for user in user_data:
+        print_status_partial(f"Setting up user {user['username']}...")
 
         # Check whether this user exists
         try:
-            user = UserModel.objects.get(username=user_data["username"])
+            existing_user = UserModel.objects.get(username=user["username"])
         except UserModel.DoesNotExist:
             if delete:
                 # Nothing to do delete and that's fine.
-                print_status_partial(f"User ({[user_data['username']]}) does not exist, no need to delete")
+                print_status_partial(f"User ({[user['username']]}) does not exist, no need to delete")
             else:
                 # No record so let's create one
-                print_status_partial(f"About to create  user ({user_data['username']})...")
-                # Password is random but printed out on creation so user can capture and login to change password
-                user_data['password'] = get_random_string(10)
-                print_status_partial(f"Password for user {user_data['username']} is {user_data['password']}")
+                print_status_partial(f"About to create  user ({user['username']})...")
+
+                # ToDo: Remove the logging of password once setting of password from env variable working as expected
+                print_status_partial(f"Password for user {user['username']} is {user['password']}")
 
                 # Choose function to use for creating user depending upon whether superuser is required or not
-                if user_data['superuser_flag'] is True:
+                if user['superuser_flag'] is True:
                     function = UserModel.objects.create_superuser
                 else:
                     function = UserModel.objects.create_user
 
                 # Remove superuser flag and return flag from user_data as it's not a recognised keyword and we are using it as kwargs.
-                del user_data['superuser_flag']
-                if "return" in user_data:
-                    del user_data['return']
+                del user['superuser_flag']
 
-                print_status_partial(f"Calling {function.__name__}: {user_data}")
+                print_status_partial(f"Calling {function.__name__}: {user}")
 
                 # Need to provide the SECRET_KEY for the project to be used when hashing the password
                 # (will also be used when authenticating)
-                user = function(**user_data)
-                print_status_partial(f"User ({user}) created")
-                if return_flag is True:
-                    print_status_partial(f"Setting user to return {user}")
-                    user_to_return = user
+                new_user = function(**user)
+                print_status_partial(f"User ({new_user}) created")
+                user_to_return = new_user
         else:
-            # User exists, so either delete or leave
+            # User exists, so we want to check whether the password is set to the configured value, an if not
+            # change it to that value.
             if delete:
-                print_status_partial(f"User ({user_data['username']}) exists, deleting...")
-                user.delete()
-                print_status_partial(f"User ({user_data['username']}) exists, deleted...")
+                print_status_partial(f"User ({existing_user.username}) exists, deleting...")
+                existing_user.delete()
             else:
-                print_status_partial(f"User ({user}) already exists")
-                if return_flag is True:
-                    print_status_partial(f"Setting user to return {user}")
-                    user_to_return = user
+                # Check whether new password is same as current password set for the user
+                print_status_partial(f"User ({existing_user}) already exists")
+                password_works = existing_user.check_password(user['password'])
+                if password_works:
+                    print_status_partial(f"Passwords match, no need to update")
+                else:
+                    print_status_partial(f"Passwords do not match for existing user {existing_user.username}, updating...")
+                    existing_user.set_password(user['password'])
+                    existing_user.save()
+                    print_status_partial(f"Password updated")
+                print_status_partial(f"Setting user to return {user}")
+                user_to_return = existing_user
 
     if not delete:
         return user_to_return
+    else:
+        return None
