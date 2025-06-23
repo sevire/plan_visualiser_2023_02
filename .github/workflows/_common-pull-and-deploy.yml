@@ -20,6 +20,18 @@ on:
         required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
+      STAGING_SHARED_USER_NAME:
+        required: true
+      STAGING_SHARED_USER_PASSWORD:
+        required: true
+      STAGING_APP_USER_1_NAME:
+        required: true
+      STAGING_APP_USER_1_PASSWORD:
+        required: true
+      STAGING_ADMIN_NAME:
+        required: true
+      STAGING_ADMIN_PASSWORD:
+        required: true
 
 jobs:
   pull-and-deploy-docker-images:
