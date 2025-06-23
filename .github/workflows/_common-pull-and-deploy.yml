@@ -33,6 +33,7 @@ on:
       SECRET_ADMIN_PASSWORD:
         required: true
 
+
 jobs:
   pull-and-deploy-docker-images:
     runs-on: ubuntu-latest
