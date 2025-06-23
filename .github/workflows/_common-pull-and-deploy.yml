@@ -100,5 +100,5 @@ jobs:
           "${{ secrets.SECRET_APP_USER_1_NAME }}" \
           "${{ secrets.SECRET_APP_USER_1_PASSWORD }}" \
           "${{ secrets.SECRET_ADMIN_NAME }}" \
-          "${{ secrets.SECRET_ADMIN_PASSWORD }}" 
+          "${{ secrets.SECRET_ADMIN_PASSWORD }}" \
           < ./devops/ci-scripts/deploy-on-remote.sh
