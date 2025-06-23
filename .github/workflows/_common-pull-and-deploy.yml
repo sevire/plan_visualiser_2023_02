@@ -94,10 +94,10 @@ jobs:
           "${{ inputs.environment }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" \
-          "${{ secrets.SECRET_SHARED_USER_NAME }} \
-          "${{ secrets.SECRET_SHARED_USER_PASSWORD }} \
-          "${{ secrets.SECRET_APP_USER_1_NAME }} \
-          "${{ secrets.SECRET_APP_USER_1_PASSWORD }} \
-          "${{ secrets.SECRET_ADMIN_NAME }} \
-          "${{ secrets.SECRET_ADMIN_PASSWORD }} \
+          "${{ secrets.SECRET_SHARED_USER_NAME }}" \
+          "${{ secrets.SECRET_SHARED_USER_PASSWORD }}" \
+          "${{ secrets.SECRET_APP_USER_1_NAME }}" \
+          "${{ secrets.SECRET_APP_USER_1_PASSWORD }}" \
+          "${{ secrets.SECRET_ADMIN_NAME }}" \
+          "${{ secrets.SECRET_ADMIN_PASSWORD }}" 
           < ./devops/ci-scripts/deploy-on-remote.sh
