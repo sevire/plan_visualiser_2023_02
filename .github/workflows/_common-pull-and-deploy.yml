@@ -71,6 +71,7 @@ jobs:
         echo "ADMIN_NAME_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_ADMIN_NAME" >> $GITHUB_ENV
         echo "ADMIN_PASSWORD_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_ADMIN_PASSWORD" >> $GITHUB_ENV
 
+        # Hard coding name of secrets to test whether dynamic secret names can work
         chmod +x ./devops/ci-scripts/deploy-on-remote.sh  # Note this is on the runner - not the live server!!
         ssh -o StrictHostKeyChecking=no root@"${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" 'bash -s' -- \
           "${{ secrets.SECRET_POSTGRES_DB_NAME }}" \
@@ -81,10 +82,10 @@ jobs:
           "${{ inputs.environment }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" \
-          "${{ secrets[env.SHARED_USER_NAME_SECRET_NAME] }}" \
-          "${{ secrets[env.SHARED_USER_PASSWORD_SECRET_NAME] }}" \
-          "${{ secrets[env.APP_USER_1_NAME_SECRET_NAME] }}" \
-          "${{ secrets[env.APP_USER_1_PASSWORD_SECRET_NAME] }}" \
-          "${{ secrets[env.ADMIN_NAME_SECRET_NAME] }}" \
-          "${{ secrets[env.ADMIN_PASSWORD_SECRET_NAME] }}" \
+          "${{ secrets['STAGING_SHARED_USER_NAME'] }}
+          "${{ secrets['STAGING_SHARED_USER_PASSWORD'] }}
+          "${{ secrets['STAGING_APP_USER_1_NAME'] }}
+          "${{ secrets['STAGING_APP_USER_1_PASSWORD'] }}
+          "${{ secrets['STAGING_ADMIN_NAME'] }}
+          "${{ secrets['STAGING_ADMIN_PASSWORD'] }}
           < ./devops/ci-scripts/deploy-on-remote.sh
