@@ -20,17 +20,17 @@ on:
         required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
-      STAGING_SHARED_USER_NAME:
+      SECRET_SHARED_USER_NAME:
         required: true
-      STAGING_SHARED_USER_PASSWORD:
+      SECRET_SHARED_USER_PASSWORD:
         required: true
-      STAGING_APP_USER_1_NAME:
+      SECRET_APP_USER_1_NAME:
         required: true
-      STAGING_APP_USER_1_PASSWORD:
+      SECRET_APP_USER_1_PASSWORD:
         required: true
-      STAGING_ADMIN_NAME:
+      SECRET_ADMIN_NAME:
         required: true
-      STAGING_ADMIN_PASSWORD:
+      SECRET_ADMIN_PASSWORD:
         required: true
 
 jobs:
@@ -94,10 +94,10 @@ jobs:
           "${{ inputs.environment }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_NAME }}" \
           "${{ secrets.SECRET_DO_DOCKER_REGISTRY_API_TOKEN }}" \
-          "${{ secrets.STAGING_SHARED_USER_NAME }} \
-          "${{ secrets.STAGING_SHARED_USER_PASSWORD }} \
-          "${{ secrets.STAGING_APP_USER_1_NAME }} \
-          "${{ secrets.STAGING_APP_USER_1_PASSWORD }} \
-          "${{ secrets.STAGING_ADMIN_NAME }} \
-          "${{ secrets.STAGING_ADMIN_PASSWORD }} \
+          "${{ secrets.SECRET_SHARED_USER_NAME }} \
+          "${{ secrets.SECRET_SHARED_USER_PASSWORD }} \
+          "${{ secrets.SECRET_APP_USER_1_NAME }} \
+          "${{ secrets.SECRET_APP_USER_1_PASSWORD }} \
+          "${{ secrets.SECRET_ADMIN_NAME }} \
+          "${{ secrets.SECRET_ADMIN_PASSWORD }} \
           < ./devops/ci-scripts/deploy-on-remote.sh
