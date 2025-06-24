@@ -74,16 +74,6 @@ jobs:
     # Ensure the deployment script is executable and then run it
     - name: Connect and pull Docker images on droplet
       run: |
-        UPPERCASE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | tr '[:lower:]' '[:upper:]')
-        echo "UPPERCASE_ENVIRONMENT=$UPPERCASE_ENVIRONMENT" >> $GITHUB_ENV  # Export to GitHub Actions environment
-        
-        echo "SHARED_USER_NAME_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_SHARED_USER_NAME" >> $GITHUB_ENV
-        echo "SHARED_USER_PASSWORD_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_SHARED_USER_PASSWORD" >> $GITHUB_ENV
-        echo "APP_USER_1_NAME_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_APP_USER_1_NAME" >> $GITHUB_ENV
-        echo "APP_USER_1_PASSWORD_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_APP_USER_1_PASSWORD" >> $GITHUB_ENV
-        echo "ADMIN_NAME_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_ADMIN_NAME" >> $GITHUB_ENV
-        echo "ADMIN_PASSWORD_SECRET_NAME=${UPPERCASE_ENVIRONMENT}_ADMIN_PASSWORD" >> $GITHUB_ENV
-
         # Hard coding name of secrets to test whether dynamic secret names can work
         chmod +x ./devops/ci-scripts/deploy-on-remote.sh  # Note this is on the runner - not the live server!!
         ssh -o StrictHostKeyChecking=no root@"${{ secrets.SECRET_DO_DROPLET_HOST_IP }}" 'bash -s' -- \

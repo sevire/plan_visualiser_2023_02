@@ -41,5 +41,5 @@ class Command(BaseCommand):
             user = create_initial_users(initial_users_data, delete=False)
             add_initial_data(user, delete)
 
-            # Add intial data via service
+            # Add initial data via service
             populate_help_text_fields(fixture_file="plan_visual_django/fixtures/help_text.json")

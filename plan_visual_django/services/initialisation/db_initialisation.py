@@ -60,9 +60,9 @@ initial_data_driver = [
 # The data for each initial user is stored in a set of environment variables, the names of which follow a set schema:
 initial_users_config = [
     # Name of env variable, superuser flag, user index
-    {"SHARED_USER", False, 1},
-    {"ADMIN", True, 2},
-    {"APP_USER_1", False, 3},
+    ("SHARED_USER", False, 1),
+    ("ADMIN", True, 2),
+    ("APP_USER_1", False, 3),
 ]
 
 
@@ -190,14 +190,13 @@ def set_initial_user_data(initial_users_config_data):
         print_status("Set initial user data", f"Environment {password_env_name}:{password}")
         print_status("Set initial user data", f"Environment {email_domain_env_name}:{email_domain}")
 
-        user_record = {}
-
-        user_record['username'] = username
-        user_record['password'] = password
-        user_record['email'] = f"{username}@{email_domain}"
-        user_record['superuser_flag'] = superuser_flag
-        user_record['id'] = user_index
-
+        user_record = {
+            'username': username,
+            'password': password,
+            'email': f"{username}@{email_domain}",
+            'superuser_flag': superuser_flag,
+            'id': user_index
+        }
         user_data.append(user_record)
 
     return user_data
