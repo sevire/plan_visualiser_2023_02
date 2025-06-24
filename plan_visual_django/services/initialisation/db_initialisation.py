@@ -185,6 +185,11 @@ def set_initial_user_data(initial_users_config_data):
         password = os.environ.get(password_env_name)
         email_domain = os.environ.get(email_domain_env_name)
 
+        print_status("Set initial user data", f"Environment variables...")
+        print_status("Set initial user data", f"Environment {username_env_name}:{username}")
+        print_status("Set initial user data", f"Environment {password_env_name}:{password}")
+        print_status("Set initial user data", f"Environment {email_domain_env_name}:{email_domain}")
+
         user_record = {}
 
         user_record['username'] = username
