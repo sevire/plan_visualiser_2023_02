@@ -20,6 +20,8 @@ on:
         required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
+      INITIAL_USER_EMAIL_DOMAIN:
+        required: true
       SECRET_SHARED_USER_NAME:
         required: true
       SECRET_SHARED_USER_PASSWORD:

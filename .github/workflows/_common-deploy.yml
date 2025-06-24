@@ -28,6 +28,8 @@ on:
         required: true
       SECRET_DJANGO_SECRET_KEY:
         required: true
+      INITIAL_USER_EMAIL_DOMAIN:
+        required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
       SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
