@@ -28,9 +28,23 @@ on:
         required: true
       SECRET_DJANGO_SECRET_KEY:
         required: true
+      INITIAL_USER_EMAIL_DOMAIN:
+        required: true
       SECRET_DO_DOCKER_REGISTRY_NAME:
         required: true
       SECRET_DO_DOCKER_REGISTRY_API_TOKEN:
+        required: true
+      SECRET_APP_USER_1_NAME:
+        required: true
+      SECRET_APP_USER_1_PASSWORD:
+        required: true
+      SECRET_ADMIN_NAME:
+        required: true
+      SECRET_ADMIN_PASSWORD:
+        required: true
+      SECRET_SHARED_USER_NAME:
+        required: true
+      SECRET_SHARED_USER_PASSWORD:
         required: true
 
 jobs:

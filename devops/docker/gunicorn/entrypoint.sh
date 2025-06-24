@@ -21,6 +21,19 @@ python manage.py migrate --noinput
 
 echo "
 =================================================================
+|| Showing all env variables, and some individual variables    ||
+=================================================================
+"
+# Show all variables
+env
+
+# Access individual variables
+echo "SHARED_USER_NAME: $SHARED_USER_NAME"
+echo "ADMIN_PASSWORD: $ADMIN_PASSWORD"
+
+
+echo "
+=================================================================
 || Collecting static...                                        ||
 =================================================================
 "
