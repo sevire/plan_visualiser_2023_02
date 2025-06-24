@@ -28,6 +28,7 @@ services:
       - APP_USER_1_PASSWORD=${APP_USER_1_PASSWORD}
       - ADMIN_NAME=${ADMIN_NAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - INITIAL_USER_EMAIL_DOMAIN=${INITIAL_USER_EMAIL_DOMAIN}
   nginx:
     image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/nginx:${DOCKER_IMAGE_TAG}
     volumes:

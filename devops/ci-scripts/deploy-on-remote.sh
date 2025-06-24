@@ -37,6 +37,7 @@ echo "using APP_USER_1_NAME: ${APP_USER_1_NAME:0:4}"
 echo "using APP_USER_1_PASSWORD: ${APP_USER_1_PASSWORD:0:4}"
 echo "using ADMIN_NAME: ${ADMIN_NAME:0:4}"
 echo "using ADMIN_PASSWORD: ${ADMIN_PASSWORD:0:4}"
+echo "using INITIAL_USER_EMAIL_DOMAIN: ${INITIAL_USER_EMAIL_DOMAIN:0:4}"
 
 cd /var/www/app_root/app || exit
 pwd
