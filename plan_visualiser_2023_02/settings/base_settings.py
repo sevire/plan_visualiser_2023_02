@@ -140,7 +140,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user in initial_users within
+SHARED_DATA_USER_NAME = os.getenv('SHARED_USER_NAME', 'shared_user_name') # Note has to match shared data user in initial_users within
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 CORS_ORIGIN_ALLOW_ALL = True
 VERSION = "0.1.1"
