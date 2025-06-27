@@ -34,6 +34,16 @@ on:
         required: true
       SECRET_ADMIN_PASSWORD:
         required: true
+      SECRET_EMAIL_HOST:
+        required: true
+      SECRET_EMAIL_USE_SSL:
+        required: true
+      SECRET_EMAIL_HOST_USER:
+        required: true
+      SECRET_EMAIL_HOST_PASSWORD:
+        required: true
+      SECRET_EMAIL_PORT:
+        required: true
 
 
 jobs:
@@ -94,4 +104,9 @@ jobs:
           "${{ secrets.SECRET_ADMIN_NAME }}" \
           "${{ secrets.SECRET_ADMIN_PASSWORD }}" \
           "${{ secrets.INITIAL_USER_EMAIL_DOMAIN }}" \
+          "${{ secrets.SECRET_EMAIL_HOST }}" \
+          "${{ secrets.SECRET_EMAIL_USE_SSL }}" \
+          "${{ secrets.SECRET_EMAIL_HOST_USER }}" \
+          "${{ secrets.SECRET_EMAIL_HOST_PASSWORD }}" \
+          "${{ secrets.SECRET_EMAIL_PORT }}" \
           < ./devops/ci-scripts/deploy-on-remote.sh

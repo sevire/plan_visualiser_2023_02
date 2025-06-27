@@ -271,7 +271,7 @@ EMAIL_HOST = ""
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 SHARED_DATA_USER_NAME = 'shared_data_user'  # Note has to match shared data user in initial_users within
 # add_common_data command
