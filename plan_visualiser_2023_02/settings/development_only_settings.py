@@ -1,4 +1,9 @@
+from dotenv import load_dotenv
 from .base_settings import *
+
+# Load email settings from .env file
+dotenv_path = 'devops/env/.env.email.development'
+load_dotenv(dotenv_path)
 
 DEBUG = True
 
@@ -13,5 +18,10 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Email settings
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 
 STATIC_ROOT = "/static/"

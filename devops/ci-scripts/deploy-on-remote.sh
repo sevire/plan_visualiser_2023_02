@@ -20,6 +20,12 @@ export APP_USER_1_NAME=${APP_USER_1_NAME:-${11}}
 export APP_USER_1_PASSWORD=${APP_USER_1_PASSWORD:-${12}}
 export ADMIN_NAME=${ADMIN_NAME:-${13}}
 export ADMIN_PASSWORD=${ADMIN_PASSWORD:-${14}}
+export INITIAL_USER_EMAIL_DOMAIN=${INITIAL_USER_EMAIL_DOMAIN:-${15}}
+export EMAIL_HOST=${SECRET_EMAIL_HOST:-${16}}
+export EMAIL_USE_SSL=${SECRET_EMAIL_USE_SSL:-${17}}
+export EMAIL_HOST_USER=${SECRET_EMAIL_HOST_USER:-${18}}
+export EMAIL_HOST_PASSWORD=${SECRET_EMAIL_HOST_PASSWORD:-${19}}
+export EMAIL_PORT=${SECRET_EMAIL_PORT:-${20}}
 
 
 # Print out the values of the variables to help with debugging
@@ -38,6 +44,11 @@ echo "using APP_USER_1_PASSWORD: ${APP_USER_1_PASSWORD:0:4}"
 echo "using ADMIN_NAME: ${ADMIN_NAME:0:4}"
 echo "using ADMIN_PASSWORD: ${ADMIN_PASSWORD:0:4}"
 echo "using INITIAL_USER_EMAIL_DOMAIN: ${INITIAL_USER_EMAIL_DOMAIN:0:4}"
+echo "using EMAIL_HOST: ${EMAIL_HOST:0:4}"
+echo "using EMAIL_USE_SSL: ${EMAIL_USE_SSL:0:4}"
+echo "using EMAIL_HOST_USER: ${EMAIL_HOST_USER:0:4}"
+echo "using EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:0:4}"
+echo "using EMAIL_PORT: ${EMAIL_PORT:0:4}"
 
 cd /var/www/app_root/app || exit
 pwd

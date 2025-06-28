@@ -29,6 +29,11 @@ services:
       - ADMIN_NAME=${ADMIN_NAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - INITIAL_USER_EMAIL_DOMAIN=${INITIAL_USER_EMAIL_DOMAIN}
+      - EMAIL_HOST
+      - EMAIL_USE_SSL
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_PORT
   nginx:
     image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/nginx:${DOCKER_IMAGE_TAG}
     volumes:

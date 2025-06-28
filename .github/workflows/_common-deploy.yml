@@ -46,6 +46,16 @@ on:
         required: true
       SECRET_SHARED_USER_PASSWORD:
         required: true
+      SECRET_EMAIL_HOST:
+        required: true
+      SECRET_EMAIL_USE_SSL:
+        required: true
+      SECRET_EMAIL_HOST_USER:
+        required: true
+      SECRET_EMAIL_HOST_PASSWORD:
+        required: true
+      SECRET_EMAIL_PORT:
+        required: true
 
 jobs:
   pre-deploy-test:
