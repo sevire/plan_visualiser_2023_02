@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from plan_visual_django.services.app_status.service_list_visuals import service_list_visuals
+from plan_visual_django.services.general.text_formatting import print_formatted_dict_list, print_banner
 
 
 class Command(BaseCommand):
@@ -8,5 +9,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         visual_data = service_list_visuals()
 
-        for visual_record in visual_data:
-            self.stdout.write(f"{visual_record['user']}: {visual_record['plan_name']}: {visual_record['visual_name']}: {visual_record['visual_num_activities']}")
+        print_banner("All visuals, by user and plan name", 40, "*")
+
+        print_formatted_dict_list(visual_data)
