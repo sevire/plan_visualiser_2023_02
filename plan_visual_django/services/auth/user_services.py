@@ -145,7 +145,14 @@ class CurrentUser:
 
         # Case 2: Direct user/session ownership
         if hasattr(obj, "user") and hasattr(obj, "session_id"):
-            return (self.user == obj.user) or (self.session_key == obj.session_id)
+            # We are checking whether either the user ids or the session keys are equal between object
+            # and the user but if the user ids aren't equal then session ids both None isn't a match!
+            if self.user == obj.user:
+                return True
+            elif self.session_key is not None and obj.session_id is not None and self.session_key == obj.session_id:
+                return True
+            else:
+                return False  # Fail if either session_key or obj.session_id is None
 
         # Case 3: Follow parent-child relationships to find an owning model
         parent = self._get_parent_object(obj)
@@ -159,11 +166,13 @@ class CurrentUser:
         """
         Tries to find a parent object that links to a user or session_id.
         """
-        for field in obj._meta.fields:
-            if isinstance(field, models.ForeignKey):  # Only check foreign key relationships
-                related_obj = getattr(obj, field.name, None)
-                if related_obj:
-                    return related_obj  # Return the first valid parent found
+        # If we pass an object in which doesn't have
+        if hasattr(obj, "_meta"):
+            for field in obj._meta.fields:
+                if isinstance(field, models.ForeignKey):  # Only check foreign key relationships
+                    related_obj = getattr(obj, field.name, None)
+                    if related_obj:
+                        return related_obj  # Return the first valid parent found
         return None
 
 
@@ -196,5 +205,3 @@ def get_session_user_identifier(request):
     if not request.session.session_key:
         request.session.create()  # Ensure session exists
     return f"session_{request.session.session_key}"
-
-

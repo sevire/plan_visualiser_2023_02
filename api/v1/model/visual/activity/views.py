@@ -11,6 +11,7 @@ from api.v1.model.visual.activity.serializer import ModelVisualActivityListSeria
 from plan_visual_django.models import (PlanVisual, VisualActivity,
                                        DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
     DEFAULT_TEXT_HORIZONTAL_ALIGNMENT)
+from plan_visual_django.services.visual.model.layout import adjust_visual_activity_track
 
 
 class VisualActivityViewDispatcher(View):
@@ -165,5 +166,28 @@ class ModelVisualActivityAPI(APIView):
         visual_activity.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
+
+class ModelVisualActivityChangeSwimlaneAPI(APIView):
+    @staticmethod
+    def patch(request, visual_id, activity_unique_id, new_swimlane_id):
+        """
+        We are updating the swimlane and adjusting the track to position the activity at the bottom of the new swimlane.
+
+        :param request:
+        :param visual_id:
+        :param activity_unique_id:
+        :param new_swimlane_id:
+        :return:
+        """
+        visual = PlanVisual.objects.get(id=visual_id)
+        visual_activity = VisualActivity.objects.get(visual=visual, unique_id_from_plan=activity_unique_id)
+
+        adjust_visual_activity_track(visual_activity, new_swimlane_id)
+
+        with transaction.atomic():  # Not sure we need this!
+            visual_activity.save()
+
+        return Response(status=status.HTTP_202_ACCEPTED)
+
 
 

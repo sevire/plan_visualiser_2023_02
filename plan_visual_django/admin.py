@@ -58,13 +58,13 @@ class PlotableStyleAdmin(admin.ModelAdmin):
 
 @admin.register(PlanVisual)
 class PlanVisualAdmin(admin.ModelAdmin):
-    list_display =  ('name', 'plan')
+    list_display =  ('id', 'name', 'plan')
     ordering = ('plan',)
 
 
 @admin.register(SwimlaneForVisual)
 class SwimlaneForVisualAdmin(admin.ModelAdmin):
-    list_display = ("plan_visual", "sequence_number", "swim_lane_name")
+    list_display = ("id", "plan_visual", "sequence_number", "swim_lane_name")
     ordering = ("plan_visual", "sequence_number")
     list_filter = ('plan_visual', )
 

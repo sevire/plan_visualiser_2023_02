@@ -2,7 +2,7 @@ import {
   get_swimlane_data,
   get_visual_activity_data, get_visual_settings,
   update_swimlane_records,
-  update_visual_activities
+  update_visual_activities, update_visual_activity_swimlane
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
@@ -163,11 +163,5 @@ export async function update_swimlane_order(visual_id: number, this_swimlane_obj
     const activity = get_plan_activity(unique_id)
     console.log(`Updating swimlane id to ${swimlane_id}`)
 
-    const data = [
-    {
-      id: activity.visual_data.id,
-      swimlane: swimlane_id
-    }
-  ]
-  await update_visual_activities(activity.visual_data.visual.id, data)
+    await update_visual_activity_swimlane(activity.visual_data.visual.id, unique_id, swimlane_id)
   }

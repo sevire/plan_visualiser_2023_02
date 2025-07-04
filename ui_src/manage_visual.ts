@@ -456,6 +456,7 @@ function select_for_edit(activity_id:string, clear=false) {
           (window as any).swimlane_data.map((obj: any) => [obj.swim_lane_name, obj.id]),
           async (swimlane_id: number) => {
                     await update_swimlane_for_activity_handler(activity_id, swimlane_id);
+                    await get_plan_activity_data((window as any).visual_id)
                     await get_visual_activity_data((window as any).visual_id)
 
                     // Need visual settings as it included visual height which is needed to plot.

@@ -262,13 +262,14 @@ class PlanVisual(models.Model):
         activity_record['enabled'] = visual_activity.enabled
         activity_record['unique_id_from_plan'] = visual_activity.unique_id_from_plan
         activity_record['swimlane'] = visual_activity.swimlane.swim_lane_name
-        activity_record['plotable_shape'] = visual_activity.plotable_shape.name
+        activity_record['plotable_shape'] = visual_activity.plotable_shape
 
+        activity_record['vertical_positioning_value'] = visual_activity.vertical_positioning_value
         activity_record['height_in_tracks'] = visual_activity.height_in_tracks
         activity_record['text_horizontal_alignment'] = visual_activity.get_horizontal_alignment()
         activity_record['text_vertical_alignment'] = visual_activity.get_vertical_alignment()
         activity_record['text_flow'] = visual_activity.get_text_flow()
-        activity_record['plotable_style'] = visual_activity.plotable_style_odd.to_dict()
+        activity_record['plotable_style'] = visual_activity.plotable_style.to_dict()
 
         # Now add the plan activity record data for this activity
         activity_record['activity_name'] = plan_activity.activity_name

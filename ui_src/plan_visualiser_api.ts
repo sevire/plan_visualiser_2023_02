@@ -126,6 +126,12 @@ export async function update_visual_activities(visual_id:number, data:object) {
   return await api_patch(url_string, data)
 }
 
+export async function update_visual_activity_swimlane(visual_id:number, unique_activity_id:string, swimlane_id:number) {
+  const url_string = `/api/v1/model/visuals/activities/${visual_id}/${unique_activity_id}/${swimlane_id}/`;
+
+  return await api_patch(url_string, {})
+}
+
 export async function get_style_records() {
   console.log("Getting style records...")
   const url_string = "/api/v1/model/visuals/styles/";
