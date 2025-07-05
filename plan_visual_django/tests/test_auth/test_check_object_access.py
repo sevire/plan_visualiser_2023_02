@@ -88,7 +88,10 @@ class TestHasAccessToObject(TestCase):
         current_user = CurrentUser(self.request_user_2)
         self.assertFalse(current_user.has_access_to_object(self.plan_user_1))
 
-    def test_anonymous_user_has_access_to_session_object(self):
-        # Anonymous user should have access to their session-scoped plan
-        current_user = CurrentUser(self.request_anon)
-        self.assertTrue(current_user.has_access_to_object(self.plan_anon))
+    def test_user_does_not_have_access_to_anonymous_object(self):
+        # Authenticated users should not have access to plans belonging to an anonymous session
+        current_user = CurrentUser(self.request_user_1)
+        self.assertFalse(current_user.has_access_to_object(self.plan_anon))
+
+
+
