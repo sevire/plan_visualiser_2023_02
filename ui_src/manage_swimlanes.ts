@@ -117,6 +117,11 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
       // Send api call to compress this swimlane, then re-plot the visual
       await compress_swimlane(visual_id, swimlane_record.sequence_number);
       await get_visual_activity_data(visual_id);
+
+      // Need visual settings as it included visual height which is needed to plot.
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
+
       plot_visual();
     })
 
