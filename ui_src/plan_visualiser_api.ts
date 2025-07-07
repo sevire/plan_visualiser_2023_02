@@ -11,6 +11,15 @@ async function api_get(url_string: string) {
   return await axios.get(base_url + url_string)
 }
 
+export async function api_post(url_string: string, data: undefined | object) {
+  const base_url = ""
+  axios.defaults.xsrfCookieName = 'csrftoken'
+  axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+
+  let ret_response = undefined
+  return await axios.post(base_url + url_string, data)
+}
+
 async function api_put(url_string: string, data: undefined | object) {
   const base_url = ""
   axios.defaults.xsrfCookieName = 'csrftoken'
@@ -114,6 +123,13 @@ export async function update_swimlane_records(visual_id:number, data:object) {
   return await api_patch(url_string, data)
 }
 
+export async function compress_swimlane(visual_id:number, swimlane_seq_num:number) {
+  const url_string = `/api/v1/model/visuals/swimlanes/compress/${visual_id}/${swimlane_seq_num}/`
+
+  // No payload but it's a put because we update the database
+  return await api_post(url_string, {})
+}
+
 export async function update_timeline_records(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/timelines/${visual_id}/`;
 
@@ -124,6 +140,12 @@ export async function update_visual_activities(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/activities/${visual_id}/`;
 
   return await api_patch(url_string, data)
+}
+
+export async function update_visual_activity_swimlane(visual_id:number, unique_activity_id:string, swimlane_id:number) {
+  const url_string = `/api/v1/model/visuals/activities/${visual_id}/${unique_activity_id}/${swimlane_id}/`;
+
+  return await api_patch(url_string, {})
 }
 
 export async function get_style_records() {

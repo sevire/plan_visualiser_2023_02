@@ -120,3 +120,15 @@ class ModelVisualSwimlaneUpdateAPI(APIView):
                 except SwimlaneForVisual.DoesNotExist:
                     return Response({"error": f"Object with id={swimlane_update_record['id']} not found"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
+
+
+class ModelVisualSwimlaneCompress(APIView):
+    @staticmethod
+    def post(request, visual_id, swimlane_seq_num, **kwargs):
+        from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+        layout_manager = VisualAutoLayoutManager(visual_id)
+
+        visual = PlanVisual.objects.get(id=visual_id)
+        swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
+        layout_manager.compress_swimlane(swimlane)
+        return Response(status=status.HTTP_200_OK)

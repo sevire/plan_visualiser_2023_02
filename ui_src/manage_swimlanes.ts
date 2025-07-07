@@ -1,8 +1,9 @@
 import {
+  compress_swimlane,
   get_swimlane_data,
   get_visual_activity_data, get_visual_settings,
   update_swimlane_records,
-  update_visual_activities
+  update_visual_activities, update_visual_activity_swimlane
 } from "./plan_visualiser_api";
 import {plot_visual} from "./plot_visual";
 import {get_plan_activity} from "./manage_visual";
@@ -56,7 +57,10 @@ export async function add_arrow_button_to_element(
 }
 
 export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visual_id: number) {
+  console.log("Adding swimlanes to swimlane panel...")
   await get_swimlane_data(visual_id)
+
+  console.log(`Swimlane data: ${JSON.stringify((window as any).swimlane_data)}`)
 
   // Find the tbody element within the swimlane table, then add a row for each swimlane.
   const tbody = swimlane_html_panel.querySelector("table tbody");
@@ -64,6 +68,7 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
   // Clear tbody for case where we are updating panel rather than loading page
   tbody!.innerHTML = "";
   (window as any).swimlane_data.forEach((swimlane_record: any) => {
+    console.log(`Adding swimlane row to swimlane panel for ${swimlane_record.swim_lane_name}`)
     // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
     // Create a new row
     let row = document.createElement('tr');
@@ -90,6 +95,8 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
     buttonGroup1.setAttribute('aria-label', 'Basic Example')
     controlTD.appendChild(buttonGroup1)
 
+    console.log(`Adding arrow buttons to swimlane panel for ${swimlane_record.swim_lane_name}`)
+
     add_arrow_button_to_element(swimlane_html_panel, buttonGroup1, "up", swimlane_record.sequence_number, visual_id, swimlane_record, update_swimlane_order, update_swimlane_data)
     add_arrow_button_to_element(swimlane_html_panel, buttonGroup1, "down", swimlane_record.sequence_number, visual_id, swimlane_record, update_swimlane_order, update_swimlane_data)
 
@@ -98,9 +105,20 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
     buttonGroup2.setAttribute('aria-label', 'Basic Example')
     buttonGroup2.classList.add("btn-group", "btn-group-sm")
 
+    console.log(`Adding compress and auto buttons to swimlane panel for ${swimlane_record.swim_lane_name}`)
+
     controlTD.appendChild(buttonGroup2)
     const compressButton = create_button_with_icon("bi-arrows-collapse")
-    add_tooltip(compressButton, "Compress - remove blank lines")
+    add_tooltip(compressButton, "Compress - remove blank lines");
+
+    compressButton.addEventListener('click', async () => {
+      console.log(`Compressing swimlane ${swimlane_record.swim_lane_name}`);
+
+      // Send api call to compress this swimlane, then re-plot the visual
+      await compress_swimlane(visual_id, swimlane_record.sequence_number);
+      await get_visual_activity_data(visual_id);
+      plot_visual();
+    })
 
     const autoButton = create_button_with_icon("bi-aspect-ratio")
     add_tooltip(autoButton, "Auto - Auto layout")
@@ -163,11 +181,5 @@ export async function update_swimlane_order(visual_id: number, this_swimlane_obj
     const activity = get_plan_activity(unique_id)
     console.log(`Updating swimlane id to ${swimlane_id}`)
 
-    const data = [
-    {
-      id: activity.visual_data.id,
-      swimlane: swimlane_id
-    }
-  ]
-  await update_visual_activities(activity.visual_data.visual.id, data)
+    await update_visual_activity_swimlane(activity.visual_data.visual.id, unique_id, swimlane_id)
   }

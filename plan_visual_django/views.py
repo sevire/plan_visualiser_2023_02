@@ -629,6 +629,7 @@ def create_milestone_swimlane(request, visual_id):
     return HttpResponseRedirect(reverse('plot-visual', args=[visual_id]))
 
 
+@login_required
 def plot_visual(request, visual_id):
     """
     Screen for full dynamic editing of a visual for a given plan.
