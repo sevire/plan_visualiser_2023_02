@@ -11,6 +11,15 @@ async function api_get(url_string: string) {
   return await axios.get(base_url + url_string)
 }
 
+export async function api_post(url_string: string, data: undefined | object) {
+  const base_url = ""
+  axios.defaults.xsrfCookieName = 'csrftoken'
+  axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+
+  let ret_response = undefined
+  return await axios.post(base_url + url_string, data)
+}
+
 async function api_put(url_string: string, data: undefined | object) {
   const base_url = ""
   axios.defaults.xsrfCookieName = 'csrftoken'
@@ -112,6 +121,13 @@ export async function update_swimlane_records(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/swimlanes/${visual_id}/`;
 
   return await api_patch(url_string, data)
+}
+
+export async function compress_swimlane(visual_id:number, swimlane_seq_num:number) {
+  const url_string = `/api/v1/model/visuals/swimlanes/compress/${visual_id}/${swimlane_seq_num}/`
+
+  // No payload but it's a put because we update the database
+  return await api_post(url_string, {})
 }
 
 export async function update_timeline_records(visual_id:number, data:object) {

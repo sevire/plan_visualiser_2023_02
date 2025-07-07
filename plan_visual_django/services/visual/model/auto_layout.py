@@ -7,11 +7,11 @@ The main algorithm is the following:
 """
 from django.db import IntegrityError
 from django.db.models import Subquery, OuterRef
-
 from plan_visual_django.exceptions import DuplicateSwimlaneException
 from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
+from django.db import transaction
 
 
 class VisualAutoLayoutManager:
@@ -191,27 +191,26 @@ class VisualAutoLayoutManager:
             track_number += 1
 
     @staticmethod
-    def compress_swimlane(swimlane):
+    def compress_swimlane(swimlane, start=2):
         """
-        Compresses a swimlane by removing any blank tracks between activities.
+        Compresses a swimlane by removing any blank tracks between activities. First track specified by start.
         :param swimlane:
         :return:
         """
         # Get all the activities from the visual for this swimlane, ordered by track number
         activities = swimlane.get_visual_activities().order_by('vertical_positioning_value')
 
-        # Now go through the activities and if there is a gap between the current activity and the previous one
-        # then move the current activity up to the previous one.
-        previous_activity = None
-        for activity in activities:
-            if previous_activity is None:
-                previous_activity = activity
-                continue
+        # The activities are in vertical position order, so the approach will be to go through the activities
+        # and re-position them to the appropriate track.
 
-            if activity.vertical_positioning_value > previous_activity.vertical_positioning_value + 1:
-                # There is a gap between the current activity and the previous one so move the current activity up
-                # to the previous one.
-                activity.vertical_positioning_value = previous_activity.vertical_positioning_value + 1
+        target_track_number = start-1
+        current_track_number = 0
+
+        with transaction.atomic():
+            for activity in activities:
+                if activity.vertical_positioning_value > current_track_number:
+                    current_track_number = activity.vertical_positioning_value
+                    target_track_number += 1
+
+                activity.vertical_positioning_value = target_track_number
                 activity.save()
-
-            previous_activity = activity
