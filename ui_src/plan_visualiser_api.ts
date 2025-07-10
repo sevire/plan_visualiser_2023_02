@@ -85,10 +85,10 @@ export async function get_visual_activity_data(visual_id: number) {
   }
 }
 
-export async function add_activity_to_visual(visual_id: number, unique_id: string) {
+export async function add_activity_to_visual(visual_id: number, unique_id: string, swimlane_seq_num:number) {
   // Adds specified plan activity to the visual with supplied id.
 
-  const url_string = `/api/v1/model/visuals/activities/${visual_id}/${unique_id}/`
+  const url_string = `/api/v1/model/visuals/activities/${visual_id}/${unique_id}/${swimlane_seq_num}/`;
   const response = await api_put(url_string, undefined);
 
   console.log(`Status from adding activity to visual is ${response.status}`)

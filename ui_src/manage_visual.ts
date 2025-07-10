@@ -125,8 +125,8 @@ export async function createPlanTree() {
   return [topLevelElements[0], initial_selected_activity_div];
 }
 
-async function add_to_visual(activity_id: string) {
-  await add_activity_to_visual((window as any).visual_id, activity_id)
+async function add_to_visual(activity_id: string, swimlane_seq_number:number) {
+  await add_activity_to_visual((window as any).visual_id, activity_id, swimlane_seq_number)
   console.log("Added activity to visual: " + activity_id);
   const activity = get_plan_activity(activity_id)
   activity.enabled = true;
@@ -482,7 +482,7 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
     const inVisual = activityDiv.classList.toggle('in-visual')
     if (inVisual) {
       // Means we have just toggled it to in so need to add it
-      await add_to_visual(activity.plan_data.unique_sticky_activity_id)
+      await add_to_visual(activity.plan_data.unique_sticky_activity_id, (window as any).default_swimlane_seq_num)
       await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
       await get_plan_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 

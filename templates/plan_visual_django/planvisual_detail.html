@@ -222,6 +222,10 @@
             // Update swimlane panel with swimlanes for this visual in sequence order
             console.log("Updating swimlane panel (XXX)...")
             const swimlane_element = document.getElementById("swimlane_data")
+
+            // Set default swimlane for new activities to be added to - can be changed within UI
+            window.default_swimlane_seq_num = 1
+
             await window.update_swimlane_data(swimlane_element, window.visual_id)
 
             console.log("About to retrieve style data")

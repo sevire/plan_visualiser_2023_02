@@ -41,6 +41,12 @@ div#top-row-controls table td button {
   }
 }
 
+// Swimlanes
+// Set colour for default swimlane
+div#swimlane_data tr.default-swimlane td {
+    background-color: yellow;
+}
+
 #visual-content {
   position: relative;
   .canvas-wrapper {
