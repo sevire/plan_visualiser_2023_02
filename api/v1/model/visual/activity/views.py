@@ -103,7 +103,7 @@ class ModelVisualActivityAPI(APIView):
         return JsonResponse(response, safe=False)
 
     @staticmethod
-    def put(request, visual_id, activity_unique_id, swimlane=1):
+    def put(request, visual_id, unique_id, swimlane=1):
         """
         Adds activity to visual in given swimlane.  Note the swimlane number is a sequence number,
         not a swimlane id.
@@ -124,7 +124,7 @@ class ModelVisualActivityAPI(APIView):
         ToDo: Revisit use of PUT with no data to check this is good practice.
         :param request:
         :param visual_id:
-        :param activity_unique_id:
+        :param unique_id:
         :return:
         """
         swimlane_seq_num = swimlane  # Make code more semantic
@@ -139,12 +139,12 @@ class ModelVisualActivityAPI(APIView):
 
         # We have found the visual so now check whether the activity already exists for the visual.
         try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity_unique_id)
+            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
         except VisualActivity.DoesNotExist:
             # Need to create a new record for this activity in this visual.
 
             # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
-            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=activity_unique_id)
+            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
             if plan_activity.milestone_flag is True:
                 initial_plotable_shape = visual.default_milestone_shape
                 initial_plotable_style = visual.default_milestone_plotable_style
@@ -154,7 +154,7 @@ class ModelVisualActivityAPI(APIView):
 
             new_visual_activity = VisualActivity(
                 visual=visual,
-                unique_id_from_plan=activity_unique_id,
+                unique_id_from_plan=unique_id,
                 vertical_positioning_value=initial_swimlane.get_next_unused_track_number(),
                 height_in_tracks=DEFAULT_HEIGHT_IN_TRACKS,
                 text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
