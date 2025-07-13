@@ -130,6 +130,13 @@ export async function compress_swimlane(visual_id:number, swimlane_seq_num:numbe
   return await api_post(url_string, {})
 }
 
+export async function autolayout_swimlane(visual_id:number, swimlane_seq_num:number) {
+  const url_string = `/api/v1/model/visuals/swimlanes/autolayout/${visual_id}/${swimlane_seq_num}/`
+
+  // No payload but it's a put because we update the database
+  return await api_post(url_string, {})
+}
+
 export async function update_timeline_records(visual_id:number, data:object) {
   const url_string = `/api/v1/model/visuals/timelines/${visual_id}/`;
 

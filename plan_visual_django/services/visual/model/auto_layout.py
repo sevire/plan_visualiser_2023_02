@@ -172,19 +172,20 @@ class VisualAutoLayoutManager:
             )
 
     @staticmethod
-    def sort_swimlane(swimlane):
+    def sort_swimlane(swimlane, start_track=2):
         """
         Sort all the activities within a swimlane by start date and place each activity on a different track
         :param swimlane:
         :return:
         """
-        track_number = 1
+
+        track_number = start_track  # Leave one track for swimlane heading by default.
 
         # Carry out join on plan activity to get start date, using subquery.
         activities = (VisualActivity.objects.annotate(start_date=Subquery(PlanActivity.objects.filter(
             plan_id=OuterRef('visual__plan_id'),
             unique_sticky_activity_id=OuterRef('unique_id_from_plan')).values('start_date')))
-                      .filter(visual_id=swimlane.plan_visual_id)).order_by('start_date')
+                      .filter(visual_id=swimlane.plan_visual_id, swimlane_id=swimlane.id, enabled=True)).order_by('start_date')
         for visual_activity in activities:
             visual_activity.vertical_positioning_value = track_number
             visual_activity.save()

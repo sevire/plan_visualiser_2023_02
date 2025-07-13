@@ -2,12 +2,13 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.swimlane.serializer import ModelVisualSwimlaneListSerialiser, ModelVisualSwimlaneSerialiser
 from plan_visual_django.models import PlanVisual, SwimlaneForVisual
+from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+
 
 class SwimlaneListViewDispatcher(View):
     @staticmethod
@@ -131,4 +132,17 @@ class ModelVisualSwimlaneCompress(APIView):
         visual = PlanVisual.objects.get(id=visual_id)
         swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
         layout_manager.compress_swimlane(swimlane)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class ModelVisualSwimlaneLayout(APIView):
+    @staticmethod
+    def post(request, visual_id, swimlane_seq_num, **kwargs):
+        layout_manager = VisualAutoLayoutManager(visual_id)
+
+        visual = PlanVisual.objects.get(id=visual_id)
+        swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
+        layout_manager.sort_swimlane(swimlane)
+
         return Response(status=status.HTTP_200_OK)
