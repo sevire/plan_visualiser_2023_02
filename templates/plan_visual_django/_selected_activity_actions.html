@@ -1,9 +1,9 @@
 <div id=main-toolbar" class="btn-toolbar mb-2" role="toolbar" aria-label="Actions for visuals or plan">
     <div id="plan-button-group" class="btn-group btn-group-sm me-2" role="group" aria-label="Plan actions">
-        <a href="/pv/manage-visuals/{{ visual.plan.id }}" class="btn btn-info">Visuals</a>
-    </div>
-    <div id="visual-button-group" class="btn-group btn-group-sm me-2" role="group" aria-label="Visual actions">
-        <a href="/pv/edit-visual/{{ visual.id }}" class="settings btn btn-primary">Settings</a>
-        <a id="download-image-button" class="settings btn btn-primary">Download As Image</a>
+        <button id="add-subtask-button" class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Add sub-tasks">
+            <i class="bi bi-list-nested"></i>
+        </button>
     </div>
 </div>
+
+

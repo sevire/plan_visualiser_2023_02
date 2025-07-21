@@ -92,6 +92,12 @@ class ModelVisualActivityUpdateAPI(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class ModelVisualActivityAddSubActivitiesAPI(APIView):
+    @staticmethod
+    def put(request, visual_id, activity_unique_id:str, swimlane, **kwargs):
+        parent_plan_activity = PlanActivity.o
+
+
 class ModelVisualActivityAPI(APIView):
     @staticmethod
     def get(request, visual_id, unique_id):

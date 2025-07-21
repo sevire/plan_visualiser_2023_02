@@ -94,6 +94,16 @@ export async function add_activity_to_visual(visual_id: number, unique_id: strin
   console.log(`Status from adding activity to visual is ${response.status}`)
 }
 
+export async function add_sub_activities_to_visual(visual_id: number, unique_id: string, swimlane_seq_num:number) {
+  // Adds immediate sub-activities of currently selected activity to visual at specified swimlane.
+
+  const url_string = `/api/v1/model/visuals/activities/add-sub-activities/${visual_id}/${unique_id}/${swimlane_seq_num}/`;
+  const response = await api_put(url_string, undefined);
+
+  console.log(`Status from adding sub-activities is ${response.status}`)
+
+}
+
 export async function remove_activity_from_visual(visual_id: number, unique_id: string) {
   // Adds specified plan activity to the visual with supplied id.
 
