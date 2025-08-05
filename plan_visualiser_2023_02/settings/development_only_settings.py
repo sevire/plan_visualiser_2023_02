@@ -5,7 +5,7 @@ from .base_settings import *
 load_dotenv('devops/env/.env.email.development')
 
 # Load other dev only env variables
-load_dotenv('devops/env/.env.dev')
+load_dotenv('devops/env/.env.dev-local')
 
 DEBUG = True
 

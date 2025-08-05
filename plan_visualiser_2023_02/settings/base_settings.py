@@ -117,9 +117,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Europe/London'
 USE_I18N = True
-USE_TZ = True
+USE_TZ = True  # Default is usually True; ensure it is enabled to use timezone-aware datetimes
 
 STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

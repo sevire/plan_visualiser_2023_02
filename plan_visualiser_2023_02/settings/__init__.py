@@ -1,7 +1,6 @@
 import os
 
-print("Checking DJANGO_SETTINGS_MODULE...")
-print(f"DJANGO_SETTINGS_MODULE (before): {os.getenv('DJANGO_SETTINGS_MODULE')}")
+print("Processing Django settings...")
 
 CURRENT_ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
 
@@ -12,10 +11,7 @@ if CURRENT_ENVIRONMENT == 'production':
     from .production_only_settings import *
 elif CURRENT_ENVIRONMENT == 'staging':
     print("Using STAGING environment")
-
     from .staging_only_settings import *
 else:
     print("Using DEVELOPMENT environment")
     from .development_only_settings import *
-
-print(f"DJANGO_SETTINGS_MODULE (after): {os.getenv('DJANGO_SETTINGS_MODULE')}")
