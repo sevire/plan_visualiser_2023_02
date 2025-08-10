@@ -5,16 +5,24 @@ The main algorithm is the following:
 1. All milestones in a single swimlane laid out chronologically.
 2. Creating swimlanes and activities by using the structure of the plan. (that is Level information).
 """
+from typing import List
+from plan_visual_django.services.service_utilities.service_response import ServiceResponse
 from django.db import IntegrityError
 from django.db.models import Subquery, OuterRef
 from plan_visual_django.exceptions import DuplicateSwimlaneException
-from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity
+from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity, \
+    DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
+from plan_visual_django.services.service_utilities.service_response import ServiceStatusCode
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 from django.db import transaction
 
 
-class VisualAutoLayoutManager:
+class VisualLayoutManager:
+    """
+    Class which provides utilities for adding, moving or removing activities from a visual according to various
+    different schemes, such as to add activities or a given level, to add sub-activities for an activity etc.
+    """
     def __init__(self, visual_id_for_plan):
         self.visual_for_plan = PlanVisual.objects.get(id=visual_id_for_plan)
         self.plan = self.visual_for_plan.plan
@@ -101,6 +109,7 @@ class VisualAutoLayoutManager:
                 plan_activity_for_milestone.track_number = track_number
 
                 plan_activity_for_milestone.save()
+
 
     def add_delete_activities(self, level:int, swimlane:SwimlaneForVisual, delete_flag:bool):
         """
@@ -215,3 +224,118 @@ class VisualAutoLayoutManager:
 
                 activity.vertical_positioning_value = target_track_number
                 activity.save()
+
+    def add_activities_to_swimlane(self, activity_ids: List[str], swimlane_sequence_number: int):
+        """
+        Accepts a list of plan activities and adds each to the end of the swimlane at the specified sequence number for
+        this visual.
+
+        :param activities:
+        :param swimlane_sequence_number:
+        :return:
+        """
+        for activity_id in activity_ids:
+            self.add_activity_to_swimlane(activity_id, swimlane_sequence_number)
+
+    def add_activity_to_swimlane(self, activity_unique_id: str, swimlane_sequence_number: int):
+        """
+        Adds a single activity to the end of the swimlane at the specified sequence number for this visual.
+        Takes account of different cases:
+
+        CASE 1: Activity isn't in visual
+        - Add to visual at bottom of swimlane (as usual)
+
+        CASE 2: Activity is in visual but in another swimlane
+        - Remove from other swimlane
+        - Compress other swimlane
+        - Add back to new swimlane
+
+        CASE 3: Activity is in visual and in this swimlane
+        - Assume the user wants the sub-activities together, so move existing activities together at bottom
+        - Change track to last plus one in the swimlane
+        - Compress swimlane (as may be a gap where the activity was)
+
+        :param activity:
+        :param swimlane_sequence_number:
+        :return:
+        """
+        # I don't know whether this is the right way to do this!
+        #
+        # The logic is that I want to add this activity from the plan to the supplied visual.  But if I have previously
+        # added the activity to the visual and then removed it there will already be a record for this activity with the
+        # enabled flag set to False.
+        #
+        # This means that I don't always want to create a new record.  I think in practice the keys which define the
+        # Visual Activity should be included in the URL not the additional data.  As I don't have any other data to add
+        # then the data element of the PUT request will be empty.  I don't know whether that is seen as poor practice
+        # or not, but it avoids using GET incorrectly or having to access data before validation which seems wrong.
+        #
+        # Note - the above means we don't even need a serializer (which seems a bit wrong).
+
+        # Get swimlane where we want to place this activity
+        swimlane = self.visual_for_plan.get_swimlane_by_sequence_number(swimlane_sequence_number)
+
+        try:
+            visual_activity = self.visual_for_plan.visualactivity_set.get(unique_id_from_plan=activity_unique_id)
+        except VisualActivity.DoesNotExist:
+            # Need to create a new record for this activity in this visual.
+
+            # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
+            plan_activity = self.visual_for_plan.plan.planactivity_set.get(unique_sticky_activity_id=activity_unique_id)
+            if plan_activity.milestone_flag is True:
+                initial_plotable_shape = self.visual_for_plan.default_milestone_shape
+                initial_plotable_style = self.visual_for_plan.default_milestone_plotable_style
+            else:
+                initial_plotable_shape = self.visual_for_plan.default_activity_shape
+                initial_plotable_style = self.visual_for_plan.default_activity_plotable_style
+
+            new_visual_activity = VisualActivity(
+                visual=self.visual_for_plan,
+                unique_id_from_plan=activity_unique_id,
+                vertical_positioning_value=swimlane.get_next_unused_track_number(),
+                height_in_tracks=DEFAULT_HEIGHT_IN_TRACKS,
+                text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
+                text_vertical_alignment=DEFAULT_TEXT_VERTICAL_ALIGNMENT,
+                text_flow=DEFAULT_TEXT_FLOW,
+                plotable_shape=initial_plotable_shape,
+                plotable_style=initial_plotable_style,
+                swimlane_id=swimlane.id,
+                enabled=True
+            )
+            new_visual_activity.save()
+            status = ServiceResponse(
+                status=ServiceStatusCode.SUCCESS,
+                message=f"New activity added to visual {self.visual_for_plan} for Id = {activity_unique_id}",
+                data= {'visual_activity': new_visual_activity}
+            )
+            return status
+        else:
+            # There is already a record so we need to change the enabled flag to true.
+            # Also don't want to retain vertical position as something else may be placed there.
+            # Also need to update swimlane to one supplied.
+            visual_activity.enabled = True
+            visual_activity.vertical_positioning_value = swimlane.get_next_unused_track_number()
+            visual_activity.swimlane_id = swimlane.id
+
+            visual_activity.save()
+            status = ServiceResponse(
+                status=ServiceStatusCode.SUCCESS,
+                message=f"Existing activity re-added to visual {self.visual_for_plan} for Id = {activity_unique_id} in swimlane {swimlane_sequence_number}",
+                data= {'visual_activity': visual_activity}
+            )
+            return status
+
+    def add_subactivities(self, unique_activity_id, swimlane_sequence_num):
+        plan = self.plan
+
+        plan_tree = plan.get_plan_tree()
+        sub_activity_ids: List[str] = [activity.unique_sticky_activity_id for activity in plan_tree.get_plan_tree_children_by_unique_id(unique_activity_id)]
+
+        self.add_activities_to_swimlane(sub_activity_ids, swimlane_sequence_num)
+
+        status = ServiceResponse(
+            status=ServiceStatusCode.SUCCESS,
+            message=f"{len(sub_activity_ids)} sub-activities under id {unique_activity_id} added to visual {self.visual_for_plan} in swimlane {swimlane_sequence_num}",
+            data={'visual_activity_ids_added': sub_activity_ids}
+        )
+        return status

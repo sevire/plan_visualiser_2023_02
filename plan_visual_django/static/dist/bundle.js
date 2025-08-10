@@ -709,10 +709,13 @@ function add_add_sub_activities_event_handler(plan_tree_root) {
             else {
                 const visual_id = window.visual_id;
                 const swimlane_seq_num = window.default_swimlane_seq_num;
-                yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.add_sub_activities_to_visual)(visual_id, selected[0].id, swimlane_seq_num);
+                const unique_id = selected[0].id;
+                console.log(`About to add sub-activities for visual_id ${visual_id}, unique_id ${unique_id}, swimlane, ${swimlane_seq_num}`);
+                yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.add_sub_activities_to_visual)(visual_id, unique_id, swimlane_seq_num);
                 yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_plan_activity_data)(visual_id);
                 yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_activity_data)(visual_id);
-                yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_settings)(visual_id);
+                const response = yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_settings)(window.visual_id);
+                window.visual_settings = response.data;
                 (0,_plot_visual__WEBPACK_IMPORTED_MODULE_2__.plot_visual)();
             }
         });

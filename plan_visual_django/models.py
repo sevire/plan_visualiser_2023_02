@@ -68,6 +68,12 @@ class Plan(models.Model):
         summary = extract_summary_plan_info(self)
         return summary
 
+    def get_plan_tree(self):
+        from plan_visual_django.services.plan_file_utilities.plan_tree import PlanTree
+        plan_tree = PlanTree(self)
+
+        return plan_tree
+
     def create_visual(self):
         """
         Creates a new visual under this plan, and adds default timelines and swimlanes.
@@ -105,6 +111,7 @@ class PlanActivity(models.Model):
     level = models.IntegerField(default=1)
 
     class Meta:
+        # Order by sequence number is critical to ensure plan structure is well defined.
         ordering = ["plan", "sequence_number"]
         verbose_name_plural = " Plan activities"
         unique_together = (('plan', 'unique_sticky_activity_id'),)

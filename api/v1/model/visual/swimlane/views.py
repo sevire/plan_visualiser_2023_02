@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.swimlane.serializer import ModelVisualSwimlaneListSerialiser, ModelVisualSwimlaneSerialiser
 from plan_visual_django.models import PlanVisual, SwimlaneForVisual
-from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
 
 
 class SwimlaneListViewDispatcher(View):
@@ -126,8 +126,8 @@ class ModelVisualSwimlaneUpdateAPI(APIView):
 class ModelVisualSwimlaneCompress(APIView):
     @staticmethod
     def post(request, visual_id, swimlane_seq_num, **kwargs):
-        from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
-        layout_manager = VisualAutoLayoutManager(visual_id)
+        from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
+        layout_manager = VisualLayoutManager(visual_id)
 
         visual = PlanVisual.objects.get(id=visual_id)
         swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
@@ -139,7 +139,7 @@ class ModelVisualSwimlaneCompress(APIView):
 class ModelVisualSwimlaneLayout(APIView):
     @staticmethod
     def post(request, visual_id, swimlane_seq_num, **kwargs):
-        layout_manager = VisualAutoLayoutManager(visual_id)
+        layout_manager = VisualLayoutManager(visual_id)
 
         visual = PlanVisual.objects.get(id=visual_id)
         swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)

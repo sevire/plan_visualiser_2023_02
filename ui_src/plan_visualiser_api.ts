@@ -101,7 +101,6 @@ export async function add_sub_activities_to_visual(visual_id: number, unique_id:
   const response = await api_put(url_string, undefined);
 
   console.log(`Status from adding sub-activities is ${response.status}`)
-
 }
 
 export async function remove_activity_from_visual(visual_id: number, unique_id: string) {

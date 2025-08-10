@@ -30,11 +30,15 @@ function add_add_sub_activities_event_handler(plan_tree_root: Element) {
     } else {
       const visual_id = (window as any).visual_id
       const swimlane_seq_num = (window as any).default_swimlane_seq_num
-      await add_sub_activities_to_visual(visual_id, selected[0].id, swimlane_seq_num)
+      const unique_id = selected[0].id
+      console.log(`About to add sub-activities for visual_id ${visual_id}, unique_id ${unique_id}, swimlane, ${swimlane_seq_num}`)
+
+      await add_sub_activities_to_visual(visual_id, unique_id, swimlane_seq_num)
 
       await get_plan_activity_data(visual_id)
       await get_visual_activity_data(visual_id)
-      await get_visual_settings(visual_id)
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
 
       plot_visual()
     }
