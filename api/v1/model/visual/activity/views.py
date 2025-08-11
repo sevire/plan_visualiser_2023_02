@@ -126,8 +126,8 @@ class ModelVisualActivityAddSubActivitiesAPI(APIView):
 
 class ModelVisualActivityAPI(APIView):
     @staticmethod
-    def get(request, visual_id, unique_id):
-        visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=unique_id)
+    def get(request, visual_id, activity_unique_id):
+        visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=activity_unique_id)
         serializer = ModelVisualActivitySerialiser(instance=visual_activity_queryset)
 
         response = serializer.data

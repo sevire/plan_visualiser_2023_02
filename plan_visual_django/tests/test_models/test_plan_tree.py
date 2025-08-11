@@ -1,9 +1,8 @@
-from anytree import findall, RenderTree
 from django.core.files.base import ContentFile
 from django.test import TestCase
 from plan_visual_django.models import Plan, PlanActivity, CustomUser
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
-from utilities import date_from_string
+from plan_visual_django.tests.resources.utilities import date_from_string
 
 
 class TestPlanTree(TestCase):
