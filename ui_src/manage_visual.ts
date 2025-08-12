@@ -35,6 +35,10 @@ function add_add_sub_activities_event_handler(plan_tree_root: Element) {
 
       await add_sub_activities_to_visual(visual_id, unique_id, swimlane_seq_num)
 
+      // Now flag all the sub activity elements as in the visual in the UI
+      const planTreeManager = (window as any).App.getPlanTreeManager();
+      planTreeManager.setSubActivitiesInVisual(selected[0])
+
       await get_plan_activity_data(visual_id)
       await get_visual_activity_data(visual_id)
       const response = await get_visual_settings((window as any).visual_id);

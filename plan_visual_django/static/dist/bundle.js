@@ -2,6 +2,76 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./ui_src/application/application.ts":
+/*!*******************************************!*\
+  !*** ./ui_src/application/application.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _plan_tree_manage_plan_tree__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../plan-tree/manage-plan-tree */ "./ui_src/plan-tree/manage-plan-tree.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class App {
+    constructor() {
+        this.planTreeManager = null;
+    }
+    /**
+     * Initializes the application, creating and linking all necessary managers.
+     * This method will likely be called once on page load.
+     */
+    initialize() {
+        console.log("Initializing App...");
+        // Set up the PlanTreeManager
+        this.planTreeManager = new _plan_tree_manage_plan_tree__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        console.log("PlanTreeManager initialized.");
+        // Initialize other components/managers here as needed
+    }
+    /**
+     * Gets the PlanTreeManager instance.
+     * Throws an error if it has not been initialized.
+     */
+    getPlanTreeManager() {
+        if (!this.planTreeManager) {
+            throw new Error("PlanTreeManager has not been initialized.");
+        }
+        return this.planTreeManager;
+    }
+    /**
+     * Example of handling global API data fetching, if needed.
+     */
+    fetchData(endpoint) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data: ${response.statusText}`);
+                }
+                return yield response.json();
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+        });
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new App()); // Export a singleton instance of App
+
+
+/***/ }),
+
 /***/ "./ui_src/drawing.ts":
 /*!***************************!*\
   !*** ./ui_src/drawing.ts ***!
@@ -712,6 +782,9 @@ function add_add_sub_activities_event_handler(plan_tree_root) {
                 const unique_id = selected[0].id;
                 console.log(`About to add sub-activities for visual_id ${visual_id}, unique_id ${unique_id}, swimlane, ${swimlane_seq_num}`);
                 yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.add_sub_activities_to_visual)(visual_id, unique_id, swimlane_seq_num);
+                // Now flag all the sub activity elements as in the visual in the UI
+                const planTreeManager = window.App.getPlanTreeManager();
+                planTreeManager.setSubActivitiesInVisual(selected[0]);
                 yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_plan_activity_data)(visual_id);
                 yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_activity_data)(visual_id);
                 const response = yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_settings)(window.visual_id);
@@ -1322,6 +1395,62 @@ function addVisualImages() {
         }
     });
 }
+
+
+/***/ }),
+
+/***/ "./ui_src/plan-tree/manage-plan-tree.ts":
+/*!**********************************************!*\
+  !*** ./ui_src/plan-tree/manage-plan-tree.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+class PlanTreeManager {
+    /**
+     * Constructor to set up the manager with the root element of the plan tree.
+     * @param rootElement - The root element of the tree (e.g., a <ul> or <div> that contains tree nodes).
+     */
+    constructor() {
+        this.rootElement = "dummy for now";
+    }
+    /**
+     * Sets all immediate sub-elements of a given element to be in the visual.
+     * The parameter element is a `div` inside an `li`, and its sibling `ul` contains the child `li` elements.
+     * @param parentDiv - The `div` element whose sub-activities should be added to the visual.
+     */
+    setSubActivitiesInVisual(parentDiv) {
+        console.log(`setSubActivitiesInVisual called with ${parentDiv.tagName} element: ${parentDiv.outerHTML}`);
+        // Find the sibling `ul` element that contains the child `li` elements
+        const parentLi = parentDiv.parentElement; // The `li` containing this `div`
+        if (!parentLi) {
+            console.error("Parent <li> not found for the given <div> element.");
+            return;
+        }
+        const childUl = parentLi.querySelector(":scope > ul"); // Find the direct child `ul`
+        if (!childUl) {
+            console.log(`No <ul> found for parent activity element:`, parentDiv);
+            return;
+        }
+        // Iterate through all direct `li` under the `ul`
+        const childLiElements = Array.from(childUl.querySelectorAll(":scope > li"));
+        for (const childLi of childLiElements) {
+            // Find the `div` within the `li` and add the `in-visual` class
+            const childDiv = childLi.querySelector(":scope > div");
+            if (childDiv) {
+                childDiv.classList.add("in-visual"); // Add the class
+                console.log(`Added "in-visual" class to activity:`, childDiv);
+            }
+            else {
+                console.warn("No <div> found within child <li> element:", childLi);
+            }
+        }
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PlanTreeManager);
 
 
 /***/ }),
@@ -6554,6 +6683,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _manage_swimlanes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./manage_swimlanes */ "./ui_src/manage_swimlanes.ts");
 /* harmony import */ var _manage_timelines__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./manage_timelines */ "./ui_src/manage_timelines.ts");
 /* harmony import */ var _manage_visual_image__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./manage_visual_image */ "./ui_src/manage_visual_image.ts");
+/* harmony import */ var _application_application__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./application/application */ "./ui_src/application/application.ts");
+
 
 
 
@@ -6583,6 +6714,7 @@ window.get_shape_records = _plan_visualiser_api__WEBPACK_IMPORTED_MODULE_2__.get
 window.get_visual_settings = _plan_visualiser_api__WEBPACK_IMPORTED_MODULE_2__.get_visual_settings;
 window.add_download_image_event_listener = _manage_visual_image__WEBPACK_IMPORTED_MODULE_8__.add_download_image_event_listener;
 window.addVisualImages = _manage_visual_image__WEBPACK_IMPORTED_MODULE_8__.addVisualImages;
+window.App = _application_application__WEBPACK_IMPORTED_MODULE_9__["default"];
 
 })();
 

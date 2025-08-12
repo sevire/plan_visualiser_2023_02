@@ -191,7 +191,6 @@
     </div>
     <script src="{% static 'dist/bundle.js' %}"></script>
     <script type="application/javascript">
-
         document.addEventListener("DOMContentLoaded", async function () {
             console.log("DOM Loaded...")
 
@@ -212,6 +211,11 @@
             console.log(`plan_tree_data[0] = ${plan_tree_data[0]}...`)
 
             const plan_tree = plan_tree_data[0];
+
+            // NOTE: Start of refactoring code into a global App object.
+            window.App.initialize();
+            console.log("App initialized and ready to use.");
+
             console.log(`plan_tree = ${plan_tree}...`)
 
             const initial_selected_activity_div = plan_tree_data[1];

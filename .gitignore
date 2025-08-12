@@ -10,8 +10,8 @@ db.sqlite3-journal
 /db.sqlite3-backup
 /data/
 /docker-build-logs/
-/ui_src/*.js
-/ui_src/*.js.map
+/ui_src/**/*.js
+/ui_src/**/*.js.map
 /plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/plan_files/
 /plan_visual_django/tests/resources/input_files/excel_plan_files/plan_files/
 /plan_visual_django/tests/resources/input_files/excel_plan_files_reimport/~$PV-Test-03-t02-activity-added-not-end.xlsx
