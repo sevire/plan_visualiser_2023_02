@@ -24,7 +24,7 @@ from plan_visual_django.services.plan_file_utilities.plan_parsing import read_an
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.auth.user_services import get_current_user, \
     CurrentUser
-from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 import logging
 from django.shortcuts import render, redirect
@@ -612,7 +612,7 @@ def create_milestone_swimlane(request, visual_id):
         return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
     visual_settings = VisualSettings(visual_id=visual.id)
-    auto_layout_manager = VisualAutoLayoutManager(visual_id_for_plan=visual_id)
+    auto_layout_manager = VisualLayoutManager(visual_id_for_plan=visual_id)
 
     swimlane_plotable_style = visual_settings.default_swimlane_plotable_style
     milestone_plotable_style = visual_settings.default_milestone_plotable_style
@@ -760,7 +760,7 @@ def swimlane_actions(request, visual_id):
             swimlane = swimlane_form.cleaned_data['swimlane']
         else:
             raise ValueError(f"Unable to read swimlane from form")
-        auto_layout_manager = VisualAutoLayoutManager(visual_id)
+        auto_layout_manager = VisualLayoutManager(visual_id)
 
         # Extract level from POST
         level_post_entry = [entry for entry in request.POST if

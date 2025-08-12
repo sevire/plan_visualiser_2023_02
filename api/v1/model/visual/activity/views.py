@@ -11,7 +11,10 @@ from api.v1.model.visual.activity.serializer import ModelVisualActivityListSeria
 from plan_visual_django.models import (PlanVisual, VisualActivity,
                                        DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
     DEFAULT_TEXT_HORIZONTAL_ALIGNMENT)
+from plan_visual_django.services.service_utilities.service_response import ServiceStatusCode
+from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
 from plan_visual_django.services.visual.model.layout import adjust_visual_activity_track
+from django.contrib import messages
 
 
 class VisualActivityViewDispatcher(View):
@@ -24,6 +27,46 @@ class VisualActivityViewDispatcher(View):
     def patch(request, *args, **kwargs):
         view = ModelVisualActivityUpdateAPI.as_view()
         return view(request, *args, **kwargs)
+
+
+class ModelVisualActivitySwimlaneDispatcher(APIView):
+    """
+    Dispatcher for adding activity to visual in given swimlane or moving activity to new simwlane.
+    Can be a bit confusing as the swimlane for moving an activity is a sequence number, but for adding an
+    activity is a swimlane_id.  I think this is logically right, but it means a similar url has a different
+    meaning, which isn't as clean as I'd like.
+
+    ToDo: Re-visit use of sequence number vs swimlane_id for swimlane for moving/adding activity.
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == "PUT":
+            return ModelVisualActivityAPI.as_view()(request, *args, **kwargs)
+        elif request.method == "PATCH":
+            return ModelVisualActivityChangeSwimlaneAPI.as_view()(request, *args, **kwargs)
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
+
+class ModelVisualActivitySwimlaneSubActivities(APIView):
+    @staticmethod
+    def put(request, visual_id, activity_unique_id, swimlane, *args, **kwargs):
+        """
+        Adds all sub-activities for a given activity to the visual at the swimlane sequence number specified
+        :param request:
+        :param activity_unique_id:
+        :param swimlane:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        manager = VisualLayoutManager(visual_id)
+        service_status = manager.add_subactivities(activity_unique_id, swimlane)
+        if service_status.status == ServiceStatusCode.SUCCESS:
+            messages.add_message(request, messages.INFO, service_status.message)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            messages.add_message(request, messages.INFO, service_status.message)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ModelVisualActivityListAPI(ListAPIView):
@@ -74,10 +117,17 @@ class ModelVisualActivityUpdateAPI(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class ModelVisualActivityAddSubActivitiesAPI(APIView):
+    @staticmethod
+    def put(request, visual_id, activity_unique_id:str, swimlane, **kwargs):
+        # ToDo: Complete the coding for the add sub-activities functionality
+        pass # Coding in progress
+
+
 class ModelVisualActivityAPI(APIView):
     @staticmethod
-    def get(request, visual_id, unique_id):
-        visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=unique_id)
+    def get(request, visual_id, activity_unique_id):
+        visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=activity_unique_id)
         serializer = ModelVisualActivitySerialiser(instance=visual_activity_queryset)
 
         response = serializer.data
@@ -85,71 +135,28 @@ class ModelVisualActivityAPI(APIView):
         return JsonResponse(response, safe=False)
 
     @staticmethod
-    def put(request, visual_id, unique_id):
+    def put(request, visual_id, activity_unique_id, swimlane=1):
         """
-        I don't know whether this is the right way to do this!
+        Adds activity to visual in given swimlane.  Note the swimlane number is a sequence number,
+        not a swimlane id.
 
-        The logic is that I want to add this activity from the plan to the supplied visual.  But if I have previously
-        added the activity to the visual and then removed it there will already be a record for this activity with the
-        enabled flag set to False.
-
-        This means that I don't always want to create a new record.  I think in practice the keys which define the
-        Visual Activity should be included in the URL not the additional data.  As I don't have any other data to add
-        then the data element of the PUT request will be empty.  I don't know whether that is seen as poor practice
-        or not, but it avoids using GET incorrectly or having to access data before validation which seems wrong.
-
-        Note - the above means we don't even need a serializer (which seems a bit wrong).
-        ToDo: Revisit use of PUT with no data to check this is good practice.
         :param request:
         :param visual_id:
-        :param unique_id:
+        :param activity_unique_id:
         :return:
         """
-        try:
-            visual = PlanVisual.objects.get(id=visual_id)
-        except PlanVisual.DoesNotExist as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        # ToDo: Revisit use of PUT with no data to check this is good practice.
 
-        # We have found the visual so now check whether the activity already exists for the visual.
-        try:
-            visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
-        except VisualActivity.DoesNotExist:
-            # Need to create a new record for this activity in this visual.
-
-            # if the plan activity for this visual activity is a milestone, plot as DIAMOND, else plot as RECTANGLE
-            plan_activity = visual.plan.planactivity_set.get(unique_sticky_activity_id=unique_id)
-            if plan_activity.milestone_flag is True:
-                initial_plotable_shape = visual.default_milestone_shape
-                initial_plotable_style = visual.default_milestone_plotable_style
-            else:
-                initial_plotable_shape = visual.default_activity_shape
-                initial_plotable_style = visual.default_activity_plotable_style
-
-
-            # Check whether there is already a default swimlane for this visual.  If not create one.
-            initial_swimlane = visual.get_default_swimlane()
-
-
-            new_visual_activity = VisualActivity(
-                visual=visual,
-                unique_id_from_plan=unique_id,
-                vertical_positioning_value=initial_swimlane.get_next_unused_track_number(),
-                height_in_tracks=DEFAULT_HEIGHT_IN_TRACKS,
-                text_horizontal_alignment=DEFAULT_TEXT_HORIZONTAL_ALIGNMENT,
-                text_vertical_alignment=DEFAULT_TEXT_VERTICAL_ALIGNMENT,
-                text_flow=DEFAULT_TEXT_FLOW,
-                plotable_shape=initial_plotable_shape,
-                plotable_style=initial_plotable_style,
-                swimlane_id=initial_swimlane.id,
-                enabled=True
-            )
-            new_visual_activity.save()
+        visual_manager = VisualLayoutManager(visual_id)
+        service_status = visual_manager.add_activity_to_swimlane(activity_unique_id, swimlane)
+        if service_status.status == ServiceStatusCode.SUCCESS:
+            messages.add_message(request, messages.INFO, service_status.message)
             return Response(status=status.HTTP_201_CREATED)
         else:
-            # There is already a record so we just need to change the enabled flag to true.
-            visual_activity.enabled = True
-            visual_activity.save()
-            return Response(status=status.HTTP_201_CREATED)
+            messages.add_message(request, messages.INFO, service_status.message)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
     @staticmethod
     def delete(request, visual_id, unique_id):
@@ -169,7 +176,7 @@ class ModelVisualActivityAPI(APIView):
 
 class ModelVisualActivityChangeSwimlaneAPI(APIView):
     @staticmethod
-    def patch(request, visual_id, activity_unique_id, new_swimlane_id):
+    def patch(request, visual_id, activity_unique_id, swimlane):
         """
         We are updating the swimlane and adjusting the track to position the activity at the bottom of the new swimlane.
 
@@ -182,12 +189,9 @@ class ModelVisualActivityChangeSwimlaneAPI(APIView):
         visual = PlanVisual.objects.get(id=visual_id)
         visual_activity = VisualActivity.objects.get(visual=visual, unique_id_from_plan=activity_unique_id)
 
-        adjust_visual_activity_track(visual_activity, new_swimlane_id)
+        adjust_visual_activity_track(visual_activity, swimlane)
 
         with transaction.atomic():  # Not sure we need this!
             visual_activity.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
-
-
-

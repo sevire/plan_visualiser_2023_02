@@ -13,6 +13,7 @@ import {update_swimlane_data} from "./manage_swimlanes";
 import {update_timeline_panel} from "./manage_timelines";
 import {add_download_image_event_listener} from "./manage_visual_image";
 import {addVisualImages} from "./manage_visual_image";
+import App from "./application/application";
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Loaded zzzz....")
@@ -33,4 +34,5 @@ console.log("Executing index.ts");
 (window as any).get_visual_settings = get_visual_settings;
 (window as any).add_download_image_event_listener = add_download_image_event_listener;
 (window as any).addVisualImages = addVisualImages;
+(window as any).App = App;
 

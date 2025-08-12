@@ -152,6 +152,8 @@
             <div class="d-flex align-items-center text-sm-start bg-primary-subtle p-2 mb-1">
                 <h6 class="fw-bold mb-0">Activities From Plan</h6>
             </div>
+            {% include 'plan_visual_django/_selected_activity_actions.html' %}
+
             <div id="add-remove-activities" ></div>
 
         </div>
@@ -189,7 +191,6 @@
     </div>
     <script src="{% static 'dist/bundle.js' %}"></script>
     <script type="application/javascript">
-
         document.addEventListener("DOMContentLoaded", async function () {
             console.log("DOM Loaded...")
 
@@ -210,6 +211,11 @@
             console.log(`plan_tree_data[0] = ${plan_tree_data[0]}...`)
 
             const plan_tree = plan_tree_data[0];
+
+            // NOTE: Start of refactoring code into a global App object.
+            window.App.initialize();
+            console.log("App initialized and ready to use.");
+
             console.log(`plan_tree = ${plan_tree}...`)
 
             const initial_selected_activity_div = plan_tree_data[1];
@@ -222,6 +228,10 @@
             // Update swimlane panel with swimlanes for this visual in sequence order
             console.log("Updating swimlane panel (XXX)...")
             const swimlane_element = document.getElementById("swimlane_data")
+
+            // Set default swimlane for new activities to be added to - can be changed within UI
+            window.default_swimlane_seq_num = 1
+
             await window.update_swimlane_data(swimlane_element, window.visual_id)
 
             console.log("About to retrieve style data")
