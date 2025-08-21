@@ -53,7 +53,28 @@ class FontAdmin(admin.ModelAdmin):
 
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
-    list_display = ['user', 'style_name']
+    list_display = ['user', 'style_name', 'fill_color_preview', 'line_color_preview', 'font_color_preview']
+
+    def color_preview(self, color):
+        """
+        Helper method to render a color preview box for a given Color instance.
+        """
+        return format_html(
+            '<div style="width: 36px; height: 18px; background-color: rgb({}, {}, {});"></div>',
+            color.red, color.green, color.blue
+        )
+
+    def fill_color_preview(self, obj):
+        return self.color_preview(obj.fill_color)
+    fill_color_preview.short_description = 'Fill Color'
+
+    def line_color_preview(self, obj):
+        return self.color_preview(obj.line_color)
+    line_color_preview.short_description = 'Line Color'
+
+    def font_color_preview(self, obj):
+        return self.color_preview(obj.font_color)
+    font_color_preview.short_description = 'Font Color'
 
 
 @admin.register(PlanVisual)
@@ -99,4 +120,3 @@ class HelpTextAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title', 'updated_at')
     search_fields = ('slug', 'title', 'content')
     prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
-

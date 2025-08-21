@@ -208,7 +208,15 @@ def re_upload_plan(request, pk):
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
-def add_visual(request, plan_id):
+def add_default_visual(request, plan_id):
+    return add_visual(request, plan_id, default=True)
+
+def add_auto_visual(request, plan_id):
+    return add_visual(request, plan_id, auto=True)
+
+def add_visual(request, plan_id, default=False, auto=False):
+    # Add one blank visual and one auto layout visual
+    # Temp while testing auto_layout
     current_user = CurrentUser(request)
 
     # Check if the plan exists and user has access
@@ -220,7 +228,47 @@ def add_visual(request, plan_id):
         messages.error(request, "Plan does not exist.")
         return HttpResponseRedirect(reverse("manage-plans"))
 
-    if request.method == "POST":
+    if request.method == "GET":
+        if default is True:
+            default_visual: PlanVisual = PlanVisual.objects.create_with_defaults(plan=plan)
+
+            # Add default swimlanes and timelines
+            style_for_swimlane = default_visual.default_swimlane_plotable_style
+            default_visual.add_swimlanes_to_visual(
+                style_for_swimlane,
+                "Swimlane 1", "Swimlane 2", "Swimlane 3"
+            )
+            TimelineForVisual.create_all_default_timelines(default_visual)
+
+            messages.success(request, "New default visual for plan saved successfully.")
+
+            return HttpResponseRedirect(reverse("plot-visual", args=[default_visual.id]))
+        elif auto is True:
+            # TEMP: Now add an auto layout visual - to test full layout algorithm
+            auto_visual: PlanVisual = VisualLayoutManager.create_full_visual(plan)
+
+            # Add default timelines
+            TimelineForVisual.create_all_default_timelines(visual=auto_visual)
+            messages.success(request, "Auto-layout visual for plan saved successfully.")
+
+            # Redirect to visuals management
+            return HttpResponseRedirect(reverse("plot-visual", args=[auto_visual.id]))
+        else:
+            # Not default or auto so Display the form for adding a visual
+            form = VisualFormForAdd(plan=plan, user=current_user.user)
+            help_text = HelpText.get_help_text("add-edit-visual")
+            return render(
+                request=request,
+                template_name="plan_visual_django/pv_add_edit_visual.html",
+                context={
+                    "primary_heading": "Add Visual for Plan",
+                    "secondary_heading": plan.file_name,
+                    "help_text": help_text,
+                    "add_or_edit": "Add",
+                    "form": form,
+                }
+            )
+    elif request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
         if visual_form.is_valid():
             try:
@@ -287,23 +335,6 @@ def add_visual(request, plan_id):
                 "form": visual_form,
             }
         )
-
-    elif request.method == "GET":
-        # Display the form for adding a visual
-        form = VisualFormForAdd(plan=plan, user=current_user.user)
-        help_text = HelpText.get_help_text("add-edit-visual")
-        return render(
-            request=request,
-            template_name="plan_visual_django/pv_add_edit_visual.html",
-            context={
-                "primary_heading": "Add Visual for Plan",
-                "secondary_heading": plan.file_name,
-                "help_text": help_text,
-                "add_or_edit": "Add",
-                "form": form,
-            }
-        )
-
     else:
         raise Exception(f"Unrecognized METHOD: {request.method}")
 

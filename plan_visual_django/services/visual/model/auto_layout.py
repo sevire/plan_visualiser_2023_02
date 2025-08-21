@@ -5,18 +5,22 @@ The main algorithm is the following:
 1. All milestones in a single swimlane laid out chronologically.
 2. Creating swimlanes and activities by using the structure of the plan. (that is Level information).
 """
+import logging
 from typing import List
 from plan_visual_django.services.service_utilities.service_response import ServiceResponse
 from django.db import IntegrityError
 from django.db.models import Subquery, OuterRef
 from plan_visual_django.exceptions import DuplicateSwimlaneException
 from plan_visual_django.models import SwimlaneForVisual, VisualActivity, PlanVisual, PlanActivity, \
-    DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW
+    DEFAULT_HEIGHT_IN_TRACKS, DEFAULT_TEXT_HORIZONTAL_ALIGNMENT, DEFAULT_TEXT_VERTICAL_ALIGNMENT, DEFAULT_TEXT_FLOW, \
+    Plan
 from plan_visual_django.services.general.date_utilities import proportion_between_dates
 from plan_visual_django.services.service_utilities.service_response import ServiceStatusCode
+from plan_visual_django.services.visual.model.full_autolayout_algorithm import build_initial_layout, LayoutOptions
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 from django.db import transaction
 
+logger = logging.getLogger(__name__)
 
 class VisualLayoutManager:
     """
@@ -28,6 +32,7 @@ class VisualLayoutManager:
         self.plan = self.visual_for_plan.plan
         self.plan_activities = self.plan.planactivity_set.all()  # Note this creates a queryset which may be modified.
         self.visual_settings = VisualSettings(visual_id_for_plan)
+        self.plan_tree = self.plan.get_plan_tree()
 
     def create_milestone_swimlane(
         self,
@@ -326,10 +331,7 @@ class VisualLayoutManager:
             return status
 
     def add_subactivities(self, unique_activity_id, swimlane_sequence_num):
-        plan = self.plan
-
-        plan_tree = plan.get_plan_tree()
-        sub_activity_ids: List[str] = [activity.unique_sticky_activity_id for activity in plan_tree.get_plan_tree_children_by_unique_id(unique_activity_id)]
+        sub_activity_ids: List[str] = [activity.unique_sticky_activity_id for activity in self.plan_tree.get_plan_tree_children_by_unique_id(unique_activity_id)]
 
         self.add_activities_to_swimlane(sub_activity_ids, swimlane_sequence_num)
 
@@ -339,3 +341,60 @@ class VisualLayoutManager:
             data={'visual_activity_ids_added': sub_activity_ids}
         )
         return status
+
+    @classmethod
+    def create_full_visual(cls, plan: Plan):
+        """
+        Use algorithm to create a full visual from the plan.
+        :return:
+        """
+        layout_options = LayoutOptions(
+            max_lanes=5,
+            max_tracks_per_lane=8,
+            reserve_track_zero=True,
+            milestones_lane_name="Milestones",
+            label_window_start=None,
+            label_window_end=None
+        )
+        plan_tree = plan.get_plan_tree()
+        auto_layout = build_initial_layout(plan_tree, options=layout_options)
+
+        auto_visual: PlanVisual = PlanVisual.objects.create_with_defaults(plan=plan)
+
+
+        # Now add the activities to the visual
+        for lane in auto_layout["lanes"]:
+            swimlanes = auto_visual.add_swimlanes_to_visual(
+                auto_visual.default_swimlane_plotable_style, lane["name"]
+            )
+            swimlane = swimlanes[0]
+
+            for track_records in lane["tracks"]:
+                # Allow for activity record being None (need to fix so it doesn't happen!)
+                # ToDo: Fix at source so that lane['tracks'] doesn't include None values
+                if track_records is None:
+                    continue
+                for activity_record in track_records:
+                    plan_activity: PlanActivity = activity_record['activity']
+                    flow = activity_record['label_side']
+                    visual_activity_shape = \
+                        auto_visual.default_activity_shape if plan_activity.milestone_flag is False \
+                            else auto_visual.default_milestone_shape
+                    text_flow = VisualActivity.TextFlow.FLOW_TO_RIGHT if flow == "left" else VisualActivity.TextFlow.FLOW_TO_LEFT
+                    try:
+                        VisualActivity.objects.create(
+                            visual=auto_visual,
+                            unique_id_from_plan=plan_activity.unique_sticky_activity_id,
+                            enabled=True,
+                            swimlane=swimlane,
+                            plotable_shape=visual_activity_shape,
+                            vertical_positioning_value=activity_record['track_index'],
+                            height_in_tracks=1,
+                            text_horizontal_alignment=VisualActivity.HorizontalAlignment.CENTER,
+                            text_vertical_alignment=VisualActivity.VerticalAlignment.MIDDLE,
+                            text_flow=text_flow,
+                            plotable_style=auto_visual.default_activity_plotable_style,
+                        )
+                    except IntegrityError as e:
+                        logger.warning(f"Activity already exists for plan activity {plan_activity.unique_sticky_activity_id}")
+        return auto_visual

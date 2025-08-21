@@ -1,4 +1,5 @@
-from typing import Iterable, Dict
+from datetime import date, timedelta
+from typing import Iterable, Dict, Tuple
 import markdown
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -81,19 +82,10 @@ class Plan(models.Model):
         :return:
         """
 
-        VisualSettings.calculate_defaults_for_visual(self)
+        defaults = VisualSettings.calculate_defaults_for_visual(self)
+        visual = PlanVisual.objects.create(plan=self, **defaults)
 
-        PlanVisual.objects.create(
-            plan=self,
-            name="Default visual",
-            width=30,
-            max_height=20,
-            include_title=True,
-            track_height=20,
-            track_gap=4,
-            milestone_width=10,
-            swimlane_gap=5,
-        )
+        return visual
 
 
 class PlanActivity(models.Model):
@@ -118,6 +110,23 @@ class PlanActivity(models.Model):
 
     def __str__(self):
         return f'{self.activity_name:.20}'
+    
+    @property
+    def duration(self):
+        """
+        Calculate duration in days between start_date and end_date
+        """
+        return (self.end_date - self.start_date).days + 1
+
+    def interval(self) -> Tuple[date, date]:
+        """Return [start, end_exclusive) interval for non-overlap checks.
+        Guarantees at least 1 day width.
+        """
+        end_excl = self.end_date + timedelta(days=1)
+        if end_excl <= self.start_date:
+            # Zero/negative -> inflate to 1 day wide starting at start
+            end_excl = self.start_date + timedelta(days=1)
+        return (self.start_date, end_excl)
 
 
 class Color(models.Model):
@@ -854,7 +863,7 @@ class SwimlaneForVisual(models.Model):
         return activity_plotables
 
 
-class VisualActivity(models.Model):
+class   VisualActivity(models.Model):
     """
     Entity which represents data about an activity which has been added to a specific visual.
 

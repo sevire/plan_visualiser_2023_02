@@ -1,6 +1,12 @@
-
 from anytree import Node, findall, RenderTree
-from plan_visual_django.models import Plan
+from plan_visual_django.models import Plan, PlanActivity
+
+
+class PlanActivityTreeNode(Node):
+    def __init__(self, name, id:str=None, activity:PlanActivity=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self.id: str = id
+        self.activity: PlanActivity = activity
 
 
 class PlanTree:
@@ -17,6 +23,9 @@ class PlanTree:
       - If the level of the next activity goes down by one or more, it is a sibling of the most recent activity at the
         same level.
     """
+    # Helper to avoid repeated code in accessing either node or activity in getter type functions
+    accesor = lambda node, return_as_nodes: node if return_as_nodes else node.activity
+
     def __init__(self, plan: Plan):
         self.plan: Plan = plan
         self._parse_plan_to_tree()
@@ -26,19 +35,68 @@ class PlanTree:
             self._parse_plan_to_tree()
         return self.root
 
+    def get_activity_list(self):
+        """
+        Returns flat list of activities in entry order (preserved within tree)
+        :return:
+        """
+        return self._get_activity_list()
+
+    def get_node_list(self):
+        """
+        Returns flat list of activities in entry order (preserved within tree)
+        :return:
+        """
+        return self._get_activity_list(return_as_nodes=True)
+
     def get_plan_tree_activity_by_unique_id(self, unique_id: str):
         if self.root is None:
             self._parse_plan_to_tree()
         matching_node = self._get_node_for_id(unique_id)
         return matching_node.activity
 
-    def get_plan_tree_children_by_unique_id(self, unique_id: str):
+    def get_plan_tree_node_by_unique_id(self, unique_id: str):
         if self.root is None:
             self._parse_plan_to_tree()
         matching_node = self._get_node_for_id(unique_id)
-        activity_node_child_activities = [node.activity for node in matching_node.children]
-        return activity_node_child_activities
+        return matching_node
 
+    def get_plan_tree_child_activities_by_unique_id(self, unique_id: str):
+        return self._get_children_by_unique_id(unique_id)
+
+    def get_plan_tree_child_nodes_by_unique_id(self, unique_id: str):
+        return self._get_children_by_unique_id(unique_id, return_as_nodes=True)
+
+    def get_plan_tree_nodes_by_unique_id(self, unique_id: str):
+        return self._get_children_by_unique_id(unique_id, return_as_nodes=True)
+
+    def _get_activity_list(self, return_as_nodes: bool = False):
+        """
+        Get list of all activities in the tree but return either as activity records or nodes.
+
+        :param return_as_nodes:
+        :return:
+        """
+        if self.root is None:
+            self._parse_plan_to_tree()
+
+        return [PlanTree.accesor(activity_node, return_as_nodes) for activity_node in self.root.descendants]
+
+    def _get_node_by_unique_id(self, unique_id, return_as_nodes: bool = False):
+        if self.root is None:
+            self._parse_plan_to_tree()
+
+        matching_node = self._get_node_for_id(unique_id)
+        return PlanTree.accesor(matching_node, return_as_nodes)
+
+    def _get_children_by_unique_id(self, unique_id, return_as_nodes: bool = False):
+        if self.root is None:
+            self._parse_plan_to_tree()
+        matching_node = self._get_node_for_id(unique_id)
+        accesor = lambda node: node.activity if return_as_nodes else node
+        activity_children = [PlanTree.accesor(node, return_as_nodes) for node in matching_node.children]
+
+        return activity_children
 
     def print_plan_tree(self):
         for pre, _, node in RenderTree(self.root):
@@ -87,7 +145,7 @@ class PlanTree:
 
 
     def _create_activity_node(self, activity, parent):
-        activity_node = Node(name=activity.activity_name, parent=parent, id=activity.unique_sticky_activity_id, activity=activity)
+        activity_node = PlanActivityTreeNode(name=activity.activity_name, parent=parent, id=activity.unique_sticky_activity_id, activity=activity)
         return activity_node
 
     def _get_node_for_id(self, unique_id: str):
@@ -101,6 +159,3 @@ class PlanTree:
             return None
         else:
             raise ValueError(f"More than one match found for unique id {unique_id} in plan")
-
-
-

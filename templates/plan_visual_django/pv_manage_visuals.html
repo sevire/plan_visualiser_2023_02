@@ -20,7 +20,16 @@
         </tbody>
     </table>
 
-    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-visual/{{ plan.id }}'">Add Visual</button>
+<div class="btn-group" role="group">
+    <!-- Add visual via Form -->
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-visual/{{ plan.id }}'">Add Blank Visual</button>
+    
+    <!-- Add auto created visual -->
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-auto-visual/{{ plan.id }}'">Add Auto Visual</button>
+
+    <!-- Add Default visual -->
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-default-visual/{{ plan.id }}'">Add Default Visual</button>
+</div>
     <table class="table table-sm w-auto">
         <thead>
             <tr>

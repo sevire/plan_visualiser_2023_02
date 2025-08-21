@@ -1,6 +1,6 @@
 from django.urls import path, include
-from api.v1.model.visual.activity.views import ModelVisualActivityListAPI, ModelVisualActivityAPI, \
-    VisualActivityViewDispatcher, ModelVisualActivityChangeSwimlaneAPI, ModelVisualActivitySwimlaneDispatcher, \
+from api.v1.model.visual.activity.views import ModelVisualActivityAPI, \
+    VisualActivityViewDispatcher, ModelVisualActivitySwimlaneDispatcher, \
     ModelVisualActivitySwimlaneSubActivities
 
 urlpatterns = [
