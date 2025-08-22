@@ -7,6 +7,8 @@ The main algorithm is the following:
 """
 import logging
 from typing import List
+
+from plan_visual_django.services.plan_file_utilities.plan_tree import PlanTree
 from plan_visual_django.services.service_utilities.service_response import ServiceResponse
 from django.db import IntegrityError
 from django.db.models import Subquery, OuterRef
@@ -31,8 +33,8 @@ class VisualLayoutManager:
         self.visual_for_plan = PlanVisual.objects.get(id=visual_id_for_plan)
         self.plan = self.visual_for_plan.plan
         self.plan_activities = self.plan.planactivity_set.all()  # Note this creates a queryset which may be modified.
-        self.visual_settings = VisualSettings(visual_id_for_plan)
-        self.plan_tree = self.plan.get_plan_tree()
+        self.visual_settings: VisualSettings = VisualSettings(visual_id_for_plan)
+        self.plan_tree: PlanTree = self.plan.get_plan_tree()
 
     def create_milestone_swimlane(
         self,
@@ -331,7 +333,7 @@ class VisualLayoutManager:
             return status
 
     def add_subactivities(self, unique_activity_id, swimlane_sequence_num):
-        sub_activity_ids: List[str] = [activity.unique_sticky_activity_id for activity in self.plan_tree.get_plan_tree_children_by_unique_id(unique_activity_id)]
+        sub_activity_ids: List[str] = [activity.unique_sticky_activity_id for activity in self.plan_tree.get_plan_tree_child_activities_by_unique_id(unique_activity_id)]
 
         self.add_activities_to_swimlane(sub_activity_ids, swimlane_sequence_num)
 
