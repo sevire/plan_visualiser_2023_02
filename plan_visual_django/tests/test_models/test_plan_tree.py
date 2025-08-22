@@ -74,7 +74,7 @@ class TestPlanTree(TestCase):
         plan_tree = self._set_up_plan_tree(self.test_plan_tree_data_main)
         for expected_result_record in expected_results_data:
             id, expected_depth = expected_result_record
-            children_for_id = plan_tree.get_plan_tree_children_by_unique_id(id)
+            children_for_id = plan_tree.get_plan_tree_child_nodes_by_unique_id(id)
             with self.subTest(f"Depth for id {id}"):
                 self.assertEqual(expected_depth, len(children_for_id))
 

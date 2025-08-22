@@ -156,17 +156,15 @@ class ModelVisualActivityAPI(APIView):
             messages.add_message(request, messages.INFO, service_status.message)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
     @staticmethod
-    def delete(request, visual_id, unique_id):
+    def delete(request, visual_id, activity_unique_id):
         try:
             visual = PlanVisual.objects.get(id=visual_id)
         except PlanVisual.DoesNotExist as e:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         # We have found the visual so now check whether the activity already exists for the visual.
-        visual_activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
+        visual_activity = visual.visualactivity_set.get(unique_id_from_plan=activity_unique_id)
 
         # We just disable this activity - no need to physically delete it.
         visual_activity.enabled = False

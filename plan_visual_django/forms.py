@@ -87,6 +87,7 @@ class VisualFormForAdd(ModelForm):
             "track_gap",
             "milestone_width",
             "swimlane_gap",
+            "default_timeline_height",
             "default_activity_plotable_style",
             "default_milestone_plotable_style",
             "default_swimlane_plotable_style",
