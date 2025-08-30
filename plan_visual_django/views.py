@@ -19,7 +19,7 @@ from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEd
 from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, \
     StaticContent, HelpText
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
+from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes, FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.auth.user_services import get_current_user, \
@@ -377,6 +377,12 @@ def manage_plans(request):
     # ToDo: Clean this up as some redundancy - user is worked out here and in get_user_plans()
     current_user = CurrentUser(request)
     plan_files = current_user.get_user_plans()
+
+    # We need to add in the title of the plan file type to display in the table
+    # Add to each Plan record the title of the plan file type
+    for plan_file in plan_files:
+        plan_file.file_type_title = FileType.from_name(plan_file.file_type_name).title
+
     help_text = HelpText.get_help_text("manage-plans")
     context = {
         'help_text': help_text,

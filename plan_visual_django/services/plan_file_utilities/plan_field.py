@@ -173,7 +173,7 @@ class FileType(Enum):
         Returns all members of the enum in a format that can be used in a Django model choices field.
         :return:
         """
-        return [(member.file_type_name, member.description) for member in cls]
+        return [(member.file_type_name, member.title) for member in cls]
 
 
 @dataclass
