@@ -692,6 +692,37 @@ def plot_visual(request, visual_id):
 
 
 @login_required
+def plot_visual_new_25(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    plan_name = visual.plan.plan_name
+    visual_name = visual.name
+
+    context = {
+        'help_text': HelpText.get_help_text("plot-visual"),
+        'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
+        'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
+        'visual': visual,
+        'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
+    }
+    return render(request, "plan_visual_django/visual_main_ui_25.html", context)
+
+
+@login_required
 def manage_colors(request):
     """
     This view is used to define the colors used in the visual for a user.
