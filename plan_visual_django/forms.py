@@ -55,6 +55,9 @@ class PlanForm(ModelForm):
     class Meta:
         model = Plan
         fields = ("plan_name", "file", "file_type_name")
+        labels = {
+            "file_type_name": "File Type"
+        }
 
     def __init__(self, *args, request=None, **kwargs):
         super().__init__(*args, **kwargs)
