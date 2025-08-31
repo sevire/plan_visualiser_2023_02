@@ -123,20 +123,22 @@ export async function update_timeline_panel(timeline_html_panel:HTMLElement, vis
     controlTD.style.width = "40%"
     row.appendChild(controlTD)
 
+    // Create first out of two button groups - this one for the up and down arrows
     const buttonGroup1 = document.createElement("div")
     buttonGroup1.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1")
     buttonGroup1.setAttribute('role', 'group')
     buttonGroup1.setAttribute('aria-label', 'Basic Example')
     controlTD.appendChild(buttonGroup1)
 
+    // Add the up and down arrows to the button group
     add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel)
     add_arrow_button_to_element(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel)
 
+    // Create second out of two button groups - this one for the toggle button
     const buttonGroup2 = document.createElement("div")
-    buttonGroup2.classList.add("btn-group", "btn-group-sm", "up-down-control", "me-1")
+    buttonGroup2.classList.add("btn-group", "btn-group-sm", "toggle-control", "me-1")
     buttonGroup2.setAttribute('role', 'group')
     buttonGroup2.setAttribute('aria-label', 'Basic Example')
-    controlTD.appendChild(buttonGroup1)
 
     let timelineToggleButton: HTMLButtonElement
     if (timeline_record.enabled) {
