@@ -35,7 +35,7 @@ class BaseVisualActivitySerialiser(ModelSerializer):
         Validate the incoming string to ensure it's a valid Enum member.
         """
         normalized_value = value.upper()  # Normalize to uppercase to match Enum names
-        if normalized_value not in PlotableShapeName.__members__:
+        if normalized_value not in PlotableShapeName.values():
             raise serializers.ValidationError(f"Invalid shape name: {value}")
         return normalized_value  # Return the validated string as is
 

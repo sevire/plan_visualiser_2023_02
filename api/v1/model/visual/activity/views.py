@@ -108,12 +108,12 @@ class ModelVisualActivityUpdateAPI(APIView):
 
                     if instance.visual_id != visual_id:
                         return Response({"error": f"Supplied activity id {activity_data['id']} does not belong to supplied visual"},
-                                        status=status.HTTP_400_BAD_REQUEST)
+                                        status=status.HTTP_409_CONFLICT)
                     serializer_for_current_record = ModelVisualActivitySerialiserForUpdate(instance, data=activity_data, partial=True)
                     if serializer_for_current_record.is_valid(raise_exception=True):
                         serializer_for_current_record.save()
                 except VisualActivity.DoesNotExist:
-                    return Response({"error": f"Object with id={activity_data['id']} not found"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": f"Object with id={activity_data['id']} not found"}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK)
 
 

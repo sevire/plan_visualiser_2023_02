@@ -47,7 +47,7 @@ div#top-row-controls table td button,
 // Swimlanes
 // Set colour for default swimlane
 div#swimlane_data tr.default-swimlane td {
-    background-color: yellow;
+    background-color: darken($secondary-bg-subtle, 20%);
 }
 
 #visual-content {
@@ -131,7 +131,7 @@ ul#plan-activities {
     font-variation-settings:
       "wdth" 100;
     font-size: 12px;
-    color: white;
+    color: $secondary-text-emphasis;
 
     text-align: left;
     vertical-align: middle;
@@ -151,19 +151,21 @@ ul#plan-activities {
     border: solid 3px transparent;
 
     // Colours for plan activities
-    $background-color-activity-level-1: $primary;
-    $background-color-activity-level-2: lighten($background-color-activity-level-1, 10%);
-    $background-color-activity-level-3: lighten($background-color-activity-level-1, 20%);
-    $background-color-activity-level-4: lighten($background-color-activity-level-1, 30%);
-    $background-color-activity-level-5: lighten($background-color-activity-level-1, 40%);
-    $background-color-activity-level-6: lighten($background-color-activity-level-1, 50%);
-    $background-color-activity-level-7: lighten($background-color-activity-level-1, 50%);
-    $background-color-activity-level-8: lighten($background-color-activity-level-1, 50%);
-    $background-color-activity-level-9: lighten($background-color-activity-level-1, 50%);
-    $background-color-activity-level-10: lighten($background-color-activity-level-1, 50%);
+    $color-for-plan-activities: darken($secondary-bg-subtle,0%);
 
-    $background-color-activity-selected: lighten($secondary, 20%);
-    $border-color-activity-current: rgb(201, 1, 1);
+    $background-color-activity-level-1: $color-for-plan-activities;
+    $background-color-activity-level-2: $color-for-plan-activities;
+    $background-color-activity-level-3: $color-for-plan-activities;
+    $background-color-activity-level-4: $color-for-plan-activities;
+    $background-color-activity-level-5: $color-for-plan-activities;
+    $background-color-activity-level-6: $color-for-plan-activities;
+    $background-color-activity-level-7: $color-for-plan-activities;
+    $background-color-activity-level-8: $color-for-plan-activities;
+    $background-color-activity-level-9: $color-for-plan-activities;
+    $background-color-activity-level-10: $color-for-plan-activities;
+
+    $background-color-activity-selected: darken($color-for-plan-activities, 20%);
+    $border-color-activity-current: rgb(247, 255, 2);
 
     &.level-1 { background-color: $background-color-activity-level-1}
     &.level-2 { background-color: $background-color-activity-level-2}
@@ -176,7 +178,11 @@ ul#plan-activities {
     &.level-9 { background-color: $background-color-activity-level-9}
     &.level-10 { background-color: $background-color-activity-level-10}
 
-    &.in-visual {background-color: $background-color-activity-selected; color: black;}
+    &.in-visual {
+      background-color: $background-color-activity-selected; color: white;
+      i {color: white;}
+    }
+
     &.current {border: solid 3px $border-color-activity-current}
 
     i {

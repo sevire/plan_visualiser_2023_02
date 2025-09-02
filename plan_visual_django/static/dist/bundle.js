@@ -1692,16 +1692,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   initialise_canvases: () => (/* binding */ initialise_canvases),
 /* harmony export */   plot_visual: () => (/* binding */ plot_visual)
 /* harmony export */ });
-const HIGHLIGHT_COLOR = 'white';
+const HIGHLIGHT_LINE_COLOR = 'red';
+const HIGHLIGHT_FILL_COLOR = "rgba(255, 255, 0, 0.8)";
 const HIGHLIGHT_LINE_WIDTH = 5;
 function plot_rectangle(context, object_to_render, scale_factor, highlight_flag) {
     // if highlight flag is set then we just plot the outline in red to highlight the object.
-    let plot_function;
+    // NOTE: The highlighting logic is very hacky!  Am applying almost identical logic to each shape individually.
+    // I'm resisting the temptation to refactor this code for now as I will re-build the whole approach to client side
+    // applicationo - either by re-writing as a pure Typescript app or using Vue (or maybe both).
     if (highlight_flag) {
         console.log("Highligting...");
-        context.strokeStyle = HIGHLIGHT_COLOR; // Hard code for now!
+        context.fillStyle = HIGHLIGHT_FILL_COLOR;
+        context.strokeStyle = HIGHLIGHT_LINE_COLOR;
         context.lineWidth = HIGHLIGHT_LINE_WIDTH;
         context.strokeRect(object_to_render.shape_plot_dims.left * scale_factor, object_to_render.shape_plot_dims.top * scale_factor, object_to_render.shape_plot_dims.width * scale_factor, object_to_render.shape_plot_dims.height * scale_factor);
+        context.fillRect(object_to_render.shape_plot_dims.left * scale_factor, object_to_render.shape_plot_dims.top * scale_factor, object_to_render.shape_plot_dims.width * scale_factor, object_to_render.shape_plot_dims.height * scale_factor);
     }
     else {
         context.fillStyle = object_to_render.fill_color;
@@ -1723,8 +1728,10 @@ function plot_diamond(context, object_to_render, scale_factor, highlight_flag) {
     // the top right edge
     context.closePath();
     if (highlight_flag) {
-        context.strokeStyle = HIGHLIGHT_COLOR; // Hard code for now!
+        context.strokeStyle = HIGHLIGHT_LINE_COLOR; // Hard code for now!
         context.lineWidth = HIGHLIGHT_LINE_WIDTH;
+        context.fillStyle = HIGHLIGHT_FILL_COLOR;
+        context.fill();
         context.stroke();
     }
     else {
@@ -1743,8 +1750,10 @@ function plot_bullet(context, object_to_render, scale_factor, highlight_flag) {
     context.roundRect(left, top, width, height, cornerRadius);
     context.closePath();
     if (highlight_flag) {
-        context.strokeStyle = HIGHLIGHT_COLOR; // Hard code for now!
+        context.strokeStyle = HIGHLIGHT_LINE_COLOR; // Hard code for now!
         context.lineWidth = HIGHLIGHT_LINE_WIDTH;
+        context.fillStyle = HIGHLIGHT_FILL_COLOR;
+        context.fill();
         context.stroke();
     }
     else {
@@ -1762,8 +1771,10 @@ function plot_rounded_rectangle(context, object_to_render, scale_factor, highlig
     context.roundRect(left, top, width, height, cornerRadius);
     context.closePath();
     if (highlight_flag) {
-        context.strokeStyle = HIGHLIGHT_COLOR; // Hard code for now!
+        context.strokeStyle = HIGHLIGHT_LINE_COLOR; // Hard code for now!
         context.lineWidth = HIGHLIGHT_LINE_WIDTH;
+        context.fillStyle = HIGHLIGHT_FILL_COLOR;
+        context.fill();
         context.stroke();
     }
     else {
@@ -1784,8 +1795,10 @@ function plot_isosceles_triangle(context, object_to_render, scale_factor, highli
     context.lineTo(left, top + height);
     context.closePath();
     if (highlight_flag) {
-        context.strokeStyle = HIGHLIGHT_COLOR; // Hard code for now!
+        context.strokeStyle = HIGHLIGHT_LINE_COLOR; // Hard code for now!
         context.lineWidth = HIGHLIGHT_LINE_WIDTH;
+        context.fillStyle = HIGHLIGHT_FILL_COLOR;
+        context.fill();
         context.stroke();
     }
     else {

@@ -60,12 +60,6 @@ class PlotableShapeObjectBullet(PlotableShapeObjectRoundedRectangle):
     def __init__(self, width: float, height: float):
         super().__init__(width, height, corner_radius_percentage=0.5)
 
-
-
-
-
-
-
 # Enum-like definition
 class PlotableShapeName(Enum):
     RECTANGLE = 1, "RECTANGLE", "Rectangle", PlotableShapeObjectRectangle
@@ -97,53 +91,15 @@ class PlotableShapeName(Enum):
 
     @classmethod
     def get_by_value(cls, value):
-        return cls[value]
+        for member in cls:
+            if member._value_ == value:
+                return member
+
+    @classmethod
+    def values(cls):
+        return [member._value_ for member in cls]
 
     @property
     def shape_object_class(self):
         """Instantiates the behaviour class for a given shape value."""
         return self.cls
-
-
-
-
-
-# To be deleted as soon as I'm sure the replacement (above) is right.
-class xPlotableShapeName(models.TextChoices):
-    """
-    Enum representing plotable shape names, with references to their corresponding classes.
-    """
-    RECTANGLE = "RECTANGLE", "Rectangle"
-    ROUNDED_RECTANGLE = "ROUNDED_RECTANGLE", "Rounded Rectangle"
-    BULLET = "BULLET", "Bullet"
-    DIAMOND = "DIAMOND", "Diamond"
-    ISOSCELES_TRIANGLE = "ISOSCELES", "Isosceles Triangle"
-
-    # Use a method to define and return the mapping
-    @classmethod
-    def _get_shape_classes(cls):
-        """
-        Class-level method to return the mapping of enum values to shape classes.
-        This is a bit of a hack to overcome constraints placed by definition of TextChoices.  I'd prefer to add
-        the class reference to each member as part of its declaration but that creates conflicts.
-        """
-        return {
-            cls.RECTANGLE.value: PlotableShapeObjectRectangle,
-            cls.ROUNDED_RECTANGLE.value: PlotableShapeObjectRoundedRectangle,
-            cls.BULLET.value: PlotableShapeObjectBullet,
-            cls.DIAMOND.value: PlotableShapeObjectDiamond,
-            cls.ISOSCELES_TRIANGLE.value: PlotableShapeObjectIsosceles,
-        }
-
-    @property
-    def shape_object_class(self):
-        """
-        Accessor for the associated PlotableShapeObject subclass.
-        Returns the actual class reference.
-        """
-        # Explicitly call the class-level method
-        shape_classes = self._get_shape_classes()
-        cls = shape_classes.get(self.value)
-        if cls is None:
-            raise ValueError(f"No associated shape class found for `{self.label}`.")
-        return cls

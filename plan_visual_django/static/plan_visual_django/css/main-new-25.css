@@ -12161,7 +12161,7 @@ div#top-row-controls table td button,
 }
 
 div#swimlane_data tr.default-swimlane td {
-  background-color: yellow;
+  background-color: rgb(142.5414790997, 203.2585209003, 195.8668810289);
 }
 
 #visual-content {
@@ -12232,7 +12232,7 @@ ul#plan-activities li > div {
   font-style: normal;
   font-variation-settings: "wdth" 100;
   font-size: 12px;
-  color: white;
+  color: rgb(16.8, 62.8, 57.2);
   text-align: left;
   vertical-align: middle;
   white-space: nowrap;
@@ -12250,41 +12250,44 @@ ul#plan-activities li > div {
   border: solid 3px transparent;
 }
 ul#plan-activities li > div.level-1 {
-  background-color: #264653;
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-2 {
-  background-color: rgb(54.0165289256, 99.5041322314, 117.9834710744);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-3 {
-  background-color: rgb(70.0330578512, 129.0082644628, 152.9669421488);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-4 {
-  background-color: rgb(93.1157024793, 155.5289256198, 180.8842975207);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-5 {
-  background-color: rgb(128.0991735537, 177.0247933884, 196.9008264463);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-6 {
-  background-color: rgb(163.0826446281, 198.520661157, 212.9173553719);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-7 {
-  background-color: rgb(163.0826446281, 198.520661157, 212.9173553719);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-8 {
-  background-color: rgb(163.0826446281, 198.520661157, 212.9173553719);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-9 {
-  background-color: rgb(163.0826446281, 198.520661157, 212.9173553719);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.level-10 {
-  background-color: rgb(163.0826446281, 198.520661157, 212.9173553719);
+  background-color: rgb(212.4, 235.4, 232.6);
 }
 ul#plan-activities li > div.in-visual {
-  background-color: rgb(90.1105527638, 210.8894472362, 196.1859296482);
-  color: black;
+  background-color: rgb(142.5414790997, 203.2585209003, 195.8668810289);
+  color: white;
+}
+ul#plan-activities li > div.in-visual i {
+  color: white;
 }
 ul#plan-activities li > div.current {
-  border: solid 3px rgb(201, 1, 1);
+  border: solid 3px rgb(247, 255, 2);
 }
 ul#plan-activities li > div i {
   margin-left: 8px;

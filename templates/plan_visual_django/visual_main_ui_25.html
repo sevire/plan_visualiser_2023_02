@@ -240,7 +240,7 @@
             await window.update_timeline_panel(timeline_element, window.visual_id)
 
             console.log("About to retrieve shape data")
-            // Get all plotable styles available to this user
+            // Get all plotable shapes available to this user
             response = await get_shape_records()
             window.shape_data = response.data
 
