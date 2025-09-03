@@ -71,6 +71,8 @@ class VisualSettings:
         set_default("track_height", lambda: 20)
         set_default("track_gap", lambda: 4)
         set_default("milestone_width", lambda: 10)
+        set_default("timeline_gap", lambda: 5)
+        set_default("timeline_to_swimlane_gap", lambda: 10)
         set_default("swimlane_gap", lambda: 5)
         set_default("default_activity_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-001-activities-01"))
         set_default("default_milestone_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-004-milestones-01"))

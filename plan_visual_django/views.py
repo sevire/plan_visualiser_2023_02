@@ -242,7 +242,7 @@ def add_visual(request, plan_id, default=False, auto=False):
 
             messages.success(request, "New default visual for plan saved successfully.")
 
-            return HttpResponseRedirect(reverse("plot-visual", args=[default_visual.id]))
+            return HttpResponseRedirect(reverse("plot-visual-new-25", args=[default_visual.id]))
         elif auto is True:
             # TEMP: Now add an auto layout visual - to test full layout algorithm
             auto_visual: PlanVisual = VisualLayoutManager.create_full_visual(plan)
@@ -252,7 +252,7 @@ def add_visual(request, plan_id, default=False, auto=False):
             messages.success(request, "Auto-layout visual for plan saved successfully.")
 
             # Redirect to visuals management
-            return HttpResponseRedirect(reverse("plot-visual", args=[auto_visual.id]))
+            return HttpResponseRedirect(reverse("plot-visual-new-25", args=[auto_visual.id]))
         else:
             # Not default or auto so Display the form for adding a visual
             form = VisualFormForAdd(plan=plan, user=current_user.user)
@@ -351,13 +351,15 @@ def edit_visual(request, visual_id):
         plan = Plan.objects.get(id=plan_id)
 
         if request.method == "POST":
-            visual_form = VisualFormForEdit(data=request.POST, files=request.FILES, instance=instance)
+            visual_form = VisualFormForEdit(user=current_user.user, data=request.POST, files=request.FILES, instance=instance)
             if visual_form.is_valid():
                 # Save fields from form but don't commit so can modify other fields before comitting.
                 visual_record = visual_form.save()
                 messages.success(request, "Visual updated successfully")
+            else:
+                messages.error(request, "The provided data was invalid. Please correct the errors and try again.")
 
-            return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
+            return HttpResponseRedirect(reverse('plot-visual-new-25', args=[visual_id]))
         elif request.method == "GET":
             form = VisualFormForEdit(instance=instance, user=current_user.user)
             context = {

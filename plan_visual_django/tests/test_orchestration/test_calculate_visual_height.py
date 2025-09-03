@@ -139,7 +139,9 @@ class TestCalculateVisualHeight(TestCase):
             default_timeline_plotable_style_even=default_plotable_style,
             track_height=track_height,
             track_gap=track_gap,
-            swimlane_gap=swimlane_gap
+            swimlane_gap=swimlane_gap,
+            timeline_gap=0,
+            timeline_to_swimlane_gap=0
         )
         # Now add some sub-components
 

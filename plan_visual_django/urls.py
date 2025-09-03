@@ -21,7 +21,7 @@ urlpatterns = [
     path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
-    path("visual-new-25/<int:visual_id>/", views.plot_visual_new_25, name='plot-visual'),
+    path("visual-new-25/<int:visual_id>/", views.plot_visual_new_25, name='plot-visual-new-25'),
 
     # Visual features management
     path("manage-swimlanes-for-visual/<int:visual_id>/", views.manage_swimlanes_for_visual, name="manage-swimlanes"),

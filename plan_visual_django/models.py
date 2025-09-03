@@ -234,6 +234,8 @@ class PlanVisual(models.Model):
     track_height = models.FloatField(default=20)
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
+    timeline_gap = models.FloatField(default=5)
+    timeline_to_swimlane_gap = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
     default_milestone_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     default_activity_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
@@ -389,6 +391,10 @@ class PlanVisual(models.Model):
         else:
             timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num, enabled=True)
         timeline_height = timelines.aggregate(total_sum=Sum('timeline_height'))['total_sum'] or 0
+
+        # Add inter-timeline gaps to calculate height of all previous timelines - one for each timeline
+        inter_timeline_gap = self.timeline_gap * len(timelines)
+        timeline_height += inter_timeline_gap
 
         return timeline_height
 
@@ -546,7 +552,7 @@ class PlanVisual(models.Model):
         total_height_of_swimlanes = sum(swimlane.get_height() for swimlane in swimlanes)
         height_of_swimlane_area = total_height_of_swimlanes + total_gap
 
-        return height_of_timelines, 0, self.width, height_of_swimlane_area
+        return height_of_timelines + self.timeline_to_swimlane_gap, 0, self.width, height_of_swimlane_area
 
     def get_plotables(self):
         """
