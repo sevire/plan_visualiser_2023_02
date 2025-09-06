@@ -1,8 +1,17 @@
 from django.urls import path
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 
 from plan_visual_django import views
 from plan_visual_django.views import StaticPageView, FileTypeListView
+
+
+
+
+
+
+
+
+
 
 urlpatterns = [
     # Management of Plans
@@ -36,6 +45,3 @@ urlpatterns = [
     # Static pages
     path("textpages/<slug:page_slug>/", StaticPageView.as_view(), name='static-pages'),
 ]
-
-
-

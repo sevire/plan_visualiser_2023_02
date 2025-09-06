@@ -482,7 +482,7 @@ def manage_visuals(request, plan_id):
             'visuals': visuals,
             'plan_summary_data_display': plan_summary_data_display
         }
-        return render(request, "plan_visual_django/pv_manage_visuals.html", context)
+        return render(request, "plan_visual_django/pv_manage_visuals_new_25.html", context)
 
 
 @login_required

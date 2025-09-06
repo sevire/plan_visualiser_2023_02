@@ -374,6 +374,9 @@ class PlanVisual(models.Model):
 
         return visual_start_date_final, visual_end_date_final
 
+    def get_num_active_timelines(self):
+        return self.timelineforvisual_set.filter(enabled=True).count()
+
     def get_timelines_height(self, sequence_num=None):
         """
         (SHOULD BE TEMPORARY)
@@ -417,6 +420,9 @@ class PlanVisual(models.Model):
 
         timeline_plotables = [timeline.get_plotables() for timeline in timelines]
         return timeline_plotables
+
+    def get_num_swimlanes(self):
+        return self.swimlaneforvisual_set.count()
 
     def get_swimlanes(self, visible_only_flag=True, sequence_number=None):
         """
