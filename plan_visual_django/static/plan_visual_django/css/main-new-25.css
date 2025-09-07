@@ -12166,9 +12166,13 @@ div#swimlane_data tr.default-swimlane td {
 
 #visual-content {
   position: relative;
+  padding-bottom: 10px;
 }
 #visual-content .canvas-wrapper {
   position: relative;
+  height: 400px;
+  overflow: scroll;
+  margin-bottom: 10px;
   width: 100%;
 }
 #visual-content .canvas-wrapper .canvas-layer {

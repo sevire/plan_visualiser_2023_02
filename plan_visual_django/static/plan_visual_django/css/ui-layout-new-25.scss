@@ -52,8 +52,13 @@ div#swimlane_data tr.default-swimlane td {
 
 #visual-content {
   position: relative;
+  padding-bottom: 10px;
+
   .canvas-wrapper {
     position: relative;
+    height: 400px;
+    overflow: scroll;
+    margin-bottom: 10px; // To override margin collapsing
     width: 100%;
     .canvas-layer {
       position: relative;
@@ -87,11 +92,11 @@ div#swimlane_data tr.default-swimlane td {
   }
 }
 
-  #add-remove-activities {
-    height: 400px;
-    overflow: scroll;
-    margin-bottom: 10px // To override margin collapsing
-  }
+#add-remove-activities {
+  height: 400px;
+  overflow: scroll;
+  margin-bottom: 10px // To override margin collapsing
+}
 
 ul#plan-activities {
   // Remove default ul styles

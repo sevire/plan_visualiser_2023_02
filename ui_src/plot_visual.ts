@@ -7,7 +7,7 @@ function plot_rectangle(context: CanvasRenderingContext2D | null, object_to_rend
 
   // NOTE: The highlighting logic is very hacky!  Am applying almost identical logic to each shape individually.
   // I'm resisting the temptation to refactor this code for now as I will re-build the whole approach to client side
-  // applicationo - either by re-writing as a pure Typescript app or using Vue (or maybe both).
+  // application - either by re-writing as a pure Typescript app or using Vue (or maybe both).
   if (highlight_flag) {
     console.log("Highligting...")
     context!.fillStyle = HIGHLIGHT_FILL_COLOR;
@@ -409,7 +409,8 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
 
         // Now we have the scale_factor we can calculate the true height both of the canvas html element
         // and the plotable height of the canvas so that the visual fits neatly inside the canvas.
-        adjusted_canvas_display_height = visual_height / scale_factor
+        // Use width-based aspect ratio for CSS height so the element isn't stretched.
+        adjusted_canvas_display_height = initial_canvas_display_width * aspect_ratio
         final_canvas_height = final_canvas_width * aspect_ratio;
 
         console.log(`Scale factor is ${scale_factor}`)
@@ -428,7 +429,8 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
     const captureCanvas = document.createElement('canvas');
     captureCanvas.width = 2000; // Hard coding for now
     scale_factor = captureCanvas.width / visual_width
-    captureCanvas.height = 2000; // ToDo: Replace hard coding of canvas width with more sophisticated approach
+    // Match height to aspect ratio to avoid distortion in exports
+    captureCanvas.height = Math.round(captureCanvas.width * aspect_ratio);
 
     canvas_info.capture = captureCanvas.getContext('2d');
   }
