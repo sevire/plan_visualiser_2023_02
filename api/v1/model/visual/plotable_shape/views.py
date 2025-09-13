@@ -1,5 +1,6 @@
-from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+
 from api.v1.model.visual.plotable_shape.serializer import PlotableShapeSerializer
 
 
@@ -9,4 +10,4 @@ class ModelVisualShapeAPI(ListAPIView):
         serializer = PlotableShapeSerializer(many=True)
 
         response = serializer.data
-        return JsonResponse(response, safe=False)
+        return Response(response)

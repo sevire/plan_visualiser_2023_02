@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,4 +25,4 @@ class RenderCanvasVisualAPI(APIView):
             visual_plotables = visual.get_plotables()
             renderer = CanvasRenderer()
             rendered_plotables = renderer.render_from_iterable(visual_plotables)
-            return JsonResponse(rendered_plotables, safe=False)
+            return Response(rendered_plotables)

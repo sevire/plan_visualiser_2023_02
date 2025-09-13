@@ -1,11 +1,11 @@
 from django.db import transaction
-from django.db.models import Max
-from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.services.error_message_handling import MessagesToHeaderMixin
 from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser, \
     ModelVisualActivitySerialiserForUpdate
 from plan_visual_django.models import (PlanVisual, VisualActivity,
@@ -47,7 +47,7 @@ class ModelVisualActivitySwimlaneDispatcher(APIView):
             return super().dispatch(request, *args, **kwargs)
 
 
-class ModelVisualActivitySwimlaneSubActivities(APIView):
+class ModelVisualActivitySwimlaneSubActivities(MessagesToHeaderMixin, APIView):
     @staticmethod
     def put(request, visual_id, activity_unique_id, swimlane, *args, **kwargs):
         """
@@ -79,7 +79,7 @@ class ModelVisualActivityListAPI(ListAPIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualActivityUpdateAPI(APIView):
@@ -124,7 +124,7 @@ class ModelVisualActivityAddSubActivitiesAPI(APIView):
         pass # Coding in progress
 
 
-class ModelVisualActivityAPI(APIView):
+class ModelVisualActivityAPI(MessagesToHeaderMixin, APIView):
     @staticmethod
     def get(request, visual_id, activity_unique_id):
         visual_activity_queryset = PlanVisual.objects.get(id=visual_id).visualactivity_set.get(unique_id_from_plan=activity_unique_id)
@@ -132,7 +132,7 @@ class ModelVisualActivityAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
     @staticmethod
     def put(request, visual_id, activity_unique_id, swimlane=1):
@@ -172,7 +172,7 @@ class ModelVisualActivityAPI(APIView):
 
         return Response(status=status.HTTP_202_ACCEPTED)
 
-class ModelVisualActivityChangeSwimlaneAPI(APIView):
+class ModelVisualActivityChangeSwimlaneAPI(MessagesToHeaderMixin, APIView):
     @staticmethod
     def patch(request, visual_id, activity_unique_id, swimlane):
         """
@@ -192,4 +192,5 @@ class ModelVisualActivityChangeSwimlaneAPI(APIView):
         with transaction.atomic():  # Not sure we need this!
             visual_activity.save()
 
+        messages.add_message(request, messages.INFO, "Activity moved to new swimlane")
         return Response(status=status.HTTP_202_ACCEPTED)

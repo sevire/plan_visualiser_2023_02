@@ -1,6 +1,5 @@
-from django.http import JsonResponse
 from rest_framework.views import APIView
-
+from rest_framework.response import Response
 from api.v1.model.visual.serializer import ModelVisualSettingsSerialiser
 from plan_visual_django.models import PlanVisual
 
@@ -24,4 +23,4 @@ class RenderedCanvasVisualettingsAPI(APIView):
         serializer = ModelVisualSettingsSerialiser(instance=visual_queryset)
 
         response = serializer.data
-        return JsonResponse(response, safe=False)
+        return Response(response)

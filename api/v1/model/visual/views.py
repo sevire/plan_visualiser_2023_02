@@ -1,5 +1,5 @@
-from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.serializer import ModelVisualListSerialiser
 from api.v1.rendered.canvas.visual.settings.serializer import ModelVisualSerialiser
@@ -13,7 +13,7 @@ class ModelVisualListAPI(ListAPIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualAPI(APIView):
@@ -24,7 +24,7 @@ class ModelVisualAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 

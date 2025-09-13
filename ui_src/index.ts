@@ -14,6 +14,10 @@ import {update_timeline_panel} from "./manage_timelines";
 import {add_download_image_event_listener} from "./manage_visual_image";
 import {addVisualImages} from "./manage_visual_image";
 import App from "./application/application";
+import {setupAxiosMessageInterceptor} from "./manage_messages";
+
+// Set up axios message interceptor to handle status or error messages in api replies.
+setupAxiosMessageInterceptor();
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Loaded zzzz....")

@@ -114,6 +114,104 @@ function initialise_canvas(settings) {
 
 /***/ }),
 
+/***/ "./ui_src/manage_messages.ts":
+/*!***********************************!*\
+  !*** ./ui_src/manage_messages.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupAxiosMessageInterceptor: () => (/* binding */ setupAxiosMessageInterceptor)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+// Code which sets up axios interceptor to inject error messages from api response to
+// into the messages area on the page (part of base template).
+// messages-interceptor.ts
+
+function levelToBootstrapClass(level) {
+    switch (level) {
+        case 'success':
+            return 'alert-success';
+        case 'warning':
+            return 'alert-warning';
+        case 'error':
+            return 'alert-danger';
+        case 'info':
+            return 'alert-info';
+        case 'debug':
+        default:
+            return 'alert-secondary';
+    }
+}
+function createAlertElement(msg) {
+    const alertDiv = document.createElement('div');
+    // Match the template’s structure/classes
+    alertDiv.className = `alert ${levelToBootstrapClass(msg.level)} alert-dismissible fade show`;
+    alertDiv.setAttribute('role', 'alert');
+    // Message text
+    alertDiv.append(document.createTextNode(msg.message));
+    // Close button (Bootstrap will wire this up since its JS is loaded)
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'btn-close';
+    closeBtn.setAttribute('data-bs-dismiss', 'alert');
+    closeBtn.setAttribute('aria-label', 'Close');
+    alertDiv.appendChild(closeBtn);
+    return alertDiv;
+}
+function injectMessagesFromHeader(headerValue) {
+    if (!headerValue) {
+        console.log('[messages] No X-Server-Messages header present');
+        return;
+    }
+    let parsed = null;
+    try {
+        parsed = JSON.parse(headerValue);
+    }
+    catch (_a) {
+        console.warn('[messages] X-Server-Messages header present but could not be parsed as JSON');
+        // Silently ignore malformed header
+        return;
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+        console.log('[messages] X-Server-Messages header present but contains no messages');
+        return;
+    }
+    console.log(`[messages] Found ${parsed.length} message(s) in X-Server-Messages header`);
+    const container = document.getElementById('messages-container');
+    if (!container) {
+        console.warn('[messages] messages-container element not found in DOM');
+        return;
+    }
+    for (const m of parsed) {
+        // Basic shape check
+        if (!m || typeof m.message !== 'string' || typeof m.level !== 'string')
+            continue;
+        container.appendChild(createAlertElement(m));
+    }
+}
+function setupAxiosMessageInterceptor(instance = axios__WEBPACK_IMPORTED_MODULE_0__["default"]) {
+    instance.interceptors.response.use((response) => {
+        var _a;
+        // Axios lowercases response header keys in the browser
+        const header = (_a = response.headers) === null || _a === void 0 ? void 0 : _a['x-server-messages'];
+        injectMessagesFromHeader(header);
+        return response;
+    }, (error) => {
+        var _a, _b;
+        const header = (_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.headers) === null || _b === void 0 ? void 0 : _b['x-server-messages'];
+        injectMessagesFromHeader(header);
+        // Re-throw so callers still see the error
+        return Promise.reject(error);
+    });
+}
+// Example: call this once at app startup
+// setupAxiosMessageInterceptor();
+
+
+/***/ }),
+
 /***/ "./ui_src/manage_plan_panel.ts":
 /*!*************************************!*\
   !*** ./ui_src/manage_plan_panel.ts ***!
@@ -6701,6 +6799,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _manage_timelines__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./manage_timelines */ "./ui_src/manage_timelines.ts");
 /* harmony import */ var _manage_visual_image__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./manage_visual_image */ "./ui_src/manage_visual_image.ts");
 /* harmony import */ var _application_application__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./application/application */ "./ui_src/application/application.ts");
+/* harmony import */ var _manage_messages__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./manage_messages */ "./ui_src/manage_messages.ts");
 
 
 
@@ -6712,6 +6811,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+// Set up axios message interceptor to handle status or error messages in api replies.
+(0,_manage_messages__WEBPACK_IMPORTED_MODULE_10__.setupAxiosMessageInterceptor)();
 window.addEventListener('DOMContentLoaded', () => {
     console.log("DOM Loaded zzzz....");
 });

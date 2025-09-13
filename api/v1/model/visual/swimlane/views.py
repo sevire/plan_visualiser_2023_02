@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 from rest_framework.generics import ListAPIView, UpdateAPIView
@@ -29,7 +28,7 @@ class ModelVisualSwimlaneListAPI(ListAPIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualSwimlaneAPI(APIView):
@@ -40,7 +39,7 @@ class ModelVisualSwimlaneAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualSwimlaneUpdateAPI(APIView):
