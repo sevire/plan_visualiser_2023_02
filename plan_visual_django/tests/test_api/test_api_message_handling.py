@@ -4,7 +4,7 @@ Test functionality which adds messages from the session to the DRF response head
 import os
 
 from django.test import TestCase
-from unit_test_configuration import test_data_base_folder, test_fixtures_folder
+from plan_visual_django.tests.resources.unit_test_configuration import test_data_base_folder, test_fixtures_folder
 
 
 class TestApiMessagesToHeader(TestCase):
