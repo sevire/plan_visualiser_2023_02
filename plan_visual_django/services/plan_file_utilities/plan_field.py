@@ -144,8 +144,7 @@ class FileType(Enum):
     EXCEL_MSP_EXPORT_DEFAULT = (
         "Excel - Default MSP Export",
         "excel-01-msp-export-default-01",
-        """Represents mapping of all field names from Microsoft Project export to Excel, using 
-        default field names.
+        """Represents mapping of all field names from Microsoft Project export to Excel, using default field names.
         """
     )
     SMARTSHEET_EXPORT_01 = (
