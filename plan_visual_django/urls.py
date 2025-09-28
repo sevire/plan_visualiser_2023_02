@@ -1,16 +1,7 @@
 from django.urls import path
 from django.views.generic import RedirectView, TemplateView
-
 from plan_visual_django import views
 from plan_visual_django.views import StaticPageView, FileTypeListView
-
-
-
-
-
-
-
-
 
 
 urlpatterns = [

@@ -350,326 +350,422 @@
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 1,
+    "pk": 121,
     "fields": {
       "user": 1,
-      "name": "[01]Red",
-      "red": 240,
-      "green": 65,
-      "blue": 90,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 2,
-    "fields": {
-      "user": 1,
-      "name": "[02]Red-",
-      "red": 215,
-      "green": 51,
-      "blue": 51,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 3,
-    "fields": {
-      "user": 1,
-      "name": "[03]Red--",
-      "red": 173,
-      "green": 51,
-      "blue": 51,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 4,
-    "fields": {
-      "user": 1,
-      "name": "[04]Red+",
-      "red": 255,
-      "green": 116,
-      "blue": 116,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 5,
-    "fields": {
-      "user": 1,
-      "name": "[05]Red++",
-      "red": 251,
-      "green": 188,
-      "blue": 188,
+      "name": "[01]Green-vlight",
+      "red": 218,
+      "green": 242,
+      "blue": 208,
       "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 6,
+    "pk": 122,
     "fields": {
       "user": 1,
-      "name": "[06]Amber",
-      "red": 255,
-      "green": 186,
-      "blue": 0,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 7,
-    "fields": {
-      "user": 1,
-      "name": "[07]Amber-",
-      "red": 236,
-      "green": 173,
-      "blue": 3,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 8,
-    "fields": {
-      "user": 1,
-      "name": "[08]Amber--",
-      "red": 184,
-      "green": 135,
-      "blue": 0,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 9,
-    "fields": {
-      "user": 1,
-      "name": "[09]Amber+",
-      "red": 253,
-      "green": 203,
-      "blue": 67,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 10,
-    "fields": {
-      "user": 1,
-      "name": "[10]Amber++",
-      "red": 251,
-      "green": 222,
-      "blue": 141,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 11,
-    "fields": {
-      "user": 1,
-      "name": "[11]Green",
-      "red": 49,
-      "green": 250,
-      "blue": 0,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 12,
-    "fields": {
-      "user": 1,
-      "name": "[12]Green-",
-      "red": 43,
-      "green": 204,
-      "blue": 0,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 13,
-    "fields": {
-      "user": 1,
-      "name": "[13]Green--",
-      "red": 25,
-      "green": 135,
-      "blue": 2,
-      "alpha": 1.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 14,
-    "fields": {
-      "user": 1,
-      "name": "[14]Green+",
-      "red": 135,
-      "green": 255,
-      "blue": 112,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 15,
-    "fields": {
-      "user": 1,
-      "name": "[15]Green++",
-      "red": 132,
-      "green": 255,
-      "blue": 156,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 16,
-    "fields": {
-      "user": 1,
-      "name": "[16]Blue",
-      "red": 0,
-      "green": 122,
-      "blue": 255,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 17,
-    "fields": {
-      "user": 1,
-      "name": "[17]Blue-",
-      "red": 0,
-      "green": 89,
-      "blue": 184,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 18,
-    "fields": {
-      "user": 1,
-      "name": "[18]Blue--",
-      "red": 0,
-      "green": 74,
-      "blue": 153,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 19,
-    "fields": {
-      "user": 1,
-      "name": "[19]Blue+",
-      "red": 61,
-      "green": 154,
-      "blue": 255,
-      "alpha": 0.0
-    }
-  },
-  {
-    "model": "plan_visual_django.color",
-    "pk": 20,
-    "fields": {
-      "user": 1,
-      "name": "[20]Blue++",
-      "red": 112,
+      "name": "[02]Green-light",
+      "red": 181,
       "green": 230,
-      "blue": 255,
-      "alpha": 0.0
+      "blue": 162,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 21,
+    "pk": 123,
     "fields": {
       "user": 1,
-      "name": "[21]Grey",
-      "red": 186,
-      "green": 186,
-      "blue": 186,
-      "alpha": 0.0
+      "name": "[03]Green",
+      "red": 142,
+      "green": 217,
+      "blue": 115,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 22,
+    "pk": 124,
     "fields": {
       "user": 1,
-      "name": "[22]Grey-",
-      "red": 130,
-      "green": 130,
-      "blue": 130,
-      "alpha": 0.0
+      "name": "[04]Green-dark",
+      "red": 78,
+      "green": 167,
+      "blue": 46,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 23,
+    "pk": 125,
     "fields": {
       "user": 1,
-      "name": "[23]Grey--",
+      "name": "[05]Green-vdark",
+      "red": 60,
+      "green": 125,
+      "blue": 34,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 126,
+    "fields": {
+      "user": 1,
+      "name": "[06]Blue-vlight",
+      "red": 218,
+      "green": 233,
+      "blue": 248,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 127,
+    "fields": {
+      "user": 1,
+      "name": "[07]Blue-light",
+      "red": 166,
+      "green": 201,
+      "blue": 236,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 128,
+    "fields": {
+      "user": 1,
+      "name": "[08]Blue",
       "red": 64,
+      "green": 65,
+      "blue": 66,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 129,
+    "fields": {
+      "user": 1,
+      "name": "[09]Blue-dark",
+      "red": 0,
+      "green": 112,
+      "blue": 192,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 130,
+    "fields": {
+      "user": 1,
+      "name": "[10]Blue-vdark",
+      "red": 21,
+      "green": 61,
+      "blue": 100,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 131,
+    "fields": {
+      "user": 1,
+      "name": "[11]Amber-vlight",
+      "red": 251,
+      "green": 226,
+      "blue": 213,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 132,
+    "fields": {
+      "user": 1,
+      "name": "[12]Amber-light",
+      "red": 247,
+      "green": 199,
+      "blue": 172,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 133,
+    "fields": {
+      "user": 1,
+      "name": "[13]Amber",
+      "red": 241,
+      "green": 169,
+      "blue": 131,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 134,
+    "fields": {
+      "user": 1,
+      "name": "[14]Amber-dark",
+      "red": 99,
+      "green": 100,
+      "blue": 101,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 135,
+    "fields": {
+      "user": 1,
+      "name": "[15]Amber-vdark",
+      "red": 126,
+      "green": 53,
+      "blue": 14,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 136,
+    "fields": {
+      "user": 1,
+      "name": "[16]Red-vlight",
+      "red": 255,
+      "green": 210,
+      "blue": 211,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 137,
+    "fields": {
+      "user": 1,
+      "name": "[17]Red-light",
+      "red": 255,
+      "green": 182,
+      "blue": 184,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 138,
+    "fields": {
+      "user": 1,
+      "name": "[18]Red",
+      "red": 255,
+      "green": 122,
+      "blue": 126,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 139,
+    "fields": {
+      "user": 1,
+      "name": "[19]Red-dark",
+      "red": 223,
       "green": 64,
-      "blue": 64,
-      "alpha": 0.0
+      "blue": 70,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 24,
+    "pk": 140,
     "fields": {
       "user": 1,
-      "name": "[24]Grey+",
-      "red": 214,
-      "green": 214,
-      "blue": 214,
-      "alpha": 0.0
+      "name": "[20]Red-vdark",
+      "red": 189,
+      "green": 38,
+      "blue": 43,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 25,
+    "pk": 141,
     "fields": {
       "user": 1,
-      "name": "[25]Grey++",
-      "red": 235,
-      "green": 234,
-      "blue": 234,
-      "alpha": 0.0
+      "name": "[21]Purple-vlight",
+      "red": 242,
+      "green": 206,
+      "blue": 239,
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 26,
+    "pk": 142,
     "fields": {
       "user": 1,
-      "name": "[00]White",
+      "name": "[22]Purple-light",
+      "red": 228,
+      "green": 158,
+      "blue": 221,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 143,
+    "fields": {
+      "user": 1,
+      "name": "[23]Purple",
+      "red": 216,
+      "green": 109,
+      "blue": 205,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 144,
+    "fields": {
+      "user": 1,
+      "name": "[24]Purple-dark",
+      "red": 160,
+      "green": 43,
+      "blue": 147,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 145,
+    "fields": {
+      "user": 1,
+      "name": "[25]Purple-vdark",
+      "red": 81,
+      "green": 21,
+      "blue": 74,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 146,
+    "fields": {
+      "user": 1,
+      "name": "[26]Yellow-vlight",
+      "red": 255,
+      "green": 255,
+      "blue": 179,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 147,
+    "fields": {
+      "user": 1,
+      "name": "[27]Yellow-light",
+      "red": 255,
+      "green": 255,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 148,
+    "fields": {
+      "user": 1,
+      "name": "[28]Yellow",
+      "red": 243,
+      "green": 243,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 149,
+    "fields": {
+      "user": 1,
+      "name": "[29]Yellow-dark",
+      "red": 226,
+      "green": 226,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 150,
+    "fields": {
+      "user": 1,
+      "name": "[30]Yellow-vdark",
+      "red": 166,
+      "green": 166,
+      "blue": 0,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 151,
+    "fields": {
+      "user": 1,
+      "name": "[31]GrayScale-vlight",
       "red": 255,
       "green": 255,
       "blue": 255,
-      "alpha": 0.0
+      "alpha": 1.0
     }
   },
   {
     "model": "plan_visual_django.color",
-    "pk": 27,
+    "pk": 152,
     "fields": {
       "user": 1,
-      "name": "[00]Black",
+      "name": "[32]GrayScale-light",
+      "red": 242,
+      "green": 242,
+      "blue": 242,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 153,
+    "fields": {
+      "user": 1,
+      "name": "[33]GrayScale",
+      "red": 191,
+      "green": 191,
+      "blue": 191,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 154,
+    "fields": {
+      "user": 1,
+      "name": "[34]GrayScale-dark",
+      "red": 128,
+      "green": 128,
+      "blue": 128,
+      "alpha": 1.0
+    }
+  },
+  {
+    "model": "plan_visual_django.color",
+    "pk": 155,
+    "fields": {
+      "user": 1,
+      "name": "[35]GrayScale-vdark",
       "red": 0,
       "green": 0,
       "blue": 0,
-      "alpha": 0.0
+      "alpha": 1.0
     }
   },
   {
@@ -681,112 +777,224 @@
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 7,
+    "pk": 100,
     "fields": {
       "user": 7,
       "style_name": "app_user_style_01",
-      "fill_color": 1,
-      "line_color": 2,
-      "font_color": 21,
-      "line_thickness": 3,
+      "fill_color": 133,
+      "line_color": 134,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 8,
+    "pk": 101,
     "fields": {
       "user": 7,
       "style_name": "app_user_style_02",
-      "fill_color": 1,
-      "line_color": 2,
-      "font_color": 21,
-      "line_thickness": 3,
+      "fill_color": 133,
+      "line_color": 134,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 1,
+    "pk": 102,
     "fields": {
       "user": 1,
-      "style_name": "[01]Milestone Default 1",
-      "fill_color": 1,
-      "line_color": 2,
-      "font_color": 21,
-      "line_thickness": 3,
+      "style_name": "THEME-01-Activity-1",
+      "fill_color": 133,
+      "line_color": 134,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 2,
+    "pk": 103,
     "fields": {
       "user": 1,
-      "style_name": "[02]Milestone Default 2",
-      "fill_color": 16,
-      "line_color": 17,
-      "font_color": 21,
-      "line_thickness": 3,
+      "style_name": "THEME-01-Activity-2",
+      "fill_color": 134,
+      "line_color": 135,
+      "font_color": 134,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 3,
+    "pk": 104,
     "fields": {
       "user": 1,
-      "style_name": "[03]Activity Default 1",
-      "fill_color": 6,
-      "line_color": 7,
-      "font_color": 21,
-      "line_thickness": 3,
+      "style_name": "THEME-01-Activity-3",
+      "fill_color": 128,
+      "line_color": 129,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 4,
+    "pk": 105,
     "fields": {
       "user": 1,
-      "style_name": "[04]Activity Default 2",
-      "fill_color": 11,
-      "line_color": 12,
-      "font_color": 21,
-      "line_thickness": 3,
-      "font": 1,
-      "font_size": 15
-    }
-  },
-  {
-    "model": "plan_visual_django.plotablestyle",
-    "pk": 5,
-    "fields": {
-      "user": 1,
-      "style_name": "[05]Swimlane-odd Default 1",
-      "fill_color": 25,
-      "line_color": 25,
-      "font_color": 23,
-      "line_thickness": 3,
+      "style_name": "THEME-01-Milestone-1",
+      "fill_color": 128,
+      "line_color": 128,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
   },
   {
     "model": "plan_visual_django.plotablestyle",
-    "pk": 6,
+    "pk": 106,
     "fields": {
       "user": 1,
-      "style_name": "[06]Swimlane-even Default 1",
-      "fill_color": 24,
-      "line_color": 24,
-      "font_color": 23,
-      "line_thickness": 3,
+      "style_name": "THEME-01-Milestone-2",
+      "fill_color": 139,
+      "line_color": 139,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 107,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-Milestone-3",
+      "fill_color": 134,
+      "line_color": 134,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 108,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-SwimlaneEven-1",
+      "fill_color": 151,
+      "line_color": 152,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 109,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-SwimlaneEven-2",
+      "fill_color": 126,
+      "line_color": 127,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 110,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-SwimlaneOdd-1",
+      "fill_color": 152,
+      "line_color": 153,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 111,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-SwimlaneOdd-2",
+      "fill_color": 127,
+      "line_color": 128,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 112,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-TimelineLabelEven-1",
+      "fill_color": 128,
+      "line_color": 128,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 113,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-TimelineLabelEven-2",
+      "fill_color": 123,
+      "line_color": 123,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 114,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-TimelineLabelOdd-1",
+      "fill_color": 127,
+      "line_color": 127,
+      "font_color": 155,
+      "line_thickness": 1,
+      "font": 1,
+      "font_size": 10
+    }
+  },
+  {
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 115,
+    "fields": {
+      "user": 1,
+      "style_name": "THEME-01-TimelineLabelOdd-2",
+      "fill_color": 122,
+      "line_color": 122,
+      "font_color": 155,
+      "line_thickness": 1,
       "font": 1,
       "font_size": 10
     }
@@ -808,10 +1016,10 @@
       "timeline_to_swimlane_gap": 0,
       "default_milestone_shape": 2,
       "default_activity_shape": 1,
-      "default_activity_plotable_style": 3,
-      "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5,
-      "default_timeline_plotable_style_odd": 6
+      "default_activity_plotable_style": 102,
+      "default_milestone_plotable_style": 103,
+      "default_swimlane_plotable_style": 104,
+      "default_timeline_plotable_style_odd": 105
     }
   },
   {
@@ -831,10 +1039,10 @@
       "swimlane_gap": 5.0,
       "default_milestone_shape": 2,
       "default_activity_shape": 1,
-      "default_activity_plotable_style": 3,
-      "default_milestone_plotable_style": 1,
-      "default_swimlane_plotable_style": 5,
-      "default_timeline_plotable_style_odd": 6
+      "default_activity_plotable_style": 102,
+      "default_milestone_plotable_style": 103,
+      "default_swimlane_plotable_style": 104,
+      "default_timeline_plotable_style_odd": 105
     }
   },
   {
@@ -843,7 +1051,7 @@
     "fields": {
       "plan_visual": 4,
       "swim_lane_name": "Visual 01:01, Swimlane 1",
-      "plotable_style": 5,
+      "plotable_style": 103,
       "sequence_number": 1
     }
   },
@@ -853,7 +1061,7 @@
     "fields": {
       "plan_visual": 4,
       "swim_lane_name": "Visual 01:01, Swimlane 2",
-      "plotable_style": 5,
+      "plotable_style": 103,
       "sequence_number": 2
     }
   },
@@ -863,7 +1071,7 @@
     "fields": {
       "plan_visual": 4,
       "swim_lane_name": "Visual 01:01, Swimlane 3 (dummy, no activities)",
-      "plotable_style": 5,
+      "plotable_style": 103,
       "sequence_number": 3
     }
   },
@@ -873,7 +1081,7 @@
     "fields": {
       "plan_visual": 1,
       "swim_lane_name": "Visual 01:02, Swimlane 1",
-      "plotable_style": 5,
+      "plotable_style": 102,
       "sequence_number": 2
     }
   },
@@ -885,7 +1093,8 @@
       "timeline_type":"MONTHS",
       "timeline_name": "Timeline 1",
       "timeline_height": 25,
-      "plotable_style_odd": 5,
+      "plotable_style_odd": 103,
+      "plotable_style_even": 103,
       "sequence_number": 1,
       "enabled": true
     }
@@ -898,7 +1107,8 @@
       "timeline_type":"QUARTERS",
       "timeline_name": "Timeline 2",
       "timeline_height": 15,
-      "plotable_style_odd": 5,
+      "plotable_style_odd": 103,
+      "plotable_style_even": 103,
       "sequence_number": 2,
       "enabled": true
     }
@@ -917,7 +1127,7 @@
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",
-      "plotable_style": 4
+      "plotable_style": 105
     }
   },
   {
@@ -934,7 +1144,7 @@
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",
-      "plotable_style": 4
+      "plotable_style": 104
     }
   },
   {
@@ -951,7 +1161,7 @@
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",
-      "plotable_style": 4
+      "plotable_style": 104
     }
   },
   {
@@ -968,7 +1178,7 @@
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",
-      "plotable_style": 4
+      "plotable_style": 104
     }
   },
   {
@@ -985,7 +1195,7 @@
       "text_horizontal_alignment":  "LEFT",
       "text_vertical_alignment": "MIDDLE",
       "text_flow": "LFLOW",
-      "plotable_style": 4
+      "plotable_style": 104
     }
   }
 ]

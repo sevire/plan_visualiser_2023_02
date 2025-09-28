@@ -46,6 +46,8 @@ echo "
 =================================================================
 "
 python manage.py add_common_data
+devops/scripts/add_shared_colours.sh
+devops/scripts/add_shared_styles.sh
 
 echo "
 =================================================================

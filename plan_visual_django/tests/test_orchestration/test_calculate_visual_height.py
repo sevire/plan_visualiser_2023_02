@@ -146,7 +146,7 @@ class TestCalculateVisualHeight(TestCase):
         # Now add some sub-components
 
         # First add three swimlanes
-        style_to_use = PlotableStyle.objects.get(pk=7)  # Corresponds to test fixtures
+        style_to_use = PlotableStyle.objects.get(pk=102)  # Corresponds to test fixtures
         visual.add_swimlanes_to_visual(style_to_use, *swimlanes)
 
         # Add visual activities

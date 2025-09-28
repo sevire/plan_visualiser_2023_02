@@ -70,25 +70,25 @@ class TestVisualOrchestration(TestCase):
         expected_value_field_names=("text", "x", "y", "text_align", "text_baseline", "fill_color"),
         test_data=[
             # visual_id, objects_to_check, seq_or_activity_name, item_sequ_num, approx_flag, text, x, y, text_align, text_baseline
-            (4, "timelines", 2, True, "Jul-23", (31*1000/275)/2, 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 4, True, "Aug-23", ((31+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 6, True, "Sep-23", ((31+31+(30/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 8, True, "Oct-23", ((31+31+30+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 10, True, "Nov-23", ((31+31+30+31+(30/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 12, True, "Dec-23", ((31+31+30+31+30+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 14, True, "Jan-24", ((31+31+30+31+30+31+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 16, True, "Feb-24", ((31+31+30+31+30+31+31+(29/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 18, True, "Mar-24", ((31+31+30+31+30+31+31+29+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 20, True, "Jul-23 - Sep-23", (((31+31+30)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 22, True, "Oct-23 - Dec-23", (((31+31+30)+(31+30+31)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(64,64,64)"),
-            (4, "timelines", 24, True, "Jan-24 - Mar-24", (((31+31+30+31+30+31)+(31+29+31)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(64,64,64)"),
+            (4, "timelines", 2, True, "Jul-23", (31*1000/275)/2, 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 4, True, "Aug-23", ((31+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 6, True, "Sep-23", ((31+31+(30/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 8, True, "Oct-23", ((31+31+30+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 10, True, "Nov-23", ((31+31+30+31+(30/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 12, True, "Dec-23", ((31+31+30+31+30+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 14, True, "Jan-24", ((31+31+30+31+30+31+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 16, True, "Feb-24", ((31+31+30+31+30+31+31+(29/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 18, True, "Mar-24", ((31+31+30+31+30+31+31+29+(31/2))*1000/275), 0+25/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 20, True, "Jul-23 - Sep-23", (((31+31+30)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 22, True, "Oct-23 - Dec-23", (((31+31+30)+(31+30+31)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(99,100,101)"),
+            (4, "timelines", 24, True, "Jan-24 - Mar-24", (((31+31+30+31+30+31)+(31+29+31)/2)*1000/275), 0+25+15/2, "center", "middle", "rgb(99,100,101)"),
 
-            (4, "swimlanes", 2, True, "Visual 01:01, Swimlane 1", 5, 25+15, "left", "top", "rgb(64,64,64)"),
-            (4, "swimlanes", 4, True, "Visual 01:01, Swimlane 2", 5, 25+15+5*20+4*4+5, "left", "top", "rgb(64,64,64)"),
+            (4, "swimlanes", 2, True, "Visual 01:01, Swimlane 1", 5, 25+15, "left", "top", "rgb(99,100,101)"),
+            (4, "swimlanes", 4, True, "Visual 01:01, Swimlane 2", 5, 25+15+5*20+4*4+5, "left", "top", "rgb(99,100,101)"),
 
-            (4, "visual_activities", 2, True, "Project Start", (31+31+.5)*(1000/275)-5-5, 25+15+4*20+4*4+0.5*20, "right", "middle", "rgb(186,186,186)"), # 2023-09-01, milestone, LFLOW
-            (4, "visual_activities", 4, True, "Milestone 6", (31+31+30+31+30+31+30+0.5)*1000/275-5-5,  40 + 5*20+4*4 + 5 + 20/2, "right", "middle", "rgb(186,186,186)"),
-            (4, "visual_activities", 6, True, "Activity 24", (31+31+30+31+30+31+31)*1000/275-5, 25+15+5*20+4*4+5+9*20+9*4+(20+20+4)/2, "right", "middle", "rgb(186,186,186)"),
+            (4, "visual_activities", 2, True, "Project Start", (31+31+.5)*(1000/275)-5-5, 25+15+4*20+4*4+0.5*20, "right", "middle", "rgb(0,0,0)"), # 2023-09-01, milestone, LFLOW
+            (4, "visual_activities", 4, True, "Milestone 6", (31+31+30+31+30+31+30+0.5)*1000/275-5-5,  40 + 5*20+4*4 + 5 + 20/2, "right", "middle", "rgb(0,0,0)"),
+            (4, "visual_activities", 6, True, "Activity 24", (31+31+30+31+30+31+31)*1000/275-5, 25+15+5*20+4*4+5+9*20+9*4+(20+20+4)/2, "right", "middle", "rgb(0,0,0)"),
         ],
     ))
     @unpack

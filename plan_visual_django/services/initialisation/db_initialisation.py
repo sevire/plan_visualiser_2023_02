@@ -26,29 +26,9 @@ UserModel = get_user_model()
 #        before the record which references them.
 initial_data_driver = [
     {
-        "dumpdata_filename": 'standard_colors.json',
-        "model": Color,
-        "field_name_for_messages": "name",
-        "foreign_keys": [
-            "user",
-        ]
-    },
-    {
         "dumpdata_filename": 'fonts.json',
         "model": Font,
         "field_name_for_messages": "font_name",
-    },
-    {
-        "dumpdata_filename": 'standard_styles.json',
-        "model": PlotableStyle,
-        "field_name_for_messages": "style_name",
-        "foreign_keys": [
-            "user",
-            "fill_color",
-            "line_color",
-            "font_color",
-            "font"
-        ]
     },
     {
         "dumpdata_filename": 'static_content.json',
@@ -59,10 +39,10 @@ initial_data_driver = [
 
 # The data for each initial user is stored in a set of environment variables, the names of which follow a set schema:
 initial_users_config = [
-    # Name of env variable, superuser flag, user index
-    ("SHARED_USER", False, 1),
-    ("ADMIN", True, 2),
-    ("APP_USER_1", False, 3),
+    # Name of env variable, superuser flag, user index, return as user for other common data records
+    ("SHARED_USER", False, 1, True),
+    ("ADMIN", True, 2, False),
+    ("APP_USER_1", False, 3, False),
 ]
 
 
@@ -176,7 +156,13 @@ def set_initial_user_data(initial_users_config_data):
 
     # Work out names of environment variables to read.
     user_data = []
-    for user, superuser_flag, user_index in initial_users_config_data:
+
+    # Confirm that only one initial user record has return flag set to true.
+    record_with_return_flag_set = [user for user in initial_users_config_data if user[3] is True]
+    if len(record_with_return_flag_set) > 1:
+        raise ValueError(f"More than one initial user record has return flag set to true, only one allowed")
+
+    for user, superuser_flag, user_index, return_flag in initial_users_config_data:
         username_env_name = f"{user}_NAME"
         password_env_name = f"{user}_PASSWORD"
         email_domain_env_name = "INITIAL_USER_EMAIL_DOMAIN"
@@ -195,7 +181,8 @@ def set_initial_user_data(initial_users_config_data):
             'password': password,
             'email': f"{username}@{email_domain}",
             'superuser_flag': superuser_flag,
-            'id': user_index
+            'id': user_index,
+            'return_flag': return_flag,
         }
         user_data.append(user_record)
 
@@ -244,7 +231,10 @@ def create_initial_users(user_data, delete=False):
                     function = UserModel.objects.create_user
 
                 # Remove superuser flag and return flag from user_data as it's not a recognised keyword and we are using it as kwargs.
+                return_flag = user['return_flag']
+
                 del user['superuser_flag']
+                del user['return_flag']
 
                 print_status_partial(f"Calling {function.__name__}: {user}")
 
@@ -252,7 +242,9 @@ def create_initial_users(user_data, delete=False):
                 # (will also be used when authenticating)
                 new_user = function(**user)
                 print_status_partial(f"User ({new_user}) created")
-                user_to_return = new_user
+
+                if return_flag is True:
+                    user_to_return = new_user
         else:
             # User exists, so we want to check whether the password is set to the configured value, an if not
             # change it to that value.

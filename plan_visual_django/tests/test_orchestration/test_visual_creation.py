@@ -17,14 +17,14 @@ class TestVisualCreation(TestCase):
 
     def test_visual_plotting_no_activities(self):
         plan = Plan.objects.get(pk=2)
-        color_to_use = Color.objects.get(pk=1)
+        color_to_use = Color.objects.get(pk=121)
         user_to_use = plan.user
 
         create_default_styles_for_tests(color_to_use, user_to_use)
         visual = PlanVisual.objects.create_with_defaults(plan=plan)
 
         # Add default swimlanes and timelines
-        style_for_swimlane = PlotableStyle.objects.get(pk=7)
+        style_for_swimlane = PlotableStyle.objects.get(pk=102)
         visual.add_swimlanes_to_visual(
             style_for_swimlane,
             "Swimlane 1", "Swimlane 2", "Swimlane 3"

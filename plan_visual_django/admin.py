@@ -53,28 +53,39 @@ class FontAdmin(admin.ModelAdmin):
 
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
-    list_display = ['user', 'style_name', 'fill_color_preview', 'line_color_preview', 'font_color_preview']
+    list_display = ['user', 'style_name', 'style_preview']
 
-    def color_preview(self, color):
+    def style_preview(self, obj):
         """
-        Helper method to render a color preview box for a given Color instance.
+        Render a rectangle preview styled from the PlotableStyle:
+        - background = fill_color
+        - border color/thickness = line_color / line_thickness
+        - text color = font_color
+        - font family and size from style
         """
-        return format_html(
-            '<div style="width: 36px; height: 18px; background-color: rgb({}, {}, {});"></div>',
-            color.red, color.green, color.blue
-        )
+        try:
+            bg = f"rgb({obj.fill_color.red}, {obj.fill_color.green}, {obj.fill_color.blue})"
+            border = f"{obj.line_thickness}px solid rgb({obj.line_color.red}, {obj.line_color.green}, {obj.line_color.blue})"
+            fg = f"rgb({obj.font_color.red}, {obj.font_color.green}, {obj.font_color.blue})"
+            text = "Sample text"
+            # Rectangle dimensions can be tuned to taste
+            return format_html(
+                '<div style="display:inline-block; width: 220px; height: 22px; line-height: 22px; '
+                'background: {}; border: {}; color: {}; text-align: center; '
+                'font-family: {}; font-size: {}px; border-radius: 4px; overflow: hidden;">'
+                '{}</div>',
+                bg,
+                border,
+                fg,
+                obj.font.font_name,
+                obj.font_size,
+                text,
+            )
+        except Exception:
+            # Fall back to a simple dash if any attribute is missing
+            return "-"
 
-    def fill_color_preview(self, obj):
-        return self.color_preview(obj.fill_color)
-    fill_color_preview.short_description = 'Fill Color'
-
-    def line_color_preview(self, obj):
-        return self.color_preview(obj.line_color)
-    line_color_preview.short_description = 'Line Color'
-
-    def font_color_preview(self, obj):
-        return self.color_preview(obj.font_color)
-    font_color_preview.short_description = 'Font Color'
+    style_preview.short_description = "Preview"
 
 
 @admin.register(PlanVisual)
