@@ -5,7 +5,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.managers import PlotableStyleManager, PlanVisualManager
-from plan_visual_django.services.general.date_utilities import DatePlotter
+from plan_visual_django.services.general.date_utilities import DatePlotter, format_date_for_visual_activity
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
@@ -235,6 +235,8 @@ class PlanVisual(models.Model):
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
     timeline_gap = models.FloatField(default=5)
+    milestone_date_toggle = models.BooleanField(default=False)
+    activity_date_toggle = models.BooleanField(default=False)
     timeline_to_swimlane_gap = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
     default_milestone_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
@@ -976,15 +978,24 @@ class   VisualActivity(models.Model):
             self.visual.width
         )
         plan_activity = self.get_plan_activity()
+        plan_activity_text_flow = self.get_text_flow()
 
         if plan_activity.milestone_flag is True:
             # This is a milestone, so we plot in the middle of the day to the specified width for a milestone.
             left = date_plotter.midpoint(plan_activity.start_date) - self.visual.milestone_width / 2
             width = self.visual.milestone_width
+            date_toggle = self.visual.milestone_date_toggle
         else:
             left = date_plotter.left(plan_activity.start_date)
             width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
+            date_toggle = self.visual.activity_date_toggle
 
+        plan_activity_name = format_date_for_visual_activity(
+            self.get_plan_activity().activity_name,
+            date_toggle,
+            plan_activity_text_flow.value,
+            plan_activity.end_date
+        )
         plotable = get_plotable(
             plotable_id="activity-"+self.unique_id_from_plan,
             plotable_shape_name=PlotableShapeName.get_by_value(self.plotable_shape),
@@ -994,8 +1005,8 @@ class   VisualActivity(models.Model):
             height=activity_height,
             format=self.plotable_style,
             text_vertical_alignment=self.get_vertical_alignment(),
-            text_flow=self.get_text_flow(),
-            text=self.get_plan_activity().activity_name,
+            text_flow=plan_activity_text_flow,
+            text=plan_activity_name,
             external_text_flag=True if self.get_plan_activity().milestone_flag else False
         )
 

@@ -91,6 +91,27 @@ def is_nan(value: str):
     return ret_value
 
 
+def format_date_for_visual_activity(activity_name: str, date_toggle: bool, text_flow_value:str, date: date):
+    """
+    Checks date_toggle and text_flow and if toggle set adds date to beginning or end of text
+    depending upon value of text_flow.
+
+    To begin with hard code format to be DD-MM-YYYY.
+    # ToDo: Make date format configurable for date added to activities in visual.
+    :return:
+    """
+    if date_toggle:
+        formatted_date = date.strftime("%d-%m-%Y")
+        if text_flow_value == "LFLOW":
+            ret_value = f"{activity_name} [{formatted_date}]"
+        else:
+            ret_value = f"[{formatted_date}] {activity_name}"
+    else:
+        ret_value = activity_name
+
+    return ret_value
+
+
 class DateIncrementUnit(Enum):
     DAY = "Day"
     WEEK = "Week"

@@ -22,6 +22,9 @@ class VisualSettings:
         self.milestone_width = self.visual.milestone_width
         self.swimlane_gap: float = self.visual.swimlane_gap
 
+        self.milestone_date_toggle = self.visual.milestone_date_toggle
+        self.activity_date_toggle = self.visual.activity_date_toggle
+
         self.default_milestone_shape = self.visual.default_milestone_shape
         self.default_activity_shape = self.visual.default_activity_shape
         self.default_activity_plotable_style = self.visual.default_activity_plotable_style
@@ -74,6 +77,8 @@ class VisualSettings:
         set_default("timeline_gap", lambda: 5)
         set_default("timeline_to_swimlane_gap", lambda: 10)
         set_default("swimlane_gap", lambda: 5)
+        set_default("milestone_date_toggle", lambda: False)
+        set_default("activity_date_toggle", lambda: False)
         set_default("default_activity_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-Activity-1"))
         set_default("default_milestone_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-Milestone-1"))
         set_default("default_swimlane_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-SwimlaneOdd-1"))
