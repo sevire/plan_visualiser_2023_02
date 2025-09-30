@@ -19,12 +19,12 @@ from plan_visual_django.forms import PlanForm, VisualFormForAdd, VisualFormForEd
 from plan_visual_django.models import Plan, PlanVisual, SwimlaneForVisual, PlotableStyle, TimelineForVisual, Color, \
     StaticContent, HelpText
 from plan_visual_django.services.general.color_utilities import ColorLib
-from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes
+from plan_visual_django.services.plan_file_utilities.plan_field import FileTypes, FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import read_and_parse_plan
 from plan_visual_django.services.plan_file_utilities.plan_reader import ExcelXLSFileReader
 from plan_visual_django.services.auth.user_services import get_current_user, \
     CurrentUser
-from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
+from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
 import logging
 from django.shortcuts import render, redirect
@@ -208,7 +208,15 @@ def re_upload_plan(request, pk):
     else:
         raise Exception("Unrecognised METHOD {request['METHOD']}")
 
-def add_visual(request, plan_id):
+def add_default_visual(request, plan_id):
+    return add_visual(request, plan_id, default=True)
+
+def add_auto_visual(request, plan_id):
+    return add_visual(request, plan_id, auto=True)
+
+def add_visual(request, plan_id, default=False, auto=False):
+    # Add one blank visual and one auto layout visual
+    # Temp while testing auto_layout
     current_user = CurrentUser(request)
 
     # Check if the plan exists and user has access
@@ -220,7 +228,47 @@ def add_visual(request, plan_id):
         messages.error(request, "Plan does not exist.")
         return HttpResponseRedirect(reverse("manage-plans"))
 
-    if request.method == "POST":
+    if request.method == "GET":
+        if default is True:
+            default_visual: PlanVisual = PlanVisual.objects.create_with_defaults(plan=plan)
+
+            # Add default swimlanes and timelines
+            style_for_swimlane = default_visual.default_swimlane_plotable_style
+            default_visual.add_swimlanes_to_visual(
+                style_for_swimlane,
+                "Swimlane 1", "Swimlane 2", "Swimlane 3"
+            )
+            TimelineForVisual.create_all_default_timelines(default_visual)
+
+            messages.success(request, "New default visual for plan saved successfully.")
+
+            return HttpResponseRedirect(reverse("plot-visual-new-25", args=[default_visual.id]))
+        elif auto is True:
+            # TEMP: Now add an auto layout visual - to test full layout algorithm
+            auto_visual: PlanVisual = VisualLayoutManager.create_full_visual(plan)
+
+            # Add default timelines
+            TimelineForVisual.create_all_default_timelines(visual=auto_visual)
+            messages.success(request, "Auto-layout visual for plan saved successfully.")
+
+            # Redirect to visuals management
+            return HttpResponseRedirect(reverse("plot-visual-new-25", args=[auto_visual.id]))
+        else:
+            # Not default or auto so Display the form for adding a visual
+            form = VisualFormForAdd(plan=plan, user=current_user.user)
+            help_text = HelpText.get_help_text("add-edit-visual")
+            return render(
+                request=request,
+                template_name="plan_visual_django/pv_add_edit_visual.html",
+                context={
+                    "primary_heading": "Add Visual for Plan",
+                    "secondary_heading": plan.file_name,
+                    "help_text": help_text,
+                    "add_or_edit": "Add",
+                    "form": form,
+                }
+            )
+    elif request.method == "POST":
         visual_form = VisualFormForAdd(data=request.POST, files=request.FILES)
         if visual_form.is_valid():
             try:
@@ -287,23 +335,6 @@ def add_visual(request, plan_id):
                 "form": visual_form,
             }
         )
-
-    elif request.method == "GET":
-        # Display the form for adding a visual
-        form = VisualFormForAdd(plan=plan, user=current_user.user)
-        help_text = HelpText.get_help_text("add-edit-visual")
-        return render(
-            request=request,
-            template_name="plan_visual_django/pv_add_edit_visual.html",
-            context={
-                "primary_heading": "Add Visual for Plan",
-                "secondary_heading": plan.file_name,
-                "help_text": help_text,
-                "add_or_edit": "Add",
-                "form": form,
-            }
-        )
-
     else:
         raise Exception(f"Unrecognized METHOD: {request.method}")
 
@@ -320,13 +351,15 @@ def edit_visual(request, visual_id):
         plan = Plan.objects.get(id=plan_id)
 
         if request.method == "POST":
-            visual_form = VisualFormForEdit(data=request.POST, files=request.FILES, instance=instance)
+            visual_form = VisualFormForEdit(user=current_user.user, data=request.POST, files=request.FILES, instance=instance)
             if visual_form.is_valid():
                 # Save fields from form but don't commit so can modify other fields before comitting.
                 visual_record = visual_form.save()
                 messages.success(request, "Visual updated successfully")
+            else:
+                messages.error(request, "The provided data was invalid. Please correct the errors and try again.")
 
-            return HttpResponseRedirect(reverse('manage-visuals', args=[plan_id]))
+            return HttpResponseRedirect(reverse('plot-visual-new-25', args=[visual_id]))
         elif request.method == "GET":
             form = VisualFormForEdit(instance=instance, user=current_user.user)
             context = {
@@ -346,6 +379,12 @@ def manage_plans(request):
     # ToDo: Clean this up as some redundancy - user is worked out here and in get_user_plans()
     current_user = CurrentUser(request)
     plan_files = current_user.get_user_plans()
+
+    # We need to add in the title of the plan file type to display in the table
+    # Add to each Plan record the title of the plan file type
+    for plan_file in plan_files:
+        plan_file.file_type_title = FileType.from_name(plan_file.file_type_name).title
+
     help_text = HelpText.get_help_text("manage-plans")
     context = {
         'help_text': help_text,
@@ -443,7 +482,7 @@ def manage_visuals(request, plan_id):
             'visuals': visuals,
             'plan_summary_data_display': plan_summary_data_display
         }
-        return render(request, "plan_visual_django/pv_manage_visuals.html", context)
+        return render(request, "plan_visual_django/pv_manage_visuals_new_25.html", context)
 
 
 @login_required
@@ -612,7 +651,7 @@ def create_milestone_swimlane(request, visual_id):
         return HttpResponseRedirect(reverse('manage-plans'))
     visual = PlanVisual.objects.get(id=visual_id)
     visual_settings = VisualSettings(visual_id=visual.id)
-    auto_layout_manager = VisualAutoLayoutManager(visual_id_for_plan=visual_id)
+    auto_layout_manager = VisualLayoutManager(visual_id_for_plan=visual_id)
 
     swimlane_plotable_style = visual_settings.default_swimlane_plotable_style
     milestone_plotable_style = visual_settings.default_milestone_plotable_style
@@ -658,6 +697,37 @@ def plot_visual(request, visual_id):
         'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
     }
     return render(request, "plan_visual_django/planvisual_detail.html", context)
+
+
+@login_required
+def plot_visual_new_25(request, visual_id):
+    """
+    Screen for full dynamic editing of a visual for a given plan.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    current_user = CurrentUser(request)
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    if not current_user.has_access_to_object(visual):
+        messages.error(request, "Visual does not exist or you do not have access")
+        return HttpResponseForbidden("You do not have permission to edit this activity.")
+
+    visual = PlanVisual.objects.get(id=visual_id)
+
+    plan_name = visual.plan.plan_name
+    visual_name = visual.name
+
+    context = {
+        'help_text': HelpText.get_help_text("plot-visual"),
+        'primary_heading': f"Plan <small class='fst-italic text-body-secondary'>{plan_name}</small>",
+        'secondary_heading': f"Visual <small class='fst-italic text-body-secondary'>{visual_name}</small>",
+        'visual': visual,
+        'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
+    }
+    return render(request, "plan_visual_django/visual_main_ui_25.html", context)
 
 
 @login_required
@@ -760,7 +830,7 @@ def swimlane_actions(request, visual_id):
             swimlane = swimlane_form.cleaned_data['swimlane']
         else:
             raise ValueError(f"Unable to read swimlane from form")
-        auto_layout_manager = VisualAutoLayoutManager(visual_id)
+        auto_layout_manager = VisualLayoutManager(visual_id)
 
         # Extract level from POST
         level_post_entry = [entry for entry in request.POST if

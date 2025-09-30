@@ -144,8 +144,7 @@ class FileType(Enum):
     EXCEL_MSP_EXPORT_DEFAULT = (
         "Excel - Default MSP Export",
         "excel-01-msp-export-default-01",
-        """Represents mapping of all field names from Microsoft Project export to Excel, using 
-        default field names.
+        """Represents mapping of all field names from Microsoft Project export to Excel, using default field names.
         """
     )
     SMARTSHEET_EXPORT_01 = (
@@ -173,7 +172,7 @@ class FileType(Enum):
         Returns all members of the enum in a format that can be used in a Django model choices field.
         :return:
         """
-        return [(member.file_type_name, member.description) for member in cls]
+        return [(member.file_type_name, member.title) for member in cls]
 
 
 @dataclass

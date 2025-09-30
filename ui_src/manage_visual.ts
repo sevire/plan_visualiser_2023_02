@@ -5,6 +5,7 @@
 
 import {
   add_activity_to_visual,
+  add_sub_activities_to_visual,
   get_plan_activity_data,
   get_visual_activity_data, get_visual_settings,
   remove_activity_from_visual,
@@ -16,6 +17,37 @@ import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
 import {clearElement, createDropdown, populateDropdown} from "./widgets";
+
+function add_add_sub_activities_event_handler(plan_tree_root: Element) {
+  // Add event handler to icon button for adding all sub-activities of the currently selected
+  // activity.
+  const add_sub_activities_button = document.getElementById("add-subtask-button")
+  add_sub_activities_button?.addEventListener('click', async function() {
+    // Get id of the currently selected plan activity and use api to add all direct sub-activities for that activity.
+    const selected = plan_tree_root.getElementsByClassName('current')
+    if (selected.length != 1) {
+      console.log(`Error: add-subtask-button clicked but unique activity not selected ${selected}`)
+    } else {
+      const visual_id = (window as any).visual_id
+      const swimlane_seq_num = (window as any).default_swimlane_seq_num
+      const unique_id = selected[0].id
+      console.log(`About to add sub-activities for visual_id ${visual_id}, unique_id ${unique_id}, swimlane, ${swimlane_seq_num}`)
+
+      await add_sub_activities_to_visual(visual_id, unique_id, swimlane_seq_num)
+
+      // Now flag all the sub activity elements as in the visual in the UI
+      const planTreeManager = (window as any).App.getPlanTreeManager();
+      planTreeManager.setSubActivitiesInVisual(selected[0])
+
+      await get_plan_activity_data(visual_id)
+      await get_visual_activity_data(visual_id)
+      const response = await get_visual_settings((window as any).visual_id);
+      (window as any).visual_settings = response.data
+
+      plot_visual()
+    }
+  })
+}
 
 export async function createPlanTree() {
   // We are going to create a tree of elements to represent the hierarchical plan structure.  We will iterate through
@@ -32,6 +64,10 @@ export async function createPlanTree() {
   // We assume that the level for the first activity will be the lowest in the plan.
   const level_adjust = 1 - (window as any).plan_activity_data[0].plan_data.level
   let previousLevel = 1;
+
+  // Before building the plan activity tree, add the event handler for plan activity buttons, such as
+  // button to add sub-activities for current activity.
+  add_add_sub_activities_event_handler(topLevelElements[0])
 
   // We are going to store the element we use to represent the first activity in the plan as we are going to return it
   // so it can be used as the current selected element once the page has been built.
@@ -125,8 +161,8 @@ export async function createPlanTree() {
   return [topLevelElements[0], initial_selected_activity_div];
 }
 
-async function add_to_visual(activity_id: string) {
-  await add_activity_to_visual((window as any).visual_id, activity_id)
+async function add_to_visual(activity_id: string, swimlane_seq_number:number) {
+  await add_activity_to_visual((window as any).visual_id, activity_id, swimlane_seq_number)
   console.log("Added activity to visual: " + activity_id);
   const activity = get_plan_activity(activity_id)
   activity.enabled = true;
@@ -482,7 +518,7 @@ async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivEle
     const inVisual = activityDiv.classList.toggle('in-visual')
     if (inVisual) {
       // Means we have just toggled it to in so need to add it
-      await add_to_visual(activity.plan_data.unique_sticky_activity_id)
+      await add_to_visual(activity.plan_data.unique_sticky_activity_id, (window as any).default_swimlane_seq_num)
       await get_visual_activity_data((window as any).visual_id)  // Refresh data from server before replotting
       await get_plan_activity_data((window as any).visual_id)  // Refresh data from server before replotting
 

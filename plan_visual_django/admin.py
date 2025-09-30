@@ -53,7 +53,39 @@ class FontAdmin(admin.ModelAdmin):
 
 @admin.register(PlotableStyle)
 class PlotableStyleAdmin(admin.ModelAdmin):
-    list_display = ['user', 'style_name']
+    list_display = ['user', 'style_name', 'style_preview']
+
+    def style_preview(self, obj):
+        """
+        Render a rectangle preview styled from the PlotableStyle:
+        - background = fill_color
+        - border color/thickness = line_color / line_thickness
+        - text color = font_color
+        - font family and size from style
+        """
+        try:
+            bg = f"rgb({obj.fill_color.red}, {obj.fill_color.green}, {obj.fill_color.blue})"
+            border = f"{obj.line_thickness}px solid rgb({obj.line_color.red}, {obj.line_color.green}, {obj.line_color.blue})"
+            fg = f"rgb({obj.font_color.red}, {obj.font_color.green}, {obj.font_color.blue})"
+            text = "Sample text"
+            # Rectangle dimensions can be tuned to taste
+            return format_html(
+                '<div style="display:inline-block; width: 220px; height: 22px; line-height: 22px; '
+                'background: {}; border: {}; color: {}; text-align: center; '
+                'font-family: {}; font-size: {}px; border-radius: 4px; overflow: hidden;">'
+                '{}</div>',
+                bg,
+                border,
+                fg,
+                obj.font.font_name,
+                obj.font_size,
+                text,
+            )
+        except Exception:
+            # Fall back to a simple dash if any attribute is missing
+            return "-"
+
+    style_preview.short_description = "Preview"
 
 
 @admin.register(PlanVisual)
@@ -99,4 +131,3 @@ class HelpTextAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title', 'updated_at')
     search_fields = ('slug', 'title', 'content')
     prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
-

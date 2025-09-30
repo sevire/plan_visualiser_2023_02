@@ -30,12 +30,20 @@ class TestApiPlotableStyles(TestCase):
         self.client.force_login(user=user)
 
         expected_plotable_styles = [
-            "[01]Milestone Default 1",
-            "[02]Milestone Default 2",
-            "[03]Activity Default 1",
-            "[04]Activity Default 2",
-            "[05]Swimlane-odd Default 1",
-            "[06]Swimlane-even Default 1",
+            "THEME-01-Activity-1",
+            "THEME-01-Activity-2",
+            "THEME-01-Activity-3",
+            "THEME-01-Milestone-1",
+            "THEME-01-Milestone-2",
+            "THEME-01-Milestone-3",
+            "THEME-01-SwimlaneEven-1",
+            "THEME-01-SwimlaneEven-2",
+            "THEME-01-SwimlaneOdd-1",
+            "THEME-01-SwimlaneOdd-2",
+            "THEME-01-TimelineLabelEven-1",
+            "THEME-01-TimelineLabelEven-2",
+            "THEME-01-TimelineLabelOdd-1",
+            "THEME-01-TimelineLabelOdd-2",
             "app_user_style_01",
             "app_user_style_02",
         ]
@@ -46,8 +54,8 @@ class TestApiPlotableStyles(TestCase):
         response = self.client.get(url)
         json_response = response.json()
         returned_api_plotable_style_names = [style["style_name"] for style in json_response]
-        with self.subTest(num_styles=6):
-            self.assertEqual(8, len(returned_api_plotable_style_names))
+        with self.subTest():
+            self.assertEqual(16, len(returned_api_plotable_style_names))
 
         for expected_plotable_style in expected_plotable_styles:
             with self.subTest(expected_plotable_style=expected_plotable_style):

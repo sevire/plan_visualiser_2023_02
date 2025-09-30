@@ -19,7 +19,7 @@ class TestPlanVisual(TestCase):
         """
         User = CustomUser
         user_to_use = User.objects.get(pk=1)
-        color_to_use = Color.objects.get(pk=1)
+        color_to_use = Color.objects.get(pk=121)
 
         create_default_styles_for_tests(color_to_use, user_to_use)
 
@@ -29,7 +29,7 @@ class TestPlanVisual(TestCase):
         created with defaults for remaining attributes.
         :return:
         """
-        plotable_style_to_use = PlotableStyle.objects.get(pk=1)
+        plotable_style_to_use = PlotableStyle.objects.get(pk=102)
 
         # Test driver table - visual attribute name: (value when not default, whether to use in default test, default value expected)
         attributes_to_test = {
@@ -42,12 +42,12 @@ class TestPlanVisual(TestCase):
             "milestone_width": (90, True, 10),
             "swimlane_gap": (68, True, 5),
             "default_milestone_shape": (PlotableShapeName.ROUNDED_RECTANGLE.value, True, PlotableShapeName.DIAMOND.value),
-            "default_activity_shape": (PlotableShapeName.ISOSCELES_TRIANGLE.value, True, PlotableShapeName.RECTANGLE.value),
-            "default_activity_plotable_style": (plotable_style_to_use, True, "theme-01-001-activities-01"),
-            "default_milestone_plotable_style": (plotable_style_to_use, True, "theme-01-004-milestones-01"),
-            "default_swimlane_plotable_style": (plotable_style_to_use, True, "theme-01-006-swimlanes-01"),
-            "default_timeline_plotable_style_odd": (plotable_style_to_use, True, "theme-01-008-timelines-01"),
-            "default_timeline_plotable_style_even": (plotable_style_to_use, True, "theme-01-009-timelines-02"),
+            "default_activity_shape": (PlotableShapeName.ISOSCELES_TRIANGLE.value, True, PlotableShapeName.ROUNDED_RECTANGLE.value),
+            "default_activity_plotable_style": (plotable_style_to_use, True, "THEME-01-Activity-1"),
+            "default_milestone_plotable_style": (plotable_style_to_use, True, "THEME-01-Milestone-1"),
+            "default_swimlane_plotable_style": (plotable_style_to_use, True, "THEME-01-SwimlaneOdd-1"),
+            "default_timeline_plotable_style_odd": (plotable_style_to_use, True, "THEME-01-TimelineLabelOdd-1"),
+            "default_timeline_plotable_style_even": (plotable_style_to_use, True, "THEME-01-TimelineLabelEven-1"),
         }
 
         plan = Plan.objects.get(pk=2)

@@ -1,13 +1,13 @@
 from django.db import transaction
-from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.visual.swimlane.serializer import ModelVisualSwimlaneListSerialiser, ModelVisualSwimlaneSerialiser
 from plan_visual_django.models import PlanVisual, SwimlaneForVisual
+from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
+
 
 class SwimlaneListViewDispatcher(View):
     @staticmethod
@@ -28,7 +28,7 @@ class ModelVisualSwimlaneListAPI(ListAPIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualSwimlaneAPI(APIView):
@@ -39,7 +39,7 @@ class ModelVisualSwimlaneAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualSwimlaneUpdateAPI(APIView):
@@ -125,10 +125,23 @@ class ModelVisualSwimlaneUpdateAPI(APIView):
 class ModelVisualSwimlaneCompress(APIView):
     @staticmethod
     def post(request, visual_id, swimlane_seq_num, **kwargs):
-        from plan_visual_django.services.visual.model.auto_layout import VisualAutoLayoutManager
-        layout_manager = VisualAutoLayoutManager(visual_id)
+        from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
+        layout_manager = VisualLayoutManager(visual_id)
 
         visual = PlanVisual.objects.get(id=visual_id)
         swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
         layout_manager.compress_swimlane(swimlane)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class ModelVisualSwimlaneLayout(APIView):
+    @staticmethod
+    def post(request, visual_id, swimlane_seq_num, **kwargs):
+        layout_manager = VisualLayoutManager(visual_id)
+
+        visual = PlanVisual.objects.get(id=visual_id)
+        swimlane = visual.get_swimlane_by_sequence_number(swimlane_seq_num)
+        layout_manager.sort_swimlane(swimlane)
+
         return Response(status=status.HTTP_200_OK)

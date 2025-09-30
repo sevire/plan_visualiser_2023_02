@@ -1,14 +1,26 @@
-const HIGHLIGHT_COLOR = 'white';
+const HIGHLIGHT_LINE_COLOR = 'red';
+const HIGHLIGHT_FILL_COLOR = "rgba(255, 255, 0, 0.8)";
 const HIGHLIGHT_LINE_WIDTH = 5;
 
 function plot_rectangle(context: CanvasRenderingContext2D | null, object_to_render: any, scale_factor: number, highlight_flag: boolean) {
   // if highlight flag is set then we just plot the outline in red to highlight the object.
-  let plot_function
+
+  // NOTE: The highlighting logic is very hacky!  Am applying almost identical logic to each shape individually.
+  // I'm resisting the temptation to refactor this code for now as I will re-build the whole approach to client side
+  // application - either by re-writing as a pure Typescript app or using Vue (or maybe both).
   if (highlight_flag) {
     console.log("Highligting...")
-    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.fillStyle = HIGHLIGHT_FILL_COLOR;
+    context!.strokeStyle = HIGHLIGHT_LINE_COLOR;
     context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+
     context!.strokeRect(
+      object_to_render.shape_plot_dims.left * scale_factor,
+      object_to_render.shape_plot_dims.top * scale_factor,
+      object_to_render.shape_plot_dims.width * scale_factor,
+      object_to_render.shape_plot_dims.height * scale_factor
+    );
+    context!.fillRect(
       object_to_render.shape_plot_dims.left * scale_factor,
       object_to_render.shape_plot_dims.top * scale_factor,
       object_to_render.shape_plot_dims.width * scale_factor,
@@ -57,8 +69,10 @@ function plot_diamond(context: CanvasRenderingContext2D | null, object_to_render
   context!.closePath();
 
   if (highlight_flag) {
-    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.strokeStyle = HIGHLIGHT_LINE_COLOR;  // Hard code for now!
     context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.fillStyle = HIGHLIGHT_FILL_COLOR;
+    context!.fill()
     context!.stroke()
   } else {
     context!.fillStyle = object_to_render.fill_color
@@ -88,8 +102,10 @@ function plot_bullet(context: CanvasRenderingContext2D | null, object_to_render:
   context!.closePath();
 
   if (highlight_flag) {
-    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.strokeStyle = HIGHLIGHT_LINE_COLOR;  // Hard code for now!
     context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.fillStyle = HIGHLIGHT_FILL_COLOR;
+    context!.fill()
     context!.stroke()
   } else {
     context!.fillStyle = object_to_render.fill_color
@@ -117,8 +133,10 @@ function plot_rounded_rectangle(context: CanvasRenderingContext2D | null, object
   context!.closePath();
 
   if (highlight_flag) {
-    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.strokeStyle = HIGHLIGHT_LINE_COLOR;  // Hard code for now!
     context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.fillStyle = HIGHLIGHT_FILL_COLOR;
+    context!.fill()
     context!.stroke()
   } else {
     context!.fillStyle = object_to_render.fill_color
@@ -144,8 +162,10 @@ function plot_isosceles_triangle(context: CanvasRenderingContext2D | null, objec
   context!.closePath();
 
   if (highlight_flag) {
-    context!.strokeStyle = HIGHLIGHT_COLOR;  // Hard code for now!
+    context!.strokeStyle = HIGHLIGHT_LINE_COLOR;  // Hard code for now!
     context!.lineWidth = HIGHLIGHT_LINE_WIDTH;
+    context!.fillStyle = HIGHLIGHT_FILL_COLOR;
+    context!.fill()
     context!.stroke()
   } else {
     context!.fillStyle = object_to_render.fill_color
@@ -389,7 +409,8 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
 
         // Now we have the scale_factor we can calculate the true height both of the canvas html element
         // and the plotable height of the canvas so that the visual fits neatly inside the canvas.
-        adjusted_canvas_display_height = visual_height / scale_factor
+        // Use width-based aspect ratio for CSS height so the element isn't stretched.
+        adjusted_canvas_display_height = initial_canvas_display_width * aspect_ratio
         final_canvas_height = final_canvas_width * aspect_ratio;
 
         console.log(`Scale factor is ${scale_factor}`)
@@ -408,7 +429,8 @@ export function initialise_canvases(captureOnly: boolean=false) : [number, any] 
     const captureCanvas = document.createElement('canvas');
     captureCanvas.width = 2000; // Hard coding for now
     scale_factor = captureCanvas.width / visual_width
-    captureCanvas.height = 2000; // ToDo: Replace hard coding of canvas width with more sophisticated approach
+    // Match height to aspect ratio to avoid distortion in exports
+    captureCanvas.height = Math.round(captureCanvas.width * aspect_ratio);
 
     canvas_info.capture = captureCanvas.getContext('2d');
   }

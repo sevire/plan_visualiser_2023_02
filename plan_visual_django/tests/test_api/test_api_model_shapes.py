@@ -22,6 +22,9 @@ class TestApiPlotableShapes(TestCase):
         expected_plotable_shapes = [
             "RECTANGLE",
             "DIAMOND",
+            "ROUNDED_RECTANGLE",
+            "BULLET",
+            "ISOSCELES",
         ]
 
         base_url = "/api/v1"
@@ -33,7 +36,13 @@ class TestApiPlotableShapes(TestCase):
         with self.subTest(num_shapes=5):
             self.assertEqual(5, len(returned_api_plotable_shape_names))
 
-        for expected_plotable_style in expected_plotable_shapes:
-            with self.subTest(expected_plotable_style=expected_plotable_style):
-                self.assertIn(expected_plotable_style, returned_api_plotable_shape_names)
+        for expected_plotable_shape in expected_plotable_shapes:
+            with self.subTest(expected_plotable_shape=expected_plotable_shape):
+                self.assertIn(expected_plotable_shape, returned_api_plotable_shape_names)
+
+    def check_shape_choices(self):
+        from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
+        choices = PlotableShapeName.choices
+
+        pass
 

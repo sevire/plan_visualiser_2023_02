@@ -1,4 +1,4 @@
-{% extends "plan_visual_django/pv_base.html" %}
+{% extends "plan_visual_django/pv_base_new_25.html" %}
 {% load static %}
 
 {% block page_heading %}Manage Visuals For Plan: {{ plan.plan_name }}, File: {{ plan.file_name }}{% endblock %}
@@ -20,7 +20,13 @@
         </tbody>
     </table>
 
-    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-visual/{{ plan.id }}'">Add Visual</button>
+<div class="btn-group" role="group">
+    <!-- Add auto created visual -->
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-auto-visual/{{ plan.id }}'">Add Auto Visual</button>
+
+    <!-- Add Default visual -->
+    <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-default-visual/{{ plan.id }}'">Add Default Visual</button>
+</div>
     <table class="table table-sm w-auto">
         <thead>
             <tr>
@@ -33,7 +39,7 @@
                 <td>{{ visual.name }}</td>
                 <td><a href="/pv/edit-visual/{{ visual.id }}" class="badge bg-primary">Edit Settings</a></td>
                 <td><a href="{% url 'manage-swimlanes' visual.id %}" class="badge bg-primary">Manage Swimlanes</a></td>
-                <td><a href="{% url 'plot-visual' visual.id %}" class="badge bg-primary">View Visual</a></td>
+                <td><a href="{% url 'plot-visual' visual.id %}" class="badge bg-primary">View/Edit Visual</a></td>
                 <td><a href="{% url 'delete-visual' visual.id %}" class="badge bg-danger" onclick="return confirm('Are you sure you want to delete this visual?')">Delete</a></td>
                 <td><a href="{% url 'plot-visual' visual.id %}"><img width="200px" alt="visual thumbnail" id="thumbnail-{{ visual.id }}" src="" /></a></td>
             </tr>

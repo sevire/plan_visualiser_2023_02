@@ -1,0 +1,171 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Different versions of favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'plan_visual_django/images/apple-touch-icon.png?v=1' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'plan_visual_django/images/favicon-32x32.png?v=1' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plan_visual_django/images/favicon-16x16.png?v=1' %}">
+      
+    <!-- fonts (for plan tree for example) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Georama:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <!-- Customised Bootstrap and app styling -->
+    <link href="{% static 'plan_visual_django/bootstrap-icons/font/bootstrap-icons.css'%}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/css/main-new-25.css' %}" rel="stylesheet">
+
+    <!-------------------------------------->
+    <!-- SCRIPTS                          -->
+    <!-------------------------------------->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{% static 'plan_visual_django/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+    <title>{{ "title" }}</title>
+
+</head>
+<body>
+<div id="fixed-top-element" class="fixed-top">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Navbar for visual layout">
+        <div class="container-sm">
+            <a class="navbar-brand" href="#">Plan On One Page</a>
+            {% if help_text %}
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#helpPanel"
+                        aria-expanded="false" aria-controls="helpPanel">
+                    Show Help
+                </button>
+            {% endif %}
+
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#main_navbar" aria-controls="navbarsExample03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse" id="main_navbar" style="">
+                {% with current_name=request.resolver_match.url_name current_path=request.path %}
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/pv/textpages/landing-page' in current_path %}active{% endif %}"
+                           {% if '/pv/textpages/landing-page' in current_path %}aria-current="page"{% endif %}
+                           href="/pv/textpages/landing-page">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if current_path == '/' %}active{% endif %}"
+                           {% if current_path == '/' %}aria-current="page"{% endif %}
+                           href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/pv/manage-plans' in current_path %}active{% endif %}"
+                           {% if '/pv/manage-plans' in current_path %}aria-current="page"{% endif %}
+                           href="/pv/manage-plans">My Plans</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if current_name == 'manage-colors' %}active{% endif %}"
+                           {% if current_name == 'manage-colors' %}aria-current="page"{% endif %}
+                           href="{% url 'manage-colors' %}">My Colours</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if current_name == 'manage-styles' %}active{% endif %}"
+                           {% if current_name == 'manage-styles' %}aria-current="page"{% endif %}
+                           href="{% url 'manage-styles' %}">My Styles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if current_name == 'view-file-types' %}active{% endif %}"
+                           {% if current_name == 'view-file-types' %}aria-current="page"{% endif %}
+                           href="{% url 'view-file-types' %}">Field Mappings</a>
+                    </li>
+                </ul>
+                {% endwith %}
+            </div>
+            <ul class="nav">
+                {%  if request.user.is_authenticated %}
+                    <li style="line-height: 40px;" class="nav-item text-light align-middle me-3">
+                        {{ request.user.username }}
+                    </li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-secondary" type="submit">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li id="login-button" class="user-action"><a href="{% url 'login' %}" class="btn btn-secondary me-2">Login</a></li>
+                    <li id="register-button" class="user-action"><a href="{% url 'register' %}" class="btn btn-secondary">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <header class="bg-primary-subtle py-2 mb-4 border-bottom">
+        <div class="container-sm text-left">
+            <div class="row">
+                <div class="col">
+                    <h1 class="fs-6">{{ primary_heading|default:""|safe }}</h1>
+                </div>
+                <div class="col">
+                    <h2 class="fs-6">{{ secondary_heading|default:""|safe }}</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+<div id="header-clearance"></div>
+
+{% with help_text_confirmed=help_text|default:"no-help-text" %}
+    {% if help_text_confirmed != "no-help-text" %}
+        <div class="collapse" id="helpPanel">
+            <div class="card card-body mb-3 bg-secondary-subtle">
+                <h4>{{ help_text_confirmed.title|safe }}</h4>
+                <div>
+                    {{ help_text_confirmed.content|safe }}  <!-- Safely render the parsed Markdown -->
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+<div id="messages-container" class="container-fluid p-0">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert fade show {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="container-fluid">
+
+    {% block main_content %}
+    {% endblock %}
+
+</div>
+<footer class="bg-light text-center text-lg-start mt-4 py-3 border-top">
+    <div class="container">
+        <span class="text-muted">
+            planononepage Version {{ "0.1.0" }}
+        </span>
+    </div>
+</footer>
+
+
+<script language="javascript">
+    function setNavbarHeight() {
+        console.log('setNavbarHeight');
+        const navbar = document.getElementById('fixed-top-element');
+        if (navbar) {
+           const navbarHeight = navbar.offsetHeight;
+           document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        }
+   }
+   document.addEventListener('DOMContentLoaded', setNavbarHeight);
+   window.addEventListener('resize', setNavbarHeight);
+</script>
+
+</body>
+</html>

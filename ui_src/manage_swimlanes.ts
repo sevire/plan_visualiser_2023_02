@@ -1,5 +1,6 @@
 import {
-  compress_swimlane,
+  autolayout_swimlane,
+  compress_swimlane, get_plan_activity_data,
   get_swimlane_data,
   get_visual_activity_data, get_visual_settings,
   update_swimlane_records,
@@ -57,6 +58,9 @@ export async function add_arrow_button_to_element(
 }
 
 export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visual_id: number) {
+  // Populates the swimlane panel on the main edit visual page.
+  // Adds a row for each swimlane and adds buttons for compress, move up etc.
+
   console.log("Adding swimlanes to swimlane panel...")
   await get_swimlane_data(visual_id)
 
@@ -67,20 +71,42 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
 
   // Clear tbody for case where we are updating panel rather than loading page
   tbody!.innerHTML = "";
+  let applied_default_swimlane = false;
   (window as any).swimlane_data.forEach((swimlane_record: any) => {
     console.log(`Adding swimlane row to swimlane panel for ${swimlane_record.swim_lane_name}`)
     // Add row to tbody with two td's, one for an up and down arrow and one for swimlane name
     // Create a new row
     let row = document.createElement('tr');
+    if (!applied_default_swimlane) {
+      console.log(`Adding default swimlane class to swimlane ${swimlane_record.swim_lane_name}`)
+      row.classList.add("default-swimlane")
+      applied_default_swimlane = true;
+    } else {
+      console.log(`This swimlane not default, so not adding default swimlane class to swimlane ${swimlane_record.swim_lane_name}`)
+    }
+
+    row.addEventListener('click', async function() {
+      // Need to
+      // - Remove the default-swimlane class from the row where it is currently set
+      // - Add default-swimlane class to this row
+      // - Update window.default_swimlane to be swimlane_record.sequence_number
+      const currentDefaultElement = document.querySelector('div#swimlane_data tr.default-swimlane')
+      currentDefaultElement!.classList.remove("default-swimlane")
+      row.classList.add('default-swimlane');
+      (window as any).default_swimlane_seq_num = swimlane_record.sequence_number;
+    })
+
     tbody!.appendChild(row)
 
-    // Add td and div with swimlane name to row.  We need the dive for the text-truncate to work.
+    // Add td and div with swimlane name to row.  We need the div for the text-truncate to work.
     let swimlaneNameTD = document.createElement('td');
     swimlaneNameTD.classList.add("label")
+
     row.appendChild(swimlaneNameTD);
 
     let swimlaneNameDiv = document.createElement("div")
     swimlaneNameDiv.classList.add("text-truncate")
+
     swimlaneNameDiv.textContent = swimlane_record.swim_lane_name
     swimlaneNameTD.appendChild(swimlaneNameDiv)
 
@@ -105,6 +131,8 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
     buttonGroup2.setAttribute('aria-label', 'Basic Example')
     buttonGroup2.classList.add("btn-group", "btn-group-sm")
 
+    // Add td, button group and two buttons for compress and autolayout
+
     console.log(`Adding compress and auto buttons to swimlane panel for ${swimlane_record.swim_lane_name}`)
 
     controlTD.appendChild(buttonGroup2)
@@ -117,6 +145,7 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
       // Send api call to compress this swimlane, then re-plot the visual
       await compress_swimlane(visual_id, swimlane_record.sequence_number);
       await get_visual_activity_data(visual_id);
+      await get_plan_activity_data(visual_id);
 
       // Need visual settings as it included visual height which is needed to plot.
       const response = await get_visual_settings((window as any).visual_id);
@@ -127,6 +156,21 @@ export async function update_swimlane_data(swimlane_html_panel:HTMLElement, visu
 
     const autoButton = create_button_with_icon("bi-aspect-ratio")
     add_tooltip(autoButton, "Auto - Auto layout")
+
+    autoButton.addEventListener('click', async () => {
+    console.log(`Autolayout of swimlane ${swimlane_record.swim_lane_name}`);
+
+    // Send api call to compress this swimlane, then re-plot the visual
+    await autolayout_swimlane(visual_id, swimlane_record.sequence_number);
+    await get_visual_activity_data(visual_id);
+    await get_plan_activity_data(visual_id);
+
+    // Need visual settings as it included visual height which is needed to plot.
+    const response = await get_visual_settings((window as any).visual_id);
+    (window as any).visual_settings = response.data
+
+    plot_visual();
+  })
 
     buttonGroup2.appendChild(compressButton)
     buttonGroup2.appendChild(autoButton)

@@ -1,0 +1,47 @@
+// Bring in Bootstrap functions first (needed for color manipulation, maps, etc.)
+@import "../bootstrap/scss/functions";
+
+// Override default Bootstrap color variables with your modern palette
+$primary: #264653;          // Modern blue-green
+$secondary: #2a9d8f;        // Calm green
+$success: #6a994e;          // Muted green for success (optional)
+$info: #1db2ce;             // Complementary light blue
+$warning: #f4a261;          // Soft orange
+$danger: #e76f51;           // Soft red
+$light: #f8f9fa;            // Neutral light
+$dark: #333333;             // Neutral dark
+
+// Typography — align Bootstrap to Georama (which you load via HTML)
+$font-family-sans-serif: "Georama", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-base: $font-family-sans-serif;
+$font-weight-normal: 400;
+$font-weight-bold: 600;
+$line-height-base: 1.6;
+
+// Headings use same family for now (can diverge later if you want)
+$headings-font-family: $font-family-sans-serif;
+$headings-font-weight: $font-weight-bold;
+
+// Spacing / radii
+$font-size-base: 1rem;
+$spacer: 1rem;              // Default spacing unit
+$border-radius: 0.25rem;    // Consistent rounding across components
+
+// Import Bootstrap variables so $theme-colors and other maps are defined
+@import "../bootstrap/scss/variables";
+
+// OPTIONAL: extend the theme colors AFTER variables are loaded
+// Add a semantic alias "accent" that reuses $info
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "accent": $info
+  )
+);
+
+// Continue with the rest of Bootstrap’s Sass pipeline
+@import "../bootstrap/scss/maps";
+@import "../bootstrap/scss/mixins";
+@import "../bootstrap/scss/root";
+@import "../bootstrap/scss/bootstrap";
+

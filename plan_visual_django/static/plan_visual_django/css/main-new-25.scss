@@ -1,0 +1,11 @@
+@import 'ui-layout-new-25';           // Layout-specific styles
+
+
+// Ensure that the content of the page sits underneath the fixed header
+#header-clearance {
+  padding-top: var(--navbar-height, 120px);
+}
+
+#login-button {
+
+}

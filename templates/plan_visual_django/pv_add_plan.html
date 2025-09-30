@@ -1,15 +1,37 @@
-{% extends "plan_visual_django/pv_base.html" %}
-
-{% block page_heading %}Add Plan{% endblock %}
+{% extends "plan_visual_django/pv_base_new_25.html" %}
 
 {% block main_content %}
-<div>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table class="table w-auto">
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-xl-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Add Plan</h5>
+      </div>
+      <div class="card-body">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-3">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <table class="table align-middle mb-3">
             {{ form.as_table }}
-        </table>
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+          </table>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'manage-plans' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Upload Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {# Optional: small note to guide users #}
+    <div class="alert alert-info mt-3">
+      Ensure the selected File Type matches your uploaded file’s format.
+    </div>
+  </div>
 </div>
 {% endblock %}

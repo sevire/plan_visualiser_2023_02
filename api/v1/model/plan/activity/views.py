@@ -1,13 +1,15 @@
-from django.http import JsonResponse
+from django.contrib import messages
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 from rest_framework.views import APIView
+from api.services.error_message_handling import MessagesToHeaderMixin
 from api.v1.model.plan.activity.serializer import ModelPlanActivityListSerialiser, ModelPlanActivitySerialiser, \
     ModelPlanActivityByVisualListSerialiser
 from api.v1.model.visual.activity.serializer import ModelVisualActivityListSerialiser, ModelVisualActivitySerialiser
 from plan_visual_django.models import Plan, PlanVisual
 
 
-class ModelPlanActivityListAPI(ListAPIView):
+class ModelPlanActivityListAPI(MessagesToHeaderMixin, APIView):
     """
     Provides a view to retrieve a list of activities associated with a specific plan.
 
@@ -26,10 +28,11 @@ class ModelPlanActivityListAPI(ListAPIView):
         plan_activities_queryset = plan.planactivity_set.all()
         serializer = ModelPlanActivityListSerialiser(plan_activities_queryset, many=True)
 
-        return JsonResponse(serializer.data, safe=False)
+        messages.add_message(request, messages.INFO, 'Successfully retrieved plan activities.')
+        return Response(serializer.data)
 
 
-class ModelPlanActivityByVisualListAPI(ListAPIView):
+class ModelPlanActivityByVisualListAPI(MessagesToHeaderMixin, ListAPIView):
     def get(self, request, visual_id=None, **kwargs):
         # Accessing plan but from visual id, so include visual information
         visual = PlanVisual.objects.get(pk=visual_id)
@@ -55,10 +58,10 @@ class ModelPlanActivityByVisualListAPI(ListAPIView):
                 activity_record['visual_data'] = visual_activity_serializer.data
             consolidated_activities.append(activity_record)
 
-        return JsonResponse(consolidated_activities, safe=False)
+        return Response(consolidated_activities)
 
 
-class ModelPlanActivityAPI(APIView):
+class ModelPlanActivityAPI(MessagesToHeaderMixin, APIView):
     @staticmethod
     def get(request, plan_id, unique_id):
         # ToDo: Is it right to go Plan --> Plan.activity_set or just do in one get
@@ -68,4 +71,4 @@ class ModelPlanActivityAPI(APIView):
         serializer = ModelPlanActivitySerialiser(instance=plan_activity_queryset)
 
         response = serializer.data
-        return JsonResponse(response, safe=False)
+        return Response(response)

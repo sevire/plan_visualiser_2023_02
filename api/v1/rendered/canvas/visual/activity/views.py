@@ -1,5 +1,5 @@
-from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from plan_visual_django.models import PlanVisual
 from plan_visual_django.services.visual.rendering.renderers import CanvasRenderer
@@ -21,12 +21,12 @@ class RenderedCanvasVisualActivityListAPI(APIView):
         visual = PlanVisual.objects.get(id=visual_id)
 
         if visual.activity_count() == 0:
-            return JsonResponse(status=status.HTTP_204_NO_CONTENT, data=None)
+            return Response(status=status.HTTP_204_NO_CONTENT, data=None)
         else:
             visual_activity_plotables = {"activities": visual.get_visual_activity_plotables()}
             renderer = CanvasRenderer()
             rendered_plotables = renderer.render_from_iterable(visual_activity_plotables)
-            return JsonResponse(rendered_plotables, safe=False)
+            return Response(rendered_plotables)
 
 
 class RenderedCanvasVisualActivityAPI(APIView):
@@ -45,11 +45,11 @@ class RenderedCanvasVisualActivityAPI(APIView):
         visual = PlanVisual.objects.get(id=visual_id)
 
         if visual.activity_count() == 0:
-            return JsonResponse(status=status.HTTP_204_NO_CONTENT, data=None)
+            return Response(status=status.HTTP_204_NO_CONTENT, data=None)
         else:
             activity = visual.visualactivity_set.get(unique_id_from_plan=unique_id)
             activity_plotable = activity.get_plotable()
             visual_activity_plotables = {"activities": [activity_plotable]}
             renderer = CanvasRenderer()
             rendered_plotables = renderer.render_from_iterable(visual_activity_plotables)
-            return JsonResponse(rendered_plotables, safe=False)
+            return Response(rendered_plotables)

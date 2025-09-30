@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 from rest_framework.generics import ListAPIView
@@ -28,7 +27,7 @@ class ModelVisualTimelineListAPI(ListAPIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualTimelineAPI(APIView):
@@ -39,7 +38,7 @@ class ModelVisualTimelineAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelVisualTimelineUpdateAPI(APIView):

@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Dict, List
-
-from api.v1.model.visual.plotable_shape.serializer import PlotableShapeSerializer
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
 from plan_visual_django.services.visual.rendering.visual_elements import VisualElementCollection, VisualElement
@@ -199,7 +197,8 @@ class CanvasRenderer(VisualRenderer):
                         'text_align': text_align,
                         'text_baseline': text_baseline
                     },
-                    'fill_color': item.format.font_color.to_dict(),
+                    'fill_color': item.format.font_color.to_dict(), # Note that when plotting text, fill colour is the
+                                                                    # font colour of the text to be plotted
                     'font_size': round(item.format.font_size)
                 }
             ]

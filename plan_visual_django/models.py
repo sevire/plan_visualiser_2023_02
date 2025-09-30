@@ -1,10 +1,11 @@
-from typing import Iterable, Dict
+from datetime import date, timedelta
+from typing import Iterable, Dict, Tuple
 import markdown
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint, Max, Min, Sum
 from plan_visual_django.managers import PlotableStyleManager, PlanVisualManager
-from plan_visual_django.services.general.date_utilities import DatePlotter
+from plan_visual_django.services.general.date_utilities import DatePlotter, format_date_for_visual_activity
 from plan_visual_django.services.plan_file_utilities.plan_field import FileType
 from plan_visual_django.services.plan_file_utilities.plan_parsing import extract_summary_plan_info
 from plan_visual_django.services.visual.model.plotable_shapes import PlotableShapeName
@@ -68,6 +69,12 @@ class Plan(models.Model):
         summary = extract_summary_plan_info(self)
         return summary
 
+    def get_plan_tree(self):
+        from plan_visual_django.services.plan_file_utilities.plan_tree import PlanTree
+        plan_tree = PlanTree(self)
+
+        return plan_tree
+
     def create_visual(self):
         """
         Creates a new visual under this plan, and adds default timelines and swimlanes.
@@ -75,19 +82,10 @@ class Plan(models.Model):
         :return:
         """
 
-        VisualSettings.calculate_defaults_for_visual(self)
+        defaults = VisualSettings.calculate_defaults_for_visual(self)
+        visual = PlanVisual.objects.create(plan=self, **defaults)
 
-        PlanVisual.objects.create(
-            plan=self,
-            name="Default visual",
-            width=30,
-            max_height=20,
-            include_title=True,
-            track_height=20,
-            track_gap=4,
-            milestone_width=10,
-            swimlane_gap=5,
-        )
+        return visual
 
 
 class PlanActivity(models.Model):
@@ -105,12 +103,30 @@ class PlanActivity(models.Model):
     level = models.IntegerField(default=1)
 
     class Meta:
+        # Order by sequence number is critical to ensure plan structure is well defined.
         ordering = ["plan", "sequence_number"]
         verbose_name_plural = " Plan activities"
         unique_together = (('plan', 'unique_sticky_activity_id'),)
 
     def __str__(self):
         return f'{self.activity_name:.20}'
+    
+    @property
+    def duration(self):
+        """
+        Calculate duration in days between start_date and end_date
+        """
+        return (self.end_date - self.start_date).days + 1
+
+    def interval(self) -> Tuple[date, date]:
+        """Return [start, end_exclusive) interval for non-overlap checks.
+        Guarantees at least 1 day width.
+        """
+        end_excl = self.end_date + timedelta(days=1)
+        if end_excl <= self.start_date:
+            # Zero/negative -> inflate to 1 day wide starting at start
+            end_excl = self.start_date + timedelta(days=1)
+        return (self.start_date, end_excl)
 
 
 class Color(models.Model):
@@ -218,6 +234,10 @@ class PlanVisual(models.Model):
     track_height = models.FloatField(default=20)
     track_gap = models.FloatField(default=4)
     milestone_width = models.FloatField(default=10)
+    timeline_gap = models.FloatField(default=5)
+    milestone_date_toggle = models.BooleanField(default=False)
+    activity_date_toggle = models.BooleanField(default=False)
+    timeline_to_swimlane_gap = models.FloatField(default=10)
     swimlane_gap = models.FloatField(default=5)
     default_milestone_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
     default_activity_shape = models.CharField(choices=PlotableShapeName.choices, max_length=50)
@@ -356,6 +376,9 @@ class PlanVisual(models.Model):
 
         return visual_start_date_final, visual_end_date_final
 
+    def get_num_active_timelines(self):
+        return self.timelineforvisual_set.filter(enabled=True).count()
+
     def get_timelines_height(self, sequence_num=None):
         """
         (SHOULD BE TEMPORARY)
@@ -373,6 +396,10 @@ class PlanVisual(models.Model):
         else:
             timelines = self.timelineforvisual_set.filter(sequence_number__lt=sequence_num, enabled=True)
         timeline_height = timelines.aggregate(total_sum=Sum('timeline_height'))['total_sum'] or 0
+
+        # Add inter-timeline gaps to calculate height of all previous timelines - one for each timeline
+        inter_timeline_gap = self.timeline_gap * len(timelines)
+        timeline_height += inter_timeline_gap
 
         return timeline_height
 
@@ -395,6 +422,9 @@ class PlanVisual(models.Model):
 
         timeline_plotables = [timeline.get_plotables() for timeline in timelines]
         return timeline_plotables
+
+    def get_num_swimlanes(self):
+        return self.swimlaneforvisual_set.count()
 
     def get_swimlanes(self, visible_only_flag=True, sequence_number=None):
         """
@@ -530,7 +560,7 @@ class PlanVisual(models.Model):
         total_height_of_swimlanes = sum(swimlane.get_height() for swimlane in swimlanes)
         height_of_swimlane_area = total_height_of_swimlanes + total_gap
 
-        return height_of_timelines, 0, self.width, height_of_swimlane_area
+        return height_of_timelines + self.timeline_to_swimlane_gap, 0, self.width, height_of_swimlane_area
 
     def get_plotables(self):
         """
@@ -847,7 +877,7 @@ class SwimlaneForVisual(models.Model):
         return activity_plotables
 
 
-class VisualActivity(models.Model):
+class   VisualActivity(models.Model):
     """
     Entity which represents data about an activity which has been added to a specific visual.
 
@@ -948,15 +978,24 @@ class VisualActivity(models.Model):
             self.visual.width
         )
         plan_activity = self.get_plan_activity()
+        plan_activity_text_flow = self.get_text_flow()
 
         if plan_activity.milestone_flag is True:
             # This is a milestone, so we plot in the middle of the day to the specified width for a milestone.
             left = date_plotter.midpoint(plan_activity.start_date) - self.visual.milestone_width / 2
             width = self.visual.milestone_width
+            date_toggle = self.visual.milestone_date_toggle
         else:
             left = date_plotter.left(plan_activity.start_date)
             width = date_plotter.width(plan_activity.start_date, plan_activity.end_date)
+            date_toggle = self.visual.activity_date_toggle
 
+        plan_activity_name = format_date_for_visual_activity(
+            self.get_plan_activity().activity_name,
+            date_toggle,
+            plan_activity_text_flow.value,
+            plan_activity.end_date
+        )
         plotable = get_plotable(
             plotable_id="activity-"+self.unique_id_from_plan,
             plotable_shape_name=PlotableShapeName.get_by_value(self.plotable_shape),
@@ -966,8 +1005,8 @@ class VisualActivity(models.Model):
             height=activity_height,
             format=self.plotable_style,
             text_vertical_alignment=self.get_vertical_alignment(),
-            text_flow=self.get_text_flow(),
-            text=self.get_plan_activity().activity_name,
+            text_flow=plan_activity_text_flow,
+            text=plan_activity_name,
             external_text_flag=True if self.get_plan_activity().milestone_flag else False
         )
 

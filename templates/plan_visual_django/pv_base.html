@@ -8,7 +8,7 @@
     <!-- Different versions of favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'plan_visual_django/images/apple-touch-icon.png?v=1' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'plan_visual_django/images/favicon-32x32.png?v=1' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static '/plan_visual_django/images/favicon-16x16.png?v=1' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plan_visual_django/images/favicon-16x16.png?v=1' %}">
       
     <!-- fonts (for plan tree for example) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,17 +115,16 @@
     {% endif %}
 {% endwith %}
 
-
-{% if messages %}
-    <div class="container-fluid p-0">
+<div id="messages-container" class="container-fluid p-0">
+    {% if messages %}
         {% for message in messages %}
             <div class="alert fade show {{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
-    </div>
-{% endif %}
+    {% endif %}
+</div>
 <div class="container-fluid">
 
     {% block main_content %}

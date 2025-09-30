@@ -47,7 +47,6 @@ def update_plan_activity(plan, activity, action):
         if action == "update":
             record = PlanActivity.objects.get(plan=plan, unique_sticky_activity_id=activity['unique_sticky_activity_id'])
             record.activity_name = activity['activity_name']
-            record.duration = activity['duration']
             record.start_date = activity['start_date']
             record.end_date = activity['end_date']
             record.level = activity['level'] if 'level' in activity else 1

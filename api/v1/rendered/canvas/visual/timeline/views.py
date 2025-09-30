@@ -1,5 +1,5 @@
-from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from plan_visual_django.models import PlanVisual
 from plan_visual_django.services.visual.rendering.renderers import CanvasRenderer
@@ -24,7 +24,7 @@ class RenderedCanvasVisualTimelineListAPI(ListAPIView):
         renderer = CanvasRenderer()
         rendered_plotables = renderer.render_from_iterable(timeline_plotables)
 
-        return JsonResponse(data=rendered_plotables, safe=False)
+        return Response(data=rendered_plotables)
 
 
 
@@ -48,4 +48,4 @@ class RenderedCanvasVisualTimelineAPI(APIView):
         renderer = CanvasRenderer()
         rendered_plotables = renderer.render_from_iterable(timeline_plotables)
 
-        return JsonResponse(data=rendered_plotables, safe=False)
+        return Response(data=rendered_plotables)

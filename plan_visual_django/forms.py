@@ -55,6 +55,9 @@ class PlanForm(ModelForm):
     class Meta:
         model = Plan
         fields = ("plan_name", "file", "file_type_name")
+        labels = {
+            "file_type_name": "File Type"
+        }
 
     def __init__(self, *args, request=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,7 +89,12 @@ class VisualFormForAdd(ModelForm):
             "track_height",
             "track_gap",
             "milestone_width",
+            "timeline_gap",
+            "timeline_to_swimlane_gap",
             "swimlane_gap",
+            "milestone_date_toggle",
+            "activity_date_toggle",
+            "default_timeline_height",
             "default_activity_plotable_style",
             "default_milestone_plotable_style",
             "default_swimlane_plotable_style",
@@ -130,6 +138,10 @@ class VisualFormForEdit(ModelForm):
             "track_gap",
             "milestone_width",
             "swimlane_gap",
+            "milestone_date_toggle",
+            "activity_date_toggle",
+            "timeline_gap",
+            "timeline_to_swimlane_gap",
             "default_activity_plotable_style",
             "default_milestone_plotable_style",
             "default_swimlane_plotable_style",

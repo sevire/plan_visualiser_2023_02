@@ -1,8 +1,8 @@
 from django.urls import path
-from django.views.generic import RedirectView
-
+from django.views.generic import RedirectView, TemplateView
 from plan_visual_django import views
 from plan_visual_django.views import StaticPageView, FileTypeListView
+
 
 urlpatterns = [
     # Management of Plans
@@ -16,9 +16,12 @@ urlpatterns = [
     # Maintenance of Visuals
     path("manage-visuals/<int:plan_id>/", views.manage_visuals, name='manage-visuals'),
     path("add-visual/<int:plan_id>", views.add_visual, name="add-visual"),
+    path("add-default-visual/<int:plan_id>", views.add_default_visual, name="add-default-visual"),
+    path("add-auto-visual/<int:plan_id>", views.add_auto_visual, name="add-auto-visual"),
     path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
     path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
+    path("visual-new-25/<int:visual_id>/", views.plot_visual_new_25, name='plot-visual-new-25'),
 
     # Visual features management
     path("manage-swimlanes-for-visual/<int:visual_id>/", views.manage_swimlanes_for_visual, name="manage-swimlanes"),
@@ -33,6 +36,3 @@ urlpatterns = [
     # Static pages
     path("textpages/<slug:page_slug>/", StaticPageView.as_view(), name='static-pages'),
 ]
-
-
-

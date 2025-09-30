@@ -1,0 +1,132 @@
+{% extends "plan_visual_django/pv_base_new_25.html" %}
+{% load static %}
+
+{% block page_heading %}Manage Visuals For Plan: {{ plan.plan_name }}, File: {{ plan.file_name }}{% endblock %}
+
+{% block main_content %}
+    <style>
+        /* Soft gradient overlay so text is readable across any thumbnail */
+        .visual-card .card-img-overlay {
+            background: linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 0.55) 15%,
+                    rgba(0, 0, 0, 0.25) 45%,
+                    rgba(0, 0, 0, 0.05) 100%
+            );
+        }
+
+        /* Card hover */
+        .visual-card {
+            transition: transform 120ms ease, box-shadow 120ms ease;
+            overflow: hidden; /* clip overlay within rounded corners */
+            position: relative; /* scope stretched-link and z-layers */
+            border-radius: .5rem;
+        }
+
+        .visual-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .2);
+        }
+
+        /* Make titles truncate neatly */
+        .visual-card .card-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ensure top controls sit above stretched-link */
+        .z-3 {
+            z-index: 3;
+        }
+    </style>
+    <table class="table table-sm w-auto mb-5">
+        <thead>
+            <tr>
+                <th colspan="2" class="table-light text-center">Plan Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for summary_data in plan_summary_data_display %}
+                <tr>
+                    <th scope="row">{{ summary_data.0 }}</th>
+                    <td>{{ summary_data.1 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="btn-group" role="group">
+        <!-- Add auto created visual -->
+        <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-auto-visual/{{ plan.id }}'">Add Auto Visual</button>
+
+        <!-- Add Default visual -->
+        <button type="button" class="btn btn-primary" onclick="location.href='/pv/add-default-visual/{{ plan.id }}'">Add Default Visual</button>
+    </div>
+    <div class="container py-4">
+
+        <div class="row g-3">
+
+            {% for visual in visuals %}
+                <!-- Card template: repeat for each visual -->
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <div class="card visual-card h-100 border-0 shadow-sm">
+                        <div class="ratio ratio-16x9">
+                            <img
+                                    id="thumbnail-{{ visual.id }}"
+                                    src=""
+                                    alt="{{ visual.name }} thumbnail"
+                                    class="card-img"
+                                    style="object-fit: cover; object-position: top"
+
+                            >
+                            <div class="card-img-overlay d-flex flex-column p-2 p-sm-3">
+                                <!-- Header: title on first line, buttons on second line -->
+                                <div class="d-flex flex-column">
+                                    <div class="min-w-0">
+                                        <a href="{% url 'plot-visual-new-25' visual.id %}" class="stretched-link text-decoration-none">
+                                            <h5 class="card-title fs-6 mb-0 text-white-50 text-truncate">{{ visual.name }}</h5>
+                                        </a>
+                                    </div>
+                                    <div class="mt-2 d-flex flex-wrap gap-1 z-3">
+                                        <a href="{% url 'edit-visual' visual.id %}" class="btn btn-sm bg-secondary bg-opacity-50">
+                                            <i class="bi bi-sliders"></i><span
+                                                class="d-none d-md-inline ms-1">Settings</span>
+                                        </a>
+                                        <a href="{% url 'manage-swimlanes' visual.id %}" class="btn btn-sm bg-secondary bg-opacity-50">
+                                            <i class="bi bi-diagram-3"></i><span class="d-none d-md-inline ms-1">Swimlanes</span>
+                                        </a>
+                                        <a href="{% url 'delete-visual' visual.id %}" class="btn btn-sm bg-danger bg-opacity-50"
+                                           onclick="return confirm('Delete this visual?')">
+                                            <i class="bi bi-trash"></i><span
+                                                class="d-none d-md-inline ms-1">Delete</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="flex-grow-1"></div>
+
+                                <div class="d-flex align-items-center justify-content-between gap-2 text-white-50 small">
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <span class="badge bg-dark bg-opacity-50 text-white fw-normal"># Activities: {{ visual.activity_count }}</span>
+                                        <span class="badge bg-dark bg-opacity-50 text-white fw-normal"># Swimlanes: {{ visual.get_num_swimlanes }}</span>
+                                        <span class="badge bg-dark bg-opacity-50 text-white fw-normal"># Timelines: {{ visual.get_num_active_timelines }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div> <!-- /.row -->
+    </div> <!-- /.container -->
+
+    <script src="{% static 'dist/bundle.js' %}"></script>
+    <script type="application/javascript">
+    document.addEventListener("DOMContentLoaded", async function() {
+        window.addVisualImages()
+    });
+    </script>
+
+{% endblock %}

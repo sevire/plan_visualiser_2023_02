@@ -24,9 +24,9 @@ class TestCreateInitialUsers(TestCase):
             },
             "initial_users_config": [
                 # Name of env variable, superuser flag, user index
-                ("SHARED_USER", False, 1),
-                ("ADMIN", True, 2),
-                ("APP_USER_1", False, 3),
+                ("SHARED_USER", False, 1, True),
+                ("ADMIN", True, 2, False),
+                ("APP_USER_1", False, 3, False),
             ],
             'expected_results_config_data': {
                 'shared_user': {

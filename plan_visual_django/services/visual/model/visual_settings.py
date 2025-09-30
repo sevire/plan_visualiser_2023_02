@@ -6,6 +6,8 @@ class VisualSettings:
     Holds key information about the visual which is required to physically plot it.
 
     Most of this will come from the VisualActivity object, but some will be hard-coded or calculated.
+    name
+
     """
 
     def __init__(self, visual_id: int):
@@ -14,11 +16,14 @@ class VisualSettings:
         self.visual: PlanVisual = PlanVisual.objects.get(id=visual_id)
 
         self.width: float = self.visual.width
-        self.height: float = self.visual.max_height
+        self.max_height: float = self.visual.max_height
         self.track_height: float = self.visual.track_height
         self.track_gap: float = self.visual.track_gap
         self.milestone_width = self.visual.milestone_width
         self.swimlane_gap: float = self.visual.swimlane_gap
+
+        self.milestone_date_toggle = self.visual.milestone_date_toggle
+        self.activity_date_toggle = self.visual.activity_date_toggle
 
         self.default_milestone_shape = self.visual.default_milestone_shape
         self.default_activity_shape = self.visual.default_activity_shape
@@ -26,6 +31,7 @@ class VisualSettings:
         self.default_milestone_plotable_style = self.visual.default_milestone_plotable_style
         self.default_swimlane_plotable_style = self.visual.default_swimlane_plotable_style
         self.default_timeline_plotable_style_odd = self.visual.default_timeline_plotable_style_odd
+        self.default_timeline_height = self.visual.default_timeline_height
 
         if self.visual.default_timeline_plotable_style_even is not None:
             self.default_timeline_plotable_style_even = self.visual.default_timeline_plotable_style_even
@@ -55,23 +61,6 @@ class VisualSettings:
                 defaults[key] = calculate_value()
 
         from plan_visual_django.models import PlotableStyle
-        default_field_names = {
-            "name",
-            "width",
-            "max_height",
-            "include_title",
-            "default_activity_shape",
-            "default_milestone_shape",
-            "track_height",
-            "track_gap",
-            "milestone_width",
-            "swimlane_gap",
-            "default_activity_plotable_style",
-            "default_milestone_plotable_style",
-            "default_swimlane_plotable_style",
-            "default_timeline_plotable_style_odd",
-            "default_timeline_plotable_style_even",
-        }
 
         num_visuals_for_plan = plan.planvisual_set.count()
 
@@ -80,17 +69,22 @@ class VisualSettings:
         set_default("width", lambda: 1200)
         set_default("max_height", lambda: 800)
         set_default("include_title", lambda: False)
-        set_default("default_activity_shape", lambda: PlotableShapeName.RECTANGLE.name)
+        set_default("default_activity_shape", lambda: PlotableShapeName.ROUNDED_RECTANGLE.name)
         set_default("default_milestone_shape", lambda: PlotableShapeName.DIAMOND.name)
         set_default("track_height", lambda: 20)
         set_default("track_gap", lambda: 4)
         set_default("milestone_width", lambda: 10)
+        set_default("timeline_gap", lambda: 5)
+        set_default("timeline_to_swimlane_gap", lambda: 10)
         set_default("swimlane_gap", lambda: 5)
-        set_default("default_activity_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-001-activities-01"))
-        set_default("default_milestone_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-004-milestones-01"))
-        set_default("default_swimlane_plotable_style", lambda: PlotableStyle.objects.get(style_name="theme-01-006-swimlanes-01"))
-        set_default("default_timeline_plotable_style_odd", lambda: PlotableStyle.objects.get(style_name="theme-01-008-timelines-01"))
-        set_default("default_timeline_plotable_style_even", lambda: PlotableStyle.objects.get(style_name="theme-01-009-timelines-02"))
+        set_default("milestone_date_toggle", lambda: False)
+        set_default("activity_date_toggle", lambda: False)
+        set_default("default_activity_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-Activity-1"))
+        set_default("default_milestone_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-Milestone-1"))
+        set_default("default_swimlane_plotable_style", lambda: PlotableStyle.objects.get(style_name="THEME-01-SwimlaneOdd-1"))
+        set_default("default_timeline_plotable_style_odd", lambda: PlotableStyle.objects.get(style_name="THEME-01-TimelineLabelOdd-1"))
+        set_default("default_timeline_plotable_style_even", lambda: PlotableStyle.objects.get(style_name="THEME-01-TimelineLabelEven-1"))
+        set_default("default_timeline_height", lambda: 20)
 
         return defaults
 

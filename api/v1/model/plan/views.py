@@ -1,11 +1,11 @@
-from django.http import JsonResponse
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.v1.model.plan.serializer import ModelPlanSerialiser, ModelPlanListSerialiser
 from plan_visual_django.models import Plan, PlanVisual
 
 
-class ModelPlanListAPI(ListAPIView):
+class ModelPlanListAPI(APIView):
     def get(self, request, **kwargs):
         # ToDo: Need to adjust to only return plans for current user
         plans_queryset = Plan.objects.all()
@@ -13,7 +13,7 @@ class ModelPlanListAPI(ListAPIView):
 
         response = serializer.data
         
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 class ModelPlanAPI(APIView):
@@ -24,7 +24,7 @@ class ModelPlanAPI(APIView):
 
         response = serializer.data
 
-        return JsonResponse(response, safe=False)
+        return Response(response)
 
 
 
