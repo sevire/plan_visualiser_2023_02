@@ -44,4 +44,8 @@ class PlanVisualManager(models.Manager):
             kwargs[field] = value
 
         # Create and return the instance
-        return self.create(plan=plan, **kwargs)
+        from django.db import transaction
+        with transaction.atomic():
+            plan.visual_count += 1
+            plan.save()
+            return self.create(plan=plan, **kwargs)

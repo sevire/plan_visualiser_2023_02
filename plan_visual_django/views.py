@@ -296,6 +296,10 @@ def add_visual(request, plan_id, default=False, auto=False):
                     # Attempt to save (will enforce the unique constraint at the database level)
                     visual_record.save()
 
+                    # Increment visual_count in plan record so future default visual names don't clash
+                    plan.visual_count += 1
+                    plan.save()
+
                     # Add default swimlanes and timelines
                     style_for_swimlane = visual_record.default_swimlane_plotable_style
                     visual_record.add_swimlanes_to_visual(

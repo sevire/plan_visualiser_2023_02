@@ -49,6 +49,7 @@ class Plan(models.Model):
     file_name = models.CharField(max_length=100)  # Name of file uploaded (may be stored with different name to make unique)
     file = models.FileField(upload_to="plan_files", null=True)  # Includes a File object pointing to the actual file to be parsed
     file_type_name = models.CharField(max_length=50, choices=FileType.as_choices())
+    visual_count = models.IntegerField(default=0)  # Used to generate unique default visual names
     session_id = models.CharField(max_length=50, null=True, blank=True)  # Stores anonymous user session ID
 
     class Meta:
@@ -978,7 +979,7 @@ class   VisualActivity(models.Model):
             self.visual.width
         )
         plan_activity = self.get_plan_activity()
-        plan_activity_text_flow = self.get_text_flow()
+        plan_activity_text_flow_value = self.get_text_flow().value
 
         if plan_activity.milestone_flag is True:
             # This is a milestone, so we plot in the middle of the day to the specified width for a milestone.
@@ -993,7 +994,7 @@ class   VisualActivity(models.Model):
         plan_activity_name = format_date_for_visual_activity(
             self.get_plan_activity().activity_name,
             date_toggle,
-            plan_activity_text_flow.value,
+            plan_activity_text_flow_value,
             plan_activity.end_date
         )
         plotable = get_plotable(
@@ -1005,7 +1006,7 @@ class   VisualActivity(models.Model):
             height=activity_height,
             format=self.plotable_style,
             text_vertical_alignment=self.get_vertical_alignment(),
-            text_flow=plan_activity_text_flow,
+            text_flow=plan_activity_text_flow_value,
             text=plan_activity_name,
             external_text_flag=True if self.get_plan_activity().milestone_flag else False
         )
