@@ -2,7 +2,13 @@
 {% load markdownify %}
 
 {% block main_content %}
-    
-    {{ markdown_text|safe }}
+    <div class="static-content-container">
+        <aside class="help-sidebar">
+            {{ navigation_html|safe }}
+        </aside>
 
+        <main class="help-content">
+            {{ markdown_text|safe }}
+        </main>
+    </div>
 {% endblock %}

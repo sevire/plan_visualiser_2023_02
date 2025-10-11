@@ -911,10 +911,15 @@ class StaticPageView(DetailView):
     slug_url_kwarg = 'page_slug'
 
     def get_context_data(self, **kwargs):
+        markdown_text = markdown.markdown(self.object.content, extensions=['nl2br'])
+        navigation_html = StaticContent.generate_full_link_tree(current_slug=self.object.slug)
+        html = "<div class='text-page'>" + "<h1>" + self.object.title + "</h1>" + markdown_text + "</div>"
+
         context = super().get_context_data(**kwargs)
-        context['primary_heading'] = self.object.title
-        context['secondary_heading'] = ""
-        context['markdown_text'] = markdown.markdown(self.object.content, extensions=['nl2br'])
+        context['primary_heading'] = "Help Pages"
+        context['secondary_heading'] = self.object.title
+        context['markdown_text'] = html
+        context['navigation_html'] = navigation_html
         context['help_text'] = None
         return context
 
