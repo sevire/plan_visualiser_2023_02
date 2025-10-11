@@ -1050,7 +1050,7 @@ class StaticContent(models.Model):
             HTML string representing the navigation tree
         """
         active_class = ' class="active"' if self.slug == current_slug else ''
-        html = f'<li{active_class}><a href="/help/{self.slug}/">{self.title}</a>'
+        html = f'<li{active_class}><a href="../{self.slug}/">{self.title}</a>'
 
         children = self.children.all()
         if children.exists():
