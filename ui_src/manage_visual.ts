@@ -12,7 +12,7 @@ import {
   update_visual_activities
 } from "./plan_visualiser_api";
 import {toggle_expansion} from "./manage_plan_panel";
-import {highlight_activity, plot_visual} from "./plot_visual";
+import {clear_canvas, highlight_activity, plot_visual} from "./plot_visual";
 import {update_swimlane_for_activity_handler} from "./manage_swimlanes";
 import {update_style_for_activity_handler} from "./manage_styles";
 import {update_shape_for_activity_handler} from "./manage_shapes";
@@ -407,6 +407,9 @@ function select_for_edit(activity_id:string, clear=false) {
   });
 
   if (clear) {
+    // As current activity is not in the visual we need to clear the highlight on the visual.
+    clear_canvas("highlight")
+
     console.log("Clear is set - don't update visual fields (as this activity not in visual)")
   } else {
     // Now populate each of the visual related fields (only if activity is in the visual)
@@ -513,7 +516,9 @@ function select_for_edit(activity_id:string, clear=false) {
 async function manage_plan_activity_click(activity: any, activityDiv: HTMLDivElement, topLevelElements: any) {
   // If this element isn't already the current one, then make it the current one.
   // If it is already the current one, then this click will toggle its inclusion in the visual.
+  // Remove selection from the activity which is unselected and add to new activity - if it's in the visual
   if (activityDiv.classList.contains('current')) {
+    // The clicked activity is already the selected one so need to toggle its inclusion in the visual.
     console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
     const inVisual = activityDiv.classList.toggle('in-visual')
     if (inVisual) {

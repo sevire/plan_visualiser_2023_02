@@ -65,7 +65,7 @@ class VisualSettings:
         num_visuals_for_plan = plan.planvisual_set.count()
 
         # Only set defaults for field names that haven't been specified.
-        set_default("name", lambda: f"{plan.plan_name}-Visual-{num_visuals_for_plan+1:02d}")
+        set_default("name", lambda: f"{plan.plan_name}-Visual-{plan.visual_count+1:02d}")
         set_default("width", lambda: 1200)
         set_default("max_height", lambda: 800)
         set_default("include_title", lambda: False)

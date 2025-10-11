@@ -1219,6 +1219,8 @@ function select_for_edit(activity_id, clear = false) {
         }
     });
     if (clear) {
+        // As current activity is not in the visual we need to clear the highlight on the visual.
+        (0,_plot_visual__WEBPACK_IMPORTED_MODULE_2__.clear_canvas)("highlight");
         console.log("Clear is set - don't update visual fields (as this activity not in visual)");
     }
     else {
@@ -1295,7 +1297,9 @@ function manage_plan_activity_click(activity, activityDiv, topLevelElements) {
     return __awaiter(this, void 0, void 0, function* () {
         // If this element isn't already the current one, then make it the current one.
         // If it is already the current one, then this click will toggle its inclusion in the visual.
+        // Remove selection from the activity which is unselected and add to new activity - if it's in the visual
         if (activityDiv.classList.contains('current')) {
+            // The clicked activity is already the selected one so need to toggle its inclusion in the visual.
             console.log("Toggle inclusion in visual: " + activity.plan_data.unique_sticky_activity_id);
             const inVisual = activityDiv.classList.toggle('in-visual');
             if (inVisual) {
@@ -1786,6 +1790,7 @@ function get_visual_settings(visualId) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   clear_canvas: () => (/* binding */ clear_canvas),
 /* harmony export */   highlight_activity: () => (/* binding */ highlight_activity),
 /* harmony export */   initialise_canvases: () => (/* binding */ initialise_canvases),
 /* harmony export */   plot_visual: () => (/* binding */ plot_visual)

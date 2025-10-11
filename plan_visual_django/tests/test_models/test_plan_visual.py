@@ -33,7 +33,7 @@ class TestPlanVisual(TestCase):
 
         # Test driver table - visual attribute name: (value when not default, whether to use in default test, default value expected)
         attributes_to_test = {
-            "name": ("plan_visual_default_test_xx", True, "Plan 1-Visual-03"),  # There are 2 visuals in text fixtures so this is 3rd
+            "name": ("plan_visual_default_test_xx", True, "Plan 1-Visual-10"),  # There are 2 visuals in text fixtures so this is 3rd
             "width": (123, True, 1200),
             "max_height": (234, True, 800),
             "include_title": (True, True, False),

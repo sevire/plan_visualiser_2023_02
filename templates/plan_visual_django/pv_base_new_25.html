@@ -18,6 +18,7 @@
     <!-- Customised Bootstrap and app styling -->
     <link href="{% static 'plan_visual_django/bootstrap-icons/font/bootstrap-icons.css'%}" rel="stylesheet">
     <link href="{% static 'plan_visual_django/css/main-new-25.css' %}" rel="stylesheet">
+    <link href="{% static 'plan_visual_django/css/static_pages.css' %}" rel="stylesheet">
 
     <!-------------------------------------->
     <!-- SCRIPTS                          -->
@@ -25,7 +26,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="{% static 'plan_visual_django/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 
-    <title>{{ "title" }}</title>
+    <title>{{ primary_heading }}</title>
 
 </head>
 <body>
@@ -148,7 +149,7 @@
 <footer class="bg-light text-center text-lg-start mt-4 py-3 border-top">
     <div class="container">
         <span class="text-muted">
-            planononepage Version {{ "0.1.0" }}
+            planononepage Version {{ "v2.2.1-build.115-ALPHA" }}
         </span>
     </div>
 </footer>

@@ -102,12 +102,14 @@ class VisualFormForAdd(ModelForm):
             "default_timeline_plotable_style_even"
         )
 
-    def __init__(self, *args, **kwargs):
-        plan = kwargs.pop("plan", None)
-        user = kwargs.pop("user", None)
+    def __init__(self, *args, plan: Plan | None = None, user=None, **kwargs):
+        """
+        If 'plan' is provided, prepopulate defaults and filter style fields for the given 'user'.
+        Declaring 'plan' and 'user' explicitly avoids PyCharm's 'unreachable code' false positive.
+        """
         super(VisualFormForAdd, self).__init__(*args, **kwargs)
 
-        if plan is not None: # None means we have been called from POST processing so data already populated
+        if plan is not None:  # None means POST processing so data already populated
             field_defaults = VisualSettings.calculate_defaults_for_visual(plan)
 
             for field_name, field_default in field_defaults.items():
@@ -149,8 +151,7 @@ class VisualFormForEdit(ModelForm):
             "default_timeline_plotable_style_even"
         )
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Get correct queryset for styles relatig to this user plus shared styles

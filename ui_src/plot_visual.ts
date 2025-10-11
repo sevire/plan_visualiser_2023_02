@@ -333,7 +333,7 @@ export function plot_visual(captureImageFlag: boolean = false) {
   }
 }
 
-function clear_canvas(canvas_key: string): void {
+export function clear_canvas(canvas_key: string): void {
   const canvas_ctx = (window as any).canvas_info[canvas_key];
   // Get the context for each canvas
   console.log(`Clearing canvas ${canvas_key}`)
