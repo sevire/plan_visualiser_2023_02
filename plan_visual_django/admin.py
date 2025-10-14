@@ -24,13 +24,77 @@ admin.site.register(Permission)
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     """Admin configuration for the custom user model."""
-    list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    list_display = ("username", "email", "first_name", "last_name", "is_staff", "plan_count", "last_login", "is_currently_active")
     search_fields = ("username", "email")
+    list_filter = ("is_staff", "is_active", "last_login")
+
+    def plan_count(self, obj):
+        """Display the number of plans associated with this user."""
+        return obj.plan_set.count()
+    plan_count.short_description = "Plans"
+
+    def is_currently_active(self, obj):
+        """Check if user is currently active (logged in recently)."""
+        from django.utils import timezone
+        from datetime import timedelta
+        if obj.last_login:
+            time_threshold = timezone.now() - timedelta(minutes=30)
+            return obj.last_login >= time_threshold
+        return False
+    is_currently_active.boolean = True
+    is_currently_active.short_description = "Active Now"
+
+
+class AnonymousUserProxy(Plan):
+    """Proxy model to display anonymous users (session-based plans) in admin."""
+    class Meta:
+        proxy = True
+        verbose_name = "Anonymous User"
+        verbose_name_plural = "Anonymous Users"
+
+
+@admin.register(AnonymousUserProxy)
+class AnonymousUserAdmin(admin.ModelAdmin):
+    """Admin view for anonymous users identified by session_id."""
+    list_display = ["session_id", "plan_count_for_session", "last_activity", "plan_names"]
+    search_fields = ["session_id"]
+
+    def get_queryset(self, request):
+        """Only show plans with session_id (anonymous users)."""
+        qs = super().get_queryset(request)
+        return qs.filter(user__isnull=True, session_id__isnull=False).order_by('session_id')
+
+    def plan_count_for_session(self, obj):
+        """Count plans for this session."""
+        return Plan.objects.filter(session_id=obj.session_id).count()
+    plan_count_for_session.short_description = "Plans"
+
+    def last_activity(self, obj):
+        """Get the most recent plan modification for this session."""
+        # Since Plan doesn't have a timestamp field, we show the plan name as proxy
+        return "See Plans"
+    last_activity.short_description = "Last Activity"
+
+    def plan_names(self, obj):
+        """Show all plan names for this session."""
+        plans = Plan.objects.filter(session_id=obj.session_id)
+        names = [p.plan_name for p in plans[:3]]
+        result = ", ".join(names)
+        if plans.count() > 3:
+            result += f" (+{plans.count() - 3} more)"
+        return result
+    plan_names.short_description = "Plans"
+
+    def has_add_permission(self, request):
+        """Disable add functionality for this view."""
+        return False
 
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ["user", "plan_name", "file_name", "file_type_name"]
+    list_display = ["user", "session_id", "plan_name", "file_name", "file_type_name"]
+    list_filter = ["user", "file_type_name"]
+    search_fields = ["plan_name", "session_id", "user__username"]
 
 
 @admin.register(Color)
