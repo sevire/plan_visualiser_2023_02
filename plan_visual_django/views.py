@@ -703,7 +703,6 @@ def plot_visual(request, visual_id):
     return render(request, "plan_visual_django/planvisual_detail.html", context)
 
 
-@login_required
 def plot_visual_new_25(request, visual_id):
     """
     Screen for full dynamic editing of a visual for a given plan.
