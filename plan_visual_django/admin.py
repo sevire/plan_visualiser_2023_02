@@ -196,3 +196,236 @@ class HelpTextAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title', 'updated_at')
     search_fields = ('slug', 'title', 'content')
     prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
+
+
+# ==============================================================================
+# Health Dashboard View
+# ==============================================================================
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from django.db.models import Count, Avg, Max, Min
+from django.utils import timezone
+from django.conf import settings
+from datetime import timedelta
+from django.db import connection
+import time
+import os
+
+
+@staff_member_required
+def health_dashboard_view(request):
+    """
+    Display application health statistics.
+    Only accessible to staff/admin users.
+    """
+
+    # 1. System Health
+    try:
+        start = time.time()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        db_response_time = round((time.time() - start) * 1000, 2)  # in ms
+        db_status = "OK"
+    except Exception as e:
+        db_response_time = None
+        db_status = f"ERROR: {str(e)}"
+
+    # Get disk space
+    try:
+        media_root = settings.MEDIA_ROOT if hasattr(settings, 'MEDIA_ROOT') else os.path.join(settings.BASE_DIR, 'plan_files')
+        stat = os.statvfs(media_root)
+        total_space = stat.f_blocks * stat.f_frsize
+        free_space = stat.f_bavail * stat.f_frsize
+        used_space = total_space - free_space
+        disk_usage_percent = round((used_space / total_space) * 100, 2)
+    except Exception:
+        total_space = free_space = used_space = disk_usage_percent = None
+
+    # 2. User Statistics
+    total_registered_users = User.objects.count()
+    total_anonymous_sessions = Plan.objects.filter(
+        user__isnull=True, session_id__isnull=False
+    ).values('session_id').distinct().count()
+
+    now = timezone.now()
+    active_24h = User.objects.filter(last_login__gte=now - timedelta(hours=24)).count()
+    active_7d = User.objects.filter(last_login__gte=now - timedelta(days=7)).count()
+    active_30d = User.objects.filter(last_login__gte=now - timedelta(days=30)).count()
+
+    # 3. Plan Statistics
+    total_plans = Plan.objects.count()
+    registered_plans = Plan.objects.filter(user__isnull=False).count()
+    anonymous_plans = Plan.objects.filter(user__isnull=True, session_id__isnull=False).count()
+
+    # Plans by file type
+    plans_by_type = Plan.objects.values('file_type_name').annotate(
+        count=Count('id')
+    ).order_by('-count')
+
+    # Plans per registered user stats
+    user_plan_stats = Plan.objects.filter(user__isnull=False).values('user').annotate(
+        plan_count=Count('id')
+    ).aggregate(
+        avg=Avg('plan_count'),
+        min=Min('plan_count'),
+        max=Max('plan_count')
+    )
+
+    # Plans per anonymous session - grouped by session_id
+    anonymous_session_stats = Plan.objects.filter(
+        user__isnull=True, session_id__isnull=False
+    ).values('session_id').annotate(
+        plan_count=Count('id')
+    ).order_by('-plan_count')
+
+    # Calculate aggregate stats for anonymous sessions
+    anonymous_aggregate = anonymous_session_stats.aggregate(
+        avg=Avg('plan_count'),
+        min=Min('plan_count'),
+        max=Max('plan_count')
+    )
+
+    # 4. Visual Statistics
+    total_visuals = PlanVisual.objects.count()
+
+    visuals_per_plan = PlanVisual.objects.values('plan').annotate(
+        visual_count=Count('id')
+    ).aggregate(
+        avg=Avg('visual_count'),
+        min=Min('visual_count'),
+        max=Max('visual_count')
+    )
+
+    # Visuals per user
+    visuals_per_user = PlanVisual.objects.filter(
+        plan__user__isnull=False
+    ).values('plan__user').annotate(
+        visual_count=Count('id')
+    ).aggregate(
+        avg=Avg('visual_count'),
+        min=Min('visual_count'),
+        max=Max('visual_count')
+    )
+
+    # 5. Activity Statistics
+    total_plan_activities = PlanActivity.objects.count()
+
+    plan_activities_per_user = PlanActivity.objects.filter(
+        plan__user__isnull=False
+    ).values('plan__user').annotate(
+        activity_count=Count('id')
+    ).aggregate(
+        avg=Avg('activity_count'),
+        min=Min('activity_count'),
+        max=Max('activity_count')
+    )
+
+    total_visual_activities = VisualActivity.objects.count()
+    enabled_visual_activities = VisualActivity.objects.filter(enabled=True).count()
+    disabled_visual_activities = total_visual_activities - enabled_visual_activities
+
+    visual_activities_per_user = VisualActivity.objects.filter(
+        visual__plan__user__isnull=False
+    ).values('visual__plan__user').annotate(
+        activity_count=Count('id')
+    ).aggregate(
+        avg=Avg('activity_count'),
+        min=Min('activity_count'),
+        max=Max('activity_count')
+    )
+
+    # 6. Storage Statistics
+    try:
+        plan_files_dir = os.path.join(
+            settings.MEDIA_ROOT if hasattr(settings, 'MEDIA_ROOT') else settings.BASE_DIR,
+            'plan_files'
+        )
+        if os.path.exists(plan_files_dir):
+            total_files = 0
+            total_size = 0
+            file_sizes = []
+
+            for root, dirs, files in os.walk(plan_files_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    try:
+                        size = os.path.getsize(file_path)
+                        total_size += size
+                        file_sizes.append(size)
+                        total_files += 1
+                    except Exception:
+                        pass
+
+            total_size_mb = round(total_size / (1024 * 1024), 2)
+            avg_file_size_kb = round((total_size / total_files) / 1024, 2) if total_files > 0 else 0
+            largest_file_mb = round(max(file_sizes) / (1024 * 1024), 2) if file_sizes else 0
+        else:
+            total_files = total_size_mb = avg_file_size_kb = largest_file_mb = 0
+    except Exception:
+        total_files = total_size_mb = avg_file_size_kb = largest_file_mb = None
+
+    # 7. Recent Activity (last 20 plans)
+    recent_plans = Plan.objects.select_related('user').order_by('-id')[:20]
+
+    # Build context
+    context = {
+        # System Health
+        'db_status': db_status,
+        'db_response_time': db_response_time,
+        'total_space_gb': round(total_space / (1024**3), 2) if total_space else None,
+        'free_space_gb': round(free_space / (1024**3), 2) if free_space else None,
+        'disk_usage_percent': disk_usage_percent,
+
+        # User Stats
+        'total_registered_users': total_registered_users,
+        'total_anonymous_sessions': total_anonymous_sessions,
+        'active_24h': active_24h,
+        'active_7d': active_7d,
+        'active_30d': active_30d,
+
+        # Plan Stats
+        'total_plans': total_plans,
+        'registered_plans': registered_plans,
+        'anonymous_plans': anonymous_plans,
+        'plans_by_type': plans_by_type,
+        'user_plan_avg': round(user_plan_stats['avg'], 2) if user_plan_stats['avg'] else 0,
+        'user_plan_min': user_plan_stats['min'] or 0,
+        'user_plan_max': user_plan_stats['max'] or 0,
+        'anonymous_plan_avg': round(anonymous_aggregate['avg'], 2) if anonymous_aggregate['avg'] else 0,
+        'anonymous_plan_min': anonymous_aggregate['min'] or 0,
+        'anonymous_plan_max': anonymous_aggregate['max'] or 0,
+        'anonymous_session_stats': anonymous_session_stats[:10],  # Top 10
+
+        # Visual Stats
+        'total_visuals': total_visuals,
+        'visuals_per_plan_avg': round(visuals_per_plan['avg'], 2) if visuals_per_plan['avg'] else 0,
+        'visuals_per_plan_min': visuals_per_plan['min'] or 0,
+        'visuals_per_plan_max': visuals_per_plan['max'] or 0,
+        'visuals_per_user_avg': round(visuals_per_user['avg'], 2) if visuals_per_user['avg'] else 0,
+        'visuals_per_user_min': visuals_per_user['min'] or 0,
+        'visuals_per_user_max': visuals_per_user['max'] or 0,
+
+        # Activity Stats
+        'total_plan_activities': total_plan_activities,
+        'plan_activities_per_user_avg': round(plan_activities_per_user['avg'], 2) if plan_activities_per_user['avg'] else 0,
+        'plan_activities_per_user_min': plan_activities_per_user['min'] or 0,
+        'plan_activities_per_user_max': plan_activities_per_user['max'] or 0,
+        'total_visual_activities': total_visual_activities,
+        'enabled_visual_activities': enabled_visual_activities,
+        'disabled_visual_activities': disabled_visual_activities,
+        'visual_activities_per_user_avg': round(visual_activities_per_user['avg'], 2) if visual_activities_per_user['avg'] else 0,
+        'visual_activities_per_user_min': visual_activities_per_user['min'] or 0,
+        'visual_activities_per_user_max': visual_activities_per_user['max'] or 0,
+
+        # Storage Stats
+        'total_files': total_files,
+        'total_size_mb': total_size_mb,
+        'avg_file_size_kb': avg_file_size_kb,
+        'largest_file_mb': largest_file_mb,
+
+        # Recent Activity
+        'recent_plans': recent_plans,
+    }
+
+    return render(request, 'admin/health_dashboard.html', context)
