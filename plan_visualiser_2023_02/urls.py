@@ -20,9 +20,11 @@ from django.views.generic import RedirectView
 import plan_visual_django
 from plan_visual_django import views
 from plan_visual_django.views import CustomLoginView
+from plan_visual_django.admin import health_dashboard_view
 
 urlpatterns = [
     path("", RedirectView.as_view(url='pv/textpages/landing-page/', permanent=True), name='index'),
+    path("admin/health/", health_dashboard_view, name='admin_health'),
     path("admin/", admin.site.urls),
     path("pv/", include('plan_visual_django.urls')),
     path('api/', include('api.urls')),
