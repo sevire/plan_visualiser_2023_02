@@ -616,16 +616,14 @@ function update_swimlane_for_activity_handler(unique_id, swimlane_id) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   add_arrow_to_element: () => (/* binding */ add_arrow_to_element),
-/* harmony export */   update_swimlane_for_activity_handler: () => (/* binding */ update_swimlane_for_activity_handler),
 /* harmony export */   update_timeline_order: () => (/* binding */ update_timeline_order),
 /* harmony export */   update_timeline_panel: () => (/* binding */ update_timeline_panel)
 /* harmony export */ });
 /* harmony import */ var _plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plan_visualiser_api */ "./ui_src/plan_visualiser_api.ts");
 /* harmony import */ var _plot_visual__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./plot_visual */ "./ui_src/plot_visual.ts");
-/* harmony import */ var _manage_visual__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./manage_visual */ "./ui_src/manage_visual.ts");
-/* harmony import */ var _manage_swimlanes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./manage_swimlanes */ "./ui_src/manage_swimlanes.ts");
-/* harmony import */ var _widgets__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./widgets */ "./ui_src/widgets.ts");
-/* harmony import */ var _manage_styles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./manage_styles */ "./ui_src/manage_styles.ts");
+/* harmony import */ var _manage_swimlanes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./manage_swimlanes */ "./ui_src/manage_swimlanes.ts");
+/* harmony import */ var _widgets__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./widgets */ "./ui_src/widgets.ts");
+/* harmony import */ var _manage_styles__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./manage_styles */ "./ui_src/manage_styles.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -635,7 +633,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -670,9 +667,9 @@ function add_arrow_to_element(element, direction, id, visual_id, timeline_record
     });
 }
 function createAndPopulateDropdown(dropdownParent, styleName, styleData, visualId, timelineRecordId, isOdd) {
-    let dropDownButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_4__.createDropdown)(dropdownParent, styleName);
-    (0,_widgets__WEBPACK_IMPORTED_MODULE_4__.populateDropdown)(dropDownButton, styleData.map(obj => [obj.style_name, obj.id]), (style_id) => __awaiter(this, void 0, void 0, function* () {
-        yield (0,_manage_styles__WEBPACK_IMPORTED_MODULE_5__.update_style_for_timeline_handler)(visualId, timelineRecordId, style_id, isOdd);
+    let dropDownButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_3__.createDropdown)(dropdownParent, styleName);
+    (0,_widgets__WEBPACK_IMPORTED_MODULE_3__.populateDropdown)(dropDownButton, styleData.map(obj => [obj.style_name, obj.id]), (style_id) => __awaiter(this, void 0, void 0, function* () {
+        yield (0,_manage_styles__WEBPACK_IMPORTED_MODULE_4__.update_style_for_timeline_handler)(visualId, timelineRecordId, style_id, isOdd);
         yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_activity_data)(window.visual_id);
         // Need visual settings as it includes visual height which is needed to plot.
         const response = yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_settings)(window.visual_id);
@@ -719,8 +716,8 @@ function update_timeline_panel(timeline_html_panel, visual_id) {
             buttonGroup1.setAttribute('aria-label', 'Basic Example');
             controlTD.appendChild(buttonGroup1);
             // Add the up and down arrows to the button group
-            (0,_manage_swimlanes__WEBPACK_IMPORTED_MODULE_3__.add_arrow_button_to_element)(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
-            (0,_manage_swimlanes__WEBPACK_IMPORTED_MODULE_3__.add_arrow_button_to_element)(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
+            (0,_manage_swimlanes__WEBPACK_IMPORTED_MODULE_2__.add_arrow_button_to_element)(timeline_html_panel, buttonGroup1, "up", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
+            (0,_manage_swimlanes__WEBPACK_IMPORTED_MODULE_2__.add_arrow_button_to_element)(timeline_html_panel, buttonGroup1, "down", timeline_record.sequence_number, visual_id, timeline_record, update_timeline_order, update_timeline_panel);
             // Create second out of two button groups - this one for the toggle button
             const buttonGroup2 = document.createElement("div");
             buttonGroup2.classList.add("btn-group", "btn-group-sm", "toggle-control", "me-1");
@@ -728,11 +725,11 @@ function update_timeline_panel(timeline_html_panel, visual_id) {
             buttonGroup2.setAttribute('aria-label', 'Basic Example');
             let timelineToggleButton;
             if (timeline_record.enabled) {
-                timelineToggleButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_4__.create_button_with_icon)("bi-check2");
+                timelineToggleButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_3__.create_button_with_icon)("bi-check2");
                 timelineToggleButton.classList.add("active");
             }
             else {
-                timelineToggleButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_4__.create_button_with_icon)("bi-x-lg");
+                timelineToggleButton = (0,_widgets__WEBPACK_IMPORTED_MODULE_3__.create_button_with_icon)("bi-x-lg");
             }
             timelineToggleButton.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
                 const data = [
@@ -803,21 +800,6 @@ function update_timeline_order(visual_id, this_timeline_object, direction) {
             }
         }
         yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.update_timeline_records)(visual_id, timeline_update_object);
-    });
-}
-function update_swimlane_for_activity_handler(unique_id, swimlane_id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // This is a handler function which will be passed to the Dropdown class for the swimlane dropdown in the activity
-        // panel.  It will update the swimlane for the indicated activity to the one with the swimlane name supplied.
-        const activity = (0,_manage_visual__WEBPACK_IMPORTED_MODULE_2__.get_plan_activity)(unique_id);
-        console.log(`Updating swimlane id to ${swimlane_id}`);
-        const data = [
-            {
-                id: activity.visual_data.id,
-                swimlane: swimlane_id
-            }
-        ];
-        yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.update_visual_activities)(activity.visual_data.visual.id, data);
     });
 }
 
@@ -2185,17 +2167,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   checkKey: () => (/* binding */ checkKey),
 /* harmony export */   getIdFromRowIndex: () => (/* binding */ getIdFromRowIndex),
-/* harmony export */   get_activities_from_server: () => (/* binding */ get_activities_from_server),
 /* harmony export */   get_activity: () => (/* binding */ get_activity),
-/* harmony export */   get_activity_data: () => (/* binding */ get_activity_data),
 /* harmony export */   get_rendered_visual: () => (/* binding */ get_rendered_visual),
 /* harmony export */   loadActivity: () => (/* binding */ loadActivity),
-/* harmony export */   load_activities: () => (/* binding */ load_activities),
 /* harmony export */   move: () => (/* binding */ move),
 /* harmony export */   selectRow: () => (/* binding */ selectRow),
-/* harmony export */   selectRowByIndex: () => (/* binding */ selectRowByIndex),
-/* harmony export */   updateActivity: () => (/* binding */ updateActivity),
-/* harmony export */   update_server_visual_activity: () => (/* binding */ update_server_visual_activity)
+/* harmony export */   updateActivity: () => (/* binding */ updateActivity)
 /* harmony export */ });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _drawing__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawing */ "./ui_src/drawing.ts");
@@ -2204,30 +2181,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var return_data;
-function get_activity_data() {
-    let json_activities = document.getElementById("json_activities");
-    console.log("json_activities - " + json_activities);
-    if (json_activities.textContent == null) {
-        return {};
-    }
-    else {
-        return JSON.parse(json_activities.textContent);
-    }
-}
-function get_activities_from_server(visual_id) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfCookieName = 'csrftoken';
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfHeaderName = "X-CSRFTOKEN";
-    var url_string = `/api/v1/visual_activities/${visual_id}/`;
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(url_string)
-        .then((response) => {
-        return_data = response.data;
-        load_activities(JSON.parse(return_data));
-    })
-        .catch(error => {
-        console.log("Error...");
-        console.log(error);
-    });
-}
 function get_activity(visual_id, unique_activity_id) {
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfCookieName = 'csrftoken';
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -2241,31 +2194,6 @@ function get_activity(visual_id, unique_activity_id) {
         console.log("Error...");
         console.log(error);
     });
-}
-function load_activities(activities) {
-    console.log("loading activities");
-    // Gets activities for the visual from server and loads them into activities table on the page
-    console.log(activities);
-    let activities_table = document.getElementById("activities_table");
-    activities_table.innerHTML = "";
-    for (let activity of activities) {
-        let row = activities_table.insertRow();
-        row.onclick = (e) => {
-            let element = e.target;
-            let row_element = element.closest("tr");
-            console.log("element clicked...");
-            console.log(row_element);
-            selectRow(row_element);
-        };
-        let cell = row.insertCell();
-        cell.innerHTML = activity.activity_name;
-        cell = row.insertCell();
-        cell.innerHTML = activity.unique_id_from_plan;
-        cell.hidden = true;
-        cell.classList.add("unique_id");
-    }
-    // Select first row
-    selectRowByIndex(1);
 }
 function loadActivity(activity_data) {
     // Passed in activity data (obtained from server) and update activity information on this page
@@ -2328,15 +2256,6 @@ function selectRow(tr) {
     }
     tr.classList.add("selected");
     updateActivity(tr.rowIndex);
-}
-function selectRowByIndex(row_index) {
-    // Set row at row_index as selected
-    console.log("selectRowByIndex called...");
-    console.log(row_index);
-    let layout_table = document.getElementById("activities_table");
-    console.log("layout_table: " + layout_table);
-    let indexed_row = layout_table.rows[row_index - 1];
-    return selectRow(indexed_row);
 }
 function move(direction) {
     // Move the selected activity in the specified direction
@@ -2403,20 +2322,6 @@ function checkKey(event) {
         move("down");
     }
 }
-function update_server_visual_activity(visual_id, activity_id, activity_data) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfCookieName = 'csrftoken';
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfHeaderName = "X-CSRFTOKEN";
-    var url_string = `/api/v1/visual_activities/${visual_id}/${activity_id}`;
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put(url_string, activity_data)
-        .then((response) => {
-        return_data = response.data;
-        loadActivity(JSON.parse(return_data));
-    })
-        .catch(error => {
-        console.log("Error...");
-        console.log(error);
-    });
-}
 function get_rendered_visual(visual_id) {
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfCookieName = 'csrftoken';
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -2449,15 +2354,12 @@ function get_rendered_visual(visual_id) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Dropdown: () => (/* binding */ Dropdown),
 /* harmony export */   add_tooltip: () => (/* binding */ add_tooltip),
 /* harmony export */   clearElement: () => (/* binding */ clearElement),
 /* harmony export */   createDropdown: () => (/* binding */ createDropdown),
 /* harmony export */   create_button_with_icon: () => (/* binding */ create_button_with_icon),
 /* harmony export */   populateDropdown: () => (/* binding */ populateDropdown)
 /* harmony export */ });
-/* harmony import */ var _plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plan_visualiser_api */ "./ui_src/plan_visualiser_api.ts");
-/* harmony import */ var _plot_visual__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./plot_visual */ "./ui_src/plot_visual.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2467,48 +2369,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-
-class Dropdown {
-    constructor(id, activity_unique_id, options, select_handler) {
-        this.activity_unique_id = activity_unique_id;
-        this.options = options;
-        this.element = document.getElementById(id);
-        this.selectedOption = this.options[0][0];
-        this.select_handler = select_handler;
-        this.generate();
-    }
-    generate() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const select = document.createElement('select');
-            select.id = "select_element";
-            this.options.forEach(option => {
-                const option_text = option[0];
-                const option_id = option[1];
-                const optElement = document.createElement('option');
-                optElement.text = option_text;
-                optElement.value = option_text;
-                optElement.id = option_id.toString();
-                select.add(optElement);
-            });
-            select.addEventListener('click', (event) => __awaiter(this, void 0, void 0, function* () {
-                const targetSelectedElement = event.target;
-                const targetOptionElement = targetSelectedElement.options[targetSelectedElement.selectedIndex];
-                const swimlane_id = parseInt(targetOptionElement.id);
-                console.log(`Swimlane selected: text:${this.selectedOption}, id:${swimlane_id}`);
-                yield this.select_handler(this.activity_unique_id, swimlane_id);
-                yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_activity_data)(window.visual_id);
-                // Need visual settings as it included visual height which is needed to plot.
-                const response = yield (0,_plan_visualiser_api__WEBPACK_IMPORTED_MODULE_0__.get_visual_settings)(window.visual_id);
-                window.visual_settings = response.data;
-                (0,_plot_visual__WEBPACK_IMPORTED_MODULE_1__.plot_visual)();
-            }));
-            if (this.element) {
-                this.element.appendChild(select);
-            }
-        });
-    }
-}
 function create_button_with_icon(icon_name) {
     const button = document.createElement("button");
     button.classList.add("btn", "btn-primary");

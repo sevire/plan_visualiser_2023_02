@@ -3,35 +3,6 @@ import {initialise_canvas} from "./drawing";
 import {plot_visual} from "./plot_visual";
 
 var return_data: any
-
-export function get_activity_data(): any {
-    let json_activities = document.getElementById("json_activities")!
-    console.log("json_activities - " + json_activities)
-    if (json_activities.textContent == null) {
-        return {}
-    } else {
-        return JSON.parse(json_activities.textContent)
-    }
-}
-
-export function get_activities_from_server(visual_id: number): any {
-  axios.defaults.xsrfCookieName = 'csrftoken'
-  axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-
-  var url_string = `/api/v1/visual_activities/${visual_id}/`
-
-  axios.get(url_string)
-    .then((response) => {
-        return_data = response.data
-        load_activities(JSON.parse(return_data))
-      })
-    .catch(error => {
-        console.log("Error...")
-        console.log(error)
-      }
-    );
-}
-
 export function get_activity(visual_id: string, unique_activity_id: string): any {
   axios.defaults.xsrfCookieName = 'csrftoken'
   axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
@@ -49,33 +20,6 @@ export function get_activity(visual_id: string, unique_activity_id: string): any
       }
     );
 }
-
-export function load_activities(activities: any): any {
-  console.log("loading activities")
-  // Gets activities for the visual from server and loads them into activities table on the page
-  console.log(activities)
-  let activities_table: HTMLTableElement = <HTMLTableElement>document.getElementById("activities_table")
-  activities_table.innerHTML = ""
-  for (let activity of activities) {
-    let row = activities_table.insertRow()
-    row.onclick = (e) => {
-      let element: HTMLTableElement = e.target as HTMLTableElement
-      let row_element = element.closest("tr")
-        console.log("element clicked...")
-        console.log(row_element)
-        selectRow(row_element as HTMLTableRowElement)
-    }
-    let cell = row.insertCell()
-    cell.innerHTML = activity.activity_name
-    cell = row.insertCell()
-    cell.innerHTML = activity.unique_id_from_plan
-    cell.hidden = true
-    cell.classList.add("unique_id")
-  }
-  // Select first row
-  selectRowByIndex(1)
-}
-
 export function loadActivity(activity_data: any) {
   // Passed in activity data (obtained from server) and update activity information on this page
   let activities_table: HTMLTableElement = <HTMLTableElement>document.getElementById("layout_activities")
@@ -144,17 +88,6 @@ export function selectRow(tr: HTMLTableRowElement) {
   tr.classList.add("selected")
   updateActivity(tr.rowIndex)
 }
-
-export function selectRowByIndex(row_index: number) {
-  // Set row at row_index as selected
-  console.log("selectRowByIndex called...")
-  console.log(row_index)
-  let layout_table: HTMLTableElement = document.getElementById("activities_table") as HTMLTableElement
-  console.log("layout_table: " + layout_table)
-  let indexed_row: HTMLTableRowElement = layout_table.rows[row_index-1] as HTMLTableRowElement
-  return selectRow(indexed_row)
-}
-
 export function move(direction: string) {
   // Move the selected activity in the specified direction
   console.log("move called with direction: " + direction)
@@ -219,25 +152,6 @@ export function checkKey(event: any) {
     move("down")
   }
 }
-
-export function update_server_visual_activity(visual_id: string, activity_id: string, activity_data: any) {
-  axios.defaults.xsrfCookieName = 'csrftoken'
-  axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-
-  var url_string = `/api/v1/visual_activities/${visual_id}/${activity_id}`
-
-  axios.put(url_string, activity_data)
-    .then((response) => {
-        return_data = response.data
-        loadActivity(JSON.parse(return_data))
-      })
-    .catch(error => {
-        console.log("Error...")
-        console.log(error)
-      }
-    );
-}
-
 export function get_rendered_visual(visual_id:number): any {
   axios.defaults.xsrfCookieName = 'csrftoken'
   axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"

@@ -215,18 +215,3 @@ export async function update_timeline_order(visual_id: number, this_timeline_obj
   }
   await update_timeline_records(visual_id, timeline_update_object)
   }
-
-  export async function update_swimlane_for_activity_handler(unique_id:string, swimlane_id:number) {
-    // This is a handler function which will be passed to the Dropdown class for the swimlane dropdown in the activity
-    // panel.  It will update the swimlane for the indicated activity to the one with the swimlane name supplied.
-    const activity = get_plan_activity(unique_id)
-    console.log(`Updating swimlane id to ${swimlane_id}`)
-
-    const data = [
-    {
-      id: activity.visual_data.id,
-      swimlane: swimlane_id
-    }
-  ]
-  await update_visual_activities(activity.visual_data.visual.id, data)
-  }

@@ -20,7 +20,6 @@ urlpatterns = [
     path("add-auto-visual/<int:plan_id>", views.add_auto_visual, name="add-auto-visual"),
     path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
-    path("visual/<int:visual_id>/", views.plot_visual, name='plot-visual'),
     path("visual-new-25/<int:visual_id>/", views.plot_visual_new_25, name='plot-visual-new-25'),
 
     # Visual features management
