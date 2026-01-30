@@ -21,3 +21,7 @@ The app has the following broad features:
     - Define formatting for swimlanes, activities, milestones
     - Add timeline labels for Months, Quarters etc.
     - Export the visual as an image for pasting into PowerPoint slide or other application.
+
+### Documentation
+
+For details on our documentation approach and best practices, see [DOCUMENTATION_STRATEGY.md](./DOCUMENTATION_STRATEGY.md).
