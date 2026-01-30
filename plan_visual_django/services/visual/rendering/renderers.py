@@ -2,168 +2,136 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Dict, List
 from plan_visual_django.models import VisualActivity, PlotableStyle, Color
 from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
-from plan_visual_django.services.visual.rendering.visual_elements import VisualElementCollection, VisualElement
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
 
 
 class VisualRenderer(ABC):
     """
-    An object which carries out the physical plotting of objects within the visual.
+    Base class for all renderers that convert Plotables into a target medium.
+
+    Architecture:
+    - Takes plotables organized by layer (timelines, swimlanes, activities)
+    - Layer order determines z-index/stacking order in the rendered output
+    - Handles arbitrary nesting depth of plotables (e.g., timelines contain timeline labels)
+    - Each subclass implements render_plotable() for medium-specific rendering
     """
 
-    def render_visual(self, visual: VisualElementCollection):
-        for collection in visual.collection:
-            self.render_collection(collection)
-
-    def render_collection(self, collection: VisualElementCollection):
+    def render_from_iterable(self, visual_plotables: Dict[str, Iterable]):
         """
-        Recursive method which iterates through a collection and either plots the object if it is a Plotable, or
-        calls this method recursively if the item is another collection.
+        Main entry point for rendering. Takes plotables organized by layer:
+        {
+            "timelines": [...],         # Background layer
+            "swimlanes": [...],         # Middle layer
+            "visual_activities": [...]  # Foreground layer
+        }
 
-        :param collection:
-        :return:
+        Layer order determines z-index in final output. Iterates through layers
+        and recursively renders nested structures.
+
+        :param visual_plotables: Dictionary mapping layer names to iterables of Plotables
+        :return: Renderer-specific output (defined by _finalize_render())
         """
-        for item, level in collection.iter():
-            if type(item) == type(VisualElement) or issubclass(type(item), VisualElement):
-                plotable = item.plot_element()
-                self.render_plotable(plotable)
-            elif type(item) == type(VisualElementCollection):
-                self.render_collection(item)
-            else:
-                raise Exception(f"Unexpected type {type(item)} when plotting visual")
+        for layer_name, plotable_iterable in visual_plotables.items():
+            self._render_iterable(plotable_iterable)
+        return self._finalize_render()
 
+    def _render_iterable(self, plotable_iterable: Plotable | Iterable):
+        """
+        Recursively renders nested iterables of plotables.
+        Handles arbitrary nesting depth (e.g., timeline -> timeline_labels).
+
+        :param plotable_iterable: Either a single Plotable or an iterable containing
+                                  Plotables and/or nested iterables
+        """
+        if isinstance(plotable_iterable, Plotable):
+            self.render_plotable(plotable_iterable)
+        elif isinstance(plotable_iterable, Iterable):
+            for item in plotable_iterable:
+                self._render_iterable(item)
+        else:
+            raise TypeError(f"Expected Plotable or Iterable, got {type(plotable_iterable)}")
 
     @abstractmethod
-    def render_plotable(self, item: Plotable):
+    def render_plotable(self, plotable: Plotable):
+        """
+        Render a single plotable to the target medium.
+        Must be implemented by each subclass for their specific output format.
+
+        :param plotable: The Plotable object to render
+        """
         pass
+
+    def _finalize_render(self):
+        """
+        Called after all plotables have been rendered.
+        Override to return medium-specific output.
+
+        :return: The final rendered output (format depends on subclass)
+        """
+        return None
 
 
 class CanvasRenderer(VisualRenderer):
     """
-    Carries out the plotting activities for plotting on a Canvas on a web page.
+    Renders plotables as JSON data structures for HTML Canvas rendering in the browser.
 
-    Note that unlike other plotters, this class doesn't carry out the physical plotting as that needs to happen within
-    the browser.  This class will create the object which will then be converted to a JSON string and sent to the
-    browser to actually plot the shapes on the canvas.
+    This renderer doesn't perform actual drawing - it creates data structures that
+    are serialized to JSON and sent to the browser, where JavaScript renders them
+    onto HTML canvas elements.
+
+    Output format: Dictionary mapping layer names to lists of canvas objects
+    {
+        "timelines": [{shape_data}, {shape_data}, ...],
+        "swimlanes": [{shape_data}, {shape_data}, ...],
+        "visual_activities": [{shape_data}, {shape_data}, ...]
+    }
     """
+
     def __init__(self):
-        """
-        Set up object to capture plotted information which will get sent to browser as part of a Django template.
-        """
-        self.browser_data = {
-            'settings': {
-            },
-            'shapes': []
-        }
+        """Initialize canvas renderer with empty output structure."""
+        self.canvas_objects = {}
+        self.current_layer = None
 
-    @staticmethod
-    def color_to_tuple(color: Color):
+    def render_from_iterable(self, visual_plotables: Dict[str, Iterable]):
         """
-        Takes a color record from database which includes RGBA and returns a tuple which can be serialised
-        into JSON
+        Override to track which layer we're rendering for proper organization.
 
-        :return:
+        :param visual_plotables: Dictionary of layer_name -> plotables
+        :return: Dictionary of layer_name -> rendered canvas objects
         """
-        return (
-            color.red,
-            color.green,
-            color.blue,
-            color.alpha
-        )
+        for layer_name, plotable_iterable in visual_plotables.items():
+            self.current_layer = layer_name
+            self.canvas_objects[layer_name] = []
+            self._render_iterable(plotable_iterable)
 
-    def format_to_dict(
-            self,
-            shape_format: PlotableStyle,
-            text_vertical_alignment: VisualActivity.VerticalAlignment,
-            text_flow: VisualActivity.TextFlow,
-            external_text_flag
-    ):
+        return self.canvas_objects
+
+    def _render_iterable(self, plotable_iterable: Plotable | Iterable):
         """
-        Creates simplified dict version of the object to allow JSON serialisation within template.
-
-        :param external_text_flag: Indicates that text is to be positioned outside the shape but other layout options
-                                   to be applied still.  Intended for milestone type shapes where the shape is too small
-                                   for the text to be positioned inside it.
-                                   NOTE: This isn't selected by the user, it's automatically set when converting
-                                   activities to plotables, based on whether the activity is a milestone or not.
-        :param text_flow:
-        :param text_vertical_alignment:
-        :param shape_format:
-        :return:
+        Override to accumulate rendered objects in current layer.
         """
-        shape_format_dict = {
-            "line_style": {
-                "line_color": self.color_to_tuple(shape_format.line_color),
-                "line_thickness": shape_format.line_thickness,
-            },
-            "fill_style": {
-                "fill_color": self.color_to_tuple(shape_format.fill_color),
-            },
-            "text_format": {
-                "vertical_align": text_vertical_alignment.name,
-                "text_flow": text_flow.name,
-                "text_color": self.color_to_tuple(shape_format.font_color),
-                "external_text_flag": external_text_flag,
-                "font": shape_format.font.font_name,
-                "font_size": shape_format.font_size,
-            }
-        }
-        return shape_format_dict
-
-    def render_visual(self, visual_collection: VisualElementCollection):
-        """
-        For the canvas plotter, the plot data will be accumulated in an object which then needs to be returned so that
-        it can be included within the template and sent to the browser.
-
-        :param visual:
-        :return:
-        """
-        width, height = visual_collection.get_dimensions()
-        self.browser_data['settings']['canvas_width'] = width
-        self.browser_data['settings']['canvas_height'] = height
-        super().render_visual(visual_collection)
-        return self.browser_data
-
-    def _render_iterable(self, plotable_iterable: Plotable | Iterable[Iterable | Plotable], rendered_objects: List[Dict]):
         if isinstance(plotable_iterable, Plotable):
-            rendered_objects.extend(self.render_plotable(plotable_iterable))
+            rendered_objects = self.render_plotable(plotable_iterable)
+            self.canvas_objects[self.current_layer].extend(rendered_objects)
         elif isinstance(plotable_iterable, Iterable):
-            for next_plotable_iterable in plotable_iterable:
-                self._render_iterable(next_plotable_iterable, rendered_objects)
+            for item in plotable_iterable:
+                self._render_iterable(item)
         else:
-            raise TypeError(f"Unsupported type when rendering to Canvas {type(plotable_iterable)}")
-
-    def render_from_iterable(self, visual_plotables):
-        """
-        Replacement for original plot_visual to remove need for the Collection class.
-
-        Input will be a dictionary of iterables, where each dict entry will be used to create the canvas objects for
-        one canvas, and each canvas will be given a z-value to represent which layer it sits in the final rendered
-        visual.  Canvases will be positioned back to front, with the first canvas being at the back.
-
-        Output will be an object which can easily be rendered to JSON within the API.  All structure of the visual will
-        be lost apart from which canvas an object appears in.
-
-        :return:
-        """
-        canvas_objects = {}
-
-        for canvas in visual_plotables:
-            canvas_objects[canvas] = []
-            plotable_iterable = visual_plotables[canvas]
-            self._render_iterable(plotable_iterable, canvas_objects[canvas])
-
-        return canvas_objects
+            raise TypeError(f"Expected Plotable or Iterable, got {type(plotable_iterable)}")
 
     def render_plotable(self, item: Plotable):
-        # ToDo: Replace rectangle with more generic plotable and associated processing.
         """
-        Return structure with information required for browser to plot the shape.  Note when we send this to the
-        client for plotting on an HTML canvas, all context will be lost, we are just plotting shapes on the screen.
-        So any logic around positioning of objects (e.g. text layout) needs to be here.
+        Converts a Plotable into JSON-serializable canvas rendering data.
 
-        :param scale_factor:
-        :param item:
-        :return:
+        Note: A single Plotable may produce multiple canvas objects (e.g., separate
+        objects for shape and text). Text positioning logic is calculated here since
+        the browser only receives flat drawing instructions.
+
+        :param item: The Plotable to render
+        :return: List of canvas object dictionaries
         """
         if isinstance(item, RectangleBasedPlotable):
             # Note a Plotable can be rendered as more than one canvas object; e.g. one for shape, one for text.
@@ -206,5 +174,216 @@ class CanvasRenderer(VisualRenderer):
         else:
             raise ValueError(f"item of type which can't be rendered {item}:{item.__class__.__name__}")
 
-    def render_collection(self, collection: VisualElementCollection):
-        super().render_collection(collection)
+
+class PowerPointRenderer(VisualRenderer):
+    """
+    Renders plotables as shapes on a PowerPoint slide.
+
+    This renderer creates actual PowerPoint shapes using python-pptx library,
+    drawing directly onto a slide with proper layering (timelines at back,
+    activities at front).
+
+    The coordinate system is converted from the visual's coordinate system
+    (arbitrary units) to PowerPoint's coordinate system (EMUs/Inches).
+    """
+
+    # PowerPoint uses EMUs (English Metric Units) internally, but we work in inches
+    # Standard PowerPoint slide is 10" x 7.5"
+    SLIDE_WIDTH = Inches(10)
+    SLIDE_HEIGHT = Inches(7.5)
+
+    def __init__(self, presentation: Presentation = None, slide_index: int = None):
+        """
+        Initialize PowerPoint renderer.
+
+        :param presentation: Optional existing Presentation. If None, creates new one.
+        :param slide_index: Optional slide index to use. If None, adds a new blank slide.
+        """
+        if presentation is None:
+            self.presentation = Presentation()
+            # Add a blank slide layout (layout 6 is typically blank)
+            blank_slide_layout = self.presentation.slide_layouts[6]
+            self.slide = self.presentation.slides.add_slide(blank_slide_layout)
+        else:
+            self.presentation = presentation
+            if slide_index is not None:
+                self.slide = self.presentation.slides[slide_index]
+            else:
+                blank_slide_layout = self.presentation.slide_layouts[6]
+                self.slide = self.presentation.slides.add_slide(blank_slide_layout)
+
+        # Will be set during rendering to calculate coordinate conversion
+        self.visual_width = None
+        self.visual_height = None
+        self.scale_factor = None
+
+    def render_from_iterable(self, visual_plotables: Dict[str, Iterable]):
+        """
+        Override to calculate visual dimensions and scale factor before rendering.
+
+        :param visual_plotables: Dictionary of layer_name -> plotables
+        :return: The Presentation object with rendered slide
+        """
+        # Calculate the bounding box of all plotables to determine scale
+        self._calculate_visual_dimensions(visual_plotables)
+
+        # Now render with the parent implementation
+        super().render_from_iterable(visual_plotables)
+
+        return self.presentation
+
+    def _calculate_visual_dimensions(self, visual_plotables: Dict[str, Iterable]):
+        """
+        Calculate the total dimensions of the visual by examining all plotables.
+        Sets scale factor to fit visual onto PowerPoint slide.
+        """
+        min_left = float('inf')
+        min_top = float('inf')
+        max_right = float('-inf')
+        max_bottom = float('-inf')
+
+        def update_bounds(plotable: Plotable):
+            nonlocal min_left, min_top, max_right, max_bottom
+            min_left = min(min_left, plotable.get_left())
+            min_top = min(min_top, plotable.get_top())
+            max_right = max(max_right, plotable.get_right())
+            max_bottom = max(max_bottom, plotable.get_bottom())
+
+        def traverse(item):
+            if isinstance(item, Plotable):
+                update_bounds(item)
+            elif isinstance(item, Iterable):
+                for sub_item in item:
+                    traverse(sub_item)
+
+        for layer_plotables in visual_plotables.values():
+            traverse(layer_plotables)
+
+        self.visual_width = max_right - min_left
+        self.visual_height = max_bottom - min_top
+
+        # Calculate scale factor to fit on slide with some margin
+        margin = Inches(0.5)
+        available_width = self.SLIDE_WIDTH - 2 * margin
+        available_height = self.SLIDE_HEIGHT - 2 * margin
+
+        scale_x = available_width / self.visual_width if self.visual_width > 0 else 1
+        scale_y = available_height / self.visual_height if self.visual_height > 0 else 1
+
+        # Use the smaller scale to ensure it fits
+        self.scale_factor = min(scale_x, scale_y)
+
+        # Store offset to center the visual
+        self.offset_left = margin + (available_width - self.visual_width * self.scale_factor) / 2
+        self.offset_top = margin + (available_height - self.visual_height * self.scale_factor) / 2
+
+    def _convert_to_pptx_coords(self, left: float, top: float, width: float, height: float):
+        """
+        Convert visual coordinates to PowerPoint coordinates.
+
+        :return: (left, top, width, height) in PowerPoint units (Inches)
+        """
+        pptx_left = self.offset_left + left * self.scale_factor
+        pptx_top = self.offset_top + top * self.scale_factor
+        pptx_width = width * self.scale_factor
+        pptx_height = height * self.scale_factor
+
+        return pptx_left, pptx_top, pptx_width, pptx_height
+
+    def _get_shape_type(self, shape_name: str):
+        """
+        Map plotable shape names to PowerPoint shape types.
+
+        :param shape_name: Name from PlotableShapeName enum
+        :return: MSO_SHAPE constant
+        """
+        shape_mapping = {
+            'RECTANGLE': MSO_SHAPE.RECTANGLE,
+            'ROUNDED_RECTANGLE': MSO_SHAPE.ROUNDED_RECTANGLE,
+            'DIAMOND': MSO_SHAPE.DIAMOND,
+            'ISOSCELES_TRIANGLE': MSO_SHAPE.ISOSCELES_TRIANGLE,
+            'BULLET': MSO_SHAPE.OVAL,  # Use oval for bullets
+        }
+        return shape_mapping.get(shape_name, MSO_SHAPE.RECTANGLE)
+
+    def render_plotable(self, item: Plotable):
+        """
+        Render a single plotable as a PowerPoint shape.
+
+        :param item: The Plotable to render
+        """
+        if isinstance(item, RectangleBasedPlotable):
+            # Convert coordinates
+            left, top, width, height = self._convert_to_pptx_coords(
+                item.left, item.top, item.width, item.height
+            )
+
+            # Add the shape
+            shape_type = self._get_shape_type(item.shape.value)
+            shape = self.slide.shapes.add_shape(
+                shape_type,
+                left, top, width, height
+            )
+
+            # Set fill color
+            fill = shape.fill
+            fill.solid()
+            fill.fore_color.rgb = RGBColor(
+                item.format.fill_color.red,
+                item.format.fill_color.green,
+                item.format.fill_color.blue
+            )
+
+            # Set line color and thickness
+            line = shape.line
+            line.color.rgb = RGBColor(
+                item.format.line_color.red,
+                item.format.line_color.green,
+                item.format.line_color.blue
+            )
+            line.width = Pt(item.format.line_thickness)
+
+            # Add text if present
+            if item.text:
+                text_frame = shape.text_frame
+                text_frame.clear()  # Clear any default text
+                p = text_frame.paragraphs[0]
+                run = p.add_run()
+                run.text = item.text
+
+                # Set font properties
+                font = run.font
+                font.size = Pt(item.format.font_size)
+                font.color.rgb = RGBColor(
+                    item.format.font_color.red,
+                    item.format.font_color.green,
+                    item.format.font_color.blue
+                )
+                if item.format.font.font_name:
+                    font.name = item.format.font.font_name
+
+                # Set text alignment based on text_flow
+                from plan_visual_django.models import VisualActivity
+                if item.text_flow == VisualActivity.TextFlow.FLOW_CENTRE:
+                    from pptx.enum.text import PP_ALIGN
+                    p.alignment = PP_ALIGN.CENTER
+                elif item.text_flow == VisualActivity.TextFlow.FLOW_TO_LEFT:
+                    from pptx.enum.text import PP_ALIGN
+                    p.alignment = PP_ALIGN.RIGHT
+                else:  # FLOW_TO_RIGHT or default
+                    from pptx.enum.text import PP_ALIGN
+                    p.alignment = PP_ALIGN.LEFT
+
+                # Set vertical alignment
+                if item.text_vertical_alignment == VisualActivity.VerticalAlignment.MIDDLE:
+                    from pptx.enum.text import MSO_ANCHOR
+                    text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+                elif item.text_vertical_alignment == VisualActivity.VerticalAlignment.BOTTOM:
+                    from pptx.enum.text import MSO_ANCHOR
+                    text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
+                else:  # TOP or default
+                    from pptx.enum.text import MSO_ANCHOR
+                    text_frame.vertical_anchor = MSO_ANCHOR.TOP
+
+        else:
+            raise ValueError(f"Unsupported plotable type for PowerPoint: {item.__class__.__name__}")
