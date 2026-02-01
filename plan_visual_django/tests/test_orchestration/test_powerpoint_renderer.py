@@ -1,5 +1,6 @@
 import os
 import tempfile
+import pptx
 from django.test import TestCase
 from pptx import Presentation
 from plan_visual_django.models import PlanVisual
@@ -17,8 +18,10 @@ class TestPowerPointRenderer(TestCase):
     to a PowerPoint presentation.
     """
     fixtures = [
-        os.path.join(test_data_base_folder, test_fixtures_folder, 'auth_test_fixtures.json'),
-        os.path.join(test_data_base_folder, test_fixtures_folder, 'test_fixtures.json')
+        # os.path.join(test_data_base_folder, test_fixtures_folder, 'auth_test_fixtures.json'),
+        os.path.join(test_data_base_folder, test_fixtures_folder, 'plan_visual_fixture_01.json'),
+        # os.path.join(test_data_base_folder, test_fixtures_folder, 'test_fixtures.json')
+
     ]
 
     def test_powerpoint_renderer_creates_presentation(self):
@@ -26,7 +29,7 @@ class TestPowerPointRenderer(TestCase):
         Test that PowerPointRenderer creates a valid presentation with a slide.
         """
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Ensure there are plotables to render
@@ -37,7 +40,7 @@ class TestPowerPointRenderer(TestCase):
         presentation = renderer.render_from_iterable(visual_plotables)
 
         # Verify we got a Presentation object
-        self.assertIsInstance(presentation, Presentation)
+        self.assertIsInstance(presentation, pptx.presentation.Presentation)
 
         # Verify the presentation has at least one slide
         self.assertGreater(len(presentation.slides), 0)
@@ -47,7 +50,7 @@ class TestPowerPointRenderer(TestCase):
         Test that PowerPointRenderer creates a presentation that can be saved to disk.
         """
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Create renderer and render
@@ -68,7 +71,7 @@ class TestPowerPointRenderer(TestCase):
 
             # Verify we can open it again
             reopened_prs = Presentation(tmp_path)
-            self.assertIsInstance(reopened_prs, Presentation)
+            self.assertIsInstance(reopened_prs, pptx.presentation.Presentation)
             self.assertGreater(len(reopened_prs.slides), 0)
 
         finally:
@@ -81,7 +84,7 @@ class TestPowerPointRenderer(TestCase):
         Test that PowerPointRenderer actually creates shapes on the slide.
         """
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Create renderer and render
@@ -128,7 +131,7 @@ class TestPowerPointRenderer(TestCase):
         initial_slide_count = len(existing_prs.slides)
 
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Create renderer with existing presentation
@@ -161,7 +164,7 @@ class TestPowerPointRenderer(TestCase):
         presentation = renderer.render_from_iterable(empty_plotables)
 
         # Should still create a presentation with a slide, just no shapes
-        self.assertIsInstance(presentation, Presentation)
+        self.assertIsInstance(presentation, pptx.presentation.Presentation)
         self.assertGreater(len(presentation.slides), 0)
 
         # The slide should have no shapes (or very few, depending on slide layout)
@@ -174,7 +177,7 @@ class TestPowerPointRenderer(TestCase):
         Test that coordinates are properly converted and shapes fit on the slide.
         """
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Create renderer and render
@@ -201,7 +204,7 @@ class TestPowerPointRenderer(TestCase):
         The z-order is determined by the order shapes are added to the slide.
         """
         # Get a visual from the test database
-        visual = PlanVisual.objects.get(pk=4)
+        visual = PlanVisual.objects.first()
         visual_plotables = visual.get_plotables()
 
         # Create renderer and render
