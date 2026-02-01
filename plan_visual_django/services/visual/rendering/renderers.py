@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict, List
-from plan_visual_django.models import VisualActivity, PlotableStyle, Color
+from typing import Iterable, Dict, List, Optional
 from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
 from pptx import Presentation
 from pptx.util import Inches, Pt
@@ -53,6 +52,41 @@ class VisualRenderer(ABC):
                 self._render_iterable(item)
         else:
             raise TypeError(f"Expected Plotable or Iterable, got {type(plotable_iterable)}")
+
+    def _calculate_visual_bounds(self, visual_plotables: Dict[str, Iterable]):
+        """
+        Calculate the total dimensions of the visual by examining all plotables.
+        
+        :param visual_plotables: Dictionary of layer_name -> plotables
+        :return: Tuple of (min_left, min_top, max_right, max_bottom, width, height)
+        """
+        min_left = float('inf')
+        min_top = float('inf')
+        max_right = float('-inf')
+        max_bottom = float('-inf')
+
+        # Updates visual bounds based on plotable dimensions
+        def update_bounds(plotable: Plotable):
+            nonlocal min_left, min_top, max_right, max_bottom
+            min_left = min(min_left, plotable.get_left())
+            min_top = min(min_top, plotable.get_top())
+            max_right = max(max_right, plotable.get_right())
+            max_bottom = max(max_bottom, plotable.get_bottom())
+
+        def traverse(item):
+            if isinstance(item, Plotable):
+                update_bounds(item)
+            elif isinstance(item, Iterable):
+                for sub_item in item:
+                    traverse(sub_item)
+
+        for layer_plotables in visual_plotables.values():
+            traverse(layer_plotables)
+
+        width = max_right - min_left if max_right != float('-inf') else 0
+        height = max_bottom - min_top if max_bottom != float('-inf') else 0
+
+        return min_left, min_top, max_right, max_bottom, width, height
 
     @abstractmethod
     def render_plotable(self, plotable: Plotable):
@@ -187,12 +221,7 @@ class PowerPointRenderer(VisualRenderer):
     (arbitrary units) to PowerPoint's coordinate system (EMUs/Inches).
     """
 
-    # PowerPoint uses EMUs (English Metric Units) internally, but we work in inches
-    # Standard PowerPoint slide is 10" x 7.5"
-    SLIDE_WIDTH = Inches(10)
-    SLIDE_HEIGHT = Inches(7.5)
-
-    def __init__(self, presentation: Presentation = None, slide_index: int = None):
+    def __init__(self, presentation: Optional[Presentation] = None, slide_index: int = None):
         """
         Initialize PowerPoint renderer.
 
@@ -225,47 +254,14 @@ class PowerPointRenderer(VisualRenderer):
         :return: The Presentation object with rendered slide
         """
         # Calculate the bounding box of all plotables to determine scale
-        self._calculate_visual_dimensions(visual_plotables)
-
-        # Now render with the parent implementation
-        super().render_from_iterable(visual_plotables)
-
-        return self.presentation
-
-    def _calculate_visual_dimensions(self, visual_plotables: Dict[str, Iterable]):
-        """
-        Calculate the total dimensions of the visual by examining all plotables.
-        Sets scale factor to fit visual onto PowerPoint slide.
-        """
-        min_left = float('inf')
-        min_top = float('inf')
-        max_right = float('-inf')
-        max_bottom = float('-inf')
-
-        def update_bounds(plotable: Plotable):
-            nonlocal min_left, min_top, max_right, max_bottom
-            min_left = min(min_left, plotable.get_left())
-            min_top = min(min_top, plotable.get_top())
-            max_right = max(max_right, plotable.get_right())
-            max_bottom = max(max_bottom, plotable.get_bottom())
-
-        def traverse(item):
-            if isinstance(item, Plotable):
-                update_bounds(item)
-            elif isinstance(item, Iterable):
-                for sub_item in item:
-                    traverse(sub_item)
-
-        for layer_plotables in visual_plotables.values():
-            traverse(layer_plotables)
-
-        self.visual_width = max_right - min_left
-        self.visual_height = max_bottom - min_top
+        _, _, _, _, self.visual_width, self.visual_height = self._calculate_visual_bounds(visual_plotables)
 
         # Calculate scale factor to fit on slide with some margin
         margin = Inches(0.5)
-        available_width = self.SLIDE_WIDTH - 2 * margin
-        available_height = self.SLIDE_HEIGHT - 2 * margin
+        
+        # Use presentation slide dimensions instead of hardcoded constants
+        available_width = self.presentation.slide_width - 2 * margin
+        available_height = self.presentation.slide_height - 2 * margin
 
         scale_x = available_width / self.visual_width if self.visual_width > 0 else 1
         scale_y = available_height / self.visual_height if self.visual_height > 0 else 1
@@ -276,6 +272,11 @@ class PowerPointRenderer(VisualRenderer):
         # Store offset to center the visual
         self.offset_left = margin + (available_width - self.visual_width * self.scale_factor) / 2
         self.offset_top = margin + (available_height - self.visual_height * self.scale_factor) / 2
+
+        # Now render with the parent implementation
+        super().render_from_iterable(visual_plotables)
+
+        return self.presentation
 
     def _convert_to_pptx_coords(self, left: float, top: float, width: float, height: float):
         """
