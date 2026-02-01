@@ -5,6 +5,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 
 
 class VisualRenderer(ABC):
@@ -366,24 +367,18 @@ class PowerPointRenderer(VisualRenderer):
                 # Set text alignment based on text_flow
                 from plan_visual_django.models import VisualActivity
                 if item.text_flow == VisualActivity.TextFlow.FLOW_CENTRE:
-                    from pptx.enum.text import PP_ALIGN
                     p.alignment = PP_ALIGN.CENTER
                 elif item.text_flow == VisualActivity.TextFlow.FLOW_TO_LEFT:
-                    from pptx.enum.text import PP_ALIGN
                     p.alignment = PP_ALIGN.RIGHT
                 else:  # FLOW_TO_RIGHT or default
-                    from pptx.enum.text import PP_ALIGN
                     p.alignment = PP_ALIGN.LEFT
 
                 # Set vertical alignment
                 if item.text_vertical_alignment == VisualActivity.VerticalAlignment.MIDDLE:
-                    from pptx.enum.text import MSO_ANCHOR
                     text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
                 elif item.text_vertical_alignment == VisualActivity.VerticalAlignment.BOTTOM:
-                    from pptx.enum.text import MSO_ANCHOR
                     text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
                 else:  # TOP or default
-                    from pptx.enum.text import MSO_ANCHOR
                     text_frame.vertical_anchor = MSO_ANCHOR.TOP
 
         else:

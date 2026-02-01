@@ -18,6 +18,7 @@ def service_list_visuals():
 
             for visual in visuals:
                 visual_record = {
+                    'id': visual.id,
                     'user': user.username,
                     'plan_name': plan.plan_name,
                     'visual_name': visual.name,

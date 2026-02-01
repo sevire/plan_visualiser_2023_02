@@ -1,0 +1,4202 @@
+[
+{
+    "model": "plan_visual_django.planvisual",
+    "pk": 47,
+    "fields": {
+        "plan": 1,
+        "name": "Plan-app_user_01-001-Visual-02",
+        "width": 1200.0,
+        "max_height": 800.0,
+        "include_title": false,
+        "track_height": 20.0,
+        "track_gap": 4.0,
+        "milestone_width": 10.0,
+        "timeline_gap": 5.0,
+        "milestone_date_toggle": false,
+        "activity_date_toggle": false,
+        "timeline_to_swimlane_gap": 10.0,
+        "swimlane_gap": 5.0,
+        "default_milestone_shape": "DIAMOND",
+        "default_activity_shape": "ROUNDED_RECTANGLE",
+        "default_activity_plotable_style": 102,
+        "default_milestone_plotable_style": 105,
+        "default_swimlane_plotable_style": 110,
+        "default_timeline_height": 20.0,
+        "default_timeline_plotable_style_odd": 114,
+        "default_timeline_plotable_style_even": 112
+    }
+},
+{
+    "model": "plan_visual_django.plan",
+    "pk": 1,
+    "fields": {
+        "user": 3,
+        "plan_name": "Plan-app_user_01-001",
+        "file_name": "Speed To Market Project Plan WIP 1404.xlsx",
+        "file": "plan_files/Speed_To_Market_Project_Plan_WIP_1404.xlsx",
+        "file_type_name": "excel-01-msp-export-default-01",
+        "visual_count": 2,
+        "session_id": null
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 1,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "1",
+        "sequence_number": 1,
+        "activity_name": "Key Dependencies",
+        "milestone_flag": false,
+        "start_date": "2025-01-01",
+        "end_date": "2025-06-17",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 2,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "2",
+        "sequence_number": 2,
+        "activity_name": "FGH Resources Identified & Secured",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 3,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "3",
+        "sequence_number": 3,
+        "activity_name": "Integration Partners Aligned",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 4,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "4",
+        "sequence_number": 4,
+        "activity_name": "All Integration Designs Sign Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-16",
+        "end_date": "2025-05-16",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 5,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "5",
+        "sequence_number": 5,
+        "activity_name": "Design Issued to Partners for issue of SoW",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 6,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "6",
+        "sequence_number": 6,
+        "activity_name": "Statement Of Work(s) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-09",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 7,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "7",
+        "sequence_number": 7,
+        "activity_name": "Purchase Orders Raised and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-06-17",
+        "end_date": "2025-06-17",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 8,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "8",
+        "sequence_number": 8,
+        "activity_name": "Integration Partner Resources Secured",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 9,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "9",
+        "sequence_number": 9,
+        "activity_name": "Requirements Signed Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 10,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "10",
+        "sequence_number": 10,
+        "activity_name": "Design Workshops - Business",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 11,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "11",
+        "sequence_number": 11,
+        "activity_name": "Design Workshops - Integration Partners",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 12,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "12",
+        "sequence_number": 12,
+        "activity_name": "Access to Group Data",
+        "milestone_flag": false,
+        "start_date": "2025-01-01",
+        "end_date": "2025-04-21",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 13,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "13",
+        "sequence_number": 13,
+        "activity_name": "Group Decision on Integration - HAP or Kosmos v2",
+        "milestone_flag": false,
+        "start_date": "2025-01-01",
+        "end_date": "2025-04-21",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 14,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "15",
+        "sequence_number": 14,
+        "activity_name": "Business Case Created",
+        "milestone_flag": false,
+        "start_date": "2025-02-03",
+        "end_date": "2025-02-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 15,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "16",
+        "sequence_number": 15,
+        "activity_name": "Business Case Review Completed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-27",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 16,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "17",
+        "sequence_number": 16,
+        "activity_name": "Business Case Updated and Submitted",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 17,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "18",
+        "sequence_number": 17,
+        "activity_name": "Business Case Approved",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-04-25",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 18,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "19",
+        "sequence_number": 18,
+        "activity_name": "Funding Confirmed",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-04-29",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 19,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "20",
+        "sequence_number": 19,
+        "activity_name": "Project Governance",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-04-18",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 20,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "21",
+        "sequence_number": 20,
+        "activity_name": "SharePoint Created",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 21,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "22",
+        "sequence_number": 21,
+        "activity_name": "Project Created ActiTime",
+        "milestone_flag": false,
+        "start_date": "2025-04-07",
+        "end_date": "2025-04-08",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 22,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "23",
+        "sequence_number": 22,
+        "activity_name": "Resource Model created",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-20",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 23,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "24",
+        "sequence_number": 23,
+        "activity_name": "RACI created",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-04-18",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 24,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "25",
+        "sequence_number": 24,
+        "activity_name": "Implementation Kick Off Meeting Scheduled - Internal",
+        "milestone_flag": false,
+        "start_date": "2025-03-18",
+        "end_date": "2025-03-20",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 25,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "26",
+        "sequence_number": 25,
+        "activity_name": "Implementation Kick Off Meeting Scheduled - External",
+        "milestone_flag": false,
+        "start_date": "2025-03-19",
+        "end_date": "2025-03-21",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 26,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "27",
+        "sequence_number": 26,
+        "activity_name": "Discovery & Scope",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-05-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 27,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "28",
+        "sequence_number": 27,
+        "activity_name": "Business Requirements Document",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-02-24",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 28,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "29",
+        "sequence_number": 28,
+        "activity_name": "High Level Scope Agreed",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-01-17",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 29,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "30",
+        "sequence_number": 29,
+        "activity_name": "High Level Scope Signed Off",
+        "milestone_flag": false,
+        "start_date": "2025-02-24",
+        "end_date": "2025-02-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 30,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "31",
+        "sequence_number": 30,
+        "activity_name": "Business Requirements Gathering",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-05-05",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 31,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "32",
+        "sequence_number": 31,
+        "activity_name": "Workshop(s) Scheduled & Agenda and Audience Agreed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 32,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "33",
+        "sequence_number": 32,
+        "activity_name": "Workshop(s) Conducted",
+        "milestone_flag": false,
+        "start_date": "2025-04-18",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 33,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "34",
+        "sequence_number": 33,
+        "activity_name": "BRD Draft Circulated",
+        "milestone_flag": false,
+        "start_date": "2025-04-04",
+        "end_date": "2025-04-17",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 34,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "35",
+        "sequence_number": 34,
+        "activity_name": "BRD Walkthrough completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-07",
+        "end_date": "2025-04-11",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 35,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "36",
+        "sequence_number": 35,
+        "activity_name": "BRD Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-04-17",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 36,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "37",
+        "sequence_number": 36,
+        "activity_name": "BRD Review and Feedback",
+        "milestone_flag": false,
+        "start_date": "2025-04-22",
+        "end_date": "2025-04-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 37,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "38",
+        "sequence_number": 37,
+        "activity_name": "Conduct Workshops (if required)",
+        "milestone_flag": false,
+        "start_date": "2025-04-29",
+        "end_date": "2025-05-02",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 38,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "39",
+        "sequence_number": 38,
+        "activity_name": "BRD Signed  Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-05",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 39,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "40",
+        "sequence_number": 39,
+        "activity_name": "Process flows",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-05-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 40,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "41",
+        "sequence_number": 40,
+        "activity_name": "Pimberley Content Process - As Is",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 41,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "42",
+        "sequence_number": 41,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-18",
+        "end_date": "2025-03-24",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 42,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "43",
+        "sequence_number": 42,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 43,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "44",
+        "sequence_number": 43,
+        "activity_name": "Business Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 44,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "45",
+        "sequence_number": 44,
+        "activity_name": "Sign Off",
+        "milestone_flag": false,
+        "start_date": "2025-03-17",
+        "end_date": "2025-03-17",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 45,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "46",
+        "sequence_number": 45,
+        "activity_name": "Fabric - To Be",
+        "milestone_flag": false,
+        "start_date": "2025-04-28",
+        "end_date": "2025-05-07",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 46,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "47",
+        "sequence_number": 46,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-04-28",
+        "end_date": "2025-05-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 47,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "48",
+        "sequence_number": 47,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-05",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 48,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "49",
+        "sequence_number": 48,
+        "activity_name": "Business Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 49,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "50",
+        "sequence_number": 49,
+        "activity_name": "Sign Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-07",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 50,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "51",
+        "sequence_number": 50,
+        "activity_name": "D365 - As IS",
+        "milestone_flag": false,
+        "start_date": "2025-04-28",
+        "end_date": "2025-05-07",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 51,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "52",
+        "sequence_number": 51,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-04-28",
+        "end_date": "2025-05-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 52,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "53",
+        "sequence_number": 52,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-05",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 53,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "54",
+        "sequence_number": 53,
+        "activity_name": "Business Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 54,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "55",
+        "sequence_number": 54,
+        "activity_name": "Sign Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-07",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 55,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "56",
+        "sequence_number": 55,
+        "activity_name": "D365 - To Be",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 56,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "57",
+        "sequence_number": 56,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-09",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 57,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "58",
+        "sequence_number": 57,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-12",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 58,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "59",
+        "sequence_number": 58,
+        "activity_name": "Business Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-13",
+        "end_date": "2025-05-13",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 59,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "60",
+        "sequence_number": 59,
+        "activity_name": "Sign Off",
+        "milestone_flag": false,
+        "start_date": "2025-05-14",
+        "end_date": "2025-05-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 60,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "61",
+        "sequence_number": 60,
+        "activity_name": "Design",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-05-15",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 61,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "62",
+        "sequence_number": 61,
+        "activity_name": "Overall Solution Design Diagram",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-05-06",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 62,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "63",
+        "sequence_number": 62,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 63,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "64",
+        "sequence_number": 63,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-04-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 64,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "65",
+        "sequence_number": 64,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-28",
+        "end_date": "2025-04-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 65,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "66",
+        "sequence_number": 65,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-29",
+        "end_date": "2025-04-29",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 66,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "67",
+        "sequence_number": 66,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-30",
+        "end_date": "2025-05-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 67,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "68",
+        "sequence_number": 67,
+        "activity_name": "High Level Design",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-05-15",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 68,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "69",
+        "sequence_number": 68,
+        "activity_name": "Pimberly Integration",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 69,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "70",
+        "sequence_number": 69,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-02-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 70,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "71",
+        "sequence_number": 70,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 71,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "72",
+        "sequence_number": 71,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 72,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "73",
+        "sequence_number": 72,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-22",
+        "end_date": "2025-04-22",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 73,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "74",
+        "sequence_number": 73,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 74,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "75",
+        "sequence_number": 74,
+        "activity_name": "EKR to D365",
+        "milestone_flag": false,
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 75,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "76",
+        "sequence_number": 75,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-18",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 76,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "77",
+        "sequence_number": 76,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-21",
+        "end_date": "2025-04-25",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 77,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "78",
+        "sequence_number": 77,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-21",
+        "end_date": "2025-04-21",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 78,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "79",
+        "sequence_number": 78,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-22",
+        "end_date": "2025-04-22",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 79,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "80",
+        "sequence_number": 79,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-23",
+        "end_date": "2025-04-23",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 80,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "81",
+        "sequence_number": 80,
+        "activity_name": "Fabric to Mirakl",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 81,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "82",
+        "sequence_number": 81,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-04-04",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 82,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "83",
+        "sequence_number": 82,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-07",
+        "end_date": "2025-04-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 83,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "84",
+        "sequence_number": 83,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-08",
+        "end_date": "2025-04-08",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 84,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "85",
+        "sequence_number": 84,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-03",
+        "end_date": "2025-04-11",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 85,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "86",
+        "sequence_number": 85,
+        "activity_name": "Second ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-04-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 86,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "87",
+        "sequence_number": 86,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-21",
+        "end_date": "2025-04-22",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 87,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "88",
+        "sequence_number": 87,
+        "activity_name": "Kosmos Feed to Fabric",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-04-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 88,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "89",
+        "sequence_number": 88,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-04-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 89,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "90",
+        "sequence_number": 89,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-28",
+        "end_date": "2025-03-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 90,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "91",
+        "sequence_number": 90,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-28",
+        "end_date": "2025-03-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 91,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "92",
+        "sequence_number": 91,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-03-31",
+        "end_date": "2025-03-31",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 92,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "93",
+        "sequence_number": 92,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-01",
+        "end_date": "2025-04-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 93,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "94",
+        "sequence_number": 93,
+        "activity_name": "Legacy Integration (Anything Remaining not covered in Work Packages)",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-05-15",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 94,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "95",
+        "sequence_number": 94,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-05-09",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 95,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "96",
+        "sequence_number": 95,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-12",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 96,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "97",
+        "sequence_number": 96,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-13",
+        "end_date": "2025-05-13",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 97,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "98",
+        "sequence_number": 97,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-05-14",
+        "end_date": "2025-05-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 98,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "99",
+        "sequence_number": 98,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-05-15",
+        "end_date": "2025-05-15",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 99,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "100",
+        "sequence_number": 99,
+        "activity_name": "Low Level Design",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-05-08",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 100,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "101",
+        "sequence_number": 100,
+        "activity_name": "Pimberly Integration",
+        "milestone_flag": false,
+        "start_date": "2025-03-03",
+        "end_date": "2025-05-08",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 101,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "102",
+        "sequence_number": 101,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-03",
+        "end_date": "2025-05-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 102,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "103",
+        "sequence_number": 102,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-05",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 103,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "104",
+        "sequence_number": 103,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 104,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "105",
+        "sequence_number": 104,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-05-07",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 105,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "106",
+        "sequence_number": 105,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-05-08",
+        "end_date": "2025-05-08",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 106,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "107",
+        "sequence_number": 106,
+        "activity_name": "EKR to D365",
+        "milestone_flag": false,
+        "start_date": "2025-03-03",
+        "end_date": "2025-05-08",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 107,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "108",
+        "sequence_number": 107,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-03",
+        "end_date": "2025-05-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 108,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "109",
+        "sequence_number": 108,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-05",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 109,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "110",
+        "sequence_number": 109,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 110,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "111",
+        "sequence_number": 110,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-05-07",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 111,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "112",
+        "sequence_number": 111,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-05-08",
+        "end_date": "2025-05-08",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 112,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "113",
+        "sequence_number": 112,
+        "activity_name": "Fabric to Mirakl",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 113,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "114",
+        "sequence_number": 113,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-13",
+        "end_date": "2025-04-04",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 114,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "115",
+        "sequence_number": 114,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-07",
+        "end_date": "2025-04-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 115,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "116",
+        "sequence_number": 115,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-08",
+        "end_date": "2025-04-08",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 116,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "117",
+        "sequence_number": 116,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-03",
+        "end_date": "2025-04-11",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 117,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "118",
+        "sequence_number": 117,
+        "activity_name": "Second ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-04-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 118,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "119",
+        "sequence_number": 118,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-21",
+        "end_date": "2025-04-22",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 119,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "120",
+        "sequence_number": 119,
+        "activity_name": "Kosmos Feed to Fabric",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-04-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 120,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "121",
+        "sequence_number": 120,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-04-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 121,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "122",
+        "sequence_number": 121,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-28",
+        "end_date": "2025-03-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 122,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "123",
+        "sequence_number": 122,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-03-28",
+        "end_date": "2025-03-28",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 123,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "124",
+        "sequence_number": 123,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-03-31",
+        "end_date": "2025-03-31",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 124,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "125",
+        "sequence_number": 124,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-01",
+        "end_date": "2025-04-02",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 125,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "126",
+        "sequence_number": 125,
+        "activity_name": "Legacy Integration (Anything Remaining not covered in Work Packages)",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-05-07",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 126,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "127",
+        "sequence_number": 126,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-01-06",
+        "end_date": "2025-05-05",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 127,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "128",
+        "sequence_number": 127,
+        "activity_name": "Peer Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 128,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "129",
+        "sequence_number": 128,
+        "activity_name": "ARB Review",
+        "milestone_flag": false,
+        "start_date": "2025-05-06",
+        "end_date": "2025-05-06",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 129,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "130",
+        "sequence_number": 129,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 130,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "131",
+        "sequence_number": 130,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-05-07",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 131,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "132",
+        "sequence_number": 131,
+        "activity_name": "Build",
+        "milestone_flag": false,
+        "start_date": "2025-02-05",
+        "end_date": "2025-08-19",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 132,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "133",
+        "sequence_number": 132,
+        "activity_name": "Ensono",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-08-05",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 133,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "134",
+        "sequence_number": 133,
+        "activity_name": "Discovery Workshop(s)",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 134,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "135",
+        "sequence_number": 134,
+        "activity_name": "Statement of Work (SoW) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-05-19",
+        "end_date": "2025-05-30",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 135,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "136",
+        "sequence_number": 135,
+        "activity_name": "SoW Reviewed and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-06-02",
+        "end_date": "2025-06-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 136,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "137",
+        "sequence_number": 136,
+        "activity_name": "PO Raised",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-13",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 137,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "138",
+        "sequence_number": 137,
+        "activity_name": "PO Issued",
+        "milestone_flag": false,
+        "start_date": "2025-06-16",
+        "end_date": "2025-06-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 138,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "139",
+        "sequence_number": 138,
+        "activity_name": "Commence Build",
+        "milestone_flag": false,
+        "start_date": "2025-07-01",
+        "end_date": "2025-07-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 139,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "140",
+        "sequence_number": 139,
+        "activity_name": "Commence SIT",
+        "milestone_flag": false,
+        "start_date": "2025-07-29",
+        "end_date": "2025-08-04",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 140,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "141",
+        "sequence_number": 140,
+        "activity_name": "Handover for UAT",
+        "milestone_flag": false,
+        "start_date": "2025-08-05",
+        "end_date": "2025-08-05",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 141,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "142",
+        "sequence_number": 141,
+        "activity_name": "Tech M",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-08-19",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 142,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "143",
+        "sequence_number": 142,
+        "activity_name": "Discovery Workshop(s)",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 143,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "144",
+        "sequence_number": 143,
+        "activity_name": "Statement of Work (SoW) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-05-19",
+        "end_date": "2025-05-30",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 144,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "145",
+        "sequence_number": 144,
+        "activity_name": "SoW Reviewed and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-06-02",
+        "end_date": "2025-06-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 145,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "146",
+        "sequence_number": 145,
+        "activity_name": "PO Raised",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-13",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 146,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "147",
+        "sequence_number": 146,
+        "activity_name": "PO Issued",
+        "milestone_flag": false,
+        "start_date": "2025-06-16",
+        "end_date": "2025-06-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 147,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "148",
+        "sequence_number": 147,
+        "activity_name": "Commence Build",
+        "milestone_flag": false,
+        "start_date": "2025-07-15",
+        "end_date": "2025-08-11",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 148,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "149",
+        "sequence_number": 148,
+        "activity_name": "Commence SIT",
+        "milestone_flag": false,
+        "start_date": "2025-08-12",
+        "end_date": "2025-08-18",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 149,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "150",
+        "sequence_number": 149,
+        "activity_name": "Handover for UAT",
+        "milestone_flag": false,
+        "start_date": "2025-08-19",
+        "end_date": "2025-08-19",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 150,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "151",
+        "sequence_number": 150,
+        "activity_name": "Visionet",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-08-19",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 151,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "152",
+        "sequence_number": 151,
+        "activity_name": "Discovery Workshop(s)",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 152,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "153",
+        "sequence_number": 152,
+        "activity_name": "Scoping",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-23",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 153,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "154",
+        "sequence_number": 153,
+        "activity_name": "Technical",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-23",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 154,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "155",
+        "sequence_number": 154,
+        "activity_name": "Business",
+        "milestone_flag": false,
+        "start_date": "2025-05-05",
+        "end_date": "2025-05-23",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 155,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "156",
+        "sequence_number": 155,
+        "activity_name": "Statement of Work (SoW) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-05-19",
+        "end_date": "2025-05-30",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 156,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "157",
+        "sequence_number": 156,
+        "activity_name": "SoW Reviewed and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-06-02",
+        "end_date": "2025-06-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 157,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "158",
+        "sequence_number": 157,
+        "activity_name": "PO Raised",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-13",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 158,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "159",
+        "sequence_number": 158,
+        "activity_name": "PO Issued",
+        "milestone_flag": false,
+        "start_date": "2025-06-16",
+        "end_date": "2025-06-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 159,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "160",
+        "sequence_number": 159,
+        "activity_name": "Partner Design sign off",
+        "milestone_flag": false,
+        "start_date": "2025-05-26",
+        "end_date": "2025-05-26",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 160,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "161",
+        "sequence_number": 160,
+        "activity_name": "Commence Build",
+        "milestone_flag": false,
+        "start_date": "2025-07-15",
+        "end_date": "2025-08-11",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 161,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "162",
+        "sequence_number": 161,
+        "activity_name": "Commence SIT",
+        "milestone_flag": false,
+        "start_date": "2025-08-12",
+        "end_date": "2025-08-18",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 162,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "163",
+        "sequence_number": 162,
+        "activity_name": "Handover for UAT",
+        "milestone_flag": false,
+        "start_date": "2025-08-19",
+        "end_date": "2025-08-19",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 163,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "164",
+        "sequence_number": 163,
+        "activity_name": "Pimberly",
+        "milestone_flag": false,
+        "start_date": "2025-02-05",
+        "end_date": "2025-06-23",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 164,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "165",
+        "sequence_number": 164,
+        "activity_name": "Discovery Workshop(s)",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 165,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "166",
+        "sequence_number": 165,
+        "activity_name": "Scoping",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-16",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 166,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "167",
+        "sequence_number": 166,
+        "activity_name": "Technical",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 167,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "168",
+        "sequence_number": 167,
+        "activity_name": "Business",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 168,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "169",
+        "sequence_number": 168,
+        "activity_name": "Statement of Work (SoW) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-02-05",
+        "end_date": "2025-02-18",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 169,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "170",
+        "sequence_number": 169,
+        "activity_name": "SoW Reviewed and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-02-18",
+        "end_date": "2025-02-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 170,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "171",
+        "sequence_number": 170,
+        "activity_name": "PO Raised",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-03-28",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 171,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "172",
+        "sequence_number": 171,
+        "activity_name": "PO Issued",
+        "milestone_flag": false,
+        "start_date": "2025-03-31",
+        "end_date": "2025-03-31",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 172,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "173",
+        "sequence_number": 172,
+        "activity_name": "Pimberly Formally Kick Off",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-05-09",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 173,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "174",
+        "sequence_number": 173,
+        "activity_name": "SSO enablement agree",
+        "milestone_flag": false,
+        "start_date": "2025-04-14",
+        "end_date": "2025-05-09",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 174,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "175",
+        "sequence_number": 174,
+        "activity_name": "Commence Build",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-06-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 175,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "176",
+        "sequence_number": 175,
+        "activity_name": "Commence SIT",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-20",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 176,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "177",
+        "sequence_number": 176,
+        "activity_name": "Handover for UAT",
+        "milestone_flag": false,
+        "start_date": "2025-06-23",
+        "end_date": "2025-06-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 177,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "178",
+        "sequence_number": 177,
+        "activity_name": "W3p",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-08-18",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 178,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "179",
+        "sequence_number": 178,
+        "activity_name": "Discovery Workshop(s)",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 179,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "180",
+        "sequence_number": 179,
+        "activity_name": "Scoping",
+        "milestone_flag": false,
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-16",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 180,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "181",
+        "sequence_number": 180,
+        "activity_name": "Technical",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 181,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "182",
+        "sequence_number": 181,
+        "activity_name": "Business",
+        "milestone_flag": false,
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-07",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 182,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "183",
+        "sequence_number": 182,
+        "activity_name": "Statement of Work (SoW) Issued",
+        "milestone_flag": false,
+        "start_date": "2025-05-19",
+        "end_date": "2025-05-30",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 183,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "184",
+        "sequence_number": 183,
+        "activity_name": "SoW Reviewed and Approved",
+        "milestone_flag": false,
+        "start_date": "2025-06-02",
+        "end_date": "2025-06-06",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 184,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "185",
+        "sequence_number": 184,
+        "activity_name": "PO Raised",
+        "milestone_flag": false,
+        "start_date": "2025-06-09",
+        "end_date": "2025-06-13",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 185,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "186",
+        "sequence_number": 185,
+        "activity_name": "PO Issued",
+        "milestone_flag": false,
+        "start_date": "2025-06-16",
+        "end_date": "2025-06-16",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 186,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "187",
+        "sequence_number": 186,
+        "activity_name": "Commence Build",
+        "milestone_flag": false,
+        "start_date": "2025-05-19",
+        "end_date": "2025-05-19",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 187,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "188",
+        "sequence_number": 187,
+        "activity_name": "Commence SIT",
+        "milestone_flag": false,
+        "start_date": "2025-07-15",
+        "end_date": "2025-08-11",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 188,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "189",
+        "sequence_number": 188,
+        "activity_name": "Handover for UAT",
+        "milestone_flag": false,
+        "start_date": "2025-08-12",
+        "end_date": "2025-08-18",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 189,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "190",
+        "sequence_number": 189,
+        "activity_name": "Product Data Modelling",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-05-01",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 190,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "191",
+        "sequence_number": 190,
+        "activity_name": "Bronze Lakehouse Data Model",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-05-01",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 191,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "192",
+        "sequence_number": 191,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-03-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 192,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "193",
+        "sequence_number": 192,
+        "activity_name": "B&M input",
+        "milestone_flag": false,
+        "start_date": "2025-03-26",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 193,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "194",
+        "sequence_number": 193,
+        "activity_name": "Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-23",
+        "end_date": "2025-04-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 194,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "195",
+        "sequence_number": 194,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-24",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 195,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "196",
+        "sequence_number": 195,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-05-01",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 196,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "197",
+        "sequence_number": 196,
+        "activity_name": "Silver Lakehouse Data Model",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-05-01",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 197,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "198",
+        "sequence_number": 197,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-03-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 198,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "199",
+        "sequence_number": 198,
+        "activity_name": "B&M input",
+        "milestone_flag": false,
+        "start_date": "2025-03-26",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 199,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "200",
+        "sequence_number": 199,
+        "activity_name": "Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-23",
+        "end_date": "2025-04-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 200,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "201",
+        "sequence_number": 200,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-24",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 201,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "202",
+        "sequence_number": 201,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-05-01",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 202,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "203",
+        "sequence_number": 202,
+        "activity_name": "Gold Lakehouse Data Model",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-05-01",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 203,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "204",
+        "sequence_number": 203,
+        "activity_name": "Draft",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-03-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 204,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "205",
+        "sequence_number": 204,
+        "activity_name": "B&M input",
+        "milestone_flag": false,
+        "start_date": "2025-03-26",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 205,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "206",
+        "sequence_number": 205,
+        "activity_name": "Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-23",
+        "end_date": "2025-04-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 206,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "207",
+        "sequence_number": 206,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-24",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 207,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "208",
+        "sequence_number": 207,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-05-01",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 208,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "209",
+        "sequence_number": 208,
+        "activity_name": "Transformation Business Rules Catalogue",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-05-01",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 209,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "210",
+        "sequence_number": 209,
+        "activity_name": "Draft Walkthrough",
+        "milestone_flag": false,
+        "start_date": "2025-03-24",
+        "end_date": "2025-03-25",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 210,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "211",
+        "sequence_number": 210,
+        "activity_name": "B&M input",
+        "milestone_flag": false,
+        "start_date": "2025-03-26",
+        "end_date": "2025-04-22",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 211,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "212",
+        "sequence_number": 211,
+        "activity_name": "Review",
+        "milestone_flag": false,
+        "start_date": "2025-04-23",
+        "end_date": "2025-04-23",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 212,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "213",
+        "sequence_number": 212,
+        "activity_name": "Rework & Amendments Completed",
+        "milestone_flag": false,
+        "start_date": "2025-04-24",
+        "end_date": "2025-04-24",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 213,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "214",
+        "sequence_number": 213,
+        "activity_name": "Sign off",
+        "milestone_flag": false,
+        "start_date": "2025-04-25",
+        "end_date": "2025-05-01",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 214,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "219",
+        "sequence_number": 214,
+        "activity_name": "Mirakl to Teradata Description Shortening",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-17",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 215,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "220",
+        "sequence_number": 215,
+        "activity_name": "Design the solution / process",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 216,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "221",
+        "sequence_number": 216,
+        "activity_name": "Build the solution",
+        "milestone_flag": false,
+        "start_date": "2025-03-17",
+        "end_date": "2025-03-17",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 217,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "222",
+        "sequence_number": 217,
+        "activity_name": "Review / confirm Product Hierarchies",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-17",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 218,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "223",
+        "sequence_number": 218,
+        "activity_name": "Understand current hierarchies",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 219,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "224",
+        "sequence_number": 219,
+        "activity_name": "Document improvements",
+        "milestone_flag": false,
+        "start_date": "2025-03-17",
+        "end_date": "2025-03-17",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 220,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "225",
+        "sequence_number": 220,
+        "activity_name": "Make possible improvement to the creative elements of the To Market process",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 221,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "226",
+        "sequence_number": 221,
+        "activity_name": "Review the process / speed with which Products arrive on the website for sale",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 222,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "227",
+        "sequence_number": 222,
+        "activity_name": "PIM V1 data into Fabric",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 223,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "228",
+        "sequence_number": 223,
+        "activity_name": "Testing",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 224,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "229",
+        "sequence_number": 224,
+        "activity_name": "Test Scenarios & Scripts Creation",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 225,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "230",
+        "sequence_number": 225,
+        "activity_name": "Workshop to Agree Tasks",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 226,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "231",
+        "sequence_number": 226,
+        "activity_name": "Write Test Plan & Approach",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 227,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "232",
+        "sequence_number": 227,
+        "activity_name": "SIT",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 228,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "233",
+        "sequence_number": 228,
+        "activity_name": "UAT",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 229,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "234",
+        "sequence_number": 229,
+        "activity_name": "Group Product to Fabric (Otto, Bon Prix & Witt)",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 230,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "235",
+        "sequence_number": 230,
+        "activity_name": "Own Buy Products",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 231,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "236",
+        "sequence_number": 231,
+        "activity_name": "Product Feed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 232,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "237",
+        "sequence_number": 232,
+        "activity_name": "Imports",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 233,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "238",
+        "sequence_number": 233,
+        "activity_name": "Vendor Management",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 234,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "239",
+        "sequence_number": 234,
+        "activity_name": "PO Processing",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 4
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 235,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "240",
+        "sequence_number": 235,
+        "activity_name": "Fabric to Mikali",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 3
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 236,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "241",
+        "sequence_number": 236,
+        "activity_name": "Go Live Readiness",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 237,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "242",
+        "sequence_number": 237,
+        "activity_name": "Support Document Created",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 238,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "243",
+        "sequence_number": 238,
+        "activity_name": "Hyper Care Agreed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 239,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "244",
+        "sequence_number": 239,
+        "activity_name": "Request for Change Raised",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 240,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "253",
+        "sequence_number": 240,
+        "activity_name": "Migration Planning",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 241,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "254",
+        "sequence_number": 241,
+        "activity_name": "RFC Raised",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 2
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 242,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "255",
+        "sequence_number": 242,
+        "activity_name": "Conduct Cut Over Workshops",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 243,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "256",
+        "sequence_number": 243,
+        "activity_name": "Cut Over approach Agreed",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 244,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "257",
+        "sequence_number": 244,
+        "activity_name": "Agree Migration date",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 245,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "258",
+        "sequence_number": 245,
+        "activity_name": "Agree and book Resources",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 246,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "259",
+        "sequence_number": 246,
+        "activity_name": "Agree Hyper Care support process",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 247,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "260",
+        "sequence_number": 247,
+        "activity_name": "Raise RFC(s)",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 248,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "261",
+        "sequence_number": 248,
+        "activity_name": "Schedule Go/NoGo Call(s)",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.planactivity",
+    "pk": 249,
+    "fields": {
+        "plan": 1,
+        "unique_sticky_activity_id": "262",
+        "sequence_number": 249,
+        "activity_name": "Service Transition Documents",
+        "milestone_flag": false,
+        "start_date": "2025-03-14",
+        "end_date": "2025-03-14",
+        "level": 1
+    }
+},
+{
+    "model": "plan_visual_django.timelineforvisual",
+    "pk": 145,
+    "fields": {
+        "plan_visual": 47,
+        "timeline_type": "MONTHS",
+        "timeline_name": "MONTHS",
+        "timeline_height": 20.0,
+        "plotable_style_odd": 114,
+        "plotable_style_even": 112,
+        "sequence_number": 1,
+        "enabled": true
+    }
+},
+{
+    "model": "plan_visual_django.timelineforvisual",
+    "pk": 146,
+    "fields": {
+        "plan_visual": 47,
+        "timeline_type": "QUARTERS",
+        "timeline_name": "QUARTERS",
+        "timeline_height": 20.0,
+        "plotable_style_odd": 114,
+        "plotable_style_even": 112,
+        "sequence_number": 2,
+        "enabled": false
+    }
+},
+{
+    "model": "plan_visual_django.timelineforvisual",
+    "pk": 147,
+    "fields": {
+        "plan_visual": 47,
+        "timeline_type": "HALF_YEAR",
+        "timeline_name": "HALF_YEAR",
+        "timeline_height": 20.0,
+        "plotable_style_odd": 114,
+        "plotable_style_even": 112,
+        "sequence_number": 3,
+        "enabled": false
+    }
+},
+{
+    "model": "plan_visual_django.timelineforvisual",
+    "pk": 148,
+    "fields": {
+        "plan_visual": 47,
+        "timeline_type": "YEAR",
+        "timeline_name": "YEAR",
+        "timeline_height": 20.0,
+        "plotable_style_odd": 114,
+        "plotable_style_even": 112,
+        "sequence_number": 4,
+        "enabled": false
+    }
+},
+{
+    "model": "plan_visual_django.swimlaneforvisual",
+    "pk": 173,
+    "fields": {
+        "plan_visual": 47,
+        "swim_lane_name": "Swimlane 1",
+        "plotable_style": 110,
+        "sequence_number": 1
+    }
+},
+{
+    "model": "plan_visual_django.swimlaneforvisual",
+    "pk": 174,
+    "fields": {
+        "plan_visual": 47,
+        "swim_lane_name": "Swimlane 2",
+        "plotable_style": 110,
+        "sequence_number": 2
+    }
+},
+{
+    "model": "plan_visual_django.swimlaneforvisual",
+    "pk": 175,
+    "fields": {
+        "plan_visual": 47,
+        "swim_lane_name": "Swimlane 3",
+        "plotable_style": 110,
+        "sequence_number": 3
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1473,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "2",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 4.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1474,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "3",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 5.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1475,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "4",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 15.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1476,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "5",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 6.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1477,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "6",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 16.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1478,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "7",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 17.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1479,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "8",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 7.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1480,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "9",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 14.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1481,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "10",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 8.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1482,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "11",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 9.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1483,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "12",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 2.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1484,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "13",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 3.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1485,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "15",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 4.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1486,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "16",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 10.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1487,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "17",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 11.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1488,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "18",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 12.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1489,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "19",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 13.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1490,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "257",
+        "enabled": true,
+        "swimlane": 173,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 18.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1530,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "242",
+        "enabled": true,
+        "swimlane": 174,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 1.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1531,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "243",
+        "enabled": true,
+        "swimlane": 174,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 2.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1532,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "244",
+        "enabled": true,
+        "swimlane": 174,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 3.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1533,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "253",
+        "enabled": true,
+        "swimlane": 174,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 4.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.visualactivity",
+    "pk": 1534,
+    "fields": {
+        "visual": 47,
+        "unique_id_from_plan": "254",
+        "enabled": true,
+        "swimlane": 174,
+        "plotable_shape": "ROUNDED_RECTANGLE",
+        "vertical_positioning_value": 5.0,
+        "height_in_tracks": 1.0,
+        "text_horizontal_alignment": "LEFT",
+        "text_vertical_alignment": "MIDDLE",
+        "text_flow": "LFLOW",
+        "plotable_style": 102
+    }
+},
+{
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 102,
+    "fields": {
+        "user": 1,
+        "style_name": "THEME-01-Activity-1",
+        "fill_color": 133,
+        "line_color": 134,
+        "font_color": 155,
+        "line_thickness": 1,
+        "font": 1,
+        "font_size": 10
+    }
+},
+{
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 105,
+    "fields": {
+        "user": 1,
+        "style_name": "THEME-01-Milestone-1",
+        "fill_color": 128,
+        "line_color": 128,
+        "font_color": 155,
+        "line_thickness": 1,
+        "font": 1,
+        "font_size": 10
+    }
+},
+{
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 110,
+    "fields": {
+        "user": 1,
+        "style_name": "THEME-01-SwimlaneOdd-1",
+        "fill_color": 152,
+        "line_color": 153,
+        "font_color": 155,
+        "line_thickness": 1,
+        "font": 1,
+        "font_size": 10
+    }
+},
+{
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 112,
+    "fields": {
+        "user": 1,
+        "style_name": "THEME-01-TimelineLabelEven-1",
+        "fill_color": 128,
+        "line_color": 128,
+        "font_color": 155,
+        "line_thickness": 1,
+        "font": 1,
+        "font_size": 10
+    }
+},
+{
+    "model": "plan_visual_django.plotablestyle",
+    "pk": 114,
+    "fields": {
+        "user": 1,
+        "style_name": "THEME-01-TimelineLabelOdd-1",
+        "fill_color": 127,
+        "line_color": 127,
+        "font_color": 155,
+        "line_thickness": 1,
+        "font": 1,
+        "font_size": 10
+    }
+},
+{
+    "model": "plan_visual_django.font",
+    "pk": 1,
+    "fields": {
+        "font_name": "1"
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 128,
+    "fields": {
+        "user": 1,
+        "name": "[08]Blue",
+        "red": 77,
+        "green": 147,
+        "blue": 217,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 133,
+    "fields": {
+        "user": 1,
+        "name": "[13]Amber",
+        "red": 241,
+        "green": 169,
+        "blue": 131,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 134,
+    "fields": {
+        "user": 1,
+        "name": "[14]Amber-dark",
+        "red": 233,
+        "green": 113,
+        "blue": 50,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 152,
+    "fields": {
+        "user": 1,
+        "name": "[32]GrayScale-light",
+        "red": 242,
+        "green": 242,
+        "blue": 242,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 153,
+    "fields": {
+        "user": 1,
+        "name": "[33]GrayScale",
+        "red": 191,
+        "green": 191,
+        "blue": 191,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 155,
+    "fields": {
+        "user": 1,
+        "name": "[35]GrayScale-vdark",
+        "red": 0,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.color",
+    "pk": 127,
+    "fields": {
+        "user": 1,
+        "name": "[07]Blue-light",
+        "red": 166,
+        "green": 201,
+        "blue": 236,
+        "alpha": 1.0
+    }
+},
+{
+    "model": "plan_visual_django.customuser",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$TQkK4q4mDsZaw8gxWdO6wS$s9OvV8o27MxGfsGIAPBfcVl8Y8O+djG30d9d591ENDM=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-07-31T07:42:56.382Z",
+        "email": "shared_user_name@none",
+        "username": "shared_user_name",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "plan_visual_django.customuser",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$vPTiReh1m0GQiDaGp4uZoi$OdFnCfcASLCdcilpy04eFPIn4a6NT53YkhP80tRLQNI=",
+        "last_login": "2026-01-30T14:36:04.950Z",
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-07-31T07:42:56.768Z",
+        "email": "app_user_01@none",
+        "username": "app_user_01",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
