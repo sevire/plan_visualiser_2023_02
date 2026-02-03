@@ -19,6 +19,7 @@ urlpatterns = [
     path("add-default-visual/<int:plan_id>", views.add_default_visual, name="add-default-visual"),
     path("add-auto-visual/<int:plan_id>", views.add_auto_visual, name="add-auto-visual"),
     path("edit-visual/<int:visual_id>", views.edit_visual, name='edit-visual'),
+    path("download-visual-pptx/<int:visual_id>", views.download_visual_pptx, name='download-visual-pptx'),
     path("delete-visual/<int:pk>/", views.delete_visual, name='delete-visual'),
     path("visual-new-25/<int:visual_id>/", views.plot_visual_new_25, name='plot-visual-new-25'),
 

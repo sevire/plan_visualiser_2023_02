@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict, List, Optional
+from typing import Iterable, Dict, List, Optional, Tuple
 from plan_visual_django.services.visual.rendering.plotables import RectangleBasedPlotable, Plotable
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR, MSO_AUTO_SIZE
 
 
 class VisualRenderer(ABC):
@@ -89,7 +89,6 @@ class VisualRenderer(ABC):
 
         return min_left, min_top, max_right, max_bottom, width, height
 
-    @abstractmethod
     def render_plotable(self, plotable: Plotable):
         """
         Render a single plotable to the target medium.
@@ -98,6 +97,57 @@ class VisualRenderer(ABC):
         :param plotable: The Plotable object to render
         """
         pass
+
+    def _decompose_plotable(self, item: Plotable) -> Tuple[Optional[dict], Optional[dict]]:
+        """
+        Decomposes a Plotable into its shape and text components.
+        This provides a common way for all renderers to handle text as a separate
+        entity from the shape, allowing for better control over overflow and positioning.
+
+        :param item: The Plotable to decompose
+        :return: Tuple of (shape_component, text_component)
+        """
+        if isinstance(item, RectangleBasedPlotable):
+            # Shape component
+            shape_component = {
+                'type': 'shape',
+                'id': item.plotable_id,
+                'shape_name': item.shape.value,
+                'top': item.top,
+                'left': item.left,
+                'width': item.width,
+                'height': item.height,
+                'fill_color': item.format.fill_color,
+                'line_color': item.format.line_color,
+                'line_thickness': item.format.line_thickness,
+            }
+
+            # Text component
+            text_component = None
+            if item.text:
+                text_x, text_align = item.get_text_x()
+                text_y, text_baseline = item.get_text_y()
+                text_component = {
+                    'type': 'text',
+                    'id': f"{item.plotable_id}-text",
+                    'text': item.text,
+                    'x': text_x,
+                    'y': text_y,
+                    'text_align': text_align,
+                    'text_baseline': text_baseline,
+                    'font_color': item.format.font_color,
+                    'font_size': round(item.format.font_size),
+                    'font_name': item.format.font.font_name,
+                    'text_flow': item.text_flow,
+                    'vertical_alignment': item.text_vertical_alignment,
+                    # Original plotable dimensions for reference
+                    'parent_top': item.top,
+                    'parent_left': item.left,
+                    'parent_width': item.width,
+                    'parent_height': item.height,
+                }
+            return shape_component, text_component
+        return None, None
 
     def _finalize_render(self):
         """
@@ -168,46 +218,44 @@ class CanvasRenderer(VisualRenderer):
         :param item: The Plotable to render
         :return: List of canvas object dictionaries
         """
-        if isinstance(item, RectangleBasedPlotable):
-            # Note a Plotable can be rendered as more than one canvas object; e.g. one for shape, one for text.
+        shape_component, text_component = self._decompose_plotable(item)
+        if not shape_component:
+            return []
 
-            text_x, text_align = item.get_text_x()
-            text_y, text_baseline = item.get_text_y()
-
-            canvas_rendered_objects = [
-                {
-                    "plotable_id": item.plotable_id,
-                    'shape_type': 'rectangle',
-                    'shape_name': item.shape.value,
-                    'shape_plot_dims': {
-                        'top': item.top,
-                        'left': item.left,
-                        'width': item.width,
-                        'height': item.height,
-                    },
-                    'fill_color': item.format.fill_color.to_dict(),
-                    'stroke_color': item.format.line_color.to_dict(),
-                    'stoke_line_width': item.format.line_thickness,
+        canvas_rendered_objects = [
+            {
+                "plotable_id": shape_component['id'],
+                'shape_type': 'rectangle',
+                'shape_name': shape_component['shape_name'],
+                'shape_plot_dims': {
+                    'top': shape_component['top'],
+                    'left': shape_component['left'],
+                    'width': shape_component['width'],
+                    'height': shape_component['height'],
                 },
-                {
-                    "plotable_id": f"{item.plotable_id}-text",
-                    'shape_type': 'text',
-                    'text': item.text,
-                    'shape_name': None,  # If we are plotting text there is no shape name.
-                    'shape_plot_dims': {
-                        'x': text_x,
-                        'y': text_y,
-                        'text_align': text_align,
-                        'text_baseline': text_baseline
-                    },
-                    'fill_color': item.format.font_color.to_dict(), # Note that when plotting text, fill colour is the
-                                                                    # font colour of the text to be plotted
-                    'font_size': round(item.format.font_size)
-                }
-            ]
-            return canvas_rendered_objects
-        else:
-            raise ValueError(f"item of type which can't be rendered {item}:{item.__class__.__name__}")
+                'fill_color': shape_component['fill_color'].to_dict(),
+                'stroke_color': shape_component['line_color'].to_dict(),
+                'stoke_line_width': shape_component['line_thickness'],
+            }
+        ]
+
+        if text_component:
+            canvas_rendered_objects.append({
+                "plotable_id": text_component['id'],
+                'shape_type': 'text',
+                'text': text_component['text'],
+                'shape_name': None,
+                'shape_plot_dims': {
+                    'x': text_component['x'],
+                    'y': text_component['y'],
+                    'text_align': text_component['text_align'],
+                    'text_baseline': text_component['text_baseline']
+                },
+                'fill_color': text_component['font_color'].to_dict(),
+                'font_size': text_component['font_size']
+            })
+
+        return canvas_rendered_objects
 
 
 class PowerPointRenderer(VisualRenderer):
@@ -314,72 +362,128 @@ class PowerPointRenderer(VisualRenderer):
 
         :param item: The Plotable to render
         """
-        if isinstance(item, RectangleBasedPlotable):
-            # Convert coordinates
-            left, top, width, height = self._convert_to_pptx_coords(
-                item.left, item.top, item.width, item.height
+        shape_component, text_component = self._decompose_plotable(item)
+        if not shape_component:
+            return
+
+        # 1. Render the shape
+        left, top, width, height = self._convert_to_pptx_coords(
+            shape_component['left'], shape_component['top'],
+            shape_component['width'], shape_component['height']
+        )
+
+        shape_type = self._get_shape_type(shape_component['shape_name'])
+        shape = self.slide.shapes.add_shape(
+            shape_type,
+            left, top, width, height
+        )
+
+        # Set fill color
+        fill = shape.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(
+            shape_component['fill_color'].red,
+            shape_component['fill_color'].green,
+            shape_component['fill_color'].blue
+        )
+
+        # Set line color and thickness
+        line = shape.line
+        line.color.rgb = RGBColor(
+            shape_component['line_color'].red,
+            shape_component['line_color'].green,
+            shape_component['line_color'].blue
+        )
+        line.width = Pt(shape_component['line_thickness'])
+
+            # 2. Render the text as a separate textbox if present
+        if text_component:
+            # We want to support overflow, so we'll make the textbox position and width
+            # based on the parent shape and text flow.
+
+            # We use the parent's dimensions as a baseline but will adjust for overflow.
+            t_left, t_top, t_width, t_height = self._convert_to_pptx_coords(
+                text_component['parent_left'], text_component['parent_top'],
+                text_component['parent_width'], text_component['parent_height']
             )
 
-            # Add the shape
-            shape_type = self._get_shape_type(item.shape.value)
-            shape = self.slide.shapes.add_shape(
-                shape_type,
-                left, top, width, height
+            # To support overflow, we calculate a "generous" width for the textbox
+            # if it's set to flow beyond the shape.
+            from plan_visual_django.models import VisualActivity
+
+            # Calculate slide boundaries in EMUs
+            slide_width_emu = self.presentation.slide_width
+            
+            if text_component['text_flow'] == VisualActivity.TextFlow.FLOW_TO_RIGHT:
+                # Keep t_left as start of shape, but allow it to be as wide as possible
+                # until the right edge of the slide.
+                t_width = slide_width_emu - t_left
+            elif text_component['text_flow'] == VisualActivity.TextFlow.FLOW_TO_LEFT:
+                # End at the right edge of the shape, but allow it to be as wide
+                # as possible until the left edge of the slide.
+                original_right = t_left + t_width
+                t_left = 0
+                t_width = original_right
+            elif text_component['text_flow'] == VisualActivity.TextFlow.FLOW_CENTRE:
+                # Center on the shape, allow overflow in both directions up to slide edges.
+                # To keep it perfectly centered over the shape, we make the textbox
+                # symmetric around the shape's center, constrained by the closest slide edge.
+                centre_x = t_left + t_width / 2
+                
+                # Calculate distance to both edges
+                dist_to_left = centre_x
+                dist_to_right = slide_width_emu - centre_x
+                
+                # Use the smaller distance to maintain symmetry
+                max_half_width = min(dist_to_left, dist_to_right)
+                
+                t_left = centre_x - max_half_width
+                t_width = 2 * max_half_width
+            else:
+                # For clipped or within shape, we don't change t_left/t_width from shape dimensions
+                pass
+
+            # Ensure width is at least something small to avoid errors
+            t_width = max(t_width, Inches(0.1))
+
+            # Create a textbox
+            textbox = self.slide.shapes.add_textbox(t_left, t_top, t_width, t_height)
+            text_frame = textbox.text_frame
+            text_frame.clear()
+            
+            # Set word wrap to False to allow overflow beyond the width
+            text_frame.word_wrap = False
+            # Allow the shape to grow to fit text if needed (though we might want to control it)
+            # text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+
+            p = text_frame.paragraphs[0]
+            run = p.add_run()
+            run.text = text_component['text']
+
+            # Set font properties
+            font = run.font
+            font.size = Pt(text_component['font_size'])
+            font.color.rgb = RGBColor(
+                text_component['font_color'].red,
+                text_component['font_color'].green,
+                text_component['font_color'].blue
             )
+            if text_component['font_name']:
+                font.name = text_component['font_name']
 
-            # Set fill color
-            fill = shape.fill
-            fill.solid()
-            fill.fore_color.rgb = RGBColor(
-                item.format.fill_color.red,
-                item.format.fill_color.green,
-                item.format.fill_color.blue
-            )
+            # Set text alignment based on text_flow
+            from plan_visual_django.models import VisualActivity
+            if text_component['text_flow'] == VisualActivity.TextFlow.FLOW_CENTRE:
+                p.alignment = PP_ALIGN.CENTER
+            elif text_component['text_flow'] == VisualActivity.TextFlow.FLOW_TO_LEFT:
+                p.alignment = PP_ALIGN.RIGHT
+            else:  # FLOW_TO_RIGHT or default
+                p.alignment = PP_ALIGN.LEFT
 
-            # Set line color and thickness
-            line = shape.line
-            line.color.rgb = RGBColor(
-                item.format.line_color.red,
-                item.format.line_color.green,
-                item.format.line_color.blue
-            )
-            line.width = Pt(item.format.line_thickness)
-
-            # Add text if present
-            if item.text:
-                text_frame = shape.text_frame
-                text_frame.clear()  # Clear any default text
-                p = text_frame.paragraphs[0]
-                run = p.add_run()
-                run.text = item.text
-
-                # Set font properties
-                font = run.font
-                font.size = Pt(item.format.font_size)
-                font.color.rgb = RGBColor(
-                    item.format.font_color.red,
-                    item.format.font_color.green,
-                    item.format.font_color.blue
-                )
-                if item.format.font.font_name:
-                    font.name = item.format.font.font_name
-
-                # Set text alignment based on text_flow
-                from plan_visual_django.models import VisualActivity
-                if item.text_flow == VisualActivity.TextFlow.FLOW_CENTRE:
-                    p.alignment = PP_ALIGN.CENTER
-                elif item.text_flow == VisualActivity.TextFlow.FLOW_TO_LEFT:
-                    p.alignment = PP_ALIGN.RIGHT
-                else:  # FLOW_TO_RIGHT or default
-                    p.alignment = PP_ALIGN.LEFT
-
-                # Set vertical alignment
-                if item.text_vertical_alignment == VisualActivity.VerticalAlignment.MIDDLE:
-                    text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-                elif item.text_vertical_alignment == VisualActivity.VerticalAlignment.BOTTOM:
-                    text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
-                else:  # TOP or default
-                    text_frame.vertical_anchor = MSO_ANCHOR.TOP
-
-        else:
-            raise ValueError(f"Unsupported plotable type for PowerPoint: {item.__class__.__name__}")
+            # Set vertical alignment
+            if text_component['vertical_alignment'] == VisualActivity.VerticalAlignment.MIDDLE:
+                text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            elif text_component['vertical_alignment'] == VisualActivity.VerticalAlignment.BOTTOM:
+                text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
+            else:  # TOP or default
+                text_frame.vertical_anchor = MSO_ANCHOR.TOP

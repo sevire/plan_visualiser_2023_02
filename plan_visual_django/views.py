@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 from django.db.models import ProtectedError
 from django.forms import inlineformset_factory, formset_factory
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
 from plan_visual_django.exceptions import DuplicateSwimlaneException, PlanParseError, ExcelPlanSheetNotFound, \
@@ -26,7 +26,9 @@ from plan_visual_django.services.auth.user_services import get_current_user, \
     CurrentUser
 from plan_visual_django.services.visual.model.auto_layout import VisualLayoutManager
 from plan_visual_django.services.visual.model.visual_settings import VisualSettings
+from plan_visual_django.services.visual.rendering.renderers import PowerPointRenderer
 import logging
+import io
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
@@ -701,6 +703,49 @@ def plot_visual_new_25(request, visual_id):
         'no_activities_message': MESSAGE_NO_ACTIVITIES_IN_VISUAL,
     }
     return render(request, "plan_visual_django/visual_main_ui_25.html", context)
+
+
+@login_required
+def download_visual_pptx(request, visual_id):
+    """
+    Renders the visual as a PowerPoint presentation and returns it as a download.
+
+    :param request:
+    :param visual_id:
+    :return:
+    """
+    current_user = CurrentUser(request)
+    try:
+        visual = PlanVisual.objects.get(id=visual_id)
+    except PlanVisual.DoesNotExist:
+        messages.error(request, "Visual does not exist")
+        return HttpResponseRedirect(reverse('manage-plans'))
+
+    if not current_user.has_access_to_object(visual):
+        messages.error(request, "You do not have access to this visual")
+        return HttpResponseForbidden("You do not have permission to download this visual.")
+
+    # Get plotables for the visual
+    visual_plotables = visual.get_plotables()
+
+    # Create renderer and render
+    renderer = PowerPointRenderer()
+    presentation = renderer.render_from_iterable(visual_plotables)
+
+    # Save to a BytesIO buffer
+    buffer = io.BytesIO()
+    presentation.save(buffer)
+    buffer.seek(0)
+
+    # Prepare the response
+    filename = f"{visual.name.replace(' ', '_')}.pptx"
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
 
 
 @login_required
