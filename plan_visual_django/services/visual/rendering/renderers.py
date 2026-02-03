@@ -318,9 +318,9 @@ class PowerPointRenderer(VisualRenderer):
         # Use the smaller scale to ensure it fits
         self.scale_factor = min(scale_x, scale_y)
 
-        # Store offset to center the visual
+        # Store offset to align to top with margin
         self.offset_left = margin + (available_width - self.visual_width * self.scale_factor) / 2
-        self.offset_top = margin + (available_height - self.visual_height * self.scale_factor) / 2
+        self.offset_top = margin
 
         # Now render with the parent implementation
         super().render_from_iterable(visual_plotables)
