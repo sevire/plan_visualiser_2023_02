@@ -37,7 +37,8 @@ services:
   nginx:
     image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/nginx:${DOCKER_IMAGE_TAG}
     volumes:
-      - /var/www/app_root/ssl:/etc/nginx/ssl
+      - /etc/letsencrypt/live/planononepage.com/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+      - /etc/letsencrypt/live/planononepage.com/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
       - static:/static
     ports:
     - "80:80"
