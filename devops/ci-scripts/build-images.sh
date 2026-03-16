@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # Script to build Docker images selectively and push them to the container registry
-# Usage: ./build-images.sh [environment] [--push] [--include-postgres]
+# Usage: ./build-images.sh [environment] [--push]
 # Parameters:
 #   [environment]         - The target environment (e.g., dev, staging, prod)
 #   [--push]              - Optional flag to push images to the container registry.
-#   [--include-postgres]  - Optional flag to include the Postgres image in the build.
 
 # Exit immediately if a command exits with a non-zero status
 set -e
@@ -15,19 +14,16 @@ echo "Starting Docker image build process..."
 # Parse input arguments
 ENVIRONMENT=$1
 PUSH_IMAGES=false
-INCLUDE_POSTGRES=false
 
 # Read optional flags
 for arg in "$@"; do
   if [ "$arg" == "--push" ]; then
     PUSH_IMAGES=true
-  elif [ "$arg" == "--include-postgres" ]; then
-    INCLUDE_POSTGRES=true
   fi
 done
 
 if [ -z "$ENVIRONMENT" ]; then
-  echo "Error: Environment not specified. Usage: ./build-images.sh [environment] [--push] [--include-postgres]."
+  echo "Error: Environment not specified. Usage: ./build-images.sh [environment] [--push]."
   exit 1
 fi
 
@@ -77,22 +73,11 @@ echo "Building core Docker images for environment: $ENVIRONMENT"
 build_image "$IMAGE_PREFIX$GUNICORN_IMAGE" "./devops/docker/gunicorn/Dockerfile"
 build_image "$IMAGE_PREFIX$NGINX_IMAGE" "./devops/docker/nginx/Dockerfile"
 
-# Build Postgres image optionally
-if [ "$INCLUDE_POSTGRES" = true ]; then
-  echo "Including Postgres in the build process..."
-  build_image "$IMAGE_PREFIX$POSTGRES_IMAGE" "./devops/docker/postgres/Dockerfile"
-fi
-
 # Optionally push images to the registry
 if [ "$PUSH_IMAGES" = true ]; then
   echo "Pushing core images to the registry..."
   push_image "$IMAGE_PREFIX$GUNICORN_IMAGE"
   push_image "$IMAGE_PREFIX$NGINX_IMAGE"
-
-  if [ "$INCLUDE_POSTGRES" = true ]; then
-    echo "Pushing Postgres image to the registry..."
-    push_image "$IMAGE_PREFIX$POSTGRES_IMAGE"
-  fi
 fi
 
 echo "Docker image build process completed successfully!"

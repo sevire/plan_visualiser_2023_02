@@ -48,7 +48,7 @@ services:
     environment:
       - DJANGO_ENVIRONMENT=${DJANGO_ENVIRONMENT}
   db:
-    image: postgres
+    image: postgres:16.13
     environment:
       - "POSTGRES_DB=${POSTGRES_DB_NAME}"
       - "POSTGRES_USER=${POSTGRES_USER}"

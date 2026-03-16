@@ -19,7 +19,7 @@ services:
       - django_gunicorn
 
   db:
-    image: ${REGISTRY_PREFIX}{POSTGRES_IMAGE}
+    image: postgres:16.13
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
