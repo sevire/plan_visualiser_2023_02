@@ -36,4 +36,7 @@ INTERNAL_IPS = ['127.0.0.1', '::1']
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 
-STATIC_ROOT = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    BASE_DIR / "plan_visual_django" / "static",
+]

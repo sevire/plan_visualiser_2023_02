@@ -1,8 +1,6 @@
 services:
   django_gunicorn:
     image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
-    ports:
-      - "8000:8000"
     volumes:
       - static:/static
     depends_on:

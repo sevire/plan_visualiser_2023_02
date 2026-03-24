@@ -10,4 +10,7 @@
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />
   </component>
+  <component name="TaskProjectConfiguration">
+    <server type="JIRA" url="https://sevire.atlassian.net" />
+  </component>
 </project>
