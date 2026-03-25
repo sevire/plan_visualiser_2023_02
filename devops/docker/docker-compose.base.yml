@@ -19,7 +19,7 @@ services:
   db:
     image: postgres:16.13
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -28,4 +28,4 @@ services:
 
 volumes:
   static:
-  postgres_data:
+  data:
