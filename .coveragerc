@@ -1,0 +1,14 @@
+[run]
+source = .
+omit =
+    */migrations/*
+    */tests/*
+    */venv/*
+    manage.py
+    plan_visualiser_2023_02/wsgi.py
+    plan_visualiser_2023_02/asgi.py
+    plan_visualiser_2023_02/settings/*
+
+[report]
+show_missing = True
+skip_covered = True
