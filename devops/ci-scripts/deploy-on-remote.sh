@@ -67,3 +67,11 @@ doctl registry login
 
 # Pull images and restart containers with new images
 docker compose -f devops/docker/docker-compose-remote.yml up --detach
+
+# Clean up old docker images to reclaim space (important as droplets have limited disk space)
+echo "Cleaning up old Docker images..."
+docker image prune -a -f
+
+# Limit system logs to the last 7 days to prevent /var/log/journal from filling up
+echo "Vacuuming system journal logs..."
+journalctl --vacuum-time=7d
