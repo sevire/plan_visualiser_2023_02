@@ -8,6 +8,7 @@ services:
     image: ${DO_DOCKER_REGISTRY_NAME}/planvisualiser/gunicorn:${DOCKER_IMAGE_TAG}
     volumes:
       - static:/static
+      - media:/media
 
     depends_on:
       db:
@@ -37,6 +38,7 @@ services:
       - /etc/letsencrypt/live/planononepage.com/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
       - /etc/letsencrypt/live/planononepage.com/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
       - static:/static
+      - media:/media
     ports:
     - "80:80"
     - "443:443"
@@ -59,4 +61,5 @@ services:
       retries: 5
 volumes:
   static:
+  media:
   data:

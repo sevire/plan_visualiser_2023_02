@@ -3,6 +3,7 @@ services:
     image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
     volumes:
       - static:/static
+      - media:/media
     depends_on:
       db:
         condition: service_healthy
@@ -13,6 +14,7 @@ services:
       - "80:80"
     volumes:
       - static:/static
+      - media:/media
     depends_on:
       - django_gunicorn
 
@@ -28,4 +30,5 @@ services:
 
 volumes:
   static:
+  media:
   data:

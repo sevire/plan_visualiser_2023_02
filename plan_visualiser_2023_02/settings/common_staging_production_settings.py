@@ -25,3 +25,4 @@ print(f"EMAIL_PORT={EMAIL_PORT}")
 
 STATIC_ROOT = "/static/"
 MEDIA_ROOT = "/media/"
+MEDIA_URL = "/media/"
