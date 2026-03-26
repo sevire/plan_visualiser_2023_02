@@ -4,7 +4,7 @@ from functools import partial
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
-from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent
+from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent, HelpText
 import logging
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,11 @@ initial_data_driver = [
         "dumpdata_filename": 'static_content.json',
         "model": StaticContent,
         "field_name_for_messages": "title",
+    },
+    {
+        "dumpdata_filename": 'help_text.json',
+        "model": HelpText,
+        "field_name_for_messages": "slug",
     }
 ]
 
@@ -124,11 +129,18 @@ def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete
 
             print_status_partial(f"Adding record {fields[field_name_for_messages]}...")
             try:
-                model.objects.create(**fields)
+                # If the record already exists, we want to update it to match the fixture
+                existing_record = model.objects.filter(pk=fields['pk']).first()
+                if existing_record:
+                    for field, value in fields.items():
+                        setattr(existing_record, field, value)
+                    existing_record.save()
+                    print_status_partial(f"Record {fields[field_name_for_messages]} updated.")
+                else:
+                    model.objects.create(**fields)
+                    print_status_partial(f"Record {fields[field_name_for_messages]} added.")
             except IntegrityError as e:
-                print_status_partial(f"Couldn't add record {e.args[0]}")
-            else:
-                print_status_partial(f"Record {fields[field_name_for_messages]} added.")
+                print_status_partial(f"Couldn't add/update record {e.args[0]}")
 
 
 def print_status(phase, message, delete_flag=False):
