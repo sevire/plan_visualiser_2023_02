@@ -1116,3 +1116,25 @@ DEFAULT_TEXT_FLOW = VisualActivity.TextFlow.FLOW_TO_LEFT
 DEFAULT_PLOTABLE_SHAPE_NAME = "RECTANGLE"
 DEFAULT_MILESTONE_PLOTABLE_SHAPE_NAME = "DIAMOND"
 DEFAULT_PLOTABLE_STYLE_NAME = "(default)"
+
+
+class PhysicalPlanFile(models.Model):
+    """
+    A virtual model to represent the files stored on disk in the plan_files directory,
+    potentially linked to a Plan record.
+    """
+    id = models.CharField(max_length=255, primary_key=True)  # Using filename or plan_id as ID
+    physical_file_name = models.CharField(max_length=255, null=True, blank=True)
+    file_name_database = models.CharField(max_length=255, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    plan_name = models.CharField(max_length=100, null=True, blank=True)
+    file_type_name = models.CharField(max_length=50, null=True, blank=True)
+    plan_id = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = True
+        verbose_name = "Physical Plan File"
+        verbose_name_plural = "Physical Plan Files"
+
+    def __str__(self):
+        return self.physical_file_name if self.physical_file_name else f"Plan {self.plan_id}"

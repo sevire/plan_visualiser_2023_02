@@ -13,7 +13,8 @@ from plan_visual_django.models import (
     VisualActivity,
     PlanActivity,
     TimelineForVisual,
-    StaticContent, HelpText
+    StaticContent, HelpText,
+    PhysicalPlanFile
 )
 
 
@@ -196,6 +197,100 @@ class HelpTextAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title', 'updated_at')
     search_fields = ('slug', 'title', 'content')
     prepopulated_fields = {'slug': ('title',)}  # Auto-fill slug based on title
+
+
+@admin.register(PhysicalPlanFile)
+class PhysicalPlanFileAdmin(admin.ModelAdmin):
+    list_display = ('physical_file_name', 'user', 'file_name_database', 'plan_name', 'file_type_name')
+    list_filter = ('user', 'file_type_name')
+    search_fields = ('physical_file_name', 'file_name_database', 'plan_name')
+    actions = ['delete_physical_files']
+
+    def get_queryset(self, request):
+        # Sync the table with physical files and database records
+        self.sync_physical_files()
+        return super().get_queryset(request)
+
+    def sync_physical_files(self):
+        # 1. Get all physical files from disk
+        media_root = settings.MEDIA_ROOT if hasattr(settings, 'MEDIA_ROOT') else os.path.join(settings.BASE_DIR, 'plan_files')
+        plan_files_dir = os.path.join(media_root, 'plan_files') if os.path.exists(os.path.join(media_root, 'plan_files')) else media_root
+        
+        physical_files = []
+        if os.path.exists(plan_files_dir):
+            for f in os.listdir(plan_files_dir):
+                if os.path.isfile(os.path.join(plan_files_dir, f)) and not f.startswith('.'):
+                    physical_files.append(f)
+
+        # 2. Get all Plan records
+        plans = Plan.objects.all()
+        plan_map = {}
+        for plan in plans:
+            # We assume the physical filename is the basename of plan.file.name
+            if plan.file:
+                phys_name = os.path.basename(plan.file.name)
+                plan_map[phys_name] = plan
+
+        # 3. Combine and sync to PhysicalPlanFile table
+        # We'll use a transaction for efficiency and atomicity
+        from django.db import transaction
+        with transaction.atomic():
+            # Clear current table
+            PhysicalPlanFile.objects.all().delete()
+            
+            seen_files = set()
+            
+            # First, add all Plan records (they may or may not have physical files)
+            for plan in plans:
+                phys_name = os.path.basename(plan.file.name) if plan.file else None
+                if phys_name:
+                    seen_files.add(phys_name)
+                
+                PhysicalPlanFile.objects.create(
+                    id=f"plan_{plan.id}",
+                    physical_file_name=phys_name,
+                    file_name_database=plan.file_name,
+                    user=plan.user,
+                    plan_name=plan.plan_name,
+                    file_type_name=plan.file_type_name,
+                    plan_id=plan.id
+                )
+            
+            # Second, add physical files that don't have a Plan record
+            for phys_name in physical_files:
+                if phys_name not in seen_files:
+                    PhysicalPlanFile.objects.create(
+                        id=f"file_{phys_name}",
+                        physical_file_name=phys_name,
+                        file_name_database=None,
+                        user=None,
+                        plan_name=None,
+                        file_type_name=None,
+                        plan_id=None
+                    )
+
+    @admin.action(description='Delete physical files for selected rows')
+    def delete_physical_files(self, request, queryset):
+        media_root = settings.MEDIA_ROOT if hasattr(settings, 'MEDIA_ROOT') else os.path.join(settings.BASE_DIR, 'plan_files')
+        plan_files_dir = os.path.join(media_root, 'plan_files') if os.path.exists(os.path.join(media_root, 'plan_files')) else media_root
+        
+        deleted_count = 0
+        for obj in queryset:
+            if obj.physical_file_name:
+                file_path = os.path.join(plan_files_dir, obj.physical_file_name)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    deleted_count += 1
+        
+        self.message_user(request, f"Successfully deleted {deleted_count} physical files.")
+        # Re-sync after deletion
+        self.sync_physical_files()
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 # ==============================================================================
