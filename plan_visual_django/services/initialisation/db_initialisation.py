@@ -4,7 +4,8 @@ from functools import partial
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
-from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent
+from django.db.models import ProtectedError
+from plan_visual_django.models import Color, PlotableStyle, Font, StaticContent, HelpText
 import logging
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,12 @@ initial_data_driver = [
         "dumpdata_filename": 'static_content.json',
         "model": StaticContent,
         "field_name_for_messages": "title",
+        "foreign_keys": ["parent"],
+    },
+    {
+        "dumpdata_filename": 'help_text.json',
+        "model": HelpText,
+        "field_name_for_messages": "slug",
     }
 ]
 
@@ -66,7 +73,11 @@ def add_initial_data(shared_data_user, delete_flag=False):
     data_driver = reversed(initial_data_driver) if delete_flag else initial_data_driver
     for initial_model_data in data_driver:
         logger.info(f"Adding data for {initial_model_data}")
-        add_initial_data_for_model(shared_data_user, initial_model_data, delete_flag)
+        # We may need to do more than one pass because of forward references in the data (e.g. self-referencing)
+        # So we'll do three passes just to be safe.  Records that are already present will just be updated.
+        num_passes = 1 if delete_flag else 3
+        for i in range(num_passes):
+            add_initial_data_for_model(shared_data_user, initial_model_data, delete_flag)
 
 
 def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete_flag):
@@ -104,8 +115,11 @@ def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete
                 print_status_partial(f"No record found pk={record['pk']}")
             else:
                 print_status_partial(f"Record found, deleting.")
-                record_for_deletion.delete()
-                print_status_partial(f"Record Record deleted.")
+                try:
+                    record_for_deletion.delete()
+                    print_status_partial(f"Record Record deleted.")
+                except ProtectedError as e:
+                    print_status_partial(f"Record pk={record['pk']} is protected, skipping.")
         else:
             fields = record['fields']
             fields['pk'] = record['pk']
@@ -122,13 +136,24 @@ def add_initial_data_for_model(shared_user: UserModel, data_driver: dict, delete
                     fields[key + "_id"] = fields[key]
                     del fields[key]
 
+            # If we are adding the record, we attempt to do so using create.  If this fails because the record
+            # depends on a record which hasn't been added yet, we'll try again later.
             print_status_partial(f"Adding record {fields[field_name_for_messages]}...")
             try:
-                model.objects.create(**fields)
+                # If the record already exists, we want to update it to match the fixture
+                existing_record = model.objects.filter(pk=fields['pk']).first()
+                if existing_record:
+                    for field, value in fields.items():
+                        setattr(existing_record, field, value)
+                    existing_record.save()
+                    print_status_partial(f"Record {fields[field_name_for_messages]} updated.")
+                else:
+                    model.objects.create(**fields)
+                    print_status_partial(f"Record {fields[field_name_for_messages]} added.")
             except IntegrityError as e:
-                print_status_partial(f"Couldn't add record {e.args[0]}")
-            else:
-                print_status_partial(f"Record {fields[field_name_for_messages]} added.")
+                # We expect this to happen if there are circular references or forward references.
+                # We'll just skip it for now and it will be picked up on a subsequent pass.
+                print_status_partial(f"Skipping record {fields[field_name_for_messages]} for now due to: {e.args[0]}")
 
 
 def print_status(phase, message, delete_flag=False):
@@ -250,7 +275,11 @@ def create_initial_users(user_data, delete=False):
             # change it to that value.
             if delete:
                 print_status_partial(f"User ({existing_user.username}) exists, deleting...")
-                existing_user.delete()
+                try:
+                    existing_user.delete()
+                    print_status_partial(f"User ({existing_user.username}) deleted")
+                except ProtectedError:
+                    print_status_partial(f"User ({existing_user.username}) is protected, skipping deletion")
             else:
                 # Check whether new password is same as current password set for the user
                 print_status_partial(f"User ({existing_user}) already exists")

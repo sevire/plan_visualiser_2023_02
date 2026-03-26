@@ -3,6 +3,7 @@ services:
     image: ${REGISTRY_PREFIX}{GUNICORN_IMAGE}
     volumes:
       - static:/static
+      - media:/media
     depends_on:
       db:
         condition: service_healthy
@@ -13,13 +14,14 @@ services:
       - "80:80"
     volumes:
       - static:/static
+      - media:/media
     depends_on:
       - django_gunicorn
 
   db:
     image: postgres:16.13
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -28,4 +30,5 @@ services:
 
 volumes:
   static:
-  postgres_data:
+  media:
+  data:

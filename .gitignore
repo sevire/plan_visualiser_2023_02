@@ -20,3 +20,10 @@ db.sqlite3-journal
 # Ignore env files
 devops/env/*
 devops/env/.*
+
+# Coverage reports
+.coverage
+htmlcov/
+*.txt.report
+new_coverage_report.txt
+documents/coverage_report.txt
