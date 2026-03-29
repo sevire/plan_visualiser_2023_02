@@ -123,7 +123,8 @@ sudo certbot certonly \
   --dns-digitalocean \
   --dns-digitalocean-credentials /etc/letsencrypt/digitalocean.ini \
   -d "$DOMAIN_NAME" \
-  -d www."$DOMAIN_NAME"
+  -d www."$DOMAIN_NAME" \
+  --deploy-hook "docker restart docker-nginx-1"
 
 sudo certbot certonly --standalone -d "$DOMAIN_NAME" -d www."$DOMAIN_NAME" --email "$EMAIL" --agree-tos --non-interactive
 
@@ -133,6 +134,12 @@ sudo cp /etc/letsencrypt/live/"$DOMAIN_NAME"/privkey.pem $SSL_DIR
 
 # Change ownership of the SSL directory to the current user
 sudo chown -R "$USER":"$USER" $SSL_DIR
+
+# Create a renewal hook to restart Nginx when certificates are renewed
+echo "Creating Certbot renewal hook..."
+sudo mkdir -p /etc/letsencrypt/renewal-hooks/deploy
+printf '#!/bin/bash\ndocker restart docker-nginx-1\n' | sudo tee /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
+sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
 
 # Final instructions
 echo "Setup complete. Folders for static, media, postgres, and SSL files have been created."
